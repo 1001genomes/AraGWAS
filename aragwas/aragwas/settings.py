@@ -42,6 +42,17 @@ INSTALLED_APPS = [
     'gwasdb',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.DjangoModelPermissions',
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_csv.renderers.CSVRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ),
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
