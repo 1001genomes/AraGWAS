@@ -1,5 +1,14 @@
-# .DS_store
+# Ignore scaffolding, DS_Store and others
+.DS_Store
+*.pyc
 *.DS_Store
+*._*
+*.swp
+.nfs*
+static_deploy
+.env
+.vscode
+/venv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
