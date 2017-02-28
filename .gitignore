@@ -1,3 +1,16 @@
+# Ignore scaffolding, DS_Store and others
+.DS_Store
+*.pyc
+*.DS_Store
+*._*
+*.swp
+.nfs*
+static_deploy
+.env
+.vscode
+/venv
+.idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
