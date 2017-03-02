@@ -7,14 +7,28 @@ Study List Serializer Class (read-only)
 """
 class StudyListSerializer(serializers.ModelSerializer):
     # association_count = serializers.SerializerMethodField()
+    genotype = serializers.SerializerMethodField()
+    phenotype = serializers.SerializerMethodField()
 
     class Meta:
         model = Study
-        fields = ('name','genotype','publication')
+        fields = ('name','genotype','phenotype','publication')
 
-    def get_association_count(selfself, obj):
+    # def get_association_count(self, obj):
+    #     try:
+    #         return obj.association_set.count()
+    #     except:
+    #         return ""
+
+    def get_genotype(self, obj):
         try:
-            return obj.association_set.count()
+            return "{} {}".format(obj.genotype.name, obj.genotype.version)
+        except:
+            return ""
+
+    def get_phenotype(self, obj):
+        try:
+            return obj.phenotype.name
         except:
             return ""
 
@@ -27,7 +41,7 @@ class AssociationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Association
-        fields = ('snp', 'study','pvalue')
+        fields = ('snp','study','pvalue')
 
     def get_study(self, obj):
         try:
@@ -49,12 +63,13 @@ class AssociationValueSerializer(serializers.ModelSerializer):
     snp = serializers.SerializerMethodField()
     chrom = serializers.SerializerMethodField()
     pos = serializers.SerializerMethodField()
+    phenotype = serializers.SerializerMethodField()
     # genes = serializers.SerializerMethodField() # Still unsure whether to add this here
 
 
     class Meta:
         model = Association
-        fields = ('snp','chrom','pos','maf','pvalue','beta','odds_ratio','confidence_interval','study')
+        fields = ('snp','chrom','pos','maf','pvalue','beta','odds_ratio','confidence_interval','phenotype','study')
 
     def get_study(self, obj):
         try:
@@ -77,6 +92,12 @@ class AssociationValueSerializer(serializers.ModelSerializer):
     def get_pos(self, obj):
         try:
             return obj.snp.position
+        except:
+            return ""
+
+    def get_phenotype(self, obj):
+        try:
+            return obj.study.phenotype.name
         except:
             return ""
 """

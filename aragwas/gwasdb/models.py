@@ -11,11 +11,12 @@ class Phenotype(models.Model):
 
 class Study(models.Model):
     """
-    GWA Study model, if possible links to easyGWAS
+    GWA Study model, associated with ONE phenotype, if possible links to easyGWAS
     """
     name = models.CharField(max_length=255) # name of the study
     transformation = models.CharField(max_length=255) # transformation used prior to GWAS (log, sqrt, box-cox, etc)
     genotype = models.ForeignKey("Genotype") # foreign key to a Genotype
+    phenotype = models.ForeignKey("Phenotype", null=True) # foregin key to the phenotype of interest
     method = models.CharField(max_length=255) # method used to individuate associations (LM, KW, LMM, etc)
     publication = models.URLField(blank=True, null=True) # link to a DOI for a published study
     easygwas_link = models.URLField(blank=True, null=True) # link to easygwas study page (if applicable)
@@ -37,7 +38,7 @@ class SNP(models.Model):
     position = models.IntegerField() # position of the SNP on the chromosome
     annotation = models.CharField(max_length=255) # genome annotation used to refer to the position (TAIR10, etc)
     genotype = models.ForeignKey("Genotype") # foreign key to a Genotype
-    gene = models.ManyToManyField("Gene") # key(s) to associated genes
+    gene = models.ManyToManyField("Gene", blank=True) # key(s) to associated genes
 
 class Association(models.Model):
     """
