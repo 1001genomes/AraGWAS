@@ -3,8 +3,7 @@ from gwasdb.models import Study, Gene, Genotype, SNP, Association
 
 @admin.register(Study)
 class StudyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'transformation', 'genotype', 'method']
-    readonly_fields = ('publications', 'easygwas_link')
+    list_display = ['name', 'transformation', 'genotype', 'method','publication','easygwas_link']
 
 @admin.register(Association)
 class AssociationAdmin(admin.ModelAdmin):

@@ -17,7 +17,7 @@ class Study(models.Model):
     transformation = models.CharField(max_length=255) # transformation used prior to GWAS (log, sqrt, box-cox, etc)
     genotype = models.ForeignKey("Genotype") # foreign key to a Genotype
     method = models.CharField(max_length=255) # method used to individuate associations (LM, KW, LMM, etc)
-    publications = models.URLField(blank=True, null=True) # link to a DOI for a published study
+    publication = models.URLField(blank=True, null=True) # link to a DOI for a published study
     easygwas_link = models.URLField(blank=True, null=True) # link to easygwas study page (if applicable)
 
 class Genotype(models.Model):
@@ -32,6 +32,7 @@ class SNP(models.Model):
     """
     SNP model, might be incorporated directly into Association
     """
+    name = models.CharField(max_length=255,default="rs?")
     chromosome = models.IntegerField() # chromosome on which the SNP is located
     position = models.IntegerField() # position of the SNP on the chromosome
     annotation = models.CharField(max_length=255) # genome annotation used to refer to the position (TAIR10, etc)
