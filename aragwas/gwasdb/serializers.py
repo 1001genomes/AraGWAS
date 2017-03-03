@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from gwasdb.models import SNP, Study, Association, Genotype, Gene
+from gwasdb.models import SNP, Study, Association, Genotype, Gene, Phenotype
 
 """
 Study List Serializer Class (read-only)
@@ -22,7 +22,7 @@ class StudyListSerializer(serializers.ModelSerializer):
 
     def get_genotype(self, obj):
         try:
-            return "{} {}".format(obj.genotype.name, obj.genotype.version)
+            return "{} v{}".format(obj.genotype.name, obj.genotype.version)
         except:
             return ""
 
@@ -38,10 +38,12 @@ Association List Serializer Class (read-only) Can be used to serialize entire st
 class AssociationListSerializer(serializers.ModelSerializer):
     study = serializers.SerializerMethodField()
     snp = serializers.SerializerMethodField()
+    gene = serializers.SerializerMethodField()
+    phenotype = serializers.SerializerMethodField()
 
     class Meta:
         model = Association
-        fields = ('snp','study','pvalue')
+        fields = ('snp','study','pvalue','gene','phenotype')
 
     def get_study(self, obj):
         try:
@@ -51,7 +53,19 @@ class AssociationListSerializer(serializers.ModelSerializer):
 
     def get_snp(self, obj):
         try:
-            return obj.snp.name
+            return obj.snp.get_name()
+        except:
+            return ""
+
+    def get_gene(self, obj):
+        try:
+            return obj.snp.gene.name
+        except:
+            return ""
+
+    def get_phenotype(self, obj):
+        try:
+            return obj.study.phenotype.name
         except:
             return ""
 
@@ -121,6 +135,14 @@ class SNPListSerializer(serializers.ModelSerializer):
             return obj.genotype.version
         except:
             return ""
+
+"""
+Phenotype List Serializer Class (read-only)
+"""
+class PhenotypeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Phenotype
+        fields = ('name','description')
 
 """
 Gene View Serializer Class (read-only) Needs to be written, used when "traveling" on the genomic diagram

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
-from .models import *
+from gwasdb.models import *
+from gwasdb.serializers import *
 
 # Create your tests here.
 # Basic db initialization:
@@ -12,8 +13,8 @@ def generate_basic_db():
     genotype1 = Genotype.objects.create(name="1001genomes", version="1.2")
     phenotype1 = Phenotype.objects.create(name="Length of something")
     study1 = Study.objects.create(name="McIntosh et al., 2010", transformation="log", method="LMM", genotype=genotype1, phenotype = phenotype1)
-    SNP1 = SNP.objects.create(name="rs1", chromosome=1, position=45602, annotation="TAIR10", genotype=genotype1)
-    SNP2 = SNP.objects.create(name="rs2", chromosome=2, position=100000, annotation="TAIR10", genotype=genotype1)
+    SNP1 = SNP.objects.create(chromosome=1, position=45602, annotation="TAIR10", genotype=genotype1)
+    SNP2 = SNP.objects.create(chromosome=2, position=100000, annotation="TAIR10", genotype=genotype1)
     association1 = Association.objects.create(study=study1, snp = SNP1, maf=0.24, pvalue=1.4e-8)
     association2 = Association.objects.create(study=study1, snp=SNP2, maf=0.24, pvalue=1.4e-8)
 
@@ -39,4 +40,18 @@ class ModelRelationshipTests(TestCase):
         self.assertNotEqual(Association.objects.get(pk=1).snp, Association.objects.get(pk=2).snp) # Test independence of associations
 
 class RESTAPITests(TestCase):
-    pass
+    def test_list_serializers(self):
+        """
+        Test the StudyListSerializer
+        :return:
+        """
+        generate_basic_db()
+        study = Study.objects.get(pk=1)
+        serialized = StudyListSerializer(study)
+        # print(serialized.data)
+        associations = Association.objects.all()
+        snp2 = SNP.objects.get(pk=2)
+        serialized_assoc = AssociationListSerializer(associations, many=True)
+        # print(serialized_assoc.data[0]['snp'])
+        self.assertEqual(serialized.data['name'],study.name)
+        self.assertEqual(serialized_assoc.data[1]['snp'],snp2.get_name())

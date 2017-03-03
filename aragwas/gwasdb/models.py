@@ -33,12 +33,17 @@ class SNP(models.Model):
     """
     SNP model, might be incorporated directly into Association
     """
-    name = models.CharField(max_length=255,default="rs?")
     chromosome = models.IntegerField() # chromosome on which the SNP is located
     position = models.IntegerField() # position of the SNP on the chromosome
     annotation = models.CharField(max_length=255) # genome annotation used to refer to the position (TAIR10, etc)
     genotype = models.ForeignKey("Genotype") # foreign key to a Genotype
     gene = models.ManyToManyField("Gene", blank=True) # key(s) to associated genes
+
+    def get_name(self):
+        return "Chr{}: {}".format(self.chromosome, self.position)
+
+    def __unicode__(self):
+        return u"Chr{}: {}".format(self.chromosome, self.position)
 
 class Association(models.Model):
     """
