@@ -9,9 +9,3 @@ from gwasdb.serializers import *
 #     Detailed view for a single phenotype
 #     """
 #     model = SNP
-
-def correlation_results(request, ids=None):
-    """
-    Shows the correlation result
-    """
-    return render(request, 'results.html', {"phenotype_ids":ids})
