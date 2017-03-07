@@ -17,6 +17,16 @@ from django.conf.urls import url
 from django.contrib import admin
 from gwasdb import views
 
+import gwasdb.rest as rest
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
+
+restpatterns = [
+    #search
+    # url(r'^rest/search/$', rest.search),
+    # url(r'^rest/search/(?P<query_term>.*)/$', rest.search),
+]
+
+

@@ -1,7 +1,9 @@
 from django.test import TestCase
+from django.contrib.auth.models import AnonymousUser, User
 from rest_framework.test import APIRequestFactory
 from gwasdb.models import *
 from gwasdb.serializers import *
+from gwasdb.rest import neighboring_snps
 
 # Create your tests here.
 # Basic db initialization:
@@ -15,6 +17,7 @@ def generate_basic_db():
     study1 = Study.objects.create(name="McIntosh et al., 2010", transformation="log", method="LMM", genotype=genotype1, phenotype = phenotype1)
     SNP1 = SNP.objects.create(chromosome=1, position=45602, annotation="TAIR10", genotype=genotype1)
     SNP2 = SNP.objects.create(chromosome=2, position=100000, annotation="TAIR10", genotype=genotype1)
+    SNP3 = SNP.objects.create(chromosome=2, position=100100, annotation="TAIR10", genotype=genotype1)
     association1 = Association.objects.create(study=study1, snp = SNP1, maf=0.24, pvalue=1.4e-8)
     association2 = Association.objects.create(study=study1, snp=SNP2, maf=0.24, pvalue=1.4e-8)
 
@@ -55,3 +58,22 @@ class RESTAPITests(TestCase):
         # print(serialized_assoc.data[0]['snp'])
         self.assertEqual(serialized.data['name'],study.name)
         self.assertEqual(serialized_assoc.data[1]['snp'],snp2.get_name())
+    #
+    # def setUp(self):
+    #     # Every test needs access to request factory
+    #     self.factory = APIRequestFactory()
+    #     self.user = User.objects.create_user
+
+    def test_neighboring_snps(self):
+        """
+        Test the rest.py neighboring_snps serializer
+        :return:
+        """
+        generate_basic_db()
+        factory = APIRequestFactory()
+        request = factory.get('/results')
+        neighboring_SNP1 = neighboring_snps(request, snp_pk=1, include=False)
+        neighboring_SNP2 = neighboring_snps(request, snp_pk=2)
+        self.assertTrue(neighboring_SNP2)
+        self.assertTrue(len(neighboring_SNP1.data) == 0)
+        pass

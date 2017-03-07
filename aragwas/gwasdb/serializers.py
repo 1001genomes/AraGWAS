@@ -118,12 +118,20 @@ class AssociationValueSerializer(serializers.ModelSerializer):
 SNP List Serializer Class (read-only) Could be integrated in the AssociationValue Serializer above...
 """
 class SNPListSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
     genotype = serializers.SerializerMethodField()
     genotype_version = serializers.SerializerMethodField()
+    association_count = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ('name', 'chromosome', 'position', 'annotation', 'genotype', 'genotype_version')
+        model = SNP
+        fields = ('name', 'chromosome', 'position', 'annotation', 'genotype', 'genotype_version', 'association_count')
 
+    def get_name(self, obj):
+        try:
+            return obj.get_name()
+        except:
+            return ""
     def get_genotype(self, obj):
         try:
             return obj.genotype.name
@@ -133,6 +141,12 @@ class SNPListSerializer(serializers.ModelSerializer):
     def get_genotype_version(self, obj):
         try:
             return obj.genotype.version
+        except:
+            return ""
+
+    def get_association_count(self,obj):
+        try:
+            return obj.association_set.count()
         except:
             return ""
 

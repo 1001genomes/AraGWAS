@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 """
 List all associations
@@ -22,18 +23,33 @@ def association_list(request,format=None):
     if request.method == "GET":
         serializer = AssociationListSerializer(associations,many=True)
         return Response(serializer.data)
+"""
+List all associations in details (with chromosome, position, beta, etc...)
+"""
+@api_view(['GET'])
+def association_list_detail(request,format=None):
+    """
+    List all available associations
+    :param request:
+    :param format:
+    :return:
+    """
+    associations = Association.objects.all()
+    if request.method == "GET":
+        serializer = AssociationValueSerializer(associations,many=True)
+        return Response(serializer.data)
 
 '''
 Association details # Do we want to see individual associations or we will always only see them in a SNP or Study page?
 '''
 @api_view(['GET'])
-def association_detail(request,q,format=None):
+def association_detail(request,pk,format=None):
     """
     Detailed information about the association
     ---
     parameters:
-        - name: q
-          description: the id or doi of the phenotype
+        - name: pk
+          description: the id of the association
           required: true
           type: string
           paramType: path
@@ -42,18 +58,14 @@ def association_detail(request,q,format=None):
     omit_serializer: false
 
     """
-    doi = _is_doi(DOI_PATTERN_PHENOTYPE,q)
-
     try:
-        id = doi if doi else int(q)
-        phenotype = Phenotype.objects.published().get(pk=id)
+        association = Association.objects.get(pk=pk)
     except:
         return HttpResponse(status=404)
 
     if request.method == "GET":
-        serializer = PhenotypeListSerializer(phenotype,many=False)
+        serializer = AssociationValueSerializer(association, many=False)
         return Response(serializer.data)
-
 
 
 '''
@@ -95,5 +107,47 @@ def search(request,query_term=None,format=None):
                          'accession_search_results':association_serializer.data})
 
 """
-Retrieve neighboring SNPs (in high LD...)
+Retrieve neighboring SNPs
+"""
+# Need to review permission (this one is used for testing)
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+def neighboring_snps(request, snp_pk, window_size=1000000, include = True, format=None):
+    """
+    Returns list of the neighboring SNPs, no information about LD (this will be retrieved or computed later)
+    ---
+    parameters:
+        - name: snp_pk
+          description: pk of the SNP of interest
+          required: true
+          type: string
+          paramType: path
+        - name: window_size
+          description: number of bp around the SNP of interest (default = 1'000'000 bp)
+          required: true
+          type: int
+          paramType: path
+        - name: include
+          description: include original SNP (default = True)
+          required: true
+          type: bool
+          paramType: path
+
+    serializer: SNPListSerializer
+    omit_serializer: false
+    """
+    chromosome = SNP.objects.get(pk=snp_pk).chromosome
+    position = SNP.objects.get(pk=snp_pk).position
+    window_of_interest = [min(int(position)-window_size/2, 0), int(position) + window_size/2] # no need to get chromosome size (since we'll run > or < queries)
+    # Here we need to decide whether we include the original SNP or not.
+    neighboring_s = SNP.objects.filter(chromosome=chromosome).filter(position__range=(window_of_interest[0], window_of_interest[1]))
+    if not include:
+        # Exclude original SNP
+        neighboring_s = neighboring_s.filter(~Q(pk=snp_pk))
+    if request.method == "GET":
+        serializer = SNPListSerializer(neighboring_s, many=True)
+        return Response(serializer.data)
+
+"""
+Retrieve SNPs in high LD
 """
