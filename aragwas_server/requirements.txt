@@ -1,8 +1,9 @@
 appdirs==1.4.2
 Django==1.11b1
-djangorestframework==3.5.4
+djangorestframework==3.6.0
+djangorestframework-csv==2.0.0
 packaging==16.8
 pyparsing==2.1.10
 pytz==2016.10
 six==1.10.0
-djangorestframework-csv==2.0.0
+unicodecsv==0.14.1
