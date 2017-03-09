@@ -1,9 +1,16 @@
 appdirs==1.4.2
+coreapi==2.3.0
+coreschema==0.0.4
 Django==1.11b1
-djangorestframework==3.6.0
+djangorestframework==3.6.1
 djangorestframework-csv==2.0.0
+itypes==1.1.0
+Jinja2==2.9.5
+MarkupSafe==1.0
 packaging==16.8
 pyparsing==2.1.10
 pytz==2016.10
+requests==2.13.0
 six==1.10.0
 unicodecsv==0.14.1
+uritemplate==3.0.0

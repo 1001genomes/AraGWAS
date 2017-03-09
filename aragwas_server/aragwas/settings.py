@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gwasdb',
+    'rest_framework'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        'rest_framework.permissions.DjangoModelPermissions',
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework_csv.renderers.CSVRenderer',

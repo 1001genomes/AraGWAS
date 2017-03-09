@@ -15,18 +15,24 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from rest_framework.documentation import include_docs_urls
+from rest_framework.urlpatterns import format_suffix_patterns
+
 from gwasdb import views
 
 import gwasdb.rest as rest
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-]
+    url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS"))]
 
 restpatterns = [
+
+    url(r'^api/associations/', rest.association_list)
     #search
     # url(r'^rest/search/$', rest.search),
     # url(r'^rest/search/(?P<query_term>.*)/$', rest.search),
 ]
 
-
+restpatterns = format_suffix_patterns(restpatterns, allowed=['json','zip','png','pdf'])
+urlpatterns += restpatterns

@@ -1,3 +1,5 @@
+from rest_framework import permissions
+
 from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
 from gwasdb.serializers import *
 
@@ -12,6 +14,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 List all associations
 """
 @api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
 def association_list(request,format=None):
     """
     List all available associations
