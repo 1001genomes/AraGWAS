@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework import viewsets
 
 from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
 from gwasdb.serializers import *
@@ -10,72 +11,29 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
-"""
-List all associations
-"""
-@api_view(['GET'])
-@permission_classes((permissions.AllowAny,))
-def association_list(request,format=None):
-    """
-    List all available associations
-    :param request:
-    :param format:
-    :return:
-    """
-    associations = Association.objects.all()
-    if request.method == "GET":
-        serializer = AssociationListSerializer(associations,many=True)
-        return Response(serializer.data)
-"""
-List all associations in details (with chromosome, position, beta, etc...)
-"""
-@api_view(['GET'])
-def association_list_detail(request,format=None):
-    """
-    List all available associations
-    :param request:
-    :param format:
-    :return:
-    """
-    associations = Association.objects.all()
-    if request.method == "GET":
-        serializer = AssociationValueSerializer(associations,many=True)
-        return Response(serializer.data)
 
-'''
-Association details # Do we want to see individual associations or we will always only see them in a SNP or Study page?
-'''
-@api_view(['GET'])
-def association_detail(request,pk,format=None):
+
+class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Detailed information about the association
-    ---
-    parameters:
-        - name: pk
-          description: the id of the association
-          required: true
-          type: string
-          paramType: path
-
-    serializer: AssociationListSerializer
-    omit_serializer: false
-
+    Retrieves information about GWAS associations
     """
-    try:
-        association = Association.objects.get(pk=pk)
-    except:
-        return HttpResponse(status=404)
+    queryset = Association.objects.all()
+    serializer_class = AssociationSerializer
 
-    if request.method == "GET":
-        serializer = AssociationValueSerializer(association, many=False)
-        return Response(serializer.data)
+
+class StudyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information about GWAS study
+    """
+    queryset = Study.objects.all()
+    serializer_class = StudySerializer
 
 
 '''
 Search Endpoint
 '''
 @api_view(['GET'])
-def search(request,query_term=None,format=None):
+def search(request, query_term=None, format=None):
     """
     Search for an accession, a study, a SNP/gene or a phenotype
     ---
@@ -102,7 +60,7 @@ def search(request,query_term=None,format=None):
                                                   Q(snp__icontains=query_term)) # Does this call the __unicode__ method of SNP?
             phenotypes = Phenotype.objects.filter(name__icontains=query_term)
 
-        study_serializer = StudyListSerializer(studies,many=True)
+        study_serializer = StudySerializer(studies, many=True)
         phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
         association_serializer = AssociationListSerializer(associations,many=True)
         return Response({'phenotype_search_results':phenotype_serializer.data,

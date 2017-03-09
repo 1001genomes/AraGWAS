@@ -5,7 +5,7 @@ from gwasdb.models import SNP, Study, Association, Genotype, Gene, Phenotype
 """
 Study List Serializer Class (read-only)
 """
-class StudyListSerializer(serializers.ModelSerializer):
+class StudySerializer(serializers.ModelSerializer):
     # association_count = serializers.SerializerMethodField()
     genotype = serializers.SerializerMethodField()
     phenotype = serializers.SerializerMethodField()
@@ -72,7 +72,7 @@ class AssociationListSerializer(serializers.ModelSerializer):
 """
 Association Value Serializer Class (read-only)
 """
-class AssociationValueSerializer(serializers.ModelSerializer):
+class AssociationSerializer(serializers.ModelSerializer):
     study = serializers.SerializerMethodField()
     snp = serializers.SerializerMethodField()
     chrom = serializers.SerializerMethodField()

@@ -50,7 +50,7 @@ class RESTAPITests(TestCase):
         """
         generate_basic_db()
         study = Study.objects.get(pk=1)
-        serialized = StudyListSerializer(study)
+        serialized = StudySerializer(study)
         # print(serialized.data)
         associations = Association.objects.all()
         snp2 = SNP.objects.get(pk=2)

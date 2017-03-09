@@ -13,25 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.documentation import include_docs_urls
+from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from gwasdb import views
 
 import gwasdb.rest as rest
 
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+router.register(r'associations', rest.AssociationViewSet)
+router.register(r'studies', rest.StudyViewSet)
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS"))]
+    url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
+    url(r'^api/', include(router.urls))
+]
 
+# for custom REST API endpoints (search, etc)
 restpatterns = [
-
-    url(r'^api/associations/', rest.association_list)
-    #search
-    # url(r'^rest/search/$', rest.search),
-    # url(r'^rest/search/(?P<query_term>.*)/$', rest.search),
 ]
 
 restpatterns = format_suffix_patterns(restpatterns, allowed=['json','zip','png','pdf'])
