@@ -7,3 +7,4 @@ pytz==2016.10
 six==1.10.0
 djangorestframework-csv==2.0.0
 h5py==2.6.0
+celery==4.0.2
