@@ -58,7 +58,7 @@ class RESTAPITests(TestCase):
         # print(serialized_assoc.data[0]['snp'])
         self.assertEqual(serialized.data['name'],study.name)
         self.assertEqual(serialized_assoc.data[1]['snp'],snp2.get_name())
-    #
+
     # def setUp(self):
     #     # Every test needs access to request factory
     #     self.factory = APIRequestFactory()

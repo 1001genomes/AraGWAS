@@ -29,6 +29,9 @@ class Genotype(models.Model):
     description = models.TextField(blank=True, null=True)  # short description
     version = models.CharField(max_length=255) # version of the dataset
 
+    def __unicode__(self):
+        return u"{} {}".format(self.name, self.version)
+
 class SNP(models.Model):
     """
     SNP model, might be incorporated directly into Association
