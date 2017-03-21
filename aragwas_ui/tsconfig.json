@@ -4,6 +4,8 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "allowJs": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
     "lib": [
       "dom",
       "es5",
