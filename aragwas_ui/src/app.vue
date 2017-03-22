@@ -1,7 +1,7 @@
 <template>
  <v-app top-toolbar footer>
     <v-toolbar class="white toolbar">
-      <v-toolbar-logo class="black--text">AraGWAS</v-toolbar-logo>
+      <v-toolbar-logo class="logo"><router-link to="/">AraGWAS</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
         <v-toolbar-item><span class="black--text">About</span></v-toolbar-item>
         <v-toolbar-item><span class="black--text">FAQ</span></v-toolbar-item>
@@ -33,13 +33,18 @@
 </script>
 
 <style lang="stylus">
-  @import '../node_modules/vuetify/src/stylus/main'
+  @import '../node_modules/vuetify/src/stylus/main'v-toolbar-logo
   $theme.primary = $red.darken-2
   @import './assets/css/main.css'
 
   #main-content {
     padding-top:0;
     background-color:transparent;
+  }
+  .logo a {
+    color:black;
+    text-decoration:none;
+    font-weight:300;
   }
 
 </style>
