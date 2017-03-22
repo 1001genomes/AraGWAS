@@ -1,9 +1,8 @@
 interface Page<T> {
     items: T[];
     pageCount: number;
-    pageSize: number;
-    pageIndex: number;
-    totalCount: number;
+    current_page: number;
+    count: number;
 }
 
 export default Page;

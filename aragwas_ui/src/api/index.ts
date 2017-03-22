@@ -16,8 +16,8 @@ function convertToModel(response) {
     return response.json();
 }
 
-export async function loadStudies () {
-    return fetch('http://localhost:3000/api/studies')
+export async function loadStudies (page=1) {
+    return fetch(`/api/studies/?page=${page}`)
         .then(checkStatus)
         .then(convertToModel);
 }

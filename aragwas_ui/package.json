@@ -16,6 +16,7 @@
     "vue": "^2.2.2",
     "vue-class-component": "^5.0.0",
     "vue-parallaxy": "^1.0.2",
+    "vue-property-decorator": "^4.0.0",
     "vue-router": "^2.3.0",
     "whatwg-fetch": "^2.0.3"
   },

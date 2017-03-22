@@ -32,7 +32,7 @@
 
 <script lang="ts">
   import Vue from 'vue'
-  import Component from 'vue-class-component'
+  import {Component, Watch} from 'vue-property-decorator'
   import Study from '@/models/study'
   import Page from '@/models/page'
   import {loadStudies} from '@/api'
@@ -47,14 +47,13 @@
   export default class Studies extends Vue {
     loading: boolean = false
     studyPage: Page<Study>
-    sortOrders = {'name': 1, 'transformation': 1, 'method': 1}
+    sortOrders = {'name': 1, 'phenotype': 1, 'transformation': 1, 'method': 1, 'genotype': 1}
     sortKey: string = ''
-    columns = ['name', 'transformation', 'method']
+    columns = ['name', 'phenotype', 'transformation', 'method', 'genotype']
     filterKey: string = ''
     studies = []
     currentPage = 1
     pageCount = 5
-    pageSize = 25
     totalCount = 0
 
     get filteredData () {
@@ -82,15 +81,22 @@
       return data
     }
 
+    @Watch('currentPage')
+    onCurrentPageChanged (val:number, oldVal:number) {
+      this.loadData(val)
+    }
+
     created (): void {
-      loadStudies().then(this._displayData)
+      this.loadData(this.currentPage)
+    }
+    loadData (page:number): void {
+      loadStudies(page).then(this._displayData)
     }
     _displayData (data) : void {
-      this.studies = data['items']
-      this.pageSize = data['pageSize']
-      this.currentPage = data['pageIndex']
-      this.totalCount = data['totalCount']
-      this.pageCount = data['pageCount']
+      this.studies = data['results']
+      this.currentPage = data['current_page']
+      this.totalCount = data['count']
+      this.pageCount = data['page_count']
     }
     sortBy (key) : void {
       this.sortKey = key
