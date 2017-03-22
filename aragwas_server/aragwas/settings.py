@@ -48,9 +48,10 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework.renderers.JSONRenderer',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'gwasdb.paginator.CustomPagination',
+    'PAGE_SIZE': 25
 }
 
 MIDDLEWARE = [
