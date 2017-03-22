@@ -21,6 +21,8 @@ class Study(models.Model):
     publication = models.URLField(blank=True, null=True) # link to a DOI for a published study
     easygwas_link = models.URLField(blank=True, null=True) # link to easygwas study page (if applicable)
 
+# TODO add number of markers as field and DOI for publication
+# how to deal with versioning (maybe via N:M table)
 class Genotype(models.Model):
     """
     Genotype model, specific to the dataset used for a particular GWAS

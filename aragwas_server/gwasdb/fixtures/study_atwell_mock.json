@@ -1,0 +1,1393 @@
+[
+  {
+    "model": "gwasdb.study",
+    "pk": 5,
+    "fields": {
+      "name": "FT Diameter Fieldraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 1,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/1"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 6,
+    "fields": {
+      "name": "At2 CFU2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 2,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/2"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 7,
+    "fields": {
+      "name": "Leaf serr 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 3,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/3"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 8,
+    "fields": {
+      "name": "Seed bank 133-91raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 4,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/4"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 9,
+    "fields": {
+      "name": "Na23raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 5,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/5"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 10,
+    "fields": {
+      "name": "Leaf serr 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 6,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/6"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 11,
+    "fields": {
+      "name": "Emco5raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 7,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/7"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 12,
+    "fields": {
+      "name": "Leaf roll 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 8,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/8"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 13,
+    "fields": {
+      "name": "Leaf roll 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 9,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/9"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 14,
+    "fields": {
+      "name": "Bsraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 10,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/10"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 15,
+    "fields": {
+      "name": "2Wraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 11,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/11"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 16,
+    "fields": {
+      "name": "Rosette Erect 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 12,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/12"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 17,
+    "fields": {
+      "name": "Cd114raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 13,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/13"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 18,
+    "fields": {
+      "name": "Width 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 14,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/14"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 19,
+    "fields": {
+      "name": "Storage 28 daysraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 15,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/15"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 20,
+    "fields": {
+      "name": "LY raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 16,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/16"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 21,
+    "fields": {
+      "name": "avrRpm1raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 17,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/17"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 22,
+    "fields": {
+      "name": "Width 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 18,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/18"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 23,
+    "fields": {
+      "name": "Chlorosis 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 19,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/19"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 24,
+    "fields": {
+      "name": "Storage 7 daysraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 20,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/20"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 25,
+    "fields": {
+      "name": "As2 CFU2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 21,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/21"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 26,
+    "fields": {
+      "name": "Co59raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 22,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/22"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 27,
+    "fields": {
+      "name": "FW raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 23,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/23"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 28,
+    "fields": {
+      "name": "Cu65raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 24,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/24"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 29,
+    "fields": {
+      "name": "Bacterial titerraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 25,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/25"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 30,
+    "fields": {
+      "name": "Width 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 26,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/26"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 31,
+    "fields": {
+      "name": "Storage 56 daysraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 27,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/27"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 32,
+    "fields": {
+      "name": "YEL raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 28,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/28"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 33,
+    "fields": {
+      "name": "FLCraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 29,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/29"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 34,
+    "fields": {
+      "name": "FT16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 30,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/30"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 35,
+    "fields": {
+      "name": "FT10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 31,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/31"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 36,
+    "fields": {
+      "name": "FT Duration GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 32,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/32"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 37,
+    "fields": {
+      "name": "Se82raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 33,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/33"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 38,
+    "fields": {
+      "name": "LDVraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 34,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/34"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 39,
+    "fields": {
+      "name": "Noco2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 35,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/35"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 40,
+    "fields": {
+      "name": "8W GH LNraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 36,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/36"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 41,
+    "fields": {
+      "name": "0Wraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 37,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/37"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 42,
+    "fields": {
+      "name": "MT GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 38,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/38"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 43,
+    "fields": {
+      "name": "After Vern Growthraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 39,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/39"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 44,
+    "fields": {
+      "name": "Aphid numberraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 40,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/40"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 45,
+    "fields": {
+      "name": "LN22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 41,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/41"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 46,
+    "fields": {
+      "name": "Bs CFU2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 42,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/42"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 47,
+    "fields": {
+      "name": "avrRpt2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 43,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/43"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 48,
+    "fields": {
+      "name": "Hypocotyl lengthraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 44,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/44"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 49,
+    "fields": {
+      "name": "Germ 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 45,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/45"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 50,
+    "fields": {
+      "name": "Leaf roll 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 46,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/46"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 51,
+    "fields": {
+      "name": "SDraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 47,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/47"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 52,
+    "fields": {
+      "name": "8Wraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 48,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/48"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 53,
+    "fields": {
+      "name": "FT GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 49,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/49"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 54,
+    "fields": {
+      "name": "DSDS50raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 50,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/50"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 55,
+    "fields": {
+      "name": "Ca43raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 51,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/51"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 56,
+    "fields": {
+      "name": "LC Duration GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 52,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/52"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 57,
+    "fields": {
+      "name": "0W GH FTraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 53,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/53"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 58,
+    "fields": {
+      "name": "B11raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 54,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/54"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 59,
+    "fields": {
+      "name": "Chlorosis 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 55,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/55"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 60,
+    "fields": {
+      "name": "RP GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 56,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/56"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 61,
+    "fields": {
+      "name": "Chlorosis 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 57,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/57"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 62,
+    "fields": {
+      "name": "LFS GHraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 58,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/58"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 63,
+    "fields": {
+      "name": "Germ 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 59,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/59"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 64,
+    "fields": {
+      "name": "Germ 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 60,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/60"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 65,
+    "fields": {
+      "name": "Anthocyanin 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 61,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/61"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 66,
+    "fields": {
+      "name": "Anthocyanin 10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 62,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/62"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 67,
+    "fields": {
+      "name": "At1 CFU2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 63,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/63"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 68,
+    "fields": {
+      "name": "Ni60raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 64,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/64"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 69,
+    "fields": {
+      "name": "P31raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 65,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/65"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 70,
+    "fields": {
+      "name": "Emwa1raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 66,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/66"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 71,
+    "fields": {
+      "name": "As75raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 67,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/67"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 72,
+    "fields": {
+      "name": "Germ in darkraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 68,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/68"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 73,
+    "fields": {
+      "name": "FRIraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 69,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/69"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 74,
+    "fields": {
+      "name": "As CFU2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 70,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/70"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 75,
+    "fields": {
+      "name": "Trichome avg Craw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 71,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/71"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 76,
+    "fields": {
+      "name": "Vern Growthraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 72,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/72"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 77,
+    "fields": {
+      "name": "Mo98raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 73,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/73"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 78,
+    "fields": {
+      "name": "Hiks1raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 74,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/74"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 79,
+    "fields": {
+      "name": "Anthocyanin 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 75,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/75"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 80,
+    "fields": {
+      "name": "Zn66raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 76,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/76"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 81,
+    "fields": {
+      "name": "Trichome avg JAraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 77,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/77"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 82,
+    "fields": {
+      "name": "LESraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 78,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/78"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 83,
+    "fields": {
+      "name": "Silique 16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 79,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/79"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 84,
+    "fields": {
+      "name": "Emoy*raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 80,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/80"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 85,
+    "fields": {
+      "name": "K39raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 81,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/81"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 86,
+    "fields": {
+      "name": "0W GH LNraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 82,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/82"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 87,
+    "fields": {
+      "name": "At2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 83,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/83"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 88,
+    "fields": {
+      "name": "At1raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 84,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/84"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 89,
+    "fields": {
+      "name": "LN10raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 85,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/85"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 90,
+    "fields": {
+      "name": "FT Fieldraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 86,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/86"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 91,
+    "fields": {
+      "name": "LN16raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 87,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/87"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 92,
+    "fields": {
+      "name": "avrBraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 88,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/88"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 93,
+    "fields": {
+      "name": "LDraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 89,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/89"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 94,
+    "fields": {
+      "name": "Seedling Growthraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 90,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/90"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 95,
+    "fields": {
+      "name": "S34raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 91,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/91"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 96,
+    "fields": {
+      "name": "Leaf serr 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 92,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/92"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 97,
+    "fields": {
+      "name": "DW raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 93,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/93"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 98,
+    "fields": {
+      "name": "Seed Dormancyraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 94,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/94"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 99,
+    "fields": {
+      "name": "Mn55raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 95,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/95"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 100,
+    "fields": {
+      "name": "Silique 22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 96,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/96"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 101,
+    "fields": {
+      "name": "avrPphBraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 97,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/97"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 102,
+    "fields": {
+      "name": "Fe56raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 98,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/98"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 103,
+    "fields": {
+      "name": "8W GH FTraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 99,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/99"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 104,
+    "fields": {
+      "name": "4Wraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 100,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/100"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 105,
+    "fields": {
+      "name": "Li7raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 101,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/101"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 106,
+    "fields": {
+      "name": "FT22raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 102,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/102"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 107,
+    "fields": {
+      "name": "As2raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 103,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/103"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 108,
+    "fields": {
+      "name": "SDVraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 104,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/104"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 109,
+    "fields": {
+      "name": "Mg25raw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 105,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/105"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 110,
+    "fields": {
+      "name": "Secondary Dormancyraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 106,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/106"
+    }
+  },
+  {
+    "model": "gwasdb.study",
+    "pk": 111,
+    "fields": {
+      "name": "Asraw_250k_amm",
+      "transformation": "raw",
+      "genotype": 1,
+      "phenotype": 107,
+      "method": "amm",
+      "publication": "http://www.nature.com/nature/journal/v465/n7298/full/nature08800.html",
+      "easygwas_link": "https://arapheno.1001genomes.org/phenotype/107"
+    }
+  }
+]

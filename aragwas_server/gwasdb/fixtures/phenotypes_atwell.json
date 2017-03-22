@@ -1,0 +1,1072 @@
+[
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 1,
+    "fields": {
+      "name": "FT Diameter Field",
+      "description": "Longest diameter of the plant measured on the day the first flower was observed",
+      "date": "2016-06-27T14:14:00.607399Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/1"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 2,
+    "fields": {
+      "name": "At2 CFU2",
+      "description": "",
+      "date": "2016-06-27T14:14:00.614934Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/2"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 3,
+    "fields": {
+      "name": "Leaf serr 16",
+      "description": "Average severity of serration across 4 plants was scored between 0 (entire lamina) and 1.5 (jagged serration) after 5 weeks of growth",
+      "date": "2016-06-27T14:14:00.623178Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/3"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 4,
+    "fields": {
+      "name": "Seed bank 133-91",
+      "description": "Genotypes consistently decreased their percentage of germination between 91 and 133 days of dry storage. The time point for this sudden reduction in germination rate was scored by the slope between germination percentages at these two time points",
+      "date": "2016-06-27T14:14:00.629885Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/4"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 5,
+    "fields": {
+      "name": "Na23",
+      "description": "Sodium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:00.731541Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/5"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 6,
+    "fields": {
+      "name": "Leaf serr 10",
+      "description": "Average severity of serration across 4 plants was scored between 0 (entire lamina) and 1.5 (jagged serration) after 8 weeks of growth",
+      "date": "2016-06-27T14:14:00.736161Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/6"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 7,
+    "fields": {
+      "name": "Emco5",
+      "description": "All interactions were scored specifically on first true leaves as compatible, incompatible or intermediate depending on the consistency of presence / absence of sporangiophores determined on 5-10 seedlings of each genotype with three independent replications",
+      "date": "2016-06-27T14:14:00.741124Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/7"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 8,
+    "fields": {
+      "name": "Leaf roll 16",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of rolled leaves in all 4 plants / accession at 5 weeks growth",
+      "date": "2016-06-27T14:14:00.745740Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/8"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 9,
+    "fields": {
+      "name": "Leaf roll 10",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of rolled leaves in all 4 plants / accession at 8 weeks growth",
+      "date": "2016-06-27T14:14:00.750338Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/9"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 10,
+    "fields": {
+      "name": "Bs",
+      "description": "Four days after inoculation, leaves were scored by eye for disease symptom using a scale from 0 (no visible symptom) to 10 (leaves collapse and turn yellow), with an increment of 1.",
+      "date": "2016-06-27T14:14:00.755030Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/10"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 11,
+    "fields": {
+      "name": "2W",
+      "description": "Number of days required for the bolt height to reach 5cm",
+      "date": "2016-06-27T14:14:00.761103Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/11"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 12,
+    "fields": {
+      "name": "Rosette Erect 22",
+      "description": "(22&deg;C was the only temperature at which this phenotype was frequently observed). Results were expressed as binary data, determined by the central rosette being erect (1) or not (0) in all 4 plants / accession phenotyped at 5 weeks post germination",
+      "date": "2016-06-27T14:14:00.765703Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/12"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 13,
+    "fields": {
+      "name": "Cd114",
+      "description": "Cadmium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:00.770305Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/13"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 14,
+    "fields": {
+      "name": "Width 16",
+      "description": "The diameters of 4 plants of each accession were measured and the results were expressed as an average value across all available replicates.Plants were scored 5 weeks post germination",
+      "date": "2016-06-27T14:14:00.775662Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/14"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 15,
+    "fields": {
+      "name": "Storage 28 days",
+      "description": "Primary dormancy was measured as the progressive increase of germination rate measured after 28 days of dry storage",
+      "date": "2016-06-27T14:14:00.780271Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/15"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 16,
+    "fields": {
+      "name": "LY ",
+      "description": "Presence of lesioning and yellowing.",
+      "date": "2016-06-27T14:14:00.786834Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/16"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 17,
+    "fields": {
+      "name": "avrRpm1",
+      "description": "Following inoculation of two leaves per plant with 0.1 ml of 10 -8 cfu/ml bacteria in 10 mM MgSO4 buffer using a blunt-tipped syringe, leaf collapse was scored at 20 hrs and again at 24 hrs after inoculation. A positive score at either time point was deemed a hypersensitive response",
+      "date": "2016-06-27T14:14:00.791410Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/17"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 18,
+    "fields": {
+      "name": "Width 10",
+      "description": "The diameters of 4 plants of each accession were measured and the results were expressed as an average value across all available replicates.Plants were scored 8 weeks post germination",
+      "date": "2016-06-27T14:14:00.796167Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/18"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 19,
+    "fields": {
+      "name": "Chlorosis 22",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of chlorosis in all 4 plants / accession after 5wks of growth",
+      "date": "2016-06-27T14:14:00.800833Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/19"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 20,
+    "fields": {
+      "name": "Storage 7 days",
+      "description": "Primary dormancy was measured as the progressive increase of germination rate measured after 7 days of dry storage",
+      "date": "2016-06-27T14:14:00.805483Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/20"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 21,
+    "fields": {
+      "name": "As2 CFU2",
+      "description": "",
+      "date": "2016-06-27T14:14:00.810385Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/21"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 22,
+    "fields": {
+      "name": "Co59",
+      "description": "Cobalt concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.077346Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/22"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 23,
+    "fields": {
+      "name": "FW ",
+      "description": "Lesioning measured by fresh weight",
+      "date": "2016-06-27T14:14:01.082087Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/23"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 24,
+    "fields": {
+      "name": "Cu65",
+      "description": "Copper concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.086733Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/24"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 25,
+    "fields": {
+      "name": "Bacterial titer",
+      "description": "Following inoculation into leaf  tissues, the titers of bacteria were measured at 0 and 4 days. Bacterial titres were measured from hole-punched leaf disks ground in 200&mu;L of 10 mM MgSO4. Measurements were expressed as colony forming units per unit area and replicated in triplicate.",
+      "date": "2016-06-27T14:14:01.091577Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/25"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 26,
+    "fields": {
+      "name": "Width 22",
+      "description": "The diameters of 4 plants of each accession were measured and the results were expressed as an average value across all available replicates.Plants were scored 5 weeks post germination",
+      "date": "2016-06-27T14:14:01.096201Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/26"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 27,
+    "fields": {
+      "name": "Storage 56 days",
+      "description": "Primary dormancy was measured as the progressive increase of germination rate measured after 56 days of dry storage",
+      "date": "2016-06-27T14:14:01.100777Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/27"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 28,
+    "fields": {
+      "name": "YEL ",
+      "description": "Yellowing is a precocious,more diffused leaf chlorosis.Accessions were divided in three subgroups (mild, intermediate and severe) according to the severity of the yellowing.",
+      "date": "2016-06-27T14:14:01.105451Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/28"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 29,
+    "fields": {
+      "name": "FLC",
+      "description": "RNA was extracted from leaves after 4 wks of growth. FLC gene expression levels were determined by Northern hybridization quantified relative to $Beta;-TUBULIN expression",
+      "date": "2016-06-27T14:14:01.427169Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/29"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 30,
+    "fields": {
+      "name": "FT16",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.431975Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/30"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 31,
+    "fields": {
+      "name": "FT10",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.436618Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/31"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 32,
+    "fields": {
+      "name": "FT Duration GH",
+      "description": "Number of days between appearance of the first flower and the senescence of the last flower",
+      "date": "2016-06-27T14:14:01.443549Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/32"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 33,
+    "fields": {
+      "name": "Se82",
+      "description": "Selenium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.448294Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/33"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 34,
+    "fields": {
+      "name": "LDV",
+      "description": "Number of days to flowering under long days after 4 weeks vernalization.  Seeds were stratified, and days we counted from the end of stratification. The experiment was stopped at 200 d, and accessions that had not flowered at that point were assigned a value of 200",
+      "date": "2016-06-27T14:14:01.452993Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/34"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 35,
+    "fields": {
+      "name": "Noco2",
+      "description": "All interactions were scored specifically on first true leaves as compatible, incompatible or intermediate depending on the consistency of presence / absence of sporangiophores determined on 5-10 seedlings of each genotype with three independent replications",
+      "date": "2016-06-27T14:14:01.457955Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/35"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 36,
+    "fields": {
+      "name": "8W GH LN",
+      "description": "Leaf number was scored as the number of rosette leaves and the number of cauline leaves when the bolt reached 5cm",
+      "date": "2016-06-27T14:14:01.462645Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/36"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 37,
+    "fields": {
+      "name": "0W",
+      "description": "Number of days required for the bolt height to reach 5cm",
+      "date": "2016-06-27T14:14:01.467231Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/37"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 38,
+    "fields": {
+      "name": "MT GH",
+      "description": "Number of days between last flower senescence and complete plant senescence",
+      "date": "2016-06-27T14:14:01.472179Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/38"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 39,
+    "fields": {
+      "name": "After Vern Growth",
+      "description": "Vegetative growth rate after vernalization was estimated as the increment of cm<SUP>2</SUP> leaf area per day between each of the three time points for which leaf area was measured",
+      "date": "2016-06-27T14:14:01.477013Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/39"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 40,
+    "fields": {
+      "name": "Aphid number",
+      "description": "On day 25 of growth,two alate females of the common peach aphid, <i>Myzus persicae</i>,were placed on each of four plants of each of the 96 genotypes. Nine days later, the number of offspring produced by these aphids on each plant was recorded.",
+      "date": "2016-06-27T14:14:01.481708Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/40"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 41,
+    "fields": {
+      "name": "LN22",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average leaf number at flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.486339Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/41"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 42,
+    "fields": {
+      "name": "Bs CFU2",
+      "description": "<i>In planta</i> bacterial growth (number of CFU / leaf area) of the <i>P. viridiflava</i> strain was individually measured as described in Goss and Bergelson 2006",
+      "date": "2016-06-27T14:14:01.491173Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/42"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 43,
+    "fields": {
+      "name": "avrRpt2",
+      "description": "Following inoculation of two leaves per plant with 0.1 ml of 10 -8 cfu/ml bacteria in 10 mM MgSO4 buffer using a blunt-tipped syringe, leaf collapse was scored at 20 hrs and again at 24 hrs after inoculation. A positive score at either time point was deemed a hypersensitive response",
+      "date": "2016-06-27T14:14:01.495882Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/43"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 44,
+    "fields": {
+      "name": "Hypocotyl length",
+      "description": "After seven days growth under the photocycle and thermocycle treatment,plants were flattened directly on the agar and imaged on a flatbed scanner. Hypocotyl lengths were determined using NIH Image",
+      "date": "2016-06-27T14:14:01.500493Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/44"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 45,
+    "fields": {
+      "name": "Germ 22",
+      "description": "Days to germination of each accession were recorded daily at each temperature upon first emergence of cotyledons",
+      "date": "2016-06-27T14:14:01.505171Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/45"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 46,
+    "fields": {
+      "name": "Leaf roll 22",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of rolled leaves in all 4 plants / accession at 5 weeks growth",
+      "date": "2016-06-27T14:14:01.510010Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/46"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 47,
+    "fields": {
+      "name": "SD",
+      "description": "Number of days following stratification to opening of first flower. The experiment was stopped at 200 d, and accessions that had not flowered at that point were assigned a value of 200",
+      "date": "2016-06-27T14:14:01.514805Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/47"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 48,
+    "fields": {
+      "name": "8W",
+      "description": "Number of days required for the bolt height to reach 5cm",
+      "date": "2016-06-27T14:14:01.519457Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/48"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 49,
+    "fields": {
+      "name": "FT GH",
+      "description": "Flowering time was scored as the number of days between germination date and appearance of the first flower",
+      "date": "2016-06-27T14:14:01.524272Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/49"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 50,
+    "fields": {
+      "name": "DSDS50",
+      "description": "Number of days of seed dry storage required to reach 50&#37; germination, or DSDS50 value (Alonso-Blanco et al., 2003)",
+      "date": "2016-06-27T14:14:01.528882Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/50"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 51,
+    "fields": {
+      "name": "Ca43",
+      "description": "Calcium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.533588Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/51"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 52,
+    "fields": {
+      "name": "LC Duration GH",
+      "description": "Number of days between germination and plant complete senescence",
+      "date": "2016-06-27T14:14:01.538158Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/52"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 53,
+    "fields": {
+      "name": "0W GH FT",
+      "description": "Flowering time was scored as the number of days for the bolt to reach 5cm",
+      "date": "2016-06-27T14:14:01.542986Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/53"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 54,
+    "fields": {
+      "name": "B11",
+      "description": "Boron concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.547699Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/54"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 55,
+    "fields": {
+      "name": "Chlorosis 10",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of chlorosis in all 4 plants / accession after 8wks of growth",
+      "date": "2016-06-27T14:14:01.552300Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/55"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 56,
+    "fields": {
+      "name": "RP GH",
+      "description": "Reproduction period: number of days between the appearance of the first flower and the plant complete senescence",
+      "date": "2016-06-27T14:14:01.557007Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/56"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 57,
+    "fields": {
+      "name": "Chlorosis 16",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of chlorosis in all 4 plants / accession after 5wks of growth",
+      "date": "2016-06-27T14:14:01.561697Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/57"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 58,
+    "fields": {
+      "name": "LFS GH",
+      "description": "Number of days between germination and senescence of the last flower",
+      "date": "2016-06-27T14:14:01.566296Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/58"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 59,
+    "fields": {
+      "name": "Germ 10",
+      "description": "Days to germination of each accession were recorded daily at each temperature upon first emergence of cotyledons",
+      "date": "2016-06-27T14:14:01.570966Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/59"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 60,
+    "fields": {
+      "name": "Germ 16",
+      "description": "Days to germination of each accession were recorded daily at each temperature upon first emergence of cotyledons",
+      "date": "2016-06-27T14:14:01.575805Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/60"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 61,
+    "fields": {
+      "name": "Anthocyanin 16",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of anthocyanin in all 4 plants / accession after 5wks of growth",
+      "date": "2016-06-27T14:14:01.595986Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/61"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 62,
+    "fields": {
+      "name": "Anthocyanin 10",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of anthocyanin in all 4 plants / accession after 8wks of growth",
+      "date": "2016-06-27T14:14:01.600796Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/62"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 63,
+    "fields": {
+      "name": "At1 CFU2",
+      "description": "",
+      "date": "2016-06-27T14:14:01.605478Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/63"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 64,
+    "fields": {
+      "name": "Ni60",
+      "description": "Nickel concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.610291Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/64"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 65,
+    "fields": {
+      "name": "P31",
+      "description": "Phosphorus concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.614976Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/65"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 66,
+    "fields": {
+      "name": "Emwa1",
+      "description": "All interactions were scored specifically on first true leaves as compatible, incompatible or intermediate depending on the consistency of presence / absence of sporangiophores determined on 5-10 seedlings of each genotype with three independent replications",
+      "date": "2016-06-27T14:14:01.619615Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/66"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 67,
+    "fields": {
+      "name": "As75",
+      "description": "Arsenic concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.624463Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/67"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 68,
+    "fields": {
+      "name": "Germ in dark",
+      "description": "The ability to germinate in the dark at 4&deg;C was measured as the percentage of non dormant seeds that can germinate during 1-week long cold exposure, in the absence of light",
+      "date": "2016-06-27T14:14:01.629047Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/68"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 69,
+    "fields": {
+      "name": "FRI",
+      "description": "RNA was extracted from leaves after 4 wks of growth. FRI gene expression levels were determined by Northern hybridization quantified relative to $Beta;-TUBULIN expression",
+      "date": "2016-06-27T14:14:01.633771Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/69"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 70,
+    "fields": {
+      "name": "As CFU2",
+      "description": "",
+      "date": "2016-06-27T14:14:01.638366Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/70"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 71,
+    "fields": {
+      "name": "Trichome avg C",
+      "description": "Measurements were collected from leaf disks removed from the 11th leaf of plants that had been treated with 0.6ml of a water control (C). Trichome density was calculated as the trichome number per disk divided by the disk area",
+      "date": "2016-06-27T14:14:01.643175Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/71"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 72,
+    "fields": {
+      "name": "Vern Growth",
+      "description": "Vegetative growth rate during vernalization was estimated as the increment of cm<SUP>2</SUP> leaf area per day between each of the three time points for which leaf area was measured",
+      "date": "2016-06-27T14:14:01.647819Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/72"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 73,
+    "fields": {
+      "name": "Mo98",
+      "description": "Molybdenum concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.652497Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/73"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 74,
+    "fields": {
+      "name": "Hiks1",
+      "description": "All interactions were scored specifically on first true leaves as compatible, incompatible or intermediate depending on the consistency of presence / absence of sporangiophores determined on 5-10 seedlings of each genotype with three independent replications",
+      "date": "2016-06-27T14:14:01.657342Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/74"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 75,
+    "fields": {
+      "name": "Anthocyanin 22",
+      "description": "Results expressed as binary data, determined by the presence (1) or absence (0) of anthocyanin in all 4 plants / accession after 5wks of growth",
+      "date": "2016-06-27T14:14:01.662201Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/75"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 76,
+    "fields": {
+      "name": "Zn66",
+      "description": "Zinc concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.666797Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/76"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 77,
+    "fields": {
+      "name": "Trichome avg JA",
+      "description": "Measurements were collected from leaf disks removed from the 11th leaf of plants that had been treated with 0.6 ml of a 0.45mM solution of jasmonic acid (Sigma J-2500) in water (JA). Trichome density was calculated as the trichome number per disk divided by the disk area",
+      "date": "2016-06-27T14:14:01.671408Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/77"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 78,
+    "fields": {
+      "name": "LES",
+      "description": "Lesioning is the presence in older leaves of necrotic spots, that spread to the whole leaf. Lesioned accessions were divided in three subgroups (mild, intermediate and severe) according to the severity of lesioning",
+      "date": "2016-06-27T14:14:01.676287Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/78"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 79,
+    "fields": {
+      "name": "Silique 16",
+      "description": "The length of 5 siliques was measured for each accession after growth had concluded",
+      "date": "2016-06-27T14:14:01.682095Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/79"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 80,
+    "fields": {
+      "name": "Emoy*",
+      "description": "All interactions were scored specifically on first true leaves as compatible, incompatible or intermediate depending on the consistency of presence / absence of sporangiophores determined on 5-10 seedlings of each genotype with three independent replications",
+      "date": "2016-06-27T14:14:01.686737Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/80"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 81,
+    "fields": {
+      "name": "K39",
+      "description": "Potassium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.691621Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/81"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 82,
+    "fields": {
+      "name": "0W GH LN",
+      "description": "Leaf number was scored as the number of rosette leaves and the number of cauline leaves when the bolt reached 5cm",
+      "date": "2016-06-27T14:14:01.696218Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/82"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 83,
+    "fields": {
+      "name": "At2",
+      "description": "",
+      "date": "2016-06-27T14:14:01.700821Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/83"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 84,
+    "fields": {
+      "name": "At1",
+      "description": "",
+      "date": "2016-06-27T14:14:01.705501Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/84"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 85,
+    "fields": {
+      "name": "LN10",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average leaf number at flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.710442Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/85"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 86,
+    "fields": {
+      "name": "FT Field",
+      "description": "Flowering time was scored as the number of days between germination date and appearance of the first flower",
+      "date": "2016-06-27T14:14:01.715043Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/86"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 87,
+    "fields": {
+      "name": "LN16",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average leaf number at flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.719684Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/87"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 88,
+    "fields": {
+      "name": "avrB",
+      "description": "Following inoculation of two leaves per plant with 0.1 ml of 10 -8 cfu/ml bacteria in 10 mM MgSO4 buffer using a blunt-tipped syringe, leaf collapse was scored at 20 hrs and again at 24 hrs after inoculation. A positive score at either time point was deemed a hypersensitive response",
+      "date": "2016-06-27T14:14:01.724575Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/88"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 89,
+    "fields": {
+      "name": "LD",
+      "description": "Number of days following stratification to opening of first flower. The experiment was stopped at 200 d, and accessions that had not flowered at that point were assigned a value of 200",
+      "date": "2016-06-27T14:14:01.729272Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/89"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 90,
+    "fields": {
+      "name": "Seedling Growth",
+      "description": "Seedling growth rate was given by leaf area  divided by the number of days of growth since sowing ( in cm<SUP>2</SUP>/day)",
+      "date": "2016-06-27T14:14:01.733859Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/90"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 91,
+    "fields": {
+      "name": "S34",
+      "description": "Sulfur concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.738445Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/91"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 92,
+    "fields": {
+      "name": "Leaf serr 22",
+      "description": "Average severity of serration across 4 plants was scored between 0 (entire lamina) and 1.5 (jagged serration) after 5 weeks of growth",
+      "date": "2016-06-27T14:14:01.743825Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/92"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 93,
+    "fields": {
+      "name": "DW ",
+      "description": "Lesioning measured by dry weight",
+      "date": "2016-06-27T14:14:01.754354Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/93"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 94,
+    "fields": {
+      "name": "Seed Dormancy",
+      "description": "Number of days of seed dry storage required to reach 50&#37 germination, or DSDS50 value (Alonso-Blanco et al., 2003). The measurement for each genotype was calculated as the average value across all available replicates",
+      "date": "2016-06-27T14:14:01.762817Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/94"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 95,
+    "fields": {
+      "name": "Mn55",
+      "description": "Manganese concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.769342Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/95"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 96,
+    "fields": {
+      "name": "Silique 22",
+      "description": "The length of 5 siliques was measured for each accession after growth had concluded",
+      "date": "2016-06-27T14:14:01.774420Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/96"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 97,
+    "fields": {
+      "name": "avrPphB",
+      "description": "Following inoculation of two leaves per plant with 0.1 ml of 10 -8 cfu/ml bacteria in 10 mM MgSO4 buffer using a blunt-tipped syringe, leaf collapse was scored at 20 hrs and again at 24 hrs after inoculation. A positive score at either time point was deemed a hypersensitive response",
+      "date": "2016-06-27T14:14:01.779174Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/97"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 98,
+    "fields": {
+      "name": "Fe56",
+      "description": "Iron concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.783837Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/98"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 99,
+    "fields": {
+      "name": "8W GH FT",
+      "description": "Flowering time was scored as the number of days for the bolt to reach 5cm",
+      "date": "2016-06-27T14:14:01.788492Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/99"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 100,
+    "fields": {
+      "name": "4W",
+      "description": "Number of days required for the bolt height to reach 5cm",
+      "date": "2016-06-27T14:14:01.793538Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/100"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 101,
+    "fields": {
+      "name": "Li7",
+      "description": "Lithium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.798160Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/101"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 102,
+    "fields": {
+      "name": "FT22",
+      "description": "Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected",
+      "date": "2016-06-27T14:14:01.802922Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/102"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 103,
+    "fields": {
+      "name": "As2",
+      "description": "",
+      "date": "2016-06-27T14:14:01.807907Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/103"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 104,
+    "fields": {
+      "name": "SDV",
+      "description": "Number of days following stratification to opening of first flower. The experiment was stopped at 200 d, and accessions that had not flowered at that point were assigned a value of 200",
+      "date": "2016-06-27T14:14:01.812812Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/104"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 105,
+    "fields": {
+      "name": "Mg25",
+      "description": "Magnesium concentrations in leaves, grown in soil. Elemental analysis was performed with an ICP-MS (PerkinElmer). Sample normalized to calculated weights as described in Baxter et al., 2008",
+      "date": "2016-06-27T14:14:01.817446Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/105"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 106,
+    "fields": {
+      "name": "Secondary Dormancy",
+      "description": "Secondary dormancy was given by the slope between the germination percentages of non-dormant seeds after one and six weeks of cold treatment. Viability of non germinating seeds after cold treatment was confirmed as described in Cadman et al., 2006",
+      "date": "2016-06-27T14:14:01.822085Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/106"
+    }
+  },
+  {
+    "model": "gwasdb.phenotype",
+    "pk": 107,
+    "fields": {
+      "name": "As",
+      "description": "Four days after inoculation, leaves were scored by eye for disease symptom using a scale from 0 (no visible symptom) to 10 (leaves collapse and turn yellow), with an increment of 1.",
+      "date": "2016-06-27T14:14:01.827054Z",
+      "arapheno_link": "https://arapheno.1001genomes.org/phenotype/107"
+    }
+  }
+]

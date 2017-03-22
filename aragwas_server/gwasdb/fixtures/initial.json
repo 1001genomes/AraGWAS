@@ -1,0 +1,38 @@
+[
+  {
+    "model": "gwasdb.genotype",
+    "pk": 1,
+    "fields": {
+      "name": "250k SNP Dataset",
+      "description": "Affymetrix genotyping array for 214.051 SNPs for 1307 accessions",
+      "version":  "3.0.6"
+    }
+  },
+  {
+    "model": "gwasdb.genotype",
+    "pk": 2,
+    "fields": {
+      "name": "Swedish genomes",
+      "description": "Full sequencing dataset for 180 Swedish accessions",
+      "version":  "1.0.0"
+    }
+  },
+  {
+    "model": "gwasdb.genotype",
+    "pk": 3,
+    "fields": {
+      "name": "1001genomes",
+      "description": "Full sequencing dataset for 1135 worldwide accessions",
+      "version":  "1.0.0"
+    }
+  },
+  {
+    "model": "gwasdb.genotype",
+    "pk": 4,
+    "fields": {
+      "name": "Full imputed genotype",
+      "description": "250k and 1001genomes dataset combined for 2029 accessions",
+      "version":  "1.0.0"
+    }
+  }
+]
