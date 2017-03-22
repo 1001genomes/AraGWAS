@@ -29,6 +29,7 @@ router.register(r'associations', rest.AssociationViewSet)
 router.register(r'studies', rest.StudyViewSet)
 
 urlpatterns = [
+    url(r'^$', views.index, name="index"),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls))

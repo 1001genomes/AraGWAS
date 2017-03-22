@@ -4,9 +4,9 @@ from django.shortcuts import render
 from gwasdb.models import (Study,Association,SNP,Gene,Genotype,Phenotype)
 from gwasdb.serializers import *
 
-class SNPDetail(DetailView):
-    """
-    Detailed view for a single phenotype
-    """
-    model = SNP
 
+def index(request):
+    '''
+    Home View of AraGWAS
+    '''
+    return render(request, 'index.html')
