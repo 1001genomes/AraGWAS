@@ -8,7 +8,7 @@ from gwasdb.serializers import *
 from rest_framework import status
 from django.db.models import Q
 from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
@@ -32,10 +32,13 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Study.objects.all()
     serializer_class = StudySerializer
 
-class SearchViewSet(APIView):
+class SearchViewSet(viewsets.ViewSet):
     """
     Allow for search in a viewset
     """
+    queryset = Association.objects.none()
+
+    @detail_route()
     def search(self, request, query_term=None):
         if request.method == "GET":
             if query_term==None:
@@ -57,11 +60,13 @@ class SearchViewSet(APIView):
                              'study_search_results':study_serializer.data,
                              'accession_search_results':association_serializer.data})
 
-class SNPLocalViewSet(APIView):
+class SNPLocalViewSet(viewsets.ViewSet):
     """
     Attempt view to localize SNPs in neighboring areas
     """
+    queryset = SNP.objects.none()
 
+    @detail_route()
     def neighboring_snps(self, request, snp_pk, window_size=1000000, include=True):
         """
         Returns list of the neighboring SNPs, no information about LD (this will be retrieved or computed later)
@@ -100,6 +105,7 @@ class SNPLocalViewSet(APIView):
             serializer = SNPListSerializer(neighboring_s, many=True)
             return Response(serializer.data)
 
+    @detail_route()
     def snps_in_ld(request, snp_pk, N=20):
         """
         Returns list of the neighboring SNPs in high LD
