@@ -8,5 +8,5 @@ The AraGWAS backend is a django app that serves as a REST endpoint for the AraGW
 
 ## Development 
 
-`./manage runserver
+`./manage runserver`
 
