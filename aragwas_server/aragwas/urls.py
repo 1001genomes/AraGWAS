@@ -16,30 +16,65 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.documentation import include_docs_urls
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter, DynamicListRoute, DynamicDetailRoute, Route
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from gwasdb import views
 
 import gwasdb.rest as rest
 
+class SearchRouter(DefaultRouter):
+    routes = [
+        Route(
+            url=r'^{prefix}$',
+            mapping={'get': 'list'},
+            name='{basename}-list',
+            initkwargs={'suffix': 'List'}
+        ),
+        Route(
+            url=r'^{prefix}/{lookup}$',
+            mapping={'get': 'retrieve'},
+            name='{basename}-detail',
+            initkwargs={'suffix': 'Detail'}
+        ),
+        DynamicDetailRoute(
+            url=r'^{prefix}/{methodname}/(?P<query_term>[^/.]+)/$',
+            name='{basename}-{methodname}',
+            initkwargs={'query_term': 'query_term'}
+        ),
+        DynamicListRoute(
+            url=r'^{prefix}/{methodname}/$',
+            name='{basename}-{methodname}',
+            initkwargs={}
+        )
+    ]
+
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'associations', rest.AssociationViewSet)
 router.register(r'studies', rest.StudyViewSet)
-router.register(r'search', rest.SearchViewSet)
+# router.register(r'search', rest.SearchViewSet)
 router.register(r'neighboring_snps', rest.SNPLocalViewSet)
+srouter = SearchRouter()
+srouter.register(r'search', rest.SearchViewSet)
+
 
 urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
-    url(r'^api/', include(router.urls))
+    url(r'^api/', include(router.urls)),
+    url(r'^api/', include(srouter.urls))
 ]
 
 # for custom REST API endpoints (search, etc)
 restpatterns = [
+    #search
+    # url(r'^api/search/search_results/$', ),
 ]
 
 restpatterns = format_suffix_patterns(restpatterns, allowed=['json','zip','png','pdf'])
 urlpatterns += restpatterns
+
+
+

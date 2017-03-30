@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.views import APIView
 
 from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
@@ -8,7 +8,7 @@ from gwasdb.serializers import *
 from rest_framework import status
 from django.db.models import Q
 from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes, detail_route
+from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
@@ -36,10 +36,25 @@ class SearchViewSet(viewsets.ViewSet):
     """
     Allow for search in a viewset
     """
-    queryset = Association.objects.none()
+    queryset = Study.objects.all()
+    query_term = None
+    serializer_class = StudySerializer
+
+    # @list_route()
+    # def search_results(self, request):
+    #     if request.method == "GET":
+    #         studies = Study.objects.all()
+    #         phenotypes = Phenotype.objects.all()
+    #         associations = Association.objects.all()
+    #         study_serializer = StudySerializer(studies, many=True)
+    #         phenotype_serializer = PhenotypeListSerializer(phenotypes, many=True)
+    #         association_serializer = AssociationListSerializer(associations, many=True)
+    #         return Response({'phenotype_search_results': phenotype_serializer.data,
+    #                          'study_search_results': study_serializer.data,
+    #                          'accession_search_results': association_serializer.data})
 
     @detail_route()
-    def search(self, request, query_term=None):
+    def search_results(self, request, query_term=None):
         if request.method == "GET":
             if query_term==None:
                 studies = Study.objects.all()
@@ -49,8 +64,8 @@ class SearchViewSet(viewsets.ViewSet):
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term))
                 associations = Association.objects.filter(Q(snp__position__icontains=query_term) |
-                                                      Q(snp__gene__name__icontains=query_term) |
-                                                      Q(snp__icontains=query_term)) # Does this call the __unicode__ method of SNP?
+                                                      Q(snp__gene__name__icontains=query_term)) #|
+                                                      # Q(snp__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
                 phenotypes = Phenotype.objects.filter(name__icontains=query_term)
 
             study_serializer = StudySerializer(studies, many=True)
