@@ -11,7 +11,12 @@
           <br>
           <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies and associations and to obtain additional meta-information.</h5>
         </div>
-        <div>Autocomplete</div>
+          <form>
+              <div class="col valign-wrapper white grey--text lighten-3">
+                  <input class="search-bar ml-2" id="search" type="search" v-model="queryTerm" placeholder="Search the catalog (e.g. petal length, Atwell et al. 2010, Chr1: 11434051, AT1G06457)" v-on:keyup.enter="loadResults" required>
+                  <router-link :to="searchResults"><i class="material-icons">search</i></router-link>
+              </div>
+          </form>
       </div>
       <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="420">
       </v-parallax>
@@ -99,7 +104,10 @@
   @Component({
   })
   export default class Home extends Vue {
-
+    queryTerm: string = ''
+    get searchResults () {
+      return '/search-results/' + this.queryTerm
+    }
   }
 </script>
 
@@ -125,6 +133,12 @@
     margin:0 auto;
     max-width: 1280px;
     width: 90%
+  }
+
+  .search-bar {
+      max-width: 1280px;
+      width: 90%;
+      font-size: 1.2rem;
   }
 
   .banner-title {

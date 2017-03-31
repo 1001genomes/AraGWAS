@@ -13,10 +13,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from gwasdb.tasks import compute_ld
-from gwasdb.paginator import CustomPagination
-
-
-import h5py, numpy
 
 class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -54,11 +50,11 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 associations = Association.objects.all()
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
-                                                      Q(phenotype__name__icontains=query_term))
+                                                      Q(phenotype__name__icontains=query_term)).order_by('name')
                 associations = Association.objects.filter(Q(snp__position__icontains=query_term) |
                                                       Q(snp__gene__name__icontains=query_term)) #|
                                                       # Q(snp__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
-                phenotypes = Phenotype.objects.filter(name__icontains=query_term)
+                phenotypes = Phenotype.objects.filter(name__icontains=query_term).order_by('name')
 
             if studies:
                 pagest = self.paginate_queryset(studies)
@@ -71,6 +67,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 association_serializer = AssociationListSerializer(pageass, many=True)
             else:
                 association_serializer = AssociationListSerializer(associations, many=True)
+
             if phenotypes:
                 pagephe = self.paginate_queryset(phenotypes)
                 phenotype_serializer = PhenotypeListSerializer(pagephe, many=True)
@@ -80,7 +77,10 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             data = {'phenotype_search_results':phenotype_serializer.data,
                              'study_search_results':study_serializer.data,
                              'accession_search_results':association_serializer.data}
-            return self.get_paginated_response(data)
+            if any([studies,associations,phenotypes]):
+                return self.get_paginated_response(data)
+            else:
+                return Response(data)
 
 
 

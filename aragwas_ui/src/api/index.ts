@@ -21,3 +21,9 @@ export async function loadStudies (page=1) {
         .then(checkStatus)
         .then(convertToModel);
 }
+
+export async function search (query_term='', page=1) {
+    return fetch(`/api/search/search_results/${query_term}/?page=${page}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}

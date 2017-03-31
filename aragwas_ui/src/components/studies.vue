@@ -1,29 +1,41 @@
 <template>
-<div class="mt-3">
-  <h4>
-    Studies
-  </h4>
-   <table>
-    <thead>
-      <tr>
-        <th v-for="key in columns"
-          @click="sortBy(key)"
-          :class="{ active: sortKey == key }">
-          {{ key | capitalize }}
-          <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-          </span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="entry in filteredData">
-        <td v-for="key in columns">
-          {{entry[key]}}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="page-container mt-5">
+<div class="mt-0">
+  <div class="banner-container" style="height: 80px">
+    <div class="section">
+      <div class="container">
+        <h4 class="white--text">
+          Studies
+        </h4>
+      </div>
+    </div>
+   <v-parallax class="parallax-container" src="/static/img/ara2.jpg" height="80">
+   </v-parallax>
+  </div>
+  <div class="container">
+   <div class="section">
+     <table>
+       <thead>
+         <tr>
+           <th v-for="key in columns"
+           @click="sortBy(key)"
+           :class="{ active: sortKey == key }">
+           {{ key | capitalize }}
+           <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+           </span>
+           </th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr v-for="entry in filteredData">
+           <td v-for="key in columns">
+           {{entry[key]}}
+           </td>
+         </tr>
+       </tbody>
+     </table>
+   </div>
+  </div>
+  <div class="page-container mt-5 mb-3">
     <v-pagination :length.number="pageCount" v-model="currentPage" />
   </div>
 </div>
@@ -107,37 +119,54 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.arrow {
-  display: inline-block;
-  vertical-align: middle;
-  width: 0;
-  height: 0;
-  margin-left: 5px;
-  opacity: 0;
-}
 
-.arrow.asc {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 4px solid green;
-}
+    .banner-container {
+        position: relative;
+        overflow: hidden;
+    }
+    .section {
+        padding-top: 1rem;
+    }
 
-.arrow.dsc {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid green;
-}
+    .parallax-container  {
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:-1;
+    }
+    .arrow {
+      display: inline-block;
+      vertical-align: middle;
+      width: 0;
+      height: 0;
+      margin-left: 5px;
+      opacity: 0;
+    }
 
-th.active {
-  color:black;
-}
+    .arrow.asc {
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 4px solid green;
+    }
 
-th.active .arrow {
-  opacity: 1;
-}
-.page-container {
-  display:flex;
-  justify-content:center;
+    .arrow.dsc {
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid green;
+    }
 
-}
+    th.active {
+      color:black;
+    }
+
+    th.active .arrow {
+      opacity: 1;
+    }
+    .page-container {
+      display:flex;
+      justify-content:center;
+
+    }
 </style>
