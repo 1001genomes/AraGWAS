@@ -23,7 +23,14 @@ export async function loadStudies (page=1) {
 }
 
 export async function search (query_term='', page=1) {
-    return fetch(`/api/search/search_results/${query_term}/?page=${page}`)
-        .then(checkStatus)
-        .then(convertToModel);
+    if (query_term == '') {
+        return fetch(`/api/search/search_results/?page=${page}`)
+            .then(checkStatus)
+            .then(convertToModel);
+    } else {
+        return fetch(`/api/search/search_results/${query_term}/?page=${page}`)
+            .then(checkStatus)
+            .then(convertToModel);
+    }
+
 }

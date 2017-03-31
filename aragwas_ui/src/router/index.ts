@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/home'
 import Studies from '@/components/studies'
+import Results from '@/components/results'
 
 
 Vue.use(Router)
@@ -17,6 +18,11 @@ export default new Router({
       path: '/studies',
       name: 'studies',
       component: Studies
+    },
+    {
+      path: '/results',
+      name: 'results',
+      component: Results
     }
   ]
 });
