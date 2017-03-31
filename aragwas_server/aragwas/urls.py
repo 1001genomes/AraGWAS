@@ -40,7 +40,7 @@ class SearchRouter(DefaultRouter):
         DynamicDetailRoute(
             url=r'^{prefix}/{methodname}/(?P<query_term>[^/.]+)/$',
             name='{basename}-{methodname}',
-            initkwargs={'query_term': 'query_term'}
+            initkwargs={}
         ),
         DynamicListRoute(
             url=r'^{prefix}/{methodname}/$',

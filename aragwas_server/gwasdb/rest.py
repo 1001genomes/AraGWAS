@@ -40,21 +40,12 @@ class SearchViewSet(viewsets.ViewSet):
     query_term = None
     serializer_class = StudySerializer
 
-    # @list_route()
-    # def search_results(self, request):
-    #     if request.method == "GET":
-    #         studies = Study.objects.all()
-    #         phenotypes = Phenotype.objects.all()
-    #         associations = Association.objects.all()
-    #         study_serializer = StudySerializer(studies, many=True)
-    #         phenotype_serializer = PhenotypeListSerializer(phenotypes, many=True)
-    #         association_serializer = AssociationListSerializer(associations, many=True)
-    #         return Response({'phenotype_search_results': phenotype_serializer.data,
-    #                          'study_search_results': study_serializer.data,
-    #                          'accession_search_results': association_serializer.data})
+    @list_route(url_path='search_results')
+    def search_result(self, request):
+        return self.search_results(request, query_term=None)
 
     @detail_route()
-    def search_results(self, request, query_term=None):
+    def search_results(self, request, query_term):
         if request.method == "GET":
             if query_term==None:
                 studies = Study.objects.all()
@@ -74,6 +65,8 @@ class SearchViewSet(viewsets.ViewSet):
             return Response({'phenotype_search_results':phenotype_serializer.data,
                              'study_search_results':study_serializer.data,
                              'accession_search_results':association_serializer.data})
+
+
 
 class SNPLocalViewSet(viewsets.ViewSet):
     """
