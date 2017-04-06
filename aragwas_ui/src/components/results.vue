@@ -37,11 +37,11 @@
                     <v-card>
                         <v-card-text>
                             <div id="results" class="col s12"><br>
-                                <h5 class="brown-text center" v-if="nobserved === 0">No {{observed}} found for query: {{queryTerm}}</h5>
+                                <h5 class="brown-text center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
                                 <table v-else>
                                     <thead>
                                     <tr>
-                                        <th v-for="key in columns"
+                                        <th v-for="key in columns[currentView]"
                                             @click="sortBy(key)"
                                             :class="{ active: sortKey == key }">
                                             {{ key | capitalize }}
@@ -52,7 +52,7 @@
                                     </thead>
                                     <tbody>
                                     <tr v-for="entry in filteredData">
-                                        <td v-for="key in columns">
+                                        <td v-for="key in columns[currentView]">
                                             {{entry[key]}}
                                         </td>
                                     </tr>
@@ -64,7 +64,7 @@
                 </v-tab-content>
             </v-tabs>
             <div class="page-container mt-3 mb-3">
-                <v-pagination v-bind:length.number="pageCount" v-model="currentPage" />
+                <v-pagination v-bind:length.number="pageCount" v-model="currentPage"/>
             </div>
         </div>
     </div>
@@ -94,20 +94,16 @@
       columnsPhenotypes = ['name', 'description']
       sortOrdersAssociations = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds_ratio': 1, 'confidence_interval': 1, 'phenotype': 1, 'study': 1}
       columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study']
-      columns = ['']
-      sortOrders = {}
+      columns = {'studies': this.columnsStudies, 'phenotypes': this.columnsPhenotypes, 'associations': this.columnsAssociations}
+      sortOrders = {'studies': this.sortOrdersStudies, 'phenotypes': this.sortOrdersPhenotypes, 'associations': this.sortOrdersAssociations}
       sortKey: string = ''
       filterKey: string = ''
-      studies = []
-      phenotypes = []
-      associations = []
       currentPage = 1
       pageCount = 5
       totalCount = 0
-      queryTerm: string = ''
-      nobserved = 0
-      dataObserved = []
-      observed: string = ''
+      queryTerm: string = this.$route.params.queryTerm
+      dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
+      observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
       currentView: string = ''
       n = {'studies': 0, 'phenotypes': 0, 'associations': 0}
       props: ['queryTerm']
@@ -118,8 +114,8 @@
         if (filterKey) {
           filterKey = filterKey.toLowerCase()
         }
-        let order = this.sortOrders[sortKey] || 1
-        let data = this.dataObserved
+        let order = this.sortOrders[this.currentView][sortKey] || 1
+        let data = this.dataObserved[this.currentView]
         if (filterKey) {
           data = data.filter(function (row) {
             return Object.keys(row).some(function (key) {
@@ -149,37 +145,20 @@
       }
       changeView (dataSet: string): void {
         this.currentView = dataSet
-        this.nobserved = this.n[dataSet]
-        if (dataSet === 'studies') {
-          this.dataObserved = this.studies
-          this.observed = 'Study'
-          this.columns = this.columnsStudies
-          this.sortOrders = this.sortOrdersStudies
-        } else if (dataSet === 'phenotypes') {
-          this.dataObserved = this.phenotypes
-          this.observed = 'Phenotype'
-          this.columns = this.columnsPhenotypes
-          this.sortOrders = this.sortOrdersPhenotypes
-        } else if (dataSet === 'associations') {
-          this.dataObserved = this.associations
-          this.observed = 'Association'
-          this.columns = this.columnsAssociations
-          this.sortOrders = this.sortOrdersAssociations
-        }
       }
       loadData (queryTerm:string, page:number): void {
         search(queryTerm, page).then(this._displayData)
       }
       _displayData (data) : void {
-        this.studies = data['results']['study_search_results']
-        this.phenotypes = data['results']['phenotype_search_results']
-        this.associations = data['results']['association_search_results']
+        this.dataObserved['studies'] = data['results']['study_search_results']
+        this.dataObserved['phenotypes'] = data['results']['phenotype_search_results']
+        this.dataObserved['associations'] = data['results']['association_search_results']
         this.currentPage = data['current_page']
         this.totalCount = data['count']
         this.pageCount = data['page_count']
-        this.n['studies'] = this.studies.length
-        this.n['phenotypes'] = this.phenotypes.length
-        this.n['associations'] = this.associations.length
+        this.n['studies'] = this.dataObserved['studies'].length
+        this.n['phenotypes'] = this.dataObserved['phenotypes'].length
+        this.n['associations'] = this.dataObserved['associations'].length
       }
       sortBy (key) : void {
         this.sortKey = key
