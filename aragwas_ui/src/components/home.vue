@@ -13,7 +13,7 @@
         </div>
           <form>
               <div class="col valign-wrapper white grey--text lighten-3">
-                  <input class="search-bar ml-2" id="search" type="search" v-model="queryTerm" placeholder="Search the catalog (e.g. petal length, Atwell et al. 2010, Chr1: 11434051, AT1G06457)" v-on:keyup.enter="loadResults" required>
+                  <input class="search-bar ml-2" id="search" type="search" v-model="queryTerm" placeholder="Search the catalog (e.g. petal length, Atwell et al. 2010, Chr1: 11434051, AT1G06457)" v-on:keyup.enter="loadResults()" required>
                   <router-link :to="searchResults"><i class="material-icons">search</i></router-link>
               </div>
           </form>
@@ -100,13 +100,18 @@
 <script lang="ts">
   import Vue from 'vue'
   import Component from 'vue-class-component'
+  import Router from '@/router/index.ts'
 
   @Component({
   })
   export default class Home extends Vue {
     queryTerm: string = ''
+    router = Router
     get searchResults () {
-      return '/search-results/' + this.queryTerm
+      return '/results/' + this.queryTerm
+    }
+    loadResults () {
+      this.router.push('/results/' + this.queryTerm)
     }
   }
 </script>

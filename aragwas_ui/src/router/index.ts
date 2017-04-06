@@ -20,6 +20,11 @@ export default new Router({
       component: Studies
     },
     {
+      path: '/results/:queryTerm',
+      name: 'results',
+      component: Results, props: true
+    },
+    {
       path: '/results',
       name: 'results',
       component: Results
