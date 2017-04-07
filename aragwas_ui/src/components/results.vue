@@ -16,22 +16,24 @@
                     id="mobile-tabs-1"
                     grow
                     scroll-bars
-                    v-bind:model="active"
+                    :model="currentView"
             >
                 <v-tab-item
                         v-for="i in ['studies','phenotypes','associations']" :key="i"
-                        v-bind:href="'#mobile-tabs-1-' + i"
+                        :href="'#' + i"
                         ripple
                         slot="activators"
                         class="green lighten-1"
                 >
-                    <container @click="changeView(i)" style="width: 110%"><div class="bold">Results: {{ i }}</div>
-                    <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
-                    <div class="" v-else><span class="arabadge">{{n[i]}} Results</span></div></container>
+                    <section style="width: 110%">
+                        <div class="bold">Results: {{ i }}</div>
+                        <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
+                        <div class="" v-else><span class="arabadge">{{n[i]}} Results</span></div>
+                    </section>
                 </v-tab-item>
                 <v-tab-content
                         v-for="i in ['studies','phenotypes','associations']" :key="i"
-                        v-bind:id="'mobile-tabs-1-' + i"
+                        :id="i"
                         slot="content"
                 >
                     <v-card>
@@ -73,7 +75,7 @@
 
 <script lang="ts">
     import Vue from 'vue'
-    import {Component, Watch} from 'vue-property-decorator'
+    import {Component, Watch, Prop} from 'vue-property-decorator'
 //    import Study from '@/models/study'
 //    import Page from '@/models/page'
     import {search} from '@/api'
@@ -101,7 +103,8 @@
       filterKey: string = ''
       currentPage = 1
       pageCount = 5
-      queryTerm: string = this.$route.params.queryTerm
+      @Prop
+      queryTerm: string
       dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
       observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
       currentView: string = ''
@@ -129,10 +132,7 @@
       }
       created (): void {
         this.loadData(this.queryTerm, this.currentPage)
-        this.changeView('studies')
-      }
-      changeView (dataSet: string): void {
-        this.currentView = dataSet
+        this.currentView = 'studies'
       }
       loadData (queryTerm:string, page:number): void {
         search(queryTerm, page, this.ordered).then(this._displayData)
@@ -215,3 +215,4 @@
 
     }
 </style>
+
