@@ -72,8 +72,8 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term)).order_by('name')
                 associations = Association.objects.filter(Q(snp__position__icontains=query_term) |
-                                                      Q(snp__gene__name__icontains=query_term) |
-                                                      Q(snp__name__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
+                                                      Q(snp__gene__name__icontains=query_term))# |
+                                                      #Q(snp__name__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
                 phenotypes = Phenotype.objects.filter(name__icontains=query_term).order_by('name')
             # custom ordering
             ordering = request.query_params.get('ordering', None)
