@@ -1,9 +1,10 @@
 from rest_framework import permissions
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, filters
 from rest_framework.views import APIView
 
 from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
 from gwasdb.serializers import *
+from gwasdb.paginator import CustomSearchPagination
 
 from rest_framework import status
 from django.db.models import Q
@@ -29,6 +30,18 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Study.objects.all()
     serializer_class = StudySerializer
 
+    # Overriding get_queryset to allow for case-insensitive custom ordering
+    def get_queryset(self):
+        queryset = self.queryset
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering is not None:
+            from django.db.models.functions import Lower
+            if ordering.startswith('-'):
+                queryset = queryset.order_by(Lower(ordering[1:])).reverse()
+            else:
+                queryset = queryset.order_by(Lower(ordering))
+        return queryset
+
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Allow for search in a viewset
@@ -36,6 +49,8 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Study.objects.all()
     query_term = None
     serializer_class = StudySerializer
+    pagination_class = CustomSearchPagination
+
 
     @list_route(url_path='search_results')
     def search_result(self, request):
@@ -52,9 +67,34 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term)).order_by('name')
                 associations = Association.objects.filter(Q(snp__position__icontains=query_term) |
-                                                      Q(snp__gene__name__icontains=query_term)) #|
-                                                      # Q(snp__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
+                                                      Q(snp__gene__name__icontains=query_term) |
+                                                      Q(snp__name__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
                 phenotypes = Phenotype.objects.filter(name__icontains=query_term).order_by('name')
+            # custom ordering
+            ordering = request.query_params.get('ordering', None)
+            ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'associations': ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study']}
+            if ordering is not None:
+                from django.db.models.functions import Lower
+                inverted = False
+                if ordering.startswith('-'):
+                    inverted = True
+                    ordering = ordering[1:]
+                if ordering in ordering_fields['studies'] and studies:
+                    if ordering == 'phenotype' or ordering == 'genotype': # Need to reference the names and not the internal IDs for ordering
+                        ordering += '__name'
+                    studies = studies.order_by(Lower(ordering))
+                    if inverted:
+                        studies = studies.reverse()
+                if ordering in ordering_fields['phenotypes'] and phenotypes:
+                    phenotypes = phenotypes.order_by(Lower(ordering))
+                    if inverted:
+                        phenotypes = phenotypes.reverse()
+                if ordering in ordering_fields['associations'] and associations:
+                    if ordering == 'snp' or ordering == 'study':
+                        ordering += '__name'
+                    associations = associations.order_by(Lower(ordering))
+                    if inverted:
+                        associations = associations.reverse()
 
             if studies:
                 pagest = self.paginate_queryset(studies)
@@ -74,13 +114,16 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 phenotype_serializer = PhenotypeListSerializer(phenotypes, many=True)
 
+            counts = [len(associations), len(phenotypes), len(studies)]
             data = {'phenotype_search_results':phenotype_serializer.data,
                              'study_search_results':study_serializer.data,
-                             'accession_search_results':association_serializer.data}
+                             'association_search_results':association_serializer.data,
+                             'counts': counts}
+
             if any([studies,associations,phenotypes]):
                 return self.get_paginated_response(data)
             else:
-                return Response(data)
+                return Response({i:data[i] for i in data if i!='counts'})
 
 
 

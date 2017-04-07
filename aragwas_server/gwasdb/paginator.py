@@ -21,8 +21,8 @@ class CustomSearchPagination(pagination.PageNumberPagination):
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link()
             },
-            'count': self.page.paginator.count,
+            'count': data['counts'],
             'page_count': self.page.paginator.num_pages,
             'current_page': self.page.number,
-            'results': data
+            'results': {i:data[i] for i in data if i!='counts'}
         })

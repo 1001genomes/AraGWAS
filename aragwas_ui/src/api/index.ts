@@ -22,13 +22,13 @@ export async function loadStudies (page=1) {
         .then(convertToModel);
 }
 
-export async function search (query_term='', page=1) {
+export async function search (query_term='', page=1, ordering='') {
     if (query_term == '') {
-        return fetch(`/api/search/search_results/?page=${page}`)
+        return fetch(`/api/search/search_results/?page=${page}&ordering=${ordering}`)
             .then(checkStatus)
             .then(convertToModel);
     } else {
-        return fetch(`/api/search/search_results/${query_term}/?page=${page}`)
+        return fetch(`/api/search/search_results/${query_term}/?page=${page}&ordering=${ordering}`)
             .then(checkStatus)
             .then(convertToModel);
     }

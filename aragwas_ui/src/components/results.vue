@@ -45,7 +45,7 @@
                                             @click="sortBy(key)"
                                             :class="{ active: sortKey == key }">
                                             {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                                        <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc'">
                                         </span>
                                         </th>
                                     </tr>
@@ -100,34 +100,23 @@
       filterKey: string = ''
       currentPage = 1
       pageCount = 5
-      totalCount = 0
       queryTerm: string = this.$route.params.queryTerm
       dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
       observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
       currentView: string = ''
       n = {'studies': 0, 'phenotypes': 0, 'associations': 0}
-      props: ['queryTerm']
 
       get filteredData () {
-        let sortKey = this.sortKey
         let filterKey = this.filterKey
         if (filterKey) {
           filterKey = filterKey.toLowerCase()
         }
-        let order = this.sortOrders[this.currentView][sortKey] || 1
         let data = this.dataObserved[this.currentView]
         if (filterKey) {
           data = data.filter(function (row) {
             return Object.keys(row).some(function (key) {
               return String(row[key]).toLowerCase().indexOf(filterKey) > -1
             })
-          })
-        }
-        if (sortKey) {
-          data = data.slice().sort(function (item1, item2) {
-            let a = item1[sortKey]
-            let b = item2[sortKey]
-            return (a === b ? 0 : a > b ? 1 : -1) * order
           })
         }
         return data
@@ -139,30 +128,32 @@
       }
       created (): void {
         this.loadData(this.queryTerm, this.currentPage)
-      }
-      mounted () {
         this.changeView('studies')
       }
       changeView (dataSet: string): void {
         this.currentView = dataSet
       }
       loadData (queryTerm:string, page:number): void {
-        search(queryTerm, page).then(this._displayData)
+        search(queryTerm, page, this.sortKey).then(this._displayData)
       }
       _displayData (data) : void {
         this.dataObserved['studies'] = data['results']['study_search_results']
         this.dataObserved['phenotypes'] = data['results']['phenotype_search_results']
         this.dataObserved['associations'] = data['results']['association_search_results']
         this.currentPage = data['current_page']
-        this.totalCount = data['count']
         this.pageCount = data['page_count']
-        this.n['studies'] = this.dataObserved['studies'].length
-        this.n['phenotypes'] = this.dataObserved['phenotypes'].length
-        this.n['associations'] = this.dataObserved['associations'].length
+        this.n['studies'] = data['count'][2]
+        this.n['phenotypes'] = data['count'][1]
+        this.n['associations'] = data['count'][0]
       }
       sortBy (key) : void {
-        this.sortKey = key
-        this.sortOrders[key] = this.sortOrders[key] * -1
+        this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1
+        if (this.sortOrders[this.currentView][key] < 0) {
+          this.sortKey = '-' + key
+        } else {
+          this.sortKey = key
+        }
+        this.loadData(this.queryTerm, this.currentPage)
       }
     }
 </script>
