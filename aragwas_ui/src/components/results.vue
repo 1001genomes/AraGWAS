@@ -4,8 +4,10 @@
             <div class="section">
                 <div class="container">
                     <h4 class="white--text">
-                        Search Results
+                        Search Results for <input type="text" class="search-bar" v-model="queryTerm" debounce="500">
                       </h4>
+
+
                 </div>
             </div>
             <v-parallax class="parallax-container" src="/static/img/ara2.jpg" height="80">
@@ -130,7 +132,14 @@
       onCurrentPageChanged (val:number, oldVal:number) {
         this.loadData(this.queryTerm, val)
       }
+      @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
+      onQueryTermChanged (val:string, oldVal:string) {
+        this.loadData(val, this.currentPage)
+      }
       created (): void {
+        if (this.$route.params.queryTerm) {
+          this.queryTerm = this.$route.params.queryTerm
+        }
         this.loadData(this.queryTerm, this.currentPage)
         this.currentView = 'studies'
       }
@@ -146,6 +155,15 @@
         this.n['studies'] = data['count'][2]
         this.n['phenotypes'] = data['count'][1]
         this.n['associations'] = data['count'][0]
+        if (this.n['studies'] === 0) {
+          this.dataObserved['studies'] = []
+        }
+        if (this.n['phenotypes'] === 0) {
+          this.dataObserved['phenotypes'] = []
+        }
+        if (this.n['associations'] === 0) {
+          this.dataObserved['associations'] = []
+        }
       }
       sortBy (key) : void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1
@@ -168,6 +186,10 @@
     }
     .section {
         padding-top: 1rem;
+    }
+    .search-bar {
+        background-color: rgba(1,1,1,0.2);
+        width: 72%;
     }
 
     .parallax-container  {

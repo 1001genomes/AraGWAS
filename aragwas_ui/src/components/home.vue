@@ -12,7 +12,13 @@
           <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies and associations and to obtain additional meta-information.</h5>
         </div>
           <form>
-              <div class="col valign-wrapper white grey--text lighten-3">
+              <v-text-field
+                          name="input-1"
+                          label="Search the catalog"
+                          v-model="queryTerm"
+                          v-on:keyup.enter="loadResults()"
+                  ></v-text-field>
+              <div class="col valign-wrapper grey--text lighten-3">
                   <input class="search-bar ml-2" id="search" type="search" v-model="queryTerm" placeholder="Search the catalog (e.g. petal length, Atwell et al. 2010, Chr1: 11434051, AT1G06457)" v-on:keyup.enter="loadResults()" required>
                   <router-link :to="searchResults"><i class="material-icons">search</i></router-link>
               </div>

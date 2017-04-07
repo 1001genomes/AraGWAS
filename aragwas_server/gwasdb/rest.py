@@ -128,7 +128,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             if any([studies,associations,phenotypes]):
                 return self.get_paginated_response(data)
             else:
-                return Response({i:data[i] for i in data if i!='counts'})
+                return Response({'results': {i:data[i] for i in data if i!='counts'}, 'count':counts})
 
 
 
