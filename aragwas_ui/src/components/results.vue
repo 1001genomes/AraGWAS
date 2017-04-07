@@ -45,7 +45,7 @@
                                             @click="sortBy(key)"
                                             :class="{ active: sortKey == key }">
                                             {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc'">
+                                        <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc' ">
                                         </span>
                                         </th>
                                     </tr>
@@ -97,6 +97,7 @@
       columns = {'studies': this.columnsStudies, 'phenotypes': this.columnsPhenotypes, 'associations': this.columnsAssociations}
       sortOrders = {'studies': this.sortOrdersStudies, 'phenotypes': this.sortOrdersPhenotypes, 'associations': this.sortOrdersAssociations}
       sortKey: string = ''
+      ordered: string = ''
       filterKey: string = ''
       currentPage = 1
       pageCount = 5
@@ -134,7 +135,7 @@
         this.currentView = dataSet
       }
       loadData (queryTerm:string, page:number): void {
-        search(queryTerm, page, this.sortKey).then(this._displayData)
+        search(queryTerm, page, this.ordered).then(this._displayData)
       }
       _displayData (data) : void {
         this.dataObserved['studies'] = data['results']['study_search_results']
@@ -149,10 +150,11 @@
       sortBy (key) : void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1
         if (this.sortOrders[this.currentView][key] < 0) {
-          this.sortKey = '-' + key
+          this.ordered = '-' + key
         } else {
-          this.sortKey = key
+          this.ordered = key
         }
+        this.sortKey = key
         this.loadData(this.queryTerm, this.currentPage)
       }
     }
