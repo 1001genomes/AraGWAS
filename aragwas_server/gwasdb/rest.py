@@ -34,12 +34,17 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         ordering = self.request.query_params.get('ordering', None)
-        if ordering is not None:
+        if ordering is not None and ordering != '':
             from django.db.models.functions import Lower
+            inverted = False
             if ordering.startswith('-'):
-                queryset = queryset.order_by(Lower(ordering[1:])).reverse()
-            else:
-                queryset = queryset.order_by(Lower(ordering))
+                ordering = ordering[1:]
+                inverted = True
+            if ordering == 'genotype' or ordering == 'phenotype':
+                ordering += '__name'
+            queryset = queryset.order_by(Lower(ordering))
+            if inverted:
+                queryset = queryset.reverse()
         return queryset
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):

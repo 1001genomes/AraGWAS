@@ -61,6 +61,7 @@
     studyPage: Page<Study>
     sortOrders = {'name': 1, 'phenotype': 1, 'transformation': 1, 'method': 1, 'genotype': 1}
     sortKey: string = ''
+    ordered: string = ''
     columns = ['name', 'phenotype', 'transformation', 'method', 'genotype']
     filterKey: string = ''
     studies = []
@@ -69,25 +70,16 @@
     totalCount = 0
 
     get filteredData () {
-      let sortKey = this.sortKey
       let filterKey = this.filterKey
       if (filterKey) {
         filterKey = filterKey.toLowerCase()
       }
-      let order = this.sortOrders[sortKey] || 1
       let data = this.studies
       if (filterKey) {
         data = data.filter(function (row) {
           return Object.keys(row).some(function (key) {
             return String(row[key]).toLowerCase().indexOf(filterKey) > -1
           })
-        })
-      }
-      if (sortKey) {
-        data = data.slice().sort(function (item1, item2) {
-          let a = item1[sortKey]
-          let b = item2[sortKey]
-          return (a === b ? 0 : a > b ? 1 : -1) * order
         })
       }
       return data
@@ -97,12 +89,11 @@
     onCurrentPageChanged (val:number, oldVal:number) {
       this.loadData(val)
     }
-
     created (): void {
       this.loadData(this.currentPage)
     }
     loadData (page:number): void {
-      loadStudies(page).then(this._displayData)
+      loadStudies(page, this.ordered).then(this._displayData)
     }
     _displayData (data) : void {
       this.studies = data['results']
@@ -113,6 +104,12 @@
     sortBy (key) : void {
       this.sortKey = key
       this.sortOrders[key] = this.sortOrders[key] * -1
+      if (this.sortOrders[key] < 0) {
+        this.ordered = '-' + key
+      } else {
+        this.ordered = key
+      }
+      this.loadData(this.currentPage)
     }
   }
 </script>
