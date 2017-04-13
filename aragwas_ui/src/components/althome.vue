@@ -1,0 +1,353 @@
+<template>
+    <div>
+        <div class="banner-container white--text" v-bind:style="{ height: height + 'px'}">
+            <div class="container">
+                <!--<transition name="custom-fadeOutUp" leave-active-class="animated fadeOutUp">-->
+                    <div v-if="!search">
+                    <div class="banner-title">
+                        <br>
+                        <h1 class="white--text text-xs-center">AraGWAS</h1>
+                    </div>
+                    <div class="banner-subtext">
+                        <h5 class="light text-xs-center">AraGWAS is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                        <br>
+                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies and associations and to obtain additional meta-information.</h5>
+                    </div>
+                    </div>
+                <!--</transition>-->
+                <br>
+                <!--<transition name="bounce">-->
+                    <v-text-field
+                            name="input-1"
+                            label="Search the catalog"
+                            v-model="queryTerm"
+                            v-bind:focused="focused"
+                    ></v-text-field>
+                <!--</transition>-->
+
+            </div>
+            <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
+            </v-parallax>
+        </div>
+        <section v-if="!search">
+            <div class="section mt-4">
+                <div class="container">
+                    <v-row class="text-xs-center">
+                        <v-col xs12 md6 lg3>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
+                                <h5 class="text-xs-center">Public GWAS studies</h5>
+                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/studies"><v-icon left>view_list</v-icon> GWAS studies</router-link>
+                            </div>
+                        </v-col>
+                        <v-col xs12 md6 lg3>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">code</i></h3>
+                                <h5 class="text-xs-center">REST API</h5>
+                                <p class="light justify">The REST API can be used to retrieve associations and meta-information from AraGWAS via URLs.</p>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq/rest"><v-icon left>code</v-icon> REST API</router-link>
+                            </div>
+                        </v-col>
+                        <v-col xs12 md6 lg3>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
+                                <h5 class="text-xs-center">Take a Tour</h5>
+                                <p class="light justify">Take a guided tour through AraGWAS and familiarise yourself with all available public functions.</p>
+                                <a class="btn btn--large icon--left green lighten-1"><v-icon left>rowing</v-icon>GWAS studies</a>
+                            </div>
+                        </v-col>
+                        <v-col xs12 md6 lg3>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                                <h5 class="text-xs-center">FAQ &amp; Tutorials</h5>
+                                <p class="light justify">Here, you can find detailed help about the functions of AraGWAS, its integrated data and frequently asked questions.</p>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq"><v-icon left>help_outline</v-icon> FAQ</router-link>
+                            </div>
+                        </v-col>
+                    </v-row>
+                    <v-row class="text-xs-center">
+                        <v-spacer></v-spacer>
+                        <v-col xs12 md6 lg3>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                                <h5 class="text-xs-center">Submit GWAS study</h5>
+                                <p class="light justify">Submit and publish your own GWAS study in order to share it with the community</p>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/submission"><v-icon left>backup</v-icon> Submit GWAS study</router-link>
+                            </div>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                    </v-row>
+                </div>
+            </div>
+            <div class="container mt-5 mb-5">
+                <div class="section">
+                    <v-row>
+                        <v-col xs12 >
+                            <h5 class="light"><v-icon class="green--text lighten-1">fiber_new</v-icon> News &amp; Updates</h5>
+                            <v-card>
+                                <v-card-text>
+                                    <div><v-icon class="green--text lighten-1">fiber_new</v-icon> AraGWAS is online</div>
+                                    <div>
+                                        <p class="light">
+                                            We are proud to announce that the first public GWAS catalogue for the model organism <em>Arabidopsis thaliana</em> has launched.
+                          </p>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </div>
+            </div>
+        </section>
+        <section v-if="search">
+            <div class="container">
+                <v-tabs
+                        id="mobile-tabs-1"
+                        grow
+                        scroll-bars
+                        :model="currentView"
+                >
+                    <v-tab-item
+                            v-for="i in ['studies','phenotypes','associations']" :key="i"
+                            :href="'#' + i"
+                            ripple
+                            slot="activators"
+                            class="green lighten-1"
+                    >
+                        <section style="width: 110%">
+                            <div class="bold">Results: {{ i }}</div>
+                            <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
+                            <div class="" v-else><span class="arabadge">{{n[i]}} Results</span></div>
+                        </section>
+                    </v-tab-item>
+                    <v-tab-content
+                            v-for="i in ['studies','phenotypes','associations']" :key="i"
+                            :id="i"
+                            slot="content"
+                    >
+                        <v-card>
+                            <v-card-text>
+                                <div id="results" class="col s12"><br>
+                                    <h5 class="brown-text center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
+                                    <table v-else>
+                                        <thead>
+                                        <tr>
+                                            <th v-for="key in columns[currentView]"
+                                                @click="sortBy(key)"
+                                                :class="{ active: sortKey == key }">
+                                                {{ key | capitalize }}
+                                        <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc' ">
+                                        </span>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="entry in filteredData">
+                                            <td v-for="key in columns[currentView]">
+                                                {{entry[key]}}
+                                        </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </v-tab-content>
+                </v-tabs>
+                <div class="page-container mt-3 mb-3">
+                        <v-pagination v-bind:length.number="pageCount" v-model="currentPage"/>
+                </div>
+            </div>
+        </section>
+    </div>
+</template>
+
+<script lang="ts">
+    import Vue from 'vue'
+//    import Component from 'vue-class-component'
+    import {Component, Watch, Prop} from 'vue-property-decorator'
+    import Router from '@/router/index.ts'
+    import {search} from '@/api'
+
+    @Component({
+      filters: {
+        capitalize (str) {
+          return str.charAt(0).toUpperCase() + str.slice(1)
+        }
+      }
+    })
+    export default class Althome extends Vue {
+      @Prop
+      queryTerm: string
+      router = Router
+      search: boolean = false
+      height = 420
+      @Prop
+      focused: boolean
+
+      @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
+      onQueryTermChanged (val:string, oldVal:string) {
+        this.search = true
+        this.height = 100
+        this.loadData(val, this.currentPage)
+      }
+      get searchResults () {
+        return '/results/' + this.queryTerm
+      }
+      loadResults () {
+        this.router.push('/results/' + this.queryTerm)
+      }
+      moveTextUp () {
+        this.search = false
+      }
+
+      sortOrdersStudies = {'name': 1, 'phenotype': 1, 'transformation': 1, 'method': 1, 'genotype': 1}
+      columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype']
+      sortOrdersPhenotypes = {'name': 1, 'description': 1}
+      columnsPhenotypes = ['name', 'description']
+      sortOrdersAssociations = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds_ratio': 1, 'confidence_interval': 1, 'phenotype': 1, 'study': 1}
+      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study']
+      columns = {'studies': this.columnsStudies, 'phenotypes': this.columnsPhenotypes, 'associations': this.columnsAssociations}
+      sortOrders = {'studies': this.sortOrdersStudies, 'phenotypes': this.sortOrdersPhenotypes, 'associations': this.sortOrdersAssociations}
+      sortKey: string = ''
+      ordered: string = ''
+      filterKey: string = ''
+      currentPage = 1
+      pageCount = 5
+      dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
+      observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
+      currentView: string = ''
+      n = {'studies': 0, 'phenotypes': 0, 'associations': 0}
+
+      get filteredData () {
+        let filterKey = this.filterKey
+        if (filterKey) {
+          filterKey = filterKey.toLowerCase()
+        }
+        let data = this.dataObserved[this.currentView]
+        if (filterKey) {
+          data = data.filter(function (row) {
+            return Object.keys(row).some(function (key) {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+            })
+          })
+        }
+        return data
+      }
+
+      @Watch('currentPage')
+      onCurrentPageChanged (val:number, oldVal:number) {
+        this.loadData(this.queryTerm, val)
+      }
+      created (): void {
+        if (this.$route.params.queryTerm) {
+          this.queryTerm = this.$route.params.queryTerm
+        }
+        this.loadData(this.queryTerm, this.currentPage)
+        this.currentView = 'studies'
+      }
+      loadData (queryTerm:string, page:number): void {
+        search(queryTerm, page, this.ordered).then(this._displayData)
+      }
+      _displayData (data) : void {
+        this.dataObserved['studies'] = data['results']['study_search_results']
+        this.dataObserved['phenotypes'] = data['results']['phenotype_search_results']
+        this.dataObserved['associations'] = data['results']['association_search_results']
+        this.currentPage = data['current_page']
+        this.pageCount = data['page_count']
+        this.n['studies'] = data['count'][2]
+        this.n['phenotypes'] = data['count'][1]
+        this.n['associations'] = data['count'][0]
+        if (this.n['studies'] === 0) {
+          this.dataObserved['studies'] = []
+        }
+        if (this.n['phenotypes'] === 0) {
+          this.dataObserved['phenotypes'] = []
+        }
+        if (this.n['associations'] === 0) {
+          this.dataObserved['associations'] = []
+        }
+      }
+      sortBy (key) : void {
+        this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1
+        if (this.sortOrders[this.currentView][key] < 0) {
+          this.ordered = '-' + key
+        } else {
+          this.ordered = key
+        }
+        this.sortKey = key
+        this.loadData(this.queryTerm, this.currentPage)
+      }
+    }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+    .banner-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+
+    .parallax-container  {
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:-1;
+    }
+
+
+    .container {
+        margin:0 auto;
+        max-width: 1280px;
+        width: 90%
+    }
+
+    .search-bar {
+        max-width: 1280px;
+        width: 90%;
+        font-size: 1.2rem;
+    }
+
+    .banner-title {
+
+    }
+
+    .banner-title h1 {
+        font-size: 4.2rem;
+        line-height: 110%;
+        margin: 2.1rem 0 1.68rem 0;
+    }
+
+    .banner-subtext {
+
+    }
+
+    .banner-subtext h5 {
+        font-weight:300;
+        color:black;
+    }
+
+
+    @media only screen and (min-width: 601px) {
+        .container {
+            width:85%
+        }
+    }
+
+    @media only screen and (min-width: 993px) {
+        .container {
+            width:70%;
+        }
+    }
+    .page-container {
+        display:flex;
+        justify-content:center;
+
+    }
+    /*ANIMATIONS*/
+
+</style>

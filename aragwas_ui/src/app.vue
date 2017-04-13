@@ -36,6 +36,7 @@
   @import '../node_modules/vuetify/src/stylus/main'v-toolbar-logo
   $theme.primary = $red.darken-2
   @import './assets/css/main.css'
+  @import './assets/css/animate.css'
 
   #main-content {
     padding-top:0;
