@@ -120,10 +120,14 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 phenotype_serializer = PhenotypeListSerializer(phenotypes, many=True)
 
             counts = [len(associations), len(phenotypes), len(studies)]
-            data = {'phenotype_search_results':phenotype_serializer.data,
-                             'study_search_results':study_serializer.data,
+            PAGE_SIZE = 25.
+            import math
+            page_counts = [int(math.ceil(float(len(associations))/PAGE_SIZE)),int(math.ceil(float(len(phenotypes))/PAGE_SIZE)), int(math.ceil(float(len(studies))/PAGE_SIZE))]
+            data = {'study_search_results':study_serializer.data,
+                             'phenotype_search_results':phenotype_serializer.data,
                              'association_search_results':association_serializer.data,
-                             'counts': counts}
+                             'counts': counts,
+                             'page_counts': page_counts}
 
             if any([studies,associations,phenotypes]):
                 return self.get_paginated_response(data)

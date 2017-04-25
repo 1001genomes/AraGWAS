@@ -27,7 +27,7 @@
                         slot="activators"
                         class="green lighten-1"
                 >
-                    <section style="width: 110%">
+                    <section style="width: 110%" @click="currentView = i">
                         <div class="bold">Results: {{ i }}</div>
                         <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
                         <div class="" v-else><span class="arabadge">{{n[i]}} Results</span></div>
@@ -68,7 +68,7 @@
                 </v-tab-content>
             </v-tabs>
             <div class="page-container mt-3 mb-3">
-                <v-pagination v-bind:length.number="pageCount" v-model="currentPage"/>
+                <v-pagination v-bind:length.number="pageCount[currentView]" v-model="currentPage"/>
             </div>
         </div>
     </div>
@@ -104,13 +104,13 @@
       ordered: string = ''
       filterKey: string = ''
       currentPage = 1
-      pageCount = 5
       @Prop
       queryTerm: string
       dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
       observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
       currentView: string = ''
       n = {'studies': 0, 'phenotypes': 0, 'associations': 0}
+      pageCount = {'studies': 5, 'phenotypes': 5, 'associations': 5}
 
       get filteredData () {
         let filterKey = this.filterKey
@@ -151,7 +151,9 @@
         this.dataObserved['phenotypes'] = data['results']['phenotype_search_results']
         this.dataObserved['associations'] = data['results']['association_search_results']
         this.currentPage = data['current_page']
-        this.pageCount = data['page_count']
+        this.pageCount['studies'] = data['page_count'][2]
+        this.pageCount['phenotypes'] = data['page_count'][1]
+        this.pageCount['associations'] = data['page_count'][0]
         this.n['studies'] = data['count'][2]
         this.n['phenotypes'] = data['count'][1]
         this.n['associations'] = data['count'][0]
