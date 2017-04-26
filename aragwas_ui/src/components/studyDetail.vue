@@ -31,7 +31,8 @@
                             </div>
                             <div class="mt-3"><h5>Statistics</h5></div>
                             <div id="statistics">
-
+                                <div>Accession origin:</div>
+                                <img src="/static/img/piechart.png">
                             </div>
                         </v-col>
                         <div id="to" class="col s12">

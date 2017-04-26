@@ -13,6 +13,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "d3": "^4.8.0",
     "vue": "^2.2.2",
     "vue-class-component": "^5.0.0",
     "vue-parallaxy": "^1.0.2",
@@ -21,6 +22,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/d3": "^4.8.0",
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.1.1",
@@ -77,6 +79,10 @@
     "style-loader": "^0.14.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "ts-loader": "^2.0.2",
+    "tslint": "^4.5.1",
+    "tslint-loader": "^3.4.3",
+    "typescript": "^2.2.1",
     "url-loader": "^0.5.7",
     "vue-loader": "^11.1.4",
     "vue-style-loader": "^2.0.0",
@@ -87,11 +93,7 @@
     "webpack-bundle-analyzer": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.16.1",
-    "webpack-merge": "^2.6.1",
-    "ts-loader": "^2.0.2",
-    "tslint": "^4.5.1",
-    "tslint-loader": "^3.4.3",
-    "typescript": "^2.2.1"
+    "webpack-merge": "^2.6.1"
   },
   "engines": {
     "node": ">= 4.0.0",
