@@ -9,6 +9,7 @@ from gwasdb.paginator import CustomSearchPagination
 from rest_framework import status
 from django.db.models import Q
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
@@ -22,6 +23,18 @@ class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Association.objects.all()
     serializer_class = AssociationSerializer
 
+class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information about GWAS associations
+    """
+    queryset = Association.objects.all()
+    serializer_class = AssociationSerializer
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        associations = get_list_or_404(Association, study=pk)
+        serializer = AssociationSerializer(associations)
+
+        return Response(serializer.data)
 
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """

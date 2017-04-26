@@ -34,3 +34,9 @@ export async function search (query_term='', page=1, ordering='') {
     }
 
 }
+// Import single study results, loads all associations refered to that study ID
+export async  function loadStudy (studyID='1', page=1, ordering='') {
+    return fetch(`/api/studies/${studyID}/?page=${page}&ordering=${ordering}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}

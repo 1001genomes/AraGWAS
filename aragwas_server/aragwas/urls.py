@@ -53,6 +53,7 @@ class SearchRouter(DefaultRouter):
 router = DefaultRouter()
 router.register(r'associations', rest.AssociationViewSet)
 router.register(r'studies', rest.StudyViewSet)
+router.register(r'associations_of_study', rest.AssociationsOfStudyViewSet)
 # router.register(r'search', rest.SearchViewSet)
 router.register(r'neighboring_snps', rest.SNPLocalViewSet)
 srouter = SearchRouter()

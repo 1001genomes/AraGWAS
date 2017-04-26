@@ -107,7 +107,6 @@
                         grow
                         scroll-bars
                         :model="currentView"
-                        class="green darken-4"
                 >
                     <v-tab-item
                             v-for="i in ['studies','phenotypes','associations']" :key="i"
@@ -146,7 +145,9 @@
                                         <tbody>
                                         <tr v-for="entry in filteredData">
                                             <td v-for="key in columns[currentView]">
-                                                {{entry[key]}}
+                                                <!--TODO: add links to studies views, need to be generated from study id-->
+                                                <router-link v-if="(key==='name' && currentView === 'studies')" :to="'/study/'" >{{entry[key]}}</router-link>
+                                                <div v-else>{{entry[key]}}</div>
                                         </td>
                                         </tr>
                                         </tbody>
@@ -192,9 +193,6 @@
         this.search = true
         this.height = 100
         this.loadData(val, this.currentPage)
-      }
-      get searchResults () {
-        return '/results/' + this.queryTerm
       }
       loadResults () {
         this.router.push('/results/' + this.queryTerm)
@@ -353,6 +351,35 @@
     }
     .tabs__slider {
         background: #f4d76c;
+    }
+
+    .arrow {
+        display: inline-block;
+        vertical-align: middle;
+        width: 0;
+        height: 0;
+        margin-left: 5px;
+        opacity: 0;
+    }
+
+    .arrow.asc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid green;
+    }
+
+    .arrow.dsc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid green;
+    }
+
+    th.active {
+        color:black;
+    }
+
+    th.active .arrow {
+        opacity: 1;
     }
     /*ANIMATIONS*/
 
