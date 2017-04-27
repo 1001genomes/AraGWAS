@@ -4,7 +4,7 @@
             <div class="section" id="head">
                 <div class="container">
                     <h4 class="white--text mt-3">
-                        Study: {{ studyName }}
+                        Phenotype: {{ phenotypeName }}
                     </h4>
                 </div>
             </div>
@@ -14,33 +14,41 @@
         <v-container>
             <v-row>
                 <v-col xs6>
-                        <br>
-                        <v-col xs12>
-                            <div id="description">
-                                <h5>Description</h5>
-                                <div>{{ studyDescription }}</div>
-                                <v-row><v-col xs3><span>Name:</span></v-col><v-col xs9>{{ studyName }}</v-col></v-row>
-                                <v-row><v-col xs3><span>Phenotype:</span></v-col><v-col xs9> <router-link :to="'/phenotype/'">Flowering time</router-link></v-col></v-row>
-                                <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a href="https://arapheno.1001genomes.org/phenotype/31/">FT10</a></v-col></v-row>
-                                <v-row><v-col xs3><span>Genotype:</span></v-col><v-col xs9>{{ genotype }}</v-col></v-row>
-                                <v-row><v-col xs3><span>Transformation:</span></v-col><v-col xs9>{{ transformation }}</v-col></v-row>
-                                <v-row><v-col xs3><span>Method:</span></v-col><v-col xs9>{{ method }}</v-col></v-row>
-                                <v-row><v-col xs3><span>easyGWAS link:</span></v-col><v-col xs9><a href="https://easygwas.ethz.ch/gwas/results/summary/a3c8b375-79d4-46f9-9341-8e9a244403bf/">GWAS-FT10</a></v-col></v-row>
-                                <v-row><v-col xs3><span>Publication:</span></v-col><v-col xs9><a href="https://doi.org/10.1038/nature08800">10.1038/nature08800</a></v-col></v-row>
-                                <div></div>
-                            </div>
-                            <div class="mt-3"><h5>Statistics</h5></div>
-                            <div id="statistics">
-                                <div>Accession origin:</div>
-                                    <pie-chart :data="[['Blueberry', 44], ['Strawberry', 23]]"></pie-chart>
-                                <img src="/static/img/piechart.png">
-                            </div>
-                        </v-col>
-                        <div id="to" class="col s12">
-                            <div id="to_chart" class="chart"></div>
+                    <br>
+                    <v-col xs12>
+                        <div id="description">
+                            <h5>Description</h5>
+                            <div></div>
+                            <v-row><v-col xs3><span>Name:</span></v-col><v-col xs9>{{ phenotypeName }}</v-col></v-row>
+                            <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a href="https://arapheno.1001genomes.org/phenotype/31/">FT10</a></v-col></v-row>
+                            <v-row><v-col xs3><span>Genotype:</span></v-col><v-col xs9>{{ genotype }}</v-col></v-row>
+                            <v-row><v-col xs3><span>Transformation:</span></v-col><v-col xs9>{{ transformation }}</v-col></v-row>
+                            <v-row><v-col xs3><span>Scoring:</span></v-col><v-col xs9>{{ scoring }}</v-col></v-row>
+                            <div></div>
                         </div>
-                        <div id="eo" class="col s12"><div class="chart" id="eo_chart"></div></div>
-                        <div id="uo" class="col s12"><div class="chart" id="uo_chart"></div></div>
+                        <div class="mt-3"><h5>Similar phenotypes</h5></div>
+                        <div id="statistics">
+                            <v-card>
+                                <v-list two-line>
+                                    <template v-for="item in list">
+                                        <v-subheader v-if="item.header" v-text="item.header" />
+                                        <v-divider v-else-if="item.divider" v-bind:inset="item.inset" />
+                                        <v-list-item v-else v-bind:key="item.title">
+                                            <v-list-tile avatar>
+                                                <v-list-tile-avatar>
+                                                    <img v-bind:src="item.avatar" />
+                                                </v-list-tile-avatar>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title v-html="item.title" />
+                                                    <v-list-tile-sub-title v-html="item.subtitle" />
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list-item>
+                                    </template>
+                                </v-list>
+                            </v-card>
+                        </div>
+                    </v-col>
                 </v-col>
                 <v-col xs6>
                     <br>
@@ -52,17 +60,17 @@
                                     @click="sortBy(key)"
                                     :class="{ active: sortKey == key }">
                                     {{ key | capitalize }}
-                                            <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
                                             </span>
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="entry in filteredData">
-                                    <td v-for="key in columns">
-                                        {{entry[key]}}
-                                    </td>
-                                </tr>
+                            <tr v-for="entry in filteredData">
+                                <td v-for="key in columns">
+                                    {{entry[key]}}
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </table>
@@ -71,8 +79,6 @@
             <v-row>
                 <v-col xs12>
                     <v-col xs12>
-                        <h5>Manhattan plots</h5>
-                        <img src="/static/img/histograms.png">
 
                     </v-col>
 
@@ -88,7 +94,7 @@
     import Chartkick from 'chartkick'
     import VueChartkick from 'vue-chartkick'
     import {Component, Prop, Watch} from 'vue-property-decorator'
-    import {loadStudy} from '@/api'
+//    import {loadStudy} from '@/api'
 
     Vue.use(VueChartkick, { Chartkick })
 
@@ -103,20 +109,20 @@
 //        }
 //      }
     })
-    export default class StudyDetail extends Vue {
+    export default class phenotypeDetail extends Vue {
       @Prop
-      studyId: string
-      studyName: string = 'Test'
-      studyDescription: string = 'A study conducted on n samples for phenotype p.'
+      phenotypeId: string
+      phenotypeName: string = 'Flowering time (test)'
+      phenotypeDescription: string = 'A study conducted on n samples for phenotype p.'
       genotype: string = 'AtPolyDB (Horton et al.)'
       transformation: string = 'Log10'
-      method: string = 'EMMAX'
+      scoring: string = 'Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected'
       currentView: string = ''
-      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene']
+      columns = ['SNP', 'p-value', 'gene', 'study']
       n = {'phenotypes': 0, 'accessions': 0}
 //    TODO: add linking to studyId through router or linking, usually the id should be given by previous page
 
-      sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds ratio': 1, 'confidence interval': 1, 'gene': 1}
+      sortOrders = {'snp': 1, 'pvalue': 1, 'gene': 1, 'study': 1}
       sortKey: string = ''
       ordered: string = ''
       filterKey: string = ''
@@ -124,6 +130,14 @@
       currentPage = 1
       pageCount = 5
       totalCount = 0
+      list: [
+        { header: 'Today' },
+        { avatar: '...', title: 'Brunch this weekend?', subtitle: "..." },
+        { divider: true, inset: true },
+        { avatar: '...', title: 'Summer BBQ', subtitle: "..." },
+        { divider: true, inset: true },
+        { avatar: '...', title: 'Qui Qui', subtitle: "..." }
+      ]
 
       get filteredData () {
         let filterKey = this.filterKey
@@ -149,7 +163,7 @@
         this.loadData(this.currentPage)
       }
       loadData (page:number): void {
-        loadStudy(this.studyId, page, this.ordered).then(this._displayData)
+//            loadStudy(this.studyId, page, this.ordered).then(this._displayData)
       }
       _displayData (data) : void {
         this.associations = data['results']

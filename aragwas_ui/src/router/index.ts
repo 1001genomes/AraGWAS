@@ -5,6 +5,7 @@ import Studies from '@/components/studies'
 import Results from '@/components/results'
 import Althome from '@/components/althome'
 import StudyDetail from '@/components/studyDetail'
+import PhenotypeDetail from '@/components/phenotypeDetail'
 
 
 Vue.use(Router)
@@ -35,6 +36,11 @@ export default new Router({
       path: '/study/:studyId?',
       name: 'studyDetail',
       component: StudyDetail, props: true
+    },
+    {
+      path: '/phenotype/:phenotypeId?',
+      name: 'phenotypeDetail',
+      component: PhenotypeDetail, props: true
     }
   ]
 });

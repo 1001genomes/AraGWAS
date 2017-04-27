@@ -9,9 +9,9 @@
                         <h1 class="white--text text-xs-center">AraGWAS</h1>
                     </div>
                     <div class="banner-subtext">
-                        <h5 class="light text-xs-center">AraGWAS is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                        <h5 class=" text-xs-center">AraGWAS is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
                         <br>
-                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies and associations and to obtain additional meta-information.</h5>
+                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
                     </div>
                     </div>
                 <!--</transition>-->
@@ -147,6 +147,7 @@
                                             <td v-for="key in columns[currentView]">
                                                 <!--TODO: add links to studies views, need to be generated from study id-->
                                                 <router-link v-if="(key==='name' && currentView === 'studies')" :to="'/study/'" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies') || (key==='name' && currentView==='phenotypes')" :to="'/phenotype/'" >{{entry[key]}}</router-link>
                                                 <div v-else>{{entry[key]}}</div>
                                         </td>
                                         </tr>
