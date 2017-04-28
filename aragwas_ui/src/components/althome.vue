@@ -33,50 +33,30 @@
             <div class="section mt-4">
                 <div class="container">
                     <v-row class="text-xs-center">
-                        <v-col xs12 md6 lg3>
+                        <v-col xs12 md6 lg4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                                <h5 class="text-xs-center">Public GWAS studies</h5>
+                                <h5 class="text-xs-center">Public GWAS Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/studies"><v-icon left>view_list</v-icon> GWAS studies</router-link>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/studies"><v-icon left>view_list</v-icon> GWAS Studies</router-link>
                             </div>
                         </v-col>
-                        <v-col xs12 md6 lg3>
+                        <v-col xs12 md6 lg4>
                             <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">code</i></h3>
-                                <h5 class="text-xs-center">REST API</h5>
-                                <p class="light justify">The REST API can be used to retrieve associations and meta-information from AraGWAS via URLs.</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq/rest"><v-icon left>code</v-icon> REST API</router-link>
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">call_merge</i></h3>
+                                <h5 class="text-xs-center">Meta-Analysis of Associations</h5>
+                                <p class="light justify">Compare associations across phenotypes or for a specific gene region.</p>
+                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq/rest"><v-icon left>call_merge</v-icon> Meta-Analysis</router-link>
                             </div>
                         </v-col>
-                        <v-col xs12 md6 lg3>
+                        <v-col xs12 md6 lg4>
                             <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
-                                <h5 class="text-xs-center">Take a Tour</h5>
-                                <p class="light justify">Take a guided tour through AraGWAS and familiarise yourself with all available public functions.</p>
-                                <a class="btn btn--large icon--left green lighten-1"><v-icon left>rowing</v-icon>GWAS studies</a>
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
+                                <h5 class="text-xs-center">Top Associations</h5>
+                                <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
+                                <a class="btn btn--large icon--left green lighten-1"><v-icon left>trending_up</v-icon>Top Associations</a>
                             </div>
                         </v-col>
-                        <v-col xs12 md6 lg3>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">backup</i></h3>
-                                <h5 class="text-xs-center">FAQ &amp; Tutorials</h5>
-                                <p class="light justify">Here, you can find detailed help about the functions of AraGWAS, its integrated data and frequently asked questions.</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq"><v-icon left>help_outline</v-icon> FAQ</router-link>
-                            </div>
-                        </v-col>
-                    </v-row>
-                    <v-row class="text-xs-center">
-                        <v-spacer></v-spacer>
-                        <v-col xs12 md6 lg3>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">backup</i></h3>
-                                <h5 class="text-xs-center">Submit GWAS study</h5>
-                                <p class="light justify">Submit and publish your own GWAS study in order to share it with the community</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/submission"><v-icon left>backup</v-icon> Submit GWAS study</router-link>
-                            </div>
-                        </v-col>
-                        <v-spacer></v-spacer>
                     </v-row>
                 </div>
             </div>
@@ -180,6 +160,7 @@
         }
       }
     })
+
     export default class Althome extends Vue {
       @Prop
       queryTerm: string
@@ -191,9 +172,14 @@
 
       @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged (val:string, oldVal:string) {
-        this.search = true
-        this.height = 100
-        this.loadData(val, this.currentPage)
+        if (val === '') {
+          this.search = false
+          this.height = 420
+        } else {
+          this.search = true
+          this.height = 100
+          this.loadData(val, this.currentPage)
+        }
       }
       loadResults () {
         this.router.push('/results/' + this.queryTerm)
