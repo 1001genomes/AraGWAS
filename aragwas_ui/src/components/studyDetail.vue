@@ -32,8 +32,8 @@
                             <div class="mt-3"><h5>Statistics</h5></div>
                             <div id="statistics">
                                 <div>Accession origin:</div>
-                                    <pie-chart :data="[['Blueberry', 44], ['Strawberry', 23]]"></pie-chart>
-                                <img src="/static/img/piechart.png">
+                                   <vue-chart :columns="[{'type': 'string','label': 'Year'},{'type': 'number','label':'#Count'}]" :rows="[['Work',11],['Eat',      2],['Commute',  2],['Watch TV', 2],['Sleep',    7]]" chart-type="PieChart"></vue-chart>
+                                   <line-chart></line-chart>
                             </div>
                         </v-col>
                         <div id="to" class="col s12">
@@ -84,88 +84,84 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue'
-    import Chartkick from 'chartkick'
-    import VueChartkick from 'vue-chartkick'
-    import {Component, Prop, Watch} from 'vue-property-decorator'
-    import {loadStudy} from '@/api'
-
-    Vue.use(VueChartkick, { Chartkick })
-
-    var el = document.createElement('script')
-    el.setAttribute('src', 'https://www.gstatic.com/charts/loader.js')
-    document.getElementsByTagName('head')[0].appendChild(el)
+    import Vue from 'vue';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import {loadStudy} from '../api';
+    import LineChart from '../components/linechart.vue';
 
     @Component({
-//      filters: {
-//        capitalize (str) {
-//          return str.charAt(0).toUpperCase() + str.slice(1)
-//        }
-//      }
+      filters: {
+        capitalize(str) {
+          return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+      },
+      components: {
+          'line-chart': LineChart,
+      },
     })
     export default class StudyDetail extends Vue {
-      @Prop
-      studyId: string
-      studyName: string = 'Test'
-      studyDescription: string = 'A study conducted on n samples for phenotype p.'
-      genotype: string = 'AtPolyDB (Horton et al.)'
-      transformation: string = 'Log10'
-      method: string = 'EMMAX'
-      currentView: string = ''
-      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene']
-      n = {'phenotypes': 0, 'accessions': 0}
+      @Prop()
+      studyId: string;
+      studyName: string = 'Test';
+      studyDescription: string = 'A study conducted on n samples for phenotype p.';
+      genotype: string = 'AtPolyDB (Horton et al.)';
+      transformation: string = 'Log10';
+      method: string = 'EMMAX';
+      currentView: string = '';
+      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene'];
+      n = {phenotypes: 0, accessions: 0};
 //    TODO: add linking to studyId through router or linking, usually the id should be given by previous page
 
-      sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds ratio': 1, 'confidence interval': 1, 'gene': 1}
-      sortKey: string = ''
-      ordered: string = ''
-      filterKey: string = ''
-      associations = []
-      currentPage = 1
-      pageCount = 5
-      totalCount = 0
+      sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds ratio': 1, 'confidence interval': 1, 'gene': 1};
+      sortKey: string = '';
+      ordered: string = '';
+      filterKey: string = '';
+      associations = [];
+      currentPage = 1;
+      pageCount = 5;
+      totalCount = 0;
 
       get filteredData () {
-        let filterKey = this.filterKey
+        let filterKey = this.filterKey;
         if (filterKey) {
-          filterKey = filterKey.toLowerCase()
+          filterKey = filterKey.toLowerCase();
         }
-        let data = this.associations
+        let data = this.associations;
         if (filterKey) {
-          data = data.filter(function (row) {
-            return Object.keys(row).some(function (key) {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1
-            })
-          })
+          data = data.filter((row) => {
+            return Object.keys(row).some((key) => {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            });
+          });
         }
-        return data
+        return data;
       }
 
       @Watch('currentPage')
-      onCurrentPageChanged (val:number, oldVal:number) {
-        this.loadData(val)
+      onCurrentPageChanged(val: number, oldVal: number) {
+        this.loadData(val);
       }
-      created (): void {
-        this.loadData(this.currentPage)
+      created(): void {
+        this.loadData(this.currentPage);
       }
-      loadData (page:number): void {
-        loadStudy(this.studyId, page, this.ordered).then(this._displayData)
+      loadData(page: number): void {
+        loadStudy(this.studyId, page, this.ordered).then(this._displayData);
       }
-      _displayData (data) : void {
-        this.associations = data['results']
-        this.currentPage = data['current_page']
-        this.totalCount = data['count']
-        this.pageCount = data['page_count']
+      _displayData(data): void {
+        this.associations = data.results;
+        this.currentPage = data.current_page;
+        this.totalCount = data.count;
+        this.pageCount = data.page_count;
       }
-      sortBy (key) : void {
-        this.sortKey = key
-        this.sortOrders[key] = this.sortOrders[key] * -1
+      sortBy(key): void {
+        this.sortKey = key;
+        this.sortOrders[key] = this.sortOrders[key] * -1;
         if (this.sortOrders[key] < 0) {
-          this.ordered = '-' + key
+          this.ordered = '-' + key;
         } else {
-          this.ordered = key
+          this.ordered = key;
         }
-        this.loadData(this.currentPage)
+        this.loadData(this.currentPage);
       }
     }
 </script>

@@ -1,15 +1,18 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify'
-import router from "./router";
-import App from './app'
+import Vue from 'vue';
+import Vuetify from 'vuetify';
+import App from './app.vue';
+import router from './router';
 
-Vue.config.productionTip = false
+import VueCharts from 'vue-charts';
 
-Vue.use(Vuetify)
+Vue.config.productionTip = false;
+
+Vue.use(VueCharts);
+Vue.use(Vuetify);
 
 /* eslint-disable no-new */
-new Vue({
-  el: "#app",
+const app = new Vue({
+  el: '#app',
   router,
-  render: h => h(App)
+  render: h => h(App),
 });

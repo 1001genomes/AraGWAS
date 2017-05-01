@@ -90,96 +90,81 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue'
-    import Chartkick from 'chartkick'
-    import VueChartkick from 'vue-chartkick'
-    import {Component, Prop, Watch} from 'vue-property-decorator'
-//    import {loadStudy} from '@/api'
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import Vue from 'vue';
 
-    Vue.use(VueChartkick, { Chartkick })
-
-    var el = document.createElement('script')
-    el.setAttribute('src', 'https://www.gstatic.com/charts/loader.js')
-    document.getElementsByTagName('head')[0].appendChild(el)
-
-    @Component({
-//      filters: {
-//        capitalize (str) {
-//          return str.charAt(0).toUpperCase() + str.slice(1)
-//        }
-//      }
-    })
-    export default class phenotypeDetail extends Vue {
-      @Prop
-      phenotypeId: string
-      phenotypeName: string = 'Flowering time (test)'
-      phenotypeDescription: string = 'A study conducted on n samples for phenotype p.'
-      genotype: string = 'AtPolyDB (Horton et al.)'
-      transformation: string = 'Log10'
-      scoring: string = 'Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected'
-      currentView: string = ''
-      columns = ['SNP', 'p-value', 'gene', 'study']
-      n = {'phenotypes': 0, 'accessions': 0}
+    @Component({})
+    export default class PhenotypeDetail extends Vue {
+      @Prop()
+      phenotypeId: string;
+      phenotypeName: string = 'Flowering time (test)';
+      phenotypeDescription: string = 'A study conducted on n samples for phenotype p.';
+      genotype: string = 'AtPolyDB (Horton et al.)';
+      transformation: string = 'Log10';
+      scoring: string = 'Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected';
+      currentView: string = '';
+      columns = ['SNP', 'p-value', 'gene', 'study'];
+      n = {phenotypes: 0, accessions: 0};
 //    TODO: add linking to studyId through router or linking, usually the id should be given by previous page
 
-      sortOrders = {'snp': 1, 'pvalue': 1, 'gene': 1, 'study': 1}
-      sortKey: string = ''
-      ordered: string = ''
-      filterKey: string = ''
-      associations = []
-      currentPage = 1
-      pageCount = 5
-      totalCount = 0
+      sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
+      sortKey: string = '';
+      ordered: string = '';
+      filterKey: string = '';
+      associations = [];
+      currentPage = 1;
+      pageCount = 5;
+      totalCount = 0;
       list: [
         { header: 'Today' },
-        { avatar: '...', title: 'Brunch this weekend?', subtitle: "..." },
+        { avatar: '...', title: 'Brunch this weekend?', subtitle: '...' },
         { divider: true, inset: true },
-        { avatar: '...', title: 'Summer BBQ', subtitle: "..." },
+        { avatar: '...', title: 'Summer BBQ', subtitle: '...' },
         { divider: true, inset: true },
-        { avatar: '...', title: 'Qui Qui', subtitle: "..." }
-      ]
+        { avatar: '...', title: 'Qui Qui', subtitle: '...' }
+      ];
 
-      get filteredData () {
-        let filterKey = this.filterKey
+      get filteredData() {
+        let filterKey = this.filterKey;
         if (filterKey) {
-          filterKey = filterKey.toLowerCase()
+          filterKey = filterKey.toLowerCase();
         }
-        let data = this.associations
+        let data = this.associations;
         if (filterKey) {
-          data = data.filter(function (row) {
-            return Object.keys(row).some(function (key) {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1
-            })
-          })
+          data = data.filter((row) => {
+            return Object.keys(row).some((key) => {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            });
+          });
         }
-        return data
+        return data;
       }
 
       @Watch('currentPage')
-      onCurrentPageChanged (val:number, oldVal:number) {
-        this.loadData(val)
+      onCurrentPageChanged(val: number, oldVal: number) {
+        this.loadData(val);
       }
-      created (): void {
-        this.loadData(this.currentPage)
+      created(): void {
+        this.loadData(this.currentPage);
       }
-      loadData (page:number): void {
+      loadData(page: number): void {
 //            loadStudy(this.studyId, page, this.ordered).then(this._displayData)
       }
-      _displayData (data) : void {
-        this.associations = data['results']
-        this.currentPage = data['current_page']
-        this.totalCount = data['count']
-        this.pageCount = data['page_count']
+      _displayData(data): void {
+        this.associations = data.results;
+        this.currentPage = data.current_page;
+        this.totalCount = data.count;
+        this.pageCount = data.page_count;
       }
-      sortBy (key) : void {
-        this.sortKey = key
-        this.sortOrders[key] = this.sortOrders[key] * -1
+      sortBy(key): void {
+        this.sortKey = key;
+        this.sortOrders[key] = this.sortOrders[key] * -1;
         if (this.sortOrders[key] < 0) {
-          this.ordered = '-' + key
+          this.ordered = '-' + key;
         } else {
-          this.ordered = key
+          this.ordered = key;
         }
-        this.loadData(this.currentPage)
+        this.loadData(this.currentPage);
       }
     }
 </script>

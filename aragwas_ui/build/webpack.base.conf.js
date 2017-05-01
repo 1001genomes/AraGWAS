@@ -31,29 +31,17 @@ module.exports = {
         include: [resolve('src'), resolve('test')]
       },
       {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: [resolve('src'), resolve('test')],
+        test: /\.ts$/,
+        loader: 'ts-loader',
         options: {
-          formatter: require('eslint-friendly-formatter')
-        }
+          appendTsSuffixTo: [/\.vue$/]
+        },
+        include: [resolve('src'), resolve('test')]
       },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
-      },
-      {
-        test: /\.ts$/,
-        loader: 'ts-loader',
-        options: {appendTsSuffixTo: [/\.vue$/]},
-        include: [resolve('src'), resolve('test')]
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('src'), resolve('test')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

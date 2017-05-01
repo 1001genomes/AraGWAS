@@ -147,125 +147,119 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue'
-//    import Component from 'vue-class-component'
-    import {Component, Watch, Prop} from 'vue-property-decorator'
-    import Router from '@/router/index.ts'
-    import {search} from '@/api'
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import Router from '../router';
+    import {search} from '../api';
+    import Vue from 'vue';
 
     @Component({
       filters: {
-        capitalize (str) {
-          return str.charAt(0).toUpperCase() + str.slice(1)
-        }
-      }
+        capitalize(str) {
+          return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+      },
     })
-
     export default class Althome extends Vue {
-      @Prop
-      queryTerm: string
-      router = Router
-      search: boolean = false
-      height = 420
-      @Prop
-      focused: boolean
+      @Prop()
+      queryTerm: string;
+      router = Router;
+      search: boolean = false;
+      height = 420;
+      @Prop()
+      focused: boolean;
+      sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
+      columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
+      sortOrdersPhenotypes = {name: 1, description: 1};
+      columnsPhenotypes = ['name', 'description'];
+      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
+      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
+      columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, associations: this.columnsAssociations};
+      sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, associations: this.sortOrdersAssociations};
+      sortKey: string = '';
+      ordered: string = '';
+      filterKey: string = '';
+      currentPage = 1;
+      dataObserved = {studies: [], phenotypes: [], associations: []};
+      observed = {studies: 'Study', phenotypes: 'Phenotype', associations: 'Association'};
+      currentView: string = '';
+      n = {studies: 0, phenotypes: 0, associations: 0};
+      pageCount = {studies: 5, phenotypes: 5, associations: 5};
 
       @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
-      onQueryTermChanged (val:string, oldVal:string) {
+      onQueryTermChanged(val: string, oldVal: string) {
         if (val === '') {
-          this.search = false
-          this.height = 420
+          this.search = false;
+          this.height = 420;
         } else {
-          this.search = true
-          this.height = 100
-          this.loadData(val, this.currentPage)
+          this.search = true;
+          this.height = 100;
+          this.loadData(val, this.currentPage);
         }
       }
-      loadResults () {
-        this.router.push('/results/' + this.queryTerm)
+      loadResults() {
+        this.router.push('/results/' + this.queryTerm);
       }
-      moveTextUp () {
-        this.search = false
+      moveTextUp() {
+        this.search = false;
       }
-
-      sortOrdersStudies = {'name': 1, 'phenotype': 1, 'transformation': 1, 'method': 1, 'genotype': 1}
-      columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype']
-      sortOrdersPhenotypes = {'name': 1, 'description': 1}
-      columnsPhenotypes = ['name', 'description']
-      sortOrdersAssociations = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds_ratio': 1, 'confidence_interval': 1, 'phenotype': 1, 'study': 1}
-      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study']
-      columns = {'studies': this.columnsStudies, 'phenotypes': this.columnsPhenotypes, 'associations': this.columnsAssociations}
-      sortOrders = {'studies': this.sortOrdersStudies, 'phenotypes': this.sortOrdersPhenotypes, 'associations': this.sortOrdersAssociations}
-      sortKey: string = ''
-      ordered: string = ''
-      filterKey: string = ''
-      currentPage = 1
-      dataObserved = {'studies': [], 'phenotypes': [], 'associations': []}
-      observed = {'studies': 'Study', 'phenotypes': 'Phenotype', 'associations': 'Association'}
-      currentView: string = ''
-      n = {'studies': 0, 'phenotypes': 0, 'associations': 0}
-      pageCount = {'studies': 5, 'phenotypes': 5, 'associations': 5}
 
       get filteredData () {
-        let filterKey = this.filterKey
+        let filterKey = this.filterKey;
         if (filterKey) {
-          filterKey = filterKey.toLowerCase()
+          filterKey = filterKey.toLowerCase();
         }
-        let data = this.dataObserved[this.currentView]
+        let data = this.dataObserved[this.currentView];
         if (filterKey) {
-          data = data.filter(function (row) {
-            return Object.keys(row).some(function (key) {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1
-            })
-          })
+          data = data.filter((row) => {
+            return Object.keys(row).some((key) => {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            });
+          });
         }
-        return data
+        return data;
       }
 
       @Watch('currentPage')
-      onCurrentPageChanged (val:number, oldVal:number) {
-        this.loadData(this.queryTerm, val)
+      onCurrentPageChanged(val: number, oldVal: number) {
+        this.loadData(this.queryTerm, val);
       }
-      created (): void {
-        if (this.$route.params.queryTerm) {
-          this.queryTerm = this.$route.params.queryTerm
-        }
-        this.loadData(this.queryTerm, this.currentPage)
-        this.currentView = 'studies'
+      created(): void {
+        this.loadData(this.queryTerm, this.currentPage);
+        this.currentView = 'studies';
       }
-      loadData (queryTerm:string, page:number): void {
-        search(queryTerm, page, this.ordered).then(this._displayData)
+      loadData(queryTerm: string, page: number): void {
+        search(queryTerm, page, this.ordered).then(this._displayData);
       }
-      _displayData (data) : void {
-        this.dataObserved['studies'] = data['results']['study_search_results']
-        this.dataObserved['phenotypes'] = data['results']['phenotype_search_results']
-        this.dataObserved['associations'] = data['results']['association_search_results']
-        this.currentPage = data['current_page']
-        this.pageCount['studies'] = data['page_count'][2]
-        this.pageCount['phenotypes'] = data['page_count'][1]
-        this.pageCount['associations'] = data['page_count'][0]
-        this.n['studies'] = data['count'][2]
-        this.n['phenotypes'] = data['count'][1]
-        this.n['associations'] = data['count'][0]
-        if (this.n['studies'] === 0) {
-          this.dataObserved['studies'] = []
+      _displayData(data): void {
+        this.dataObserved.studies = data.results.study_search_results;
+        this.dataObserved.phenotypes = data.results.phenotype_search_results;
+        this.dataObserved.associations = data.results.association_search_results;
+        this.currentPage = data.current_page;
+        this.pageCount.studies = data.page_count[2];
+        this.pageCount.phenotypes = data.page_count[1];
+        this.pageCount.associations = data.page_count[0];
+        this.n.studies = data.count[2];
+        this.n.phenotypes = data.count[1];
+        this.n.associations = data.count[0];
+        if (this.n.studies === 0) {
+          this.dataObserved.studies = [];
         }
-        if (this.n['phenotypes'] === 0) {
-          this.dataObserved['phenotypes'] = []
+        if (this.n.phenotypes === 0) {
+          this.dataObserved.phenotypes = [];
         }
-        if (this.n['associations'] === 0) {
-          this.dataObserved['associations'] = []
+        if (this.n.associations === 0) {
+          this.dataObserved.associations = [];
         }
       }
-      sortBy (key) : void {
-        this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1
+      sortBy(key): void {
+        this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
         if (this.sortOrders[this.currentView][key] < 0) {
-          this.ordered = '-' + key
+          this.ordered = '-' + key;
         } else {
-          this.ordered = key
+          this.ordered = key;
         }
-        this.sortKey = key
-        this.loadData(this.queryTerm, this.currentPage)
+        this.sortKey = key;
+        this.loadData(this.queryTerm, this.currentPage);
       }
     }
 </script>

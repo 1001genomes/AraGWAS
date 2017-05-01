@@ -43,73 +43,73 @@
 
 
 <script lang="ts">
-  import Vue from 'vue'
-  import {Component, Watch} from 'vue-property-decorator'
-  import Study from '@/models/study'
-  import Page from '@/models/page'
-  import {loadStudies} from '@/api'
+  import {Component, Watch} from 'vue-property-decorator';
+  import {loadStudies} from '../api';
+  import Page from '../models/page';
+  import Study from '../models/study';
+  import Vue from 'vue';
 
   @Component({
     filters: {
-      capitalize (str) {
-        return str.charAt(0).toUpperCase() + str.slice(1)
-      }
-    }
+      capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      },
+    },
   })
   export default class Studies extends Vue {
-    loading: boolean = false
-    studyPage: Page<Study>
-    sortOrders = {'name': 1, 'phenotype': 1, 'transformation': 1, 'method': 1, 'genotype': 1}
-    sortKey: string = ''
-    ordered: string = ''
-    columns = ['name', 'phenotype', 'transformation', 'method', 'genotype']
-    filterKey: string = ''
-    studies = []
-    currentPage = 1
-    pageCount = 5
-    totalCount = 0
+    loading: boolean = false;
+    studyPage: Page<Study>;
+    sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
+    sortKey: string = '';
+    ordered: string = '';
+    columns: string[] = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
+    filterKey: string = '';
+    studies = [];
+    currentPage = 1;
+    pageCount = 5;
+    totalCount = 0;
 
-    get filteredData () {
-      let filterKey = this.filterKey
+    get filteredData() {
+      let filterKey = this.filterKey;
       if (filterKey) {
-        filterKey = filterKey.toLowerCase()
+        filterKey = filterKey.toLowerCase();
       }
-      let data = this.studies
+      let data = this.studies;
       if (filterKey) {
-        data = data.filter(function (row) {
-          return Object.keys(row).some(function (key) {
-            return String(row[key]).toLowerCase().indexOf(filterKey) > -1
-          })
-        })
+        data = data.filter((row) => {
+          return Object.keys(row).some((key) => {
+            return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+          });
+        });
       }
-      return data
+      return data;
     }
 
     @Watch('currentPage')
-    onCurrentPageChanged (val:number, oldVal:number) {
-      this.loadData(val)
+    onCurrentPageChanged(val: number, oldVal: number) {
+      this.loadData(val);
     }
-    created (): void {
-      this.loadData(this.currentPage)
+    created(): void {
+      this.loadData(this.currentPage);
     }
-    loadData (page:number): void {
-      loadStudies(page, this.ordered).then(this._displayData)
+    loadData(page: number): void {
+      loadStudies(page, this.ordered).then(this._displayData);
     }
-    _displayData (data) : void {
-      this.studies = data['results']
-      this.currentPage = data['current_page']
-      this.totalCount = data['count']
-      this.pageCount = data['page_count']
+    _displayData(data): void {
+      this.studies = data.results;
+      this.currentPage = data.current_page;
+      this.totalCount = data.count;
+      this.pageCount = data.page_count;
     }
-    sortBy (key) : void {
-      this.sortKey = key
-      this.sortOrders[key] = this.sortOrders[key] * -1
+    sortBy(key): void {
+      this.sortKey = key;
+      this.sortOrders[key] = this.sortOrders[key] * -1;
       if (this.sortOrders[key] < 0) {
-        this.ordered = '-' + key
+        this.ordered = '-' + key;
       } else {
-        this.ordered = key
+        this.ordered = key;
       }
-      this.loadData(this.currentPage)
+      this.loadData(this.currentPage);
     }
   }
 </script>
