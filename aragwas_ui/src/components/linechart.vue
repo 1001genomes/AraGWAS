@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4>D3js Line Chart</h4>
+        <h5>D3js Line Chart</h5>
         <svg id="chart" height="200" width="500" ref="svg">
         </svg>
     </div>

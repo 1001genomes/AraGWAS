@@ -70,13 +70,11 @@
             </v-row>
             <v-row>
                 <v-col xs12>
-                    <v-col xs12>
-                        <h5>Manhattan plots</h5>
-                        <img src="/static/img/histograms.png">
-
-                    </v-col>
-
-
+                    <h5>Manhattan Plots</h5>
+                    <manhattan-plot></manhattan-plot>
+                    <manhattan-plot></manhattan-plot>
+                    <manhattan-plot></manhattan-plot>
+                    <vue-line-chart></vue-line-chart>
                 </v-col>
             </v-row>
         </v-container>
@@ -88,6 +86,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {loadStudy} from '../api';
     import LineChart from '../components/linechart.vue';
+    import ManhattanPlot from '../components/manhattanplot.vue'
 
     @Component({
       filters: {
@@ -97,6 +96,7 @@
       },
       components: {
           'line-chart': LineChart,
+          'manhattan-plot': ManhattanPlot,
       },
     })
     export default class StudyDetail extends Vue {

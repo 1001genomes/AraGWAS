@@ -1,5 +1,6 @@
 import Althome from '@/components/althome.vue';
 import Home from '@/components/home.vue';
+import HomeLayout from '@/components/homelayout.vue'
 import PhenotypeDetail from '@/components/phenotypeDetail.vue';
 import Results from '@/components/results.vue';
 import Studies from '@/components/studies.vue';
@@ -40,6 +41,11 @@ export default new Router({
       path: '/phenotype/:phenotypeId?',
       name: 'phenotypeDetail',
       component: PhenotypeDetail, props: true,
+    },
+    {
+      path: '/layout/',
+      name: 'layout',
+      component: HomeLayout, props: true,
     },
   ],
 });
