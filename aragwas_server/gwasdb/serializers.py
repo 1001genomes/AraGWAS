@@ -9,10 +9,11 @@ class StudySerializer(serializers.ModelSerializer):
     association_count = serializers.SerializerMethodField()
     genotype = serializers.SerializerMethodField()
     phenotype = serializers.SerializerMethodField()
+    phenotype_pk = serializers.SerializerMethodField()
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','method','transformation', 'publication','association_count','pk')
+        fields = ('name','genotype','phenotype','phenotype_pk','method','transformation', 'publication','association_count','pk')
 
     def get_association_count(self, obj):
         try:
@@ -29,6 +30,11 @@ class StudySerializer(serializers.ModelSerializer):
     def get_phenotype(self, obj):
         try:
             return obj.phenotype.name
+        except:
+            return ""
+    def get_phenotype_pk(self,obj):
+        try:
+            return obj.phenotype.pk
         except:
             return ""
 
@@ -156,7 +162,8 @@ Phenotype List Serializer Class (read-only)
 class PhenotypeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phenotype
-        fields = ('name','description')
+        fields = ('name','description','arapheno_link','pk','study_set')
+
 
 """
 Gene List Serializer Class (read-only)

@@ -61,6 +61,30 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
+class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information about GWAS study
+    """
+    queryset = Phenotype.objects.all()
+    serializer_class = PhenotypeListSerializer
+
+    # Overriding get_queryset to allow for case-insensitive custom ordering
+    def get_queryset(self):
+        queryset = self.queryset
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering is not None and ordering != '':
+            from django.db.models.functions import Lower
+            inverted = False
+            if ordering.startswith('-'):
+                ordering = ordering[1:]
+                inverted = True
+            if ordering == 'genotype' or ordering == 'phenotype':
+                ordering += '__name'
+            queryset = queryset.order_by(Lower(ordering))
+            if inverted:
+                queryset = queryset.reverse()
+        return queryset
+
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Allow for search in a viewset

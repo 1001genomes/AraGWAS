@@ -20,10 +20,8 @@
                             <h5>Description</h5>
                             <div></div>
                             <v-row><v-col xs3><span>Name:</span></v-col><v-col xs9>{{ phenotypeName }}</v-col></v-row>
-                            <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a href="https://arapheno.1001genomes.org/phenotype/31/">FT10</a></v-col></v-row>
-                            <v-row><v-col xs3><span>Genotype:</span></v-col><v-col xs9>{{ genotype }}</v-col></v-row>
-                            <v-row><v-col xs3><span>Transformation:</span></v-col><v-col xs9>{{ transformation }}</v-col></v-row>
-                            <v-row><v-col xs3><span>Scoring:</span></v-col><v-col xs9>{{ scoring }}</v-col></v-row>
+                            <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a v-bind:href=" arapheno_link ">{{ phenotypeName }}</a></v-col></v-row>
+                            <v-row><v-col xs3><span>Description:</span></v-col><v-col xs9>{{ phenotypeDescription }}</v-col></v-row>
                             <div></div>
                         </div>
                         <div class="mt-3"><h5>Similar phenotypes</h5></div>
@@ -92,21 +90,18 @@
 <script lang="ts">
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Vue from 'vue';
+    import {loadPhenotype, loadAssociationsOfStudy} from '../api';
 
     @Component({})
     export default class PhenotypeDetail extends Vue {
       @Prop()
-      phenotypeId: string;
+      phenotypeId: string = '';
       phenotypeName: string = 'Flowering time (test)';
       phenotypeDescription: string = 'A study conducted on n samples for phenotype p.';
-      genotype: string = 'AtPolyDB (Horton et al.)';
-      transformation: string = 'Log10';
-      scoring: string = 'Plants were checked bi-weekly for presence of first buds, and the average flowering time of 4 plants of the same accession were collected';
       currentView: string = '';
+      arapheno_link: string = '';
       columns = ['SNP', 'p-value', 'gene', 'study'];
       n = {phenotypes: 0, accessions: 0};
-//    TODO: add linking to studyId through router or linking, usually the id should be given by previous page
-
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
       sortKey: string = '';
       ordered: string = '';
@@ -145,6 +140,10 @@
         this.loadData(val);
       }
       created(): void {
+        if (this.$route.params.phenotypeId) {
+          this.phenotypeId = this.$route.params.phenotypeId;
+        }
+        loadPhenotype(this.phenotypeId).then(this._displayPhenotypeData);
         this.loadData(this.currentPage);
       }
       loadData(page: number): void {
@@ -155,6 +154,11 @@
         this.currentPage = data.current_page;
         this.totalCount = data.count;
         this.pageCount = data.page_count;
+      }
+      _displayPhenotypeData(data): void {
+        this.phenotypeName = data.name;
+        this.phenotypeDescription = data.description;
+        this.arapheno_link = data.arapheno_link;
       }
       sortBy(key): void {
         this.sortKey = key;

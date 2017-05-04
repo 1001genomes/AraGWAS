@@ -127,7 +127,8 @@
                                             <td v-for="key in columns[currentView]">
                                                 <!--TODO: add links to studies views, need to be generated from study id-->
                                                 <router-link v-if="(key==='name' && currentView === 'studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies') || (key==='name' && currentView==='phenotypes')" :to="'/phenotype/'" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='name' && currentView==='phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <div v-else>{{entry[key]}}</div>
                                         </td>
                                         </tr>

@@ -18,10 +18,10 @@
                         <v-col xs12>
                             <div id="description">
                                 <h5>Description</h5>
-                                <div>{{ studyDescription }}</div>
+                                <div></div>
                                 <v-row><v-col xs3><span>Name:</span></v-col><v-col xs9>{{ studyName }}</v-col></v-row>
-                                <v-row><v-col xs3><span>Phenotype:</span></v-col><v-col xs9> <router-link :to="'/phenotype/'">{{ phenotype }}</router-link></v-col></v-row>
-                                <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a href="https://arapheno.1001genomes.org/phenotype/31/">FT10</a></v-col></v-row>
+                                <v-row><v-col xs3><span>Phenotype:</span></v-col><v-col xs9> <router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: phenotypeId }}">{{ phenotype }}</router-link></v-col></v-row>
+                                <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a href="https://arapheno.1001genomes.org/phenotype/31/">broken</a></v-col></v-row>
                                 <v-row><v-col xs3><span>Genotype:</span></v-col><v-col xs9>{{ genotype }}</v-col></v-row>
                                 <v-row><v-col xs3><span>Transformation:</span></v-col><v-col xs9>{{ transformation }}</v-col></v-row>
                                 <v-row><v-col xs3><span>Method:</span></v-col><v-col xs9>{{ method }}</v-col></v-row>
@@ -101,18 +101,17 @@
     })
     export default class StudyDetail extends Vue {
       @Prop()
-      studyId: string;
-      studyName: string = 'Test';
-      studyDescription: string = 'A study conducted on n samples for phenotype p.';
+      studyId: string = '';
+      studyName: string = '';
       phenotype: string = '';
-      genotype: string = 'AtPolyDB (Horton et al.)';
-      transformation: string = 'Log10';
-      method: string = 'EMMAX';
+      phenotypeId: string = '';
+      genotype: string = '';
+      transformation: string;
+      method: string;
       publication: string = '';
       currentView: string = '';
       columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene'];
       n = {phenotypes: 0, accessions: 0};
-//    TODO: add linking to studyId through router or linking, usually the id should be given by previous page
 
       sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds ratio': 1, 'confidence interval': 1, 'gene': 1};
       sortKey: string = '';
@@ -122,7 +121,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-
+// TODO: add link to arapheno from loadPhenotype
       get filteredData () {
         let filterKey = this.filterKey;
         if (filterKey) {
@@ -166,6 +165,7 @@
         this.method = data.method;
         this.phenotype = data.phenotype;
         this.publication = data.publication;
+        this.phenotypeId = data.phenotype_pk;
       }
       sortBy(key): void {
         this.sortKey = key;
