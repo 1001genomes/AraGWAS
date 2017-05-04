@@ -89,7 +89,7 @@
                         :model="currentView"
                 >
                     <v-tab-item
-                            v-for="i in ['studies','phenotypes','associations']" :key="i"
+                            v-for="i in ['studies','phenotypes','genes']" :key="i"
                             :href="'#' + i"
                             ripple
                             slot="activators"
@@ -102,7 +102,7 @@
                         </section>
                     </v-tab-item>
                     <v-tab-content
-                            v-for="i in ['studies','phenotypes','associations']" :key="i"
+                            v-for="i in ['studies','phenotypes','genes']" :key="i"
                             :id="i"
                             slot="content"
                     >
@@ -171,19 +171,21 @@
       columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
       sortOrdersPhenotypes = {name: 1, description: 1};
       columnsPhenotypes = ['name', 'description'];
-      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
-      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
-      columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, associations: this.columnsAssociations};
-      sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, associations: this.sortOrdersAssociations};
+//      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
+//      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
+      sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, SNPs_count: 1, assicuations_count: 1, description: 1};
+      columnsGenes = ['name', 'chr', 'start_pos', 'end_pos', 'SNPs_count', 'assicuations_count', 'description'];
+      columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, genes: this.columnsGenes};
+      sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, genes: this.sortOrdersGenes};
       sortKey: string = '';
       ordered: string = '';
       filterKey: string = '';
       currentPage = 1;
-      dataObserved = {studies: [], phenotypes: [], associations: []};
-      observed = {studies: 'Study', phenotypes: 'Phenotype', associations: 'Association'};
+      dataObserved = {studies: [], phenotypes: [], genes: []};
+      observed = {studies: 'Study', phenotypes: 'Phenotype', genes: 'Gene'};
       currentView: string = '';
-      n = {studies: 0, phenotypes: 0, associations: 0};
-      pageCount = {studies: 5, phenotypes: 5, associations: 5};
+      n = {studies: 0, phenotypes: 0, genes: 0};
+      pageCount = {studies: 5, phenotypes: 5, genes: 5};
 
       @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {
@@ -233,22 +235,22 @@
       _displayData(data): void {
         this.dataObserved.studies = data.results.study_search_results;
         this.dataObserved.phenotypes = data.results.phenotype_search_results;
-        this.dataObserved.associations = data.results.association_search_results;
+        this.dataObserved.genes = data.results.gene_search_results;
         this.currentPage = data.current_page;
         this.pageCount.studies = data.page_count[2];
         this.pageCount.phenotypes = data.page_count[1];
-        this.pageCount.associations = data.page_count[0];
+        this.pageCount.genes = data.page_count[0];
         this.n.studies = data.count[2];
         this.n.phenotypes = data.count[1];
-        this.n.associations = data.count[0];
+        this.n.genes = data.count[0];
         if (this.n.studies === 0) {
           this.dataObserved.studies = [];
         }
         if (this.n.phenotypes === 0) {
           this.dataObserved.phenotypes = [];
         }
-        if (this.n.associations === 0) {
-          this.dataObserved.associations = [];
+        if (this.n.genes === 0) {
+          this.dataObserved.genes = [];
         }
       }
       sortBy(key): void {

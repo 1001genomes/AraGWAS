@@ -6,19 +6,19 @@ from gwasdb.models import SNP, Study, Association, Genotype, Gene, Phenotype
 Study List Serializer Class (read-only)
 """
 class StudySerializer(serializers.ModelSerializer):
-    # association_count = serializers.SerializerMethodField()
+    association_count = serializers.SerializerMethodField()
     genotype = serializers.SerializerMethodField()
     phenotype = serializers.SerializerMethodField()
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','method','transformation', 'publication')
+        fields = ('name','genotype','phenotype','method','transformation', 'publication','association_count')
 
-    # def get_association_count(self, obj):
-    #     try:
-    #         return obj.association_set.count()
-    #     except:
-    #         return ""
+    def get_association_count(self, obj):
+        try:
+            return obj.association_set.count()
+        except:
+            return ""
 
     def get_genotype(self, obj):
         try:
@@ -159,5 +159,31 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
         fields = ('name','description')
 
 """
-Gene View Serializer Class (read-only) Needs to be written, used when "traveling" on the genomic diagram
+Gene List Serializer Class (read-only)
 """
+class GeneListSerializer(serializers.ModelSerializer):
+    association_count = serializers.SerializerMethodField()
+    SNP_count = serializers.SerializerMethodField()
+    SNPs = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Gene
+        fields = ('name','chromosome','start_position','end_position','SNPs','SNP_count','association_count','description')
+
+    def get_association_count(self, obj):
+        try:
+            return obj.SNPs_set.association_set.count()
+        except:
+            return ""
+
+    def get_SNP_count(self, obj):
+        try:
+            return obj.SNPs_set.count()
+        except:
+            return ""
+
+    def get_SNPs(self, obj):
+        try:
+            return obj.SNPs_set
+        except:
+            return

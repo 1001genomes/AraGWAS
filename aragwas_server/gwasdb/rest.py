@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from gwasdb.tasks import compute_ld
 
+
 class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Retrieves information about GWAS associations
@@ -80,7 +81,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             if query_term==None:
                 studies = Study.objects.all()
                 phenotypes = Phenotype.objects.all()
-                associations = Association.objects.all()
+                genes = Gene.objects.all()
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term)).order_by('name')
@@ -88,9 +89,39 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                                                       Q(snp__gene__name__icontains=query_term))# |
                                                       #Q(snp__name__icontains=query_term)) # Does this call the __unicode__ method of SNP? Had to take it out, furthermore SNPs in A.t. are referenced using their positions.
                 phenotypes = Phenotype.objects.filter(name__icontains=query_term).order_by('name')
+                # Add chromosome position search for genomic regions
+                try:
+                    int(query_term)
+                    isnum = True
+                except ValueError:
+                    isnum = False
+                import re
+                pattern = re.compile("(Chr|CHR|chr)+\s?([0-9]{1,2})+(-|:)?(\d*)\s*(-|:|)?\s*(\d+|)")
+                if isnum: # Only a number, look for neighboring genes on all chromosomes.
+                    genes = Gene.objects.filter(Q(start_position__lte=query_term) & Q(end_position__gte=query_term)).order_by('name')
+                elif pattern.match(query_term): # Specific genomic range
+                    splitted = re.split("(Chr|CHR|chr)+\s?([0-9]{1,2})+(-|:)?(\d*)\s*(-|:|)?\s*(\d+|)", query_term)
+                    chr = int(splitted[2])
+                    s_p = None
+                    e_p = None
+                    if splitted[4]:
+                        s_p = int(splitted[4])
+                    if splitted[6]:
+                        e_p = int(splitted[6])
+                    # Need to retrieve all genes that overlap somehow with that region (all-in, right part in, left part in, etc)
+                    genes = Gene.objects.filter(chromosome__exact=chr)
+                    if s_p:
+                        if e_p:
+                            genes = genes.filter((Q(end_position__gte=s_p) & Q(end_position__lte=e_p)) |
+                                                 (Q(start_position__gte=s_p) & Q(start_position__lte=e_p)) |
+                                                 (Q(start_position__lte=s_p) & Q(end_position__gte=e_p))).order_by('name')
+                        else:
+                            genes = genes.filter(Q(start_position__lte=s_p) & Q(end_position__gte=s_p)).order_by('name')
+                else: # other type of request
+                    genes = Gene.objects.filter(Q(name__icontains=query_term)).order_by('name')
             # custom ordering
             ordering = request.query_params.get('ordering', None)
-            ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'associations': ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study']}
+            ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'genes': ['name', 'chr', 'start_position', 'end_position', 'SNPs_count', 'association_count', 'description']}
             if ordering is not None:
                 from django.db.models.functions import Lower
                 inverted = False
@@ -107,12 +138,12 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                     phenotypes = phenotypes.order_by(Lower(ordering))
                     if inverted:
                         phenotypes = phenotypes.reverse()
-                if ordering in ordering_fields['associations'] and associations:
+                if ordering in ordering_fields['genes'] and genes:
                     if ordering == 'snp' or ordering == 'study':
                         ordering += '__name'
-                    associations = associations.order_by(Lower(ordering))
+                    genes = genes.order_by(Lower(ordering))
                     if inverted:
-                        associations = associations.reverse()
+                        genes = genes.reverse()
 
             if studies:
                 pagest = self.paginate_queryset(studies)
@@ -120,11 +151,11 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 study_serializer = StudySerializer(studies, many=True)
 
-            if associations:
-                pageass = self.paginate_queryset(associations)
-                association_serializer = AssociationListSerializer(pageass, many=True)
+            if genes:
+                pagege = self.paginate_queryset(genes)
+                gene_serializer = GeneListSerializer(pagege, many=True)
             else:
-                association_serializer = AssociationListSerializer(associations, many=True)
+                gene_serializer = GeneListSerializer(genes, many=True)
 
             if phenotypes:
                 pagephe = self.paginate_queryset(phenotypes)
@@ -132,17 +163,17 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 phenotype_serializer = PhenotypeListSerializer(phenotypes, many=True)
 
-            counts = [len(associations), len(phenotypes), len(studies)]
+            counts = [len(genes), len(phenotypes), len(studies)]
             PAGE_SIZE = 25.
             import math
-            page_counts = [int(math.ceil(float(len(associations))/PAGE_SIZE)),int(math.ceil(float(len(phenotypes))/PAGE_SIZE)), int(math.ceil(float(len(studies))/PAGE_SIZE))]
+            page_counts = [int(math.ceil(float(len(genes))/PAGE_SIZE)),int(math.ceil(float(len(phenotypes))/PAGE_SIZE)), int(math.ceil(float(len(studies))/PAGE_SIZE))]
             data = {'study_search_results':study_serializer.data,
                              'phenotype_search_results':phenotype_serializer.data,
-                             'association_search_results':association_serializer.data,
+                             'gene_search_results':gene_serializer.data,
                              'counts': counts,
                              'page_counts': page_counts}
 
-            if any([studies,associations,phenotypes]):
+            if any([studies,genes,phenotypes]):
                 return self.get_paginated_response(data)
             else:
                 return Response({'results': {i:data[i] for i in data if i!='counts'}, 'count':counts})
