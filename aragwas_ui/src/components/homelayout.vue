@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div>
+        <v-parallax class="parallax-container" src="/static/img/arablack.jpg" v-bind:height=" heightParallax ">
+        </v-parallax>
         <div class="banner-container white--text" v-bind:style="{ height: height + 'px'}">
             <div class="container">
                 <!--<transition name="custom-fadeOutUp" leave-active-class="animated fadeOutUp">-->
@@ -23,12 +26,12 @@
                         class="white--text"
                         v-model="queryTerm"
                         v-bind:focused="focused"
+                        dark
                 ></v-text-field>
                 <!--</transition>-->
             </div>
         </div>
-        <v-parallax class="parallax-container" src="/static/img/arablack.jpg" v-bind:height=" heightParallax ">
-        </v-parallax>
+        </div>
         <section v-if="!search">
             <div class="section mt-4">
                 <div class="container">
@@ -65,11 +68,11 @@
                     <v-row>
                         <v-col xs12 >
                             <h5 class="light white--text"><v-icon class="green--text lighten-1">fiber_new</v-icon> News &amp; Updates</h5>
-                            <v-card class="grey">
+                            <v-card class="trgrey darken-3">
                                 <v-card-text>
-                                    <div><v-icon class="green--text lighten-1">fiber_new</v-icon> AraGWAS is online</div>
+                                    <div class="white--text"><v-icon class="green--text lighten-1">fiber_new</v-icon> AraGWAS is online</div>
                                     <div>
-                                        <p class="light">
+                                        <p class="light white--text">
                                             We are proud to announce that the first public GWAS catalogue for the model organism <em>Arabidopsis thaliana</em> has launched.
                                         </p>
                                     </div>
@@ -106,8 +109,8 @@
                             :id="i"
                             slot="content"
                     >
-                        <v-card>
-                            <v-card-text>
+                        <v-card class="trgrey">
+                            <v-card-text class="white--text">
                                 <div id="results" class="col s12"><br>
                                     <h5 class="brown-text center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
                                     <table v-else>
@@ -165,7 +168,7 @@
         router = Router;
         search: boolean = false;
         height = 420;
-        heightParallax = 1200;
+        heightParallax = 990;
         @Prop()
         focused: boolean;
         sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
@@ -191,7 +194,7 @@
             if (val === '') {
                 this.search = false;
                 this.height = 420;
-                this.heightParallax = 0.95;
+                this.heightParallax = 990;
             } else {
                 this.search = true;
                 this.height = 100;
@@ -359,11 +362,15 @@
     }
 
     th.active {
-        color:black;
+        color:white;
     }
 
     th.active .arrow {
         opacity: 1;
+    }
+    .trgrey {
+        background-color: rgba(158,158,158,0.5);
+        border-color: rgba(158,158,158,0.5);
     }
     /*ANIMATIONS*/
 
