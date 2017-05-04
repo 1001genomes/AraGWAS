@@ -35,8 +35,13 @@ export async function search(queryTerm= '', page= 1, ordering= '') {
 
 }
 // Import single study results, loads all associations refered to that study ID
-export async  function loadStudy(studyID= '1', page= 1, ordering= '-pvalue') {
-    return fetch(`/api/studies/${studyID}/?page=${page}&ordering=${ordering}`)
+export async  function loadStudy(studyID= '1') {
+    return fetch(`/api/studies/${studyID}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async  function loadAssociationsOfStudy(studyID= '1', page= 1, ordering= '-pvalue') {
+    return fetch(`/api/associations_of_study/${studyID}/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }

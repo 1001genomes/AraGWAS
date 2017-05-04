@@ -12,7 +12,7 @@ class StudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','method','transformation', 'publication','association_count')
+        fields = ('name','genotype','phenotype','method','transformation', 'publication','association_count','pk')
 
     def get_association_count(self, obj):
         try:
