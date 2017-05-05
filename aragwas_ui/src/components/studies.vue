@@ -13,12 +13,13 @@
   </div>
   <div class="container">
    <div class="section">
-     <table>
+     <table class="table">
        <thead>
          <tr>
            <th v-for="key in columns"
            @click="sortBy(key)"
-           :class="{ active: sortKey == key }">
+           :class="{ active: sortKey == key }"
+           style="font-size: 11pt">
            {{ key | capitalize }}
            <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
            </span>
@@ -28,7 +29,9 @@
        <tbody>
          <tr v-for="entry in filteredData">
            <td v-for="key in columns">
-           {{entry[key]}}
+             <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+             <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+             <div v-else>{{entry[key]}}</div>
            </td>
          </tr>
        </tbody>
@@ -124,7 +127,11 @@
     .section {
         padding-top: 1rem;
     }
-
+    .table {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 2rem;
+    }
     .parallax-container  {
         position:absolute;
         top:0;

@@ -110,12 +110,13 @@
                             <v-card-text>
                                 <div id="results" class="col s12"><br>
                                     <h5 class="brown-text center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
-                                    <table v-else>
+                                    <table v-else class="table">
                                         <thead>
                                         <tr>
                                             <th v-for="key in columns[currentView]"
                                                 @click="sortBy(key)"
-                                                :class="{ active: sortKey == key }">
+                                                :class="{ active: sortKey == key }"
+                                                style="font-size:11pt">
                                                 {{ key | capitalize }}
                                         <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc' ">
                                         </span>
@@ -291,10 +292,10 @@
         width: 90%
     }
 
-    .search-bar {
-        max-width: 1280px;
-        width: 90%;
-        font-size: 1.2rem;
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 2rem;
     }
 
     .banner-title {
