@@ -12,8 +12,7 @@ RUN npm install
 
 COPY . .
 
-VOLUME /srv/aragwas_server/gwasdb/static
-VOLUME /srv/aragwas_server/gwasdb/templates
+VOLUME /srv/aragwas_server/gwasdb
 
 CMD npm run build
 

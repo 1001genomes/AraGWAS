@@ -25,8 +25,9 @@ pipeline {
 
                     // build ui docker image to compile javascript
                     def ui_img = docker.build("aragwas_ui","aragwas_ui")
-                    ui_img.run('-v $WORKSPACE/aragwas_server/gwasdb/static:/srv/aragwas_server/gwasdb/static -v $WORKSPACE/aragwas_server/gwasdb/templates:/srv/aragwas_server/gwasdb/templates')
-
+                    sh "mkdir dist"
+                    ui_img.run('-v $WORKSPACE/dist:/srv/aragwas_server/gwasdb')
+                    sh "cp -r dist/* aragwas_server/gwasdb/"
                     //FIXME this in try-catch and clean shutdown of db_cont
                     def app_img = docker.build("aragwas","aragwas_server")
 

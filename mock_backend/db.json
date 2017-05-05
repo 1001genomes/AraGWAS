@@ -1,0 +1,70 @@
+{
+    "studies": {
+        "items": [
+            {
+                "name": "AStudy",
+                "transformation": "log",
+                "method":"AMM",
+                "phenotype": "FT10"
+            },
+            {
+                "name": "BStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "CStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "DStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "EStudy1",
+                "transformation": "boxcox",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "FStudy1",
+                "transformation": "boxcox",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "GStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "HStudy1",
+                "transformation": "boxcox",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "IStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            },
+            {
+                "name": "JStudy1",
+                "transformation": "sqrt",
+                "method":"LM",
+                "phenotype": "FT16"
+            }
+        ],
+        "pageCount": 10,
+        "pageSize": 25,
+        "pageIndex": 1,
+        "totalCount": 100
+    }
+}
