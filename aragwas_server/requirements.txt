@@ -1,4 +1,4 @@
-appdirs==1.4.2
+appdirs==1.4.3
 Django==1.11b1
 djangorestframework==3.6.2
 packaging==16.8
