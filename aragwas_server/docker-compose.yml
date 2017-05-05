@@ -2,8 +2,6 @@ version: '3'
 services:
   araagwas:
     image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
-    volumes:
-     - .db.sqlite3:/srv/web/db.sqlite3
     ports:
      - "8000:8000"
     entrypoint: /srv/web/web-entrypoint.sh
