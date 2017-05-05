@@ -25,7 +25,7 @@ pipeline {
 
                     // build ui docker image to compile javascript
                     def ui_img = docker.build("aragwas_ui","aragwas_ui")
-                    ui_img.run('-v ./aragwas_server/gwasdb/static:/srv/aragwas_server/gwasdb/static -v ./aragwas_server/gwasdb/templates:/srv/aragwas_server/gwasdb/templates')
+                    ui_img.run('-v $WORKSPACE/aragwas_server/gwasdb/static:/srv/aragwas_server/gwasdb/static -v $WORKSPACE/aragwas_server/gwasdb/templates:/srv/aragwas_server/gwasdb/templates')
 
                     //FIXME this in try-catch and clean shutdown of db_cont
                     def app_img = docker.build("aragwas","aragwas_server")
@@ -53,7 +53,7 @@ pipeline {
                         // push DB docker img to registry
                         def server_img = docker.build("docker.sci.gmi.oeaw.ac.at/nordborg/aragwas", "aragwas_server")
 
-                        db_img.push('testing')
+                        server_img.push('testing')
                         sshagent(['801dbf20-4259-4d3b-8948-e84fe1b52c7f']) {
                             sh '''
                                 scp aragwas_server/docker-compose.yml root@$DEPLOY_HOST:/root/

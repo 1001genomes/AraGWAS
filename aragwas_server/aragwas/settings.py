@@ -27,7 +27,7 @@ SECRET_KEY = '!x&y+0o%^+*hc5phfjh2jm+vprr=6z00*f^z03k5%e0xqrgiz0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aragwas.1001genomes.org', '10.60.65.4']
 
 
 # Application definition
