@@ -22,6 +22,11 @@ pipeline {
         stage('test') {
             steps {
                 script {
+
+                    // build ui docker image to compile javascript
+                    def ui_img = docker.build("aragwas_ui","aragwas_ui")
+                    ui_img.run('-v ./aragwas_server/gwasdb/static:/srv/aragwas_server/gwasdb/static -v ./aragwas_server/gwasdb/templates:/srv/aragwas_server/gwasdb/templates')
+
                     //FIXME this in try-catch and clean shutdown of db_cont
                     def app_img = docker.build("aragwas","aragwas_server")
 
@@ -40,14 +45,14 @@ pipeline {
         // not _really_ deploy, but push to local registry
         stage('deploy') {
             steps {
-
-
                 script {
+
                     //FIXME leaking local infra details
                     docker.withRegistry('https://docker.sci.gmi.oeaw.ac.at', 'platinum-docker-registry') {
 
                         // push DB docker img to registry
-                        def db_img = docker.build("docker.sci.gmi.oeaw.ac.at/nordborg/aragwas", "aragwas_server")
+                        def server_img = docker.build("docker.sci.gmi.oeaw.ac.at/nordborg/aragwas", "aragwas_server")
+
                         db_img.push('testing')
                         sshagent(['801dbf20-4259-4d3b-8948-e84fe1b52c7f']) {
                             sh '''
