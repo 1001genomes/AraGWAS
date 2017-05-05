@@ -50,10 +50,10 @@ pipeline {
                         def db_img = docker.build("docker.sci.gmi.oeaw.ac.at/nordborg/aragwas", "aragwas_server")
                         db_img.push('testing')
                         sshagent(['801dbf20-4259-4d3b-8948-e84fe1b52c7f']) {
-                            sh """
-                                scp aragwas_server/docker-compose.yml root@DEPLOY_HOST:/root/
-                                ssh root@$DEPLOY_HOST 'cd /root && docker-compose pull && docker-compose up -d'
-                            """
+                            sh '''
+                                scp aragwas_server/docker-compose.yml root@$DEPLOY_HOST:/root/
+                                ssh root@$DEPLOY_HOST "cd /root && docker-compose pull && docker-compose up -d"
+                            '''
                         }
                     }
                 }
