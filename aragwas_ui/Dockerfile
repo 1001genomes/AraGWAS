@@ -10,10 +10,5 @@ COPY package.json .
 
 RUN npm install
 
-COPY . .
-
-VOLUME /srv/aragwas_server/gwasdb
-
-CMD npm run build
-
+RUN npm config set prefix "$(pwd)/node_modules"
 
