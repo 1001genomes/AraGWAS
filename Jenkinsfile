@@ -26,13 +26,10 @@ pipeline {
                     // build ui docker image to compile javascript
                     def ui_img = docker.build("aragwas_ui","aragwas_ui")
                     ui_img.inside('-u root') {
-                        withEnv(['NPM_CONFIG_COLOR=false','NPM_CONFIG_PROGRESS=false','NPM_CONFIG_SPIN=false']) {
-                            sh """
-                            rm -fr aragwas_ui/node_modules
-                            mv /srv/aragwas_ui/node_modules aragwas_ui
-                            cd aragwas_ui && npm run build
-                            """
-                        }
+                        sh """
+                        export NODE_PATH=/srv/aragwas_ui/node_modules/
+                        cd aragwas_ui && npm run build
+                        """
                     }
                     //ui_img.run('-a -v $WORKSPACE/dist:/srv/aragwas_server/gwasdb')
                     //sh 'cp -r dist/* $WORKSPACE/aragwas_server/gwasdb/'
