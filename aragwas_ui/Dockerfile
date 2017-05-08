@@ -10,6 +10,4 @@ COPY package.json .
 
 RUN npm install
 
-RUN npm config set prefix "$(pwd)/node_modules"
 
-RUN export NODE_PATH=/srv/aragwas_ui/node_modules/
