@@ -20,15 +20,7 @@ module.exports = {
     extensions: ['.js', '.ts', '.vue', '.json'],
     alias: {
       '@': resolve('src')
-    },
-    modules: [
-      "node_modules", path.resolve(process.env.NODE_PATH)
-    ]
-  },
-  resolveLoader: {
-    modules: [
-      "node_modules", path.resolve(process.env.NODE_PATH)
-    ]
+    }
   },
   module: {
     rules: [
