@@ -15,7 +15,24 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from gwasdb.tasks import compute_ld
+from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
+from aragwas.settings import GITHUB_URL
 
+def get_api_version():
+    BUILD_STATUS_URL = None
+    if __buildurl__ != 'N/A':
+        BUILD_STATUS_URL = __buildurl__
+    return {'version':__version__,'date':__date__,'githash':__githash__,'build':__build__,'build_url':BUILD_STATUS_URL,'github_url':GITHUB_URL}
+
+
+class ApiVersionView(APIView):
+    """Displays git and version information"""
+
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request):
+        serializer = ApiVersionSerializer(get_api_version(), many=False)
+        return Response(serializer.data)
 
 class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     """

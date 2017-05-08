@@ -66,7 +66,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls)),
-    url(r'^api/', include(srouter.urls))
+    url(r'^api/', include(srouter.urls)),
+    url(r'^api/version/$',rest.ApiVersionView.as_view())
 ]
 
 # for custom REST API endpoints (search, etc)

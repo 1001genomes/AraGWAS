@@ -1,5 +1,7 @@
+import ApiVersion from '../models/apiversion';
 import Page from '../models/page';
 import Study from '../models/study';
+
 
 // TODO convert to Typescript
 function checkStatus(response) {
@@ -47,6 +49,12 @@ export async  function loadAssociationsOfStudy(studyId= '1', page= 1, ordering= 
 }
 export async  function loadPhenotype(phenotypeId = '1') {
     return fetch(`/api/phenotype/${phenotypeId}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+
+export async  function loadApiVersion(): Promise<ApiVersion> {
+    return fetch('/api/version/')
         .then(checkStatus)
         .then(convertToModel);
 }

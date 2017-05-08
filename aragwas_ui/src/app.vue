@@ -18,6 +18,18 @@
     <v-footer class="green lighten-1" >
       <div >
         AraGWAS is a public database for Arabidopsis thaliana GWAS studies.
+        <div class="version">
+          <ul>
+            <li>{{versionInfo.version}}</li>
+            <li>
+              <a :href="versionInfo.build_url" target="_blank">{{versionInfo.build}}</a>
+            </li>
+            <li>
+              <a :href="versionInfo.github_url" target="_blank">{{versionInfo.githash}}</a>
+            </li>
+            <li><timeago :since="versionInfo.date" :auto-update="60"></timeago></li>
+          </ul>
+        </div>
       </div>
     </v-footer>
   </v-app>
@@ -26,10 +38,17 @@
 <script lang="ts">
   import Vue from 'vue';
   import Component from 'vue-class-component';
+  import {loadStudies, loadApiVersion} from './api';
+  import ApiVersion from './models/apiversion';
 
   @Component({})
   export default class AppComponent extends Vue {
+    versionInfo: ApiVersion = {} as ApiVersion;
 
+    async created() {
+      let data: ApiVersion = await loadApiVersion();
+      this.versionInfo = data;
+    }
   }
 </script>
 
@@ -47,6 +66,24 @@
     color:black;
     text-decoration:none;
     font-weight:300;
+  }
+  .version {
+    float:right;
+    font-size: 0.85rem;
+    text-transform: none;
+  }
+  .version a {
+    color:#fff;
+  }
+  .version ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+  }
+  .version ul li {
+    display: inline-block;
+    padding: 2px;
   }
 
 </style>

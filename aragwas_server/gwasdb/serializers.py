@@ -2,6 +2,16 @@ from rest_framework import serializers
 
 from gwasdb.models import SNP, Study, Association, Genotype, Gene, Phenotype
 
+
+class ApiVersionSerializer(serializers.Serializer):
+    """Serializers the API version information"""
+    version = serializers.CharField(read_only=True)
+    githash = serializers.CharField(read_only=True)
+    build = serializers.CharField(read_only=True)
+    build_url = serializers.URLField(read_only=True)
+    github_url = serializers.URLField(read_only=True)
+    date = serializers.DateField(read_only=True)
+
 """
 Study List Serializer Class (read-only)
 """

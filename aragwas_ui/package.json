@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "d3": "^4.8.0",
+    "moment": "^2.18.1",
     "vue": "^2.2.2",
     "vue-charts": "^0.2.1",
     "vue-class-component": "^5.0.0",
     "vue-parallaxy": "^1.0.2",
     "vue-router": "^2.3.0",
+    "vue-timeago": "^3.3.1",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {

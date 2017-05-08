@@ -27,7 +27,7 @@ SECRET_KEY = '!x&y+0o%^+*hc5phfjh2jm+vprr=6z00*f^z03k5%e0xqrgiz0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['aragwas.1001genomes.org', '10.60.65.4']
+ALLOWED_HOSTS = ['aragwas.1001genomes.org', 'aragwas.sci.gmi.oeaw.ac.at','localhost']
 
 
 # Application definition
@@ -139,3 +139,4 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
