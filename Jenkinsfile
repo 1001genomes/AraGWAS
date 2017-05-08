@@ -28,6 +28,7 @@ pipeline {
                     ui_img.inside('-u root') {
                         withEnv(['NPM_CONFIG_COLOR=false','NPM_CONFIG_PROGRESS=false','NPM_CONFIG_SPIN=false']) {
                             sh """
+                            rm -fr aragwas_ui/node_modules
                             mv /srv/aragwas_ui/node_modules aragwas_ui
                             cd aragwas_ui && npm run build
                             """

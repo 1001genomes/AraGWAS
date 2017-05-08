@@ -1,6 +1,6 @@
 version: '3'
 services:
-  araagwas:
+  aragwas:
     image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
     ports:
      - "8000:8000"
