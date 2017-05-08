@@ -55,7 +55,7 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    sh './write_version.sh'
+                    sh 'sh write_version.sh'
                     //FIXME leaking local infra details
                     docker.withRegistry('https://docker.sci.gmi.oeaw.ac.at', 'platinum-docker-registry') {
 
