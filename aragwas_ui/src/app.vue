@@ -34,7 +34,7 @@
 </script>
 
 <style lang="stylus">
-  @import '../node_modules/vuetify/src/stylus/main'v-toolbar-logo
+  @import '~vuetify/src/stylus/main'
   $theme.primary = $red.darken-2
   @import './assets/css/main.css'
   @import './assets/css/animate.css'
