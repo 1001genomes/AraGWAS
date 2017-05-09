@@ -56,7 +56,7 @@ router.register(r'studies', rest.StudyViewSet)
 router.register(r'phenotype', rest.PhenotypeViewSet)
 router.register(r'associations_of_study', rest.AssociationsOfStudyViewSet)
 # router.register(r'search', rest.SearchViewSet)
-router.register(r'neighboring_snps', rest.SNPLocalViewSet)
+router.register(r'snp', rest.SNPLocalViewSet)
 srouter = SearchRouter()
 srouter.register(r'search', rest.SearchViewSet)
 
@@ -67,7 +67,7 @@ urlpatterns = [
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls)),
     url(r'^api/', include(srouter.urls)),
-    url(r'^api/version/$',rest.ApiVersionView.as_view())
+    url(r'^api/version/$',rest.ApiVersionView.as_view(),name='api-version')
 ]
 
 # for custom REST API endpoints (search, etc)

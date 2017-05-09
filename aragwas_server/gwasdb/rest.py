@@ -223,37 +223,19 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
 
 class SNPLocalViewSet(viewsets.ViewSet):
     """
-    Attempt view to localize SNPs in neighboring areas
+    Retrieve information about a SNP
     """
     queryset = SNP.objects.none()
 
     @detail_route()
-    def neighboring_snps(self, request, snp_pk, window_size=1000000, include=True):
+    def neighboring_snps(self, request, pk):
         """
         Returns list of the neighboring SNPs, no information about LD (this will be retrieved or computed later)
-        ---
-        parameters:
-            - name: snp_pk
-              description: pk of the SNP of interest
-              required: true
-              type: string
-              paramType: path
-            - name: window_size
-              description: number of bp around the SNP of interest (default = 1'000'000 bp)
-              required: true
-              type: int
-              paramType: path
-            - name: include
-              description: include original SNP (default = True)
-              required: true
-              type: bool
-              paramType: path
-
-        serializer: SNPListSerializer
-        omit_serializer: false
         """
-        chromosome = SNP.objects.get(pk=snp_pk).chromosome
-        position = SNP.objects.get(pk=snp_pk).position
+        window_size=request.GET.get('window_size', 1000000)
+        include = 'include' in request.GET
+        chromosome = SNP.objects.get(pk=pk).chromosome
+        position = SNP.objects.get(pk=pk).position
         window_of_interest = [min(int(position) - window_size / 2, 0), int(
             position) + window_size / 2]  # no need to get chromosome size (since we'll run > or < queries)
         # Here we need to decide whether we include the original SNP or not.
@@ -261,32 +243,18 @@ class SNPLocalViewSet(viewsets.ViewSet):
             position__range=(window_of_interest[0], window_of_interest[1]))
         if not include:
             # Exclude original SNP
-            neighboring_s = neighboring_s.filter(~Q(pk=snp_pk))
-        if request.method == "GET":
-            serializer = SNPListSerializer(neighboring_s, many=True)
-            return Response(serializer.data)
+            neighboring_s = neighboring_s.filter(~Q(pk=pk))
+
+        serializer = SNPListSerializer(neighboring_s, many=True)
+        return Response(serializer.data)
 
     @detail_route()
-    def snps_in_ld(request, snp_pk, N=20):
+    def snps_in_ld(request, pk):
         """
         Returns list of the neighboring SNPs in high LD
-        ---
-        parameters:
-            - name: snp_pk
-              description: pk of the SNP of interest
-              required: true
-              type: string
-              paramType: path
-            - name: N
-              description: number of top LD snps to return (default = 20, max 500)
-              required: true
-              type: bool
-              paramType: path
-
-        serializer: SNPListSerializer
-        omit_serializer: false
         """
-        snp = SNP.objects.get(pk=snp_pk)
+        N = request.GET.get('N',20)
+        snp = SNP.objects.get(pk=pk)
         # Get genotype
         genotype_name = snp.genotype
 

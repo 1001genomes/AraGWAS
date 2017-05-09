@@ -43,10 +43,10 @@ pipeline {
                     app_img.inside() {
                         // run the behave tests
                         echo "running tests"
-                        sh """cd /srv/web/
-                            python manage.py test || true
-                        """
+                        sh returnStatus: true, script: "cd /srv/web/ && py.test -ra -p no:cacheprovider --junitxml ${env.WORKSPACE}/TESTS-aragwas.xml"
                     }
+                     // collect unit test results
+                    junit "TESTS-aragwas.xml"
                 }
             }
         }

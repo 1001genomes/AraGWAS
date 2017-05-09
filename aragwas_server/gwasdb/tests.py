@@ -1,16 +1,18 @@
 from django.test import TestCase
+from django.shortcuts import reverse
 from django.contrib.auth.models import AnonymousUser, User
 from rest_framework.test import APIRequestFactory
 from gwasdb.models import *
 from gwasdb.serializers import *
-from gwasdb.rest import neighboring_snps
+from gwasdb import rest
+from rest_framework import status
+
 
 # Create your tests here.
 # Basic db initialization:
 def generate_basic_db():
     """
-    Simple test to generate basic database with one genotype, one study
-    :return:
+    generate database entries for tests
     """
     genotype1 = Genotype.objects.create(name="1001genomes", version="1.2")
     phenotype1 = Phenotype.objects.create(name="Length of something")
@@ -39,14 +41,14 @@ class ModelRelationshipTests(TestCase):
         :return:
         """
         generate_basic_db()
-        self.assertEqual(Study.objects.get(pk=1).genotype,Genotype.objects.get(pk=1)) # Test study-genotype relationship
+        self.assertEqual(Study.objects.get(pk=1).genotype, Genotype.objects.get(pk=1)) # Test study-genotype relationship
         self.assertNotEqual(Association.objects.get(pk=1).snp, Association.objects.get(pk=2).snp) # Test independence of associations
 
-class RESTAPITests(TestCase):
-    def test_list_serializers(self):
+class SerializerTests(TestCase):
+
+    def test_study_list_serializers(self):
         """
         Test the StudyListSerializer
-        :return:
         """
         generate_basic_db()
         study = Study.objects.get(pk=1)
@@ -56,24 +58,40 @@ class RESTAPITests(TestCase):
         snp2 = SNP.objects.get(pk=2)
         serialized_assoc = AssociationListSerializer(associations, many=True)
         # print(serialized_assoc.data[0]['snp'])
-        self.assertEqual(serialized.data['name'],study.name)
-        self.assertEqual(serialized_assoc.data[1]['snp'],snp2.get_name())
+        self.assertEqual(serialized.data['name'], study.name)
+        self.assertEqual(serialized_assoc.data[1]['snp'], snp2.get_name())
 
-    # def setUp(self):
-    #     # Every test needs access to request factory
-    #     self.factory = APIRequestFactory()
-    #     self.user = User.objects.create_user
 
-    def test_neighboring_snps(self):
+class ApiVersionTests(TestCase):
+
+    def test_get_api_version(self):
+        """test that api verison is returned"""
+
+        factory = APIRequestFactory()
+        request = factory.get(reverse('api-version'))
+        view = rest.ApiVersionView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'date': '2017-04-26T09:11:18Z', 'version': 'N/A', 'build_url': None, 'build': 'N/A', 'github_url': 'https://github.com/1001genomes/aragwas/commit', 'githash': 'N/A'})
+
+class SNPTests(TestCase):
+
+    def test_neightboring_snps(self):
         """
         Test the rest.py neighboring_snps serializer
-        :return:
         """
         generate_basic_db()
         factory = APIRequestFactory()
-        request = factory.get('/results')
-        neighboring_SNP1 = neighboring_snps(request, snp_pk=1, include=False)
-        neighboring_SNP2 = neighboring_snps(request, snp_pk=2)
-        self.assertTrue(neighboring_SNP2)
-        self.assertTrue(len(neighboring_SNP1.data) == 0)
-        pass
+        view = rest.SNPLocalViewSet.as_view(actions={'get': 'neighboring_snps'})
+        request = factory.get(reverse('snp-neighboring-snps', args=(2,))+'?include=True')
+        response1 = view(request, pk=2)
+        request = factory.get(reverse('snp-neighboring-snps', args=(2,)))
+        response2 = view(request, pk=2)
+        request = factory.get(reverse('snp-neighboring-snps', args=(1,)))
+        response3 = view(request, pk=1)
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response1.data), 2)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response2.data), 1)
+        self.assertEqual(response3.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response3.data), 0)
