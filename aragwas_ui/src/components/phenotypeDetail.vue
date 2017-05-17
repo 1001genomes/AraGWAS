@@ -1,77 +1,122 @@
 <template>
     <div>
-        <div class="banner-container" style="height: 80px">
+        <div class="banner-container" style="height: 70px">
             <div class="section" id="head">
-                <div class="container">
-                    <h4 class="white--text mt-3">
-                        Phenotype: {{ phenotypeName }}
-                    </h4>
+                <div class="container mt-3">
+                    <v-breadcrumbs icons divider="chevron_right" class="left">
+                        <v-breadcrumbs-item
+                                v-for="item in breadcrumbs" :key="item"
+                                :disabled="item.disabled"
+                                class="breadcrumbsitem"
+                                :href=" item.href "
+                                target="_self"
+                        >
+                            <h5 v-if="item.disabled">{{ item.text }}</h5>
+                            <h5 v-else class="blue--text">{{ item.text }}</h5>
+                        </v-breadcrumbs-item>
+                    </v-breadcrumbs>
+                    <v-divider></v-divider>
                 </div>
             </div>
-            <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="80">
-            </v-parallax>
         </div>
         <v-container>
             <v-row>
                 <v-col xs6>
                     <br>
                     <v-col xs12>
-                        <div id="description">
-                            <h5>Description</h5>
-                            <div></div>
-                            <v-row><v-col xs3><span>Name:</span></v-col><v-col xs9>{{ phenotypeName }}</v-col></v-row>
-                            <v-row><v-col xs3><span>AraPheno link:</span></v-col><v-col xs9><a v-bind:href=" arapheno_link ">{{ phenotypeName }}</a></v-col></v-row>
-                            <v-row><v-col xs3><span>Description:</span></v-col><v-col xs9>{{ phenotypeDescription }}</v-col></v-row>
+                        <div id="description" class="mb-5">
+                            <v-row><v-col xs11><h5 class="mb-1">Description</h5><v-divider></v-divider></v-col></v-row>
+                            <div class="mt-4"></div>
+                            <v-row><v-col xs4><span>Name:</span></v-col><v-col xs7>{{ phenotypeName }}</v-col></v-row>
+                            <v-row><v-col xs4><span>Number of studies:</span></v-col><v-col xs7>{{ studyNumber }}</v-col></v-row>
+                            <v-row><v-col xs4><span>Average number of hits:</span></v-col><v-col xs7>{{ avgHitNumber }}</v-col></v-row>
+                            <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href=" arapheno_link " target="_blank">{{ phenotypeName }}</a></v-col></v-row>
+                            <v-row><v-col xs4><span>Description:</span></v-col><v-col xs7>{{ phenotypeDescription }}</v-col></v-row>
                             <div></div>
                         </div>
-                        <div class="mt-3"><h5>Similar phenotypes</h5></div>
-                        <div id="statistics">
-                            <v-card>
-                                <v-list two-line>
-                                    <template v-for="item in list">
-                                        <v-subheader v-if="item.header" v-text="item.header" />
-                                        <v-divider v-else-if="item.divider" v-bind:inset="item.inset" />
-                                        <v-list-item v-else v-bind:key="item.title">
-                                            <v-list-tile avatar>
-                                                <v-list-tile-avatar>
-                                                    <img v-bind:src="item.avatar" />
-                                                </v-list-tile-avatar>
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title v-html="item.title" />
-                                                    <v-list-tile-sub-title v-html="item.subtitle" />
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-list-item>
-                                    </template>
-                                </v-list>
-                            </v-card>
-                        </div>
+                        <v-row class="mt-4"><v-col xs12>
+                            <v-tabs
+                                id="mobile-tabs-1"
+                                grow
+                                scroll-bars
+                                :model="currentView"
+                            >
+                                <v-tab-item
+                                        v-for="i in ['Similar Phenotypes','List of Studies']" :key="i"
+                                        :href="'#' + i"
+                                        ripple
+                                        slot="activators"
+                                        class="grey lighten-4 black--text"
+                                >
+                                    <section style="width: 110%" @click="currentView = i">
+                                        <div v-if="currentView === i" class="black--text">{{ i }}</div>
+                                        <div v-else class="grey--text"> {{ i }}</div>
+                                    </section>
+                                </v-tab-item>
+                                <v-tab-content
+                                        v-for="i in ['Similar Phenotypes','List of Studies']" :key="i"
+                                        :id="i"
+                                        slot="content"
+                                >
+                                    <v-card>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th v-for="key in columns_tab[i]"
+                                                    @click="sortBy(key)"
+                                                    :class="{ active: sortKey == key }">
+                                                    {{ key | capitalize }}
+                                                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                                            </span>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-if="currentView === 'List of Studies'" v-for="entry in filteredStudies">
+                                                <td v-for="key in columns_tab[i]">
+                                                    <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                                    <p v-else>{{entry[key]}}</p>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </v-card>
+                                </v-tab-content>
+                        </v-tabs>
+                        </v-col></v-row>
                     </v-col>
                 </v-col>
                 <v-col xs6>
                     <br>
-                    <table>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th v-for="key in columns"
-                                    @click="sortBy(key)"
-                                    :class="{ active: sortKey == key }">
-                                    {{ key | capitalize }}
-                                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                    <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
+                    <v-col xs11>
+                        <v-card class="mt-2">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th v-for="key in columns"
+                                        @click="sortBy(key)"
+                                        :class="{ active: sortKey == key }">
+                                        {{ key | capitalize }}
+                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
                                             </span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="entry in filteredData">
-                                <td v-for="key in columns">
-                                    {{entry[key]}}
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </table>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="entry in filteredData">
+                                    <td v-for="key in columns">
+                                        {{entry[key]}}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </v-card>
+                        <div class="page-container mt-5 mb-3">
+                            <v-pagination :length.number="pageCount" v-model="currentPage" />
+                        </div>
+                    </v-col>
                 </v-col>
             </v-row>
             <v-row>
@@ -90,17 +135,28 @@
 <script lang="ts">
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Vue from 'vue';
-    import {loadPhenotype, loadAssociationsOfStudy} from '../api';
+    import {loadPhenotype, loadAssociationsOfPhenotype, loadStudy} from '../api';
 
-    @Component({})
+    @Component({
+        filters: {
+            capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            },
+        },
+    })
     export default class PhenotypeDetail extends Vue {
       @Prop()
       phenotypeId: string = '';
-      phenotypeName: string = 'Flowering time (test)';
-      phenotypeDescription: string = 'A study conducted on n samples for phenotype p.';
-      currentView: string = '';
+      phenotypeName: string = '';
+      studyNumber = 0;
+      studyIDs = [];
+      studyData = [{}];
+      avgHitNumber = 0;
+      phenotypeDescription: string = '';
+      currentView: string = 'Similar Phenotypes';
       arapheno_link: string = '';
       columns = ['SNP', 'p-value', 'gene', 'study'];
+      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'transformation', 'method', 'N hits']}
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
       sortKey: string = '';
@@ -110,14 +166,11 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      list: [
-        { header: 'Today' },
-        { avatar: '...', title: 'Brunch this weekend?', subtitle: '...' },
-        { divider: true, inset: true },
-        { avatar: '...', title: 'Summer BBQ', subtitle: '...' },
-        { divider: true, inset: true },
-        { avatar: '...', title: 'Qui Qui', subtitle: '...' }
-      ];
+      breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '/phenotypes'}, {text: this.phenotypeName, href: 'here', disabled: true}];
+
+//      TODO: create phenotypes list page (copy of study list)
+//      TODO: Add computation of avg N hits
+//      TODO: add similar phenotypes fetching with Ontology
 
       get filteredData() {
         let filterKey = this.filterKey;
@@ -125,6 +178,21 @@
           filterKey = filterKey.toLowerCase();
         }
         let data = this.associations;
+        if (filterKey) {
+          data = data.filter((row) => {
+            return Object.keys(row).some((key) => {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            });
+          });
+        }
+        return data;
+      }
+      get filteredStudies() {
+        let filterKey = this.filterKey;
+        if (filterKey) {
+          filterKey = filterKey.toLowerCase();
+        }
+        let data = this.studyData;
         if (filterKey) {
           data = data.filter((row) => {
             return Object.keys(row).some((key) => {
@@ -143,11 +211,24 @@
         if (this.$route.params.phenotypeId) {
           this.phenotypeId = this.$route.params.phenotypeId;
         }
-        loadPhenotype(this.phenotypeId).then(this._displayPhenotypeData);
+        loadPhenotype(this.phenotypeId).then(this._displayPhenotypeData).then(this.loadStudyList);
         this.loadData(this.currentPage);
       }
+
+//    PHENOTYPE DATA LOADING
+      _displayPhenotypeData(data): void {
+        this.phenotypeName = data.name;
+        this.phenotypeDescription = data.description;
+        this.arapheno_link = data.arapheno_link;
+        this.breadcrumbs[2].text = data.name;
+        this.studyNumber = data.study_set.length;
+        this.studyIDs = data.study_set;
+      }
+
+//    ASSOCIATION LOADING
       loadData(page: number): void {
-//            loadStudy(this.studyId, page, this.ordered).then(this._displayData)
+          // Load associations of all cited SNPs
+       loadAssociationsOfPhenotype(this.phenotypeId, page, this.ordered).then(this._displayData)
       }
       _displayData(data): void {
         this.associations = data.results;
@@ -155,11 +236,36 @@
         this.totalCount = data.count;
         this.pageCount = data.page_count;
       }
-      _displayPhenotypeData(data): void {
-        this.phenotypeName = data.name;
-        this.phenotypeDescription = data.description;
-        this.arapheno_link = data.arapheno_link;
+//    STUDIES FETCHING
+      loadStudyList(data): void {
+        for (let key of this.studyIDs) {
+          loadStudy(key).then(this._addStudyData)
+        }
       }
+      _addStudyData(data): void {
+        if(Object.keys(this.studyIDs[0]).length === 0){
+          this.studyData = [{
+            'study': data.name,
+            'genotype': data.genotype,
+            'method': data.method,
+            'transformation': data.transformation,
+            'N hits': data.association_count, // TODO: Add proper number of hits in database
+            'pk': data.pk,
+          }]
+        }
+        else{
+          this.studyData = this.studyData.concat([{
+            'study': data.name,
+            'genotype': data.genotype,
+            'method': data.method,
+            'transformation': data.transformation,
+            'N hits': data.association_count,
+            'pk': data.pk,
+          }])
+        }
+      }
+
+//    UTILITIES
       sortBy(key): void {
         this.sortKey = key;
         this.sortOrders[key] = this.sortOrders[key] * -1;
@@ -180,15 +286,8 @@
         position: relative;
         overflow: hidden;
     }
-
-
-    .parallax-container  {
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        z-index:-1;
+    .breadcrumbsitem {
+        font-size: 18pt;
     }
 
     .container {
@@ -207,6 +306,15 @@
         color:black;
     }
 
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 2rem;
+    }
+    .page-container {
+        display:flex;
+        justify-content:center;
+    }
 
     @media only screen and (min-width: 601px) {
         .container {

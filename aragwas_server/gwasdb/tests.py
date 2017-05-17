@@ -17,11 +17,14 @@ def generate_basic_db():
     genotype1 = Genotype.objects.create(name="1001genomes", version="1.2")
     phenotype1 = Phenotype.objects.create(name="Length of something")
     study1 = Study.objects.create(name="McIntosh et al., 2010", transformation="log", method="LMM", genotype=genotype1, phenotype = phenotype1)
+    study2 = Study.objects.create(name="Test2", transformation="log", method="LMM", genotype=genotype1, phenotype = phenotype1)
     SNP1 = SNP.objects.create(chromosome=1, position=45602, annotation="TAIR10", genotype=genotype1)
     SNP2 = SNP.objects.create(chromosome=2, position=100000, annotation="TAIR10", genotype=genotype1)
     SNP3 = SNP.objects.create(chromosome=2, position=100100, annotation="TAIR10", genotype=genotype1)
     association1 = Association.objects.create(study=study1, snp = SNP1, maf=0.24, pvalue=1.4e-8)
     association2 = Association.objects.create(study=study1, snp=SNP2, maf=0.24, pvalue=1.4e-8)
+    association3 = Association.objects.create(study=study2, snp=SNP2, maf=0.24, pvalue=1.4e-8)
+
 
 
 # Test models, to implement when we'll have methods
@@ -95,3 +98,13 @@ class SNPTests(TestCase):
         self.assertEqual(len(response2.data), 1)
         self.assertEqual(response3.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response3.data), 0)
+
+class AssociationOfPhenotypeTests(TestCase):
+
+    def test_association_of_phenotype(self):
+        """
+        Test the rest association of phenotype
+        :return:
+        """
+        generate_basic_db()
+        view = rest.AssociationsOfPhenotypeViewSet.as_view()

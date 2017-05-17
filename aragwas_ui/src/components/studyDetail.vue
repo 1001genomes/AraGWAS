@@ -188,7 +188,6 @@
         overflow: hidden;
     }
 
-
     .parallax-container  {
         position:absolute;
         top:0;
