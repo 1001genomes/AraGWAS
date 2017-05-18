@@ -12,10 +12,16 @@
 
     @Component({
         name: 'manhattan-plot',
+        props: ['dataPoints', 'options']
     })
     export default class ManhattanPlot extends Vue {
-        data = [[3021, 10], [1231, 2]]
-
+        @Prop()
+        dataPoints;
+        @Prop()
+        options;
+        // TODO: add other options in props (currently only chr)
+        // TODO: auto adjustment of window size
+        // TODO: add hover functionality
         mounted() {
             //Width and height
             var padding = 40;
@@ -26,10 +32,10 @@
             var options = {
                 matrix: undefined,
                 species_id: undefined,
-                chr: 0,
+                chr: this.options.chr,
                 alpha: 0.05,
                 max_y: 10,
-                max_x: 10000,
+                max_x: 100000,
                 bonferoniThreshold: 10,
                 div: undefined,
                 divLegend: undefined,
@@ -37,7 +43,7 @@
                 ylabel: "y",
                 legend1: "",
                 legend2: "",
-                color:0,
+                color: this.options.chr,
                 limited:0,
             };
 
@@ -156,7 +162,7 @@
                 .style("stroke-width",1.5 );
             // draw datapoints
             svg.selectAll("circle")
-                .data(this.data)
+                .data(this.dataPoints)
                 .enter()
                 .append("circle")
                 .attr("cx", function(d) {

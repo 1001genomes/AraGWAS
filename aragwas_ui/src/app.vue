@@ -15,7 +15,7 @@
         </v-container>
       </v-content>
     </main>
-    <v-footer class="green lighten-1" >
+    <v-footer class="gree" >
       <div >
         AraGWAS is a public database for Arabidopsis thaliana GWAS studies.
         <div class="version">
@@ -53,10 +53,9 @@
 </script>
 
 <style lang="stylus">
-  @import '~vuetify/src/stylus/main'
-  $theme.primary = $red.darken-2
   @import './assets/css/main.css'
   @import './assets/css/animate.css'
+  @import './stylus/main'
 
   #main-content {
     padding-top:0;

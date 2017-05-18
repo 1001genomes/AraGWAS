@@ -12,7 +12,7 @@
                                 target="_self"
                         >
                             <h5 v-if="item.disabled">{{ item.text }}</h5>
-                            <h5 v-else class="blue--text">{{ item.text }}</h5>
+                            <h5 v-else class="green--text">{{ item.text }}</h5>
                         </v-breadcrumbs-item>
                     </v-breadcrumbs>
                     <v-divider></v-divider>
@@ -42,7 +42,7 @@
                                 :model="currentView"
                             >
                                 <v-tab-item
-                                        v-for="i in ['Similar Phenotypes','List of Studies']" :key="i"
+                                        v-for="i in ['List of Studies', 'Similar Phenotypes']" :key="i"
                                         :href="'#' + i"
                                         ripple
                                         slot="activators"
@@ -54,7 +54,7 @@
                                     </section>
                                 </v-tab-item>
                                 <v-tab-content
-                                        v-for="i in ['Similar Phenotypes','List of Studies']" :key="i"
+                                        v-for="i in ['List of Studies','Similar Phenotypes']" :key="i"
                                         :id="i"
                                         slot="content"
                                 >
@@ -153,7 +153,7 @@
       studyData = [{}];
       avgHitNumber = 0;
       phenotypeDescription: string = '';
-      currentView: string = 'Similar Phenotypes';
+      currentView: string = 'List of Studies';
       arapheno_link: string = '';
       columns = ['SNP', 'p-value', 'gene', 'study'];
       columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'transformation', 'method', 'N hits']}
@@ -168,7 +168,6 @@
       totalCount = 0;
       breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '#/phenotypes'}, {text: this.phenotypeName, href: '', disabled: true}];
 
-//      TODO: create phenotypes list page (copy of study list)
 //      TODO: Add computation of avg N hits
 //      TODO: add similar phenotypes fetching with Ontology
 
