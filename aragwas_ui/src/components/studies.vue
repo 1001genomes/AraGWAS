@@ -2,10 +2,20 @@
 <div class="mt-0">
   <div class="banner-container" style="height: 80px">
     <div class="section">
-      <div class="container">
-        <h4 class="white--text">
-          Studies
-        </h4>
+      <div class="container mt-2">
+        <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
+          <v-breadcrumbs-item
+                  v-for="item in breadcrumbs" :key="item"
+                  :disabled="item.disabled"
+                  class="breadcrumbsitem"
+                  :href=" item.href "
+                  target="_self"
+          >
+            <h4 v-if="item.disabled" class="grey--text text--lighten-1">{{ item.text }}</h4>
+            <h4 v-else class="white--text">{{ item.text }}</h4>
+          </v-breadcrumbs-item>
+        </v-breadcrumbs>
+        <v-divider></v-divider>
       </div>
     </div>
    <v-parallax class="parallax-container" src="/static/img/ara2.jpg" height="80">
@@ -71,6 +81,7 @@
     currentPage = 1;
     pageCount = 5;
     totalCount = 0;
+    breadcrumbs = [{text: 'Home', href: '/'}, {text:'Studies', href: '#/studies', disabled: true},];
 
     get filteredData() {
       let filterKey = this.filterKey;

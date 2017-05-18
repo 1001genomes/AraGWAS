@@ -4,6 +4,7 @@ import HomeLayout from '@/components/homelayout.vue'
 import PhenotypeDetail from '@/components/phenotypeDetail.vue';
 import Results from '@/components/results.vue';
 import Studies from '@/components/studies.vue';
+import Phenotypes from '@/components/phenotypes.vue'
 import StudyDetail from '@/components/studyDetail.vue';
 import Vue from 'vue';
 import Router from 'vue-router';
@@ -21,6 +22,11 @@ export default new Router({
       path: '/studies',
       name: 'studies',
       component: Studies,
+    },
+    {
+      path: '/phenotypes',
+      name: 'phenotypes',
+      component: Phenotypes,
     },
     {
       path: '/results/:queryTerm?',

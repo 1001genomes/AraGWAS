@@ -88,8 +88,8 @@
                 </v-col>
                 <v-col xs6>
                     <br>
-                    <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                    <v-col xs11>
+                    <v-row><v-col xs12><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
+                    <v-col xs12>
                         <v-card class="mt-2">
                             <table class="table">
                                 <thead>
@@ -166,7 +166,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '/phenotypes'}, {text: this.phenotypeName, href: 'here', disabled: true}];
+      breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '#/phenotypes'}, {text: this.phenotypeName, href: '', disabled: true}];
 
 //      TODO: create phenotypes list page (copy of study list)
 //      TODO: Add computation of avg N hits

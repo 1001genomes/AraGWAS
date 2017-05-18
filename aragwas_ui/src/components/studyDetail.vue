@@ -1,15 +1,23 @@
 <template>
     <div>
-        <div class="banner-container" style="height: 80px">
+        <div class="banner-container" style="height: 70px">
             <div class="section" id="head">
-                <div class="container">
-                    <h4 class="white--text mt-3">
-                        Study: {{ studyName }}
-                    </h4>
+                <div class="container mt-3">
+                    <v-breadcrumbs icons divider="chevron_right" class="left">
+                        <v-breadcrumbs-item
+                                v-for="item in breadcrumbs" :key="item"
+                                :disabled="item.disabled"
+                                class="breadcrumbsitem"
+                                :href=" item.href "
+                                target="_self"
+                        >
+                            <h5 v-if="item.disabled">{{ item.text }}</h5>
+                            <h5 v-else class="blue--text">{{ item.text }}</h5>
+                        </v-breadcrumbs-item>
+                    </v-breadcrumbs>
+                    <v-divider></v-divider>
                 </div>
             </div>
-            <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="80">
-            </v-parallax>
         </div>
         <v-container>
             <v-row>
@@ -121,6 +129,9 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
+      breadcrumbs = [{text: 'Home', href: '/'}, {text:'Studies', href: '#/studies'}, {text: this.studyName, href: '', disabled: true}];
+
+
 // TODO: add link to arapheno from loadPhenotype
       get filteredData () {
         let filterKey = this.filterKey;
@@ -166,6 +177,7 @@
         this.phenotype = data.phenotype;
         this.publication = data.publication;
         this.phenotypeId = data.phenotype_pk;
+        this.breadcrumbs[2].text = data.name;
       }
       sortBy(key): void {
         this.sortKey = key;
@@ -187,14 +199,8 @@
         position: relative;
         overflow: hidden;
     }
-
-    .parallax-container  {
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        z-index:-1;
+    .breadcrumbsitem {
+        font-size: 18pt;
     }
 
     .container {
