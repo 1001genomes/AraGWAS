@@ -3,7 +3,7 @@
         <div class="banner-container" style="height: 80px">
             <div class="section">
                 <div class="container mt-2">
-                    <v-breadcrumbs icons divider="chevron_right" class="left" style="font-size: 24pt; c">
+                    <v-breadcrumbs icons divider="chevron_right" class="left" style="font-size: 24pt">
                         <v-breadcrumbs-item
                                 v-for="item in breadcrumbs" :key="item"
                                 :disabled="item.disabled"

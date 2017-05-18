@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h5>D3js Line Chart</h5>
-        <svg id="chart" height="200" width="500" ref="svg">
+        <svg id="chart" height="200" width="900" ref="svg">
         </svg>
     </div>
 </template>
@@ -34,7 +33,7 @@
                 yMax = Number.MAX_VALUE;
             }
 
-            const x = d3.scaleLinear().range([0, 200]).domain([0, xMax]);
+            const x = d3.scaleLinear().range([0, 700]).domain([0, xMax]);
             const y = d3.scaleLinear().range([200, 0]).domain([0, yMax]);
             const axis = d3.axisLeft(x);
 

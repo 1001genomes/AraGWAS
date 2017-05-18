@@ -38,7 +38,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWAS Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/studies"><v-icon left>view_list</v-icon> GWAS Studies</router-link>
+                                <v-btn class="btn--large icon--left green lighten-1" router to="/studies"><v-icon left>view_list</v-icon> GWAS Studies</v-btn>
                             </div>
                         </v-col>
                         <v-col xs12 md6 lg4>
@@ -46,7 +46,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">call_merge</i></h3>
                                 <h5 class="text-xs-center">Meta-Analysis of Associations</h5>
                                 <p class="light justify">Compare associations across phenotypes or for a specific gene region.</p>
-                                <router-link class="btn btn--large icon--left green lighten-1" to="/faq/rest"><v-icon left>call_merge</v-icon> Meta-Analysis</router-link>
+                                <v-btn class="btn--large-focused icon--left green lighten-1" router to="/meta-analysis"><v-icon left>call_merge</v-icon> Meta-Analysis</v-btn>
                             </div>
                         </v-col>
                         <v-col xs12 md6 lg4>
@@ -54,7 +54,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <a class="btn btn--large icon--left green lighten-1"><v-icon left>trending_up</v-icon>Top Associations</a>
+                                <v-btn class="btn--large green lighten-1 icon--left " router to="/top-association"><v-icon left>trending_up</v-icon>Top Associations</v-btn>
                             </div>
                         </v-col>
                     </v-row>
@@ -63,19 +63,53 @@
             <div class="container mt-5 mb-5">
                 <div class="section">
                     <v-row>
-                        <v-col xs12 >
-                            <h5 class="light"><v-icon class="green--text lighten-1">fiber_new</v-icon> News &amp; Updates</h5>
+                        <v-col xs4 >
+                            <h5 class="light"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
                             <v-card>
                                 <v-card-text>
-                                    <div><v-icon class="green--text lighten-1">fiber_new</v-icon> AraGWAS is online</div>
+                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
+                                    <div>
+                                        <p class="light">
+                                            We finalized a complete recomputation of 107 phenotypes GWAS with the brandly new imputed 3004 genomes from the 1001genomes consortium.
+                                        </p>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                            <br>
+                            <v-card>
+                                <v-card-text>
+                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS is online</div>
                                     <div>
                                         <p class="light">
                                             We are proud to announce that the first public GWAS catalogue for the model organism <em>Arabidopsis thaliana</em> has launched.
-                          </p>
+                                        </p>
                                     </div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
+                        <v-col xs8 >
+                            <v-row>
+                                <v-col xs6>
+                                <h5 class="light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5><v-divider class="mb-2"></v-divider>
+                                        <v-card>
+                                            <h6 class="pt-4 pl-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ n_studies }} Studies</h6><v-divider class="mb-4"></v-divider>
+                                            <h6 class="pl-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ n_phenotypes }} Phenotypes</h6><v-divider class="mb-4"></v-divider>
+                                            <h6 class="pl-4 pb-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ n_associations }} Associations</h6>
+                                        </v-card>
+                                </v-col>
+                                <v-col xs6 >
+                                    <h5 class="light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
+                                    <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart"></vue-chart>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col xs12 >
+                                    <h5 class="light"><v-icon class="green--text lighten-1 small-icon">timeline</v-icon> New Studies</h5>
+                                    <line-chart></line-chart>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+
                     </v-row>
                 </div>
             </div>
@@ -152,6 +186,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Router from '../router';
     import {search} from '../api';
+    import LineChart from '../components/linechart.vue'
     import Vue from 'vue';
 
     @Component({
@@ -160,6 +195,9 @@
           return str.charAt(0).toUpperCase() + str.slice(1);
         },
       },
+      components: {
+          'line-chart': LineChart,
+      }
     })
     export default class Althome extends Vue {
       @Prop()
@@ -188,6 +226,9 @@
       currentView: string = '';
       n = {studies: 0, phenotypes: 0, genes: 0};
       pageCount = {studies: 5, phenotypes: 5, genes: 5};
+      n_studies = 500;
+      n_phenotypes = 200;
+      n_associations = 1110000;
 
       @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {
@@ -285,6 +326,9 @@
         z-index:-1;
     }
 
+    .small-icon {
+        vertical-align: middle;
+    }
 
     .container {
         margin:0 auto;
