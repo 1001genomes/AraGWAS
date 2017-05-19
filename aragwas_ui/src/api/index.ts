@@ -53,6 +53,27 @@ export async  function loadAssociationsOfPhenotype(phenotypeId= '1', page= 1, or
         .then(checkStatus)
         .then(convertToModel);
 }
+
+// Gene list
+export async  function loadGenes(page = 1, ordering= '') {
+    return fetch(`/api/gene/?page=${page}&ordering=${ordering}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+
+// Import single gene information
+export async  function loadGene(geneId = '1') {
+    return fetch(`/api/gene/${geneId}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async  function loadAssociationsOfGene(geneId= '1', page= 1, ordering= '-pvalue') {
+    return fetch(`/api/associations_of_gene/${geneId}/?page=${page}&ordering=${ordering}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+
+
 // TODO: add strategy to store / quickly retreive top associations across all studies
 export async function loadTopAssociations() {
     return fetch(`/api/top_associations/`)

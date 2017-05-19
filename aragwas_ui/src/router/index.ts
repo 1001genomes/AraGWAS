@@ -1,12 +1,14 @@
 import Althome from '@/components/althome.vue';
 import Home from '@/components/home.vue';
 import HomeLayout from '@/components/homelayout.vue'
-import PhenotypeDetail from '@/components/phenotypeDetail.vue';
 import Results from '@/components/results.vue';
 import Studies from '@/components/studies.vue';
-import Phenotypes from '@/components/phenotypes.vue'
-import TopAssociations from '@/components/topAssociations.vue'
 import StudyDetail from '@/components/studyDetail.vue';
+import Phenotypes from '@/components/phenotypes.vue';
+import PhenotypeDetail from '@/components/phenotypeDetail.vue';
+import Genes from '@/components/genes.vue'
+import GeneDetail from '@/components/geneDetail.vue'
+import TopAssociations from '@/components/topAssociations.vue';
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -28,6 +30,11 @@ export default new Router({
       path: '/phenotypes',
       name: 'phenotypes',
       component: Phenotypes,
+    },
+    {
+      path: '/genes',
+      name: 'genes',
+      component: Genes,
     },
     {
       path: '/top-associations',
@@ -53,6 +60,11 @@ export default new Router({
       path: '/phenotype/:phenotypeId?',
       name: 'phenotypeDetail',
       component: PhenotypeDetail, props: true,
+    },
+    {
+      path: '/gene/:geneId?',
+      name: 'geneDetail',
+      component: GeneDetail, props: true,
     },
     {
       path: '/layout/',

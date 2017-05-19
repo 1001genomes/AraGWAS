@@ -70,6 +70,22 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         except Association.DoesNotExist:
             raise Http404('Associations do not exist')
 
+class AssociationsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information about GWAS associations of a specific phenotype
+    """
+    queryset = Association.objects.all()
+    serializer_class = AssociationSerializer
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        # Get study ids
+        try:
+            associations = Association.objects.get(SNP__gene=pk).order_by('pvalue')
+            serializer = AssociationSerializer(associations)
+            return Response(serializer.data)
+        except Association.DoesNotExist:
+            raise Http404('Associations do not exist')
+
 
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -97,7 +113,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
 
 class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Retrieves information about GWAS study
+    Retrieves information about phenotypes
     """
     queryset = Phenotype.objects.all()
     serializer_class = PhenotypeListSerializer
@@ -112,8 +128,28 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             if ordering.startswith('-'):
                 ordering = ordering[1:]
                 inverted = True
-            if ordering == 'genotype' or ordering == 'phenotype':
-                ordering += '__name'
+            queryset = queryset.order_by(Lower(ordering))
+            if inverted:
+                queryset = queryset.reverse()
+        return queryset
+
+class GeneViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information genes
+    """
+    queryset = Gene.objects.all()
+    serializer_class = GeneListSerializer
+
+    # Overriding get_queryset to allow for case-insensitive custom ordering
+    def get_queryset(self):
+        queryset = self.queryset
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering is not None and ordering != '':
+            from django.db.models.functions import Lower
+            inverted = False
+            if ordering.startswith('-'):
+                ordering = ordering[1:]
+                inverted = True
             queryset = queryset.order_by(Lower(ordering))
             if inverted:
                 queryset = queryset.reverse()

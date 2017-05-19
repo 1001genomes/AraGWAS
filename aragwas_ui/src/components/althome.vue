@@ -22,6 +22,7 @@
                             label="Search the catalog"
                             v-model="queryTerm"
                             v-bind:focused="focused"
+                            prepend-icon="search"
                     ></v-text-field>
                 <!--</transition>-->
 

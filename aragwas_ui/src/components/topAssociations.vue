@@ -103,7 +103,7 @@
         ordered: string = '';
         columns = ['SNP', 'p-value', 'phenotype', 'gene','maf','beta', 'odds ratio', 'confidence interval'];
         filterKey: string = '';
-        studies = [];
+        assocations = [];
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
@@ -118,7 +118,7 @@
             if (filterKey) {
                 filterKey = filterKey.toLowerCase();
             }
-            let data = this.studies;
+            let data = this.assocations;
             if (filterKey) {
                 data = data.filter((row) => {
                     return Object.keys(row).some((key) => {
@@ -156,7 +156,7 @@
             loadStudies(page, this.ordered).then(this._displayData);
         }
         _displayData(data): void {
-            this.studies = data.results;
+            this.assocations = data.results;
             this.currentPage = data.current_page;
             this.totalCount = data.count;
             this.pageCount = data.page_count;

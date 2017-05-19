@@ -185,7 +185,7 @@ class GeneListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gene
-        fields = ('name','chromosome','start_position','end_position','SNPs','SNP_count','association_count','description')
+        fields = ('name','chromosome','start_position','end_position','SNPs','SNP_count','association_count','description','pk')
 
     def get_association_count(self, obj):
         try:
