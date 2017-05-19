@@ -53,6 +53,12 @@ export async  function loadAssociationsOfPhenotype(phenotypeId= '1', page= 1, or
         .then(checkStatus)
         .then(convertToModel);
 }
+// TODO: add strategy to store / quickly retreive top associations across all studies
+export async function loadTopAssociations() {
+    return fetch(`/api/top_associations/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 
 export async function search(queryTerm= '', page= 1, ordering= '') {
     if (queryTerm === '') {

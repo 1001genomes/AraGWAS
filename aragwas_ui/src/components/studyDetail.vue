@@ -25,7 +25,6 @@
                     grow
                     scroll-bars
                     :model="currentView"
-                    style="border-color: transparent;"
             >
                 <v-tab-item
                         v-for="i in ['Study details','Manhattan plots']" :key="i"
@@ -33,9 +32,8 @@
                         ripple
                         slot="activators"
                         class="grey lighten-4 black--text"
-                        style="border-color: transparent;"
                 >
-                    <section style="width: 110%" @click="currentView = i">
+                    <section style="width: 110%; display: block;" @click="currentView = i" >
                         <div v-if="currentView === i" class="black--text">{{ i }}</div>
                         <div v-else class="grey--text"> {{ i }}</div>
                     </section>
@@ -80,7 +78,7 @@
                                                 :href="'#' + i"
                                                 ripple
                                                 slot="activators"
-                                                class="grey lighten-4 black--text tab-item"
+                                                class="grey lighten-4 black--text"
                                         >
                                             <section style="width: 110%" @click="currentViewIn = i">
                                                 <div v-if="currentViewIn === i" class="black--text">{{ i }}</div>
@@ -139,7 +137,7 @@
                             <br>
                             <v-col xs12>
                             <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                            <manhattan-plot :dataPoints="dataChr2[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="{chr: i}"></manhattan-plot>
+                            <manhattan-plot :dataPoints="dataChr2[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
                             <vue-line-chart></vue-line-chart>
                             </v-col>
                         </v-col>
@@ -179,13 +177,22 @@
       association_count;
       arapheno_link: string = '';
       currentView: string = 'Study details';
-      currentViewIn: string = 'On genes'
+      currentViewIn: string = 'On genes';
       columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene'];
       n = {phenotypes: 0, accessions: 0};
 
       dataChr2 = {
           '1': [[3021, 9], [3021, 5], [3000, 9], [1231, 2]],
           '2': [[8000, 9], [2131,4]]
+      };
+
+      // Manhattan plots options
+      options = {
+          '1': {chr: 1, max_x: 3000000},
+          '2': {chr: 2, max_x: 300000},
+          '3': {chr: 3, max_x: 100},
+          '4': {chr: 4,},
+          '5': {chr: 5,},
       };
 
       sig_as_distibution_columns = {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <svg id="chart" height="200" width="2000" ref="svg">
+        <svg id="chart" height="200" width="100%" ref="svg">
         </svg>
     </div>
 </template>
@@ -25,14 +25,18 @@
         mounted() {
             //Width and height
             var padding = 40;
-            var w = 1200;
+            var w = this.options.width;
+            if( typeof w === 'undefined' ) {
+                w = 1200;
+            }
             var h = 185;
             var scaleW = d3.scaleLinear();
             var scaleH = d3.scaleLinear();
-            var options = {
+
+            var defaultOptions = {
                 matrix: undefined,
                 species_id: undefined,
-                chr: this.options.chr,
+                chr: 0,
                 alpha: 0.05,
                 max_y: 10,
                 max_x: 100000,
@@ -46,6 +50,13 @@
                 color: this.options.chr,
                 limited:0,
             };
+            var options = this.options;
+            // Add the missing parameters
+            for( var key of Object.keys(defaultOptions) ) {
+                if( typeof options[key] === 'undefined') {
+                    options[key] = defaultOptions[key]
+                }
+            }
 
             // define scaling options
             scaleW.domain([0, options.max_x]);

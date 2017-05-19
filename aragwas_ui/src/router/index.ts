@@ -5,6 +5,7 @@ import PhenotypeDetail from '@/components/phenotypeDetail.vue';
 import Results from '@/components/results.vue';
 import Studies from '@/components/studies.vue';
 import Phenotypes from '@/components/phenotypes.vue'
+import TopAssociations from '@/components/topAssociations.vue'
 import StudyDetail from '@/components/studyDetail.vue';
 import Vue from 'vue';
 import Router from 'vue-router';
@@ -27,6 +28,11 @@ export default new Router({
       path: '/phenotypes',
       name: 'phenotypes',
       component: Phenotypes,
+    },
+    {
+      path: '/top-associations',
+      name: 'topAssociations',
+      component: TopAssociations,
     },
     {
       path: '/results/:queryTerm?',

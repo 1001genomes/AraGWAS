@@ -54,7 +54,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn class="btn--large green lighten-1 icon--left " router to="/top-association"><v-icon left>trending_up</v-icon>Top Associations</v-btn>
+                                <v-btn class="btn--large green lighten-1 icon--left " router to="/top-associations"><v-icon left>trending_up</v-icon>Top Associations</v-btn>
                             </div>
                         </v-col>
                     </v-row>
@@ -103,9 +103,9 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col xs12 >
+                                <v-col xs12 ref="plotCol">
                                     <h5 class="light"><v-icon class="green--text lighten-1 small-icon">timeline</v-icon> New Studies</h5>
-                                    <line-chart></line-chart>
+                                    <line-chart :width="w"></line-chart>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -229,6 +229,7 @@
       n_studies = 500;
       n_phenotypes = 200;
       n_associations = 1110000;
+//      w = ;
 
       @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {

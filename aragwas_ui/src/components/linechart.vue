@@ -1,6 +1,6 @@
 <template>
     <div>
-        <svg id="chart" height="200" width="900" ref="svg">
+        <svg id="chart" height="100%" width="100%" ref="svg">
         </svg>
     </div>
 </template>
@@ -17,9 +17,12 @@
 
     @Component({
         name: 'line-chart',
+        props: ['width']
     })
     export default class LineChart extends Vue {
         values: ChartData[] = [ { x: 0, y: 30 }, { x: 50, y: 20 }, { x: 100, y: 40 }, { x: 150, y: 80 }, { x: 200, y: 95 }];
+        @Prop()
+        width;
 
         mounted() {
 
@@ -33,7 +36,7 @@
                 yMax = Number.MAX_VALUE;
             }
 
-            const x = d3.scaleLinear().range([0, 700]).domain([0, xMax]);
+            const x = d3.scaleLinear().range([0, 600]).domain([0, xMax]);
             const y = d3.scaleLinear().range([200, 0]).domain([0, yMax]);
             const axis = d3.axisLeft(x);
 
