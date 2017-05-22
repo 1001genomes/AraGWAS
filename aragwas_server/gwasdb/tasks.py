@@ -46,7 +46,7 @@ def compute_ld(chromosome, position, genotype_name, N=20):
             completed = True
             break
     if not completed:
-        raise ValueError("No values matching chromosome {} in genotype {}".format(snp.chromosome, genotype_name))
+        raise ValueError("No values matching chromosome {} in genotype {}".format(chromosome, genotype_name))
 
     found = False
     for idx, c in enumerate(h5gen['position_index'][start_idx:end_idx]):

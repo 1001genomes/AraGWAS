@@ -137,7 +137,7 @@
                             <br>
                             <v-col xs12>
                             <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                            <manhattan-plot :dataPoints="dataChr2[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
+                            <manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
                             <vue-line-chart></vue-line-chart>
                             </v-col>
                         </v-col>
@@ -151,13 +151,14 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {loadStudy, loadAssociationsOfStudy, loadPhenotype} from '../api';
+    import {loadStudy, loadAssociationsOfStudy, loadPhenotype, loadAssociationsForManhattan} from '../api';
     import ManhattanPlot from '../components/manhattanplot.vue'
 
     @Component({
       filters: {
         capitalize(str) {
-          return str.charAt(0).toUpperCase() + str.slice(1);
+            str = str.split('_').join(' ');
+            return str.charAt(0).toUpperCase() + str.slice(1);
         },
       },
       components: {
@@ -178,21 +179,24 @@
       arapheno_link: string = '';
       currentView: string = 'Study details';
       currentViewIn: string = 'On genes';
-      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds ratio', 'confidence interval', 'gene'];
+      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds_ratio', 'confidence_interval', 'gene'];
       n = {phenotypes: 0, accessions: 0};
 
-      dataChr2 = {
-          '1': [[3021, 9], [3021, 5], [3000, 9], [1231, 2]],
-          '2': [[8000, 9], [2131,4]]
+      dataChr = {
+          '1': [],
+          '2': [],
+          '3': [],
+          '4': [],
+          '5': []
       };
 
       // Manhattan plots options
       options = {
-          '1': {chr: 1, max_x: 3000000},
-          '2': {chr: 2, max_x: 300000},
-          '3': {chr: 3, max_x: 100},
-          '4': {chr: 4,},
-          '5': {chr: 5,},
+          '1': {chr: 1, max_x: 30427671},
+          '2': {chr: 2, max_x: 19698289},
+          '3': {chr: 3, max_x: 23459830},
+          '4': {chr: 4, max_x: 18585056},
+          '5': {chr: 5, max_x: 26975502},
       };
 
       sig_as_distibution_columns = {
@@ -202,7 +206,7 @@
           'On genes': [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]],
           'On snp type': [['S',23],['SN', 2],['*', 2]]};
 
-      sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds ratio': 1, 'confidence interval': 1, 'gene': 1};
+      sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds_ratio': 1, 'confidence_interval': 1, 'gene': 1};
       sortKey: string = '';
       ordered: string = '';
       filterKey: string = '';
@@ -232,12 +236,17 @@
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(val);
       }
+//      @Watch('currentView')
+//      onCurrentViewChanged(val: number, oldVal: number) {
+//        this.loadData(val);
+//      }
       created(): void {
         if (this.$route.params.studyId) {
           this.studyId = this.$route.params.studyId;
         }
         loadStudy(this.studyId).then(this._displayStudyData);
         this.loadData(this.currentPage);
+        loadAssociationsForManhattan(this.studyId).then(this._displayManhattanPlots);
       }
       loadData(page: number): void {
         loadAssociationsOfStudy(this.studyId, page, this.ordered).then(this._displayData);
@@ -263,6 +272,12 @@
       _loadAraPhenoLink(data): void {
         this.arapheno_link = data.arapheno_link;
       }
+      _displayManhattanPlots(data): void {
+        for (let i of [1,2,3,4,5]) {
+            this.dataChr[i.toString()] = data['chr'+i.toString()].pvalues.map(function (e, l) {return [e, data['chr'+i.toString()].positions[l]]})
+        }
+      }
+
       sortBy(key): void {
         this.sortKey = key;
         this.sortOrders[key] = this.sortOrders[key] * -1;

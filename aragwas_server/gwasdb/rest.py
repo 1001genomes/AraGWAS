@@ -18,6 +18,8 @@ from gwasdb.tasks import compute_ld
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
 from aragwas.settings import GITHUB_URL
 
+import h5py, numpy
+
 def get_api_version():
     BUILD_STATUS_URL = None
     if __buildurl__ != 'N/A':
@@ -53,6 +55,33 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = AssociationSerializer(associations)
 
         return Response(serializer.data)
+
+class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Fetch associations in hdf5 file for manhattan plots
+    """
+    queryset = Association.objects.all()
+    serializer_class = AssociationSerializer
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        # Load hdf5 genotype file:
+        try:
+            association_file = h5py.File(pk + ".hdf5", 'r')
+        except:
+            raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
+        # Get SNP position in file
+        output = {}
+
+        # Get top 2500 associations for each chromosome.
+        for i in range(5):
+            values_chr = association_file['pvalues']['chr'+str(i+1)]['scores'][:2500]
+            pos_chr = association_file['pvalues']['chr'+str(i+1)]['positions'][:2500]
+            mafs_chr = association_file['pvalues']['chr'+str(i+1)]['mafs'][:2500]
+            output['chr'+str(i+1)] = {'pvalues': values_chr, 'positions': pos_chr, 'mafs': mafs_chr}
+
+        return Response(output, status=status.HTTP_200_OK)
+
+
 
 class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -124,11 +153,15 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         ordering = self.request.query_params.get('ordering', None)
         if ordering is not None and ordering != '':
             from django.db.models.functions import Lower
+            from django.db.models import Count
             inverted = False
             if ordering.startswith('-'):
                 ordering = ordering[1:]
                 inverted = True
-            queryset = queryset.order_by(Lower(ordering))
+            if ordering == 'n_studies':
+                queryset = queryset.annotate(n_studies=Count('study')).order_by(Lower(ordering))
+            else:
+                queryset = queryset.order_by(Lower(ordering))
             if inverted:
                 queryset = queryset.reverse()
         return queryset

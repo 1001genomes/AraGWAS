@@ -40,7 +40,7 @@
                         <tr v-for="entry in filteredData">
                             <td v-for="key in columns">
                                 <router-link v-if="(key==='name')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry[key] }}</router-link>
-                                <div v-else-if="(key==='n studies')" >{{ entry['study_set'].length }}</div>
+                                <div v-else-if="(key==='n_studies')" >{{ entry['study_set'].length }}</div>
                                 <div v-else>{{ entry[key] }}</div>
                             </td>
                         </tr>
@@ -65,6 +65,7 @@
     @Component({
         filters: {
             capitalize(str) {
+                str = str.split('_').join(' ');
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
         },
@@ -75,7 +76,7 @@
         sortOrders = {name: 1, description: 1, n_studies: 1};
         sortKey: string = '';
         ordered: string = '';
-        columns: string[] = ['name', 'description', 'n studies'];
+        columns: string[] = ['name', 'description', 'n_studies'];
         filterKey: string = '';
         phenotypes = [];
         currentPage = 1;

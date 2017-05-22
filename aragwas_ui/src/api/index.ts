@@ -35,6 +35,13 @@ export async  function loadAssociationsOfStudy(studyId= '1', page= 1, ordering= 
         .then(checkStatus)
         .then(convertToModel);
 }
+// Load associations for manhattan plots
+export async  function loadAssociationsForManhattan(studyId= '1') {
+    return fetch(`/api/associations_manhattan/${studyId}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+
 // Phenotype list
 export async  function loadPhenotypes(page = 1, ordering= '') {
     return fetch(`/api/phenotype/?page=${page}&ordering=${ordering}`)
