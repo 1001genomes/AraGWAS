@@ -186,7 +186,7 @@
 <script lang="ts">
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Router from '../router';
-    import {search} from '../api';
+    import {search, loadPhenotypes, loadStudies} from '../api';
     import LineChart from '../components/linechart.vue'
     import Vue from 'vue';
 
@@ -273,10 +273,16 @@
       created(): void {
         this.loadData(this.queryTerm, this.currentPage);
         this.currentView = 'studies';
+        this.loadSummaryData(); // TODO: find a faster (server-side?) way to count total number of associations.
       }
       loadData(queryTerm: string, page: number): void {
         search(queryTerm, page, this.ordered).then(this._displayData);
       }
+      loadSummaryData(): void {
+        loadStudies().then(this._countStudies);
+        loadPhenotypes().then(this._countPhenotypes);
+      }
+
       _displayData(data): void {
         this.dataObserved.studies = data.results.study_search_results;
         this.dataObserved.phenotypes = data.results.phenotype_search_results;
@@ -297,6 +303,13 @@
         if (this.n.genes === 0) {
           this.dataObserved.genes = [];
         }
+      }
+
+      _countStudies(data): void {
+        this.n_studies = data.count
+      }
+      _countPhenotypes(data): void {
+        this.n_phenotypes = data.count
       }
       sortBy(key): void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
