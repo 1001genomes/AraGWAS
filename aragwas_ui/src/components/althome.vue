@@ -17,18 +17,23 @@
                 <!--</transition>-->
                 <br>
                 <!--<transition name="bounce">-->
-                    <v-text-field
-                            name="input-1"
-                            label="Search the catalog"
-                            v-model="queryTerm"
-                            v-bind:focused="focused"
-                            prepend-icon="search"
-                    ></v-text-field>
+
                 <!--</transition>-->
 
             </div>
             <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
             </v-parallax>
+        </div>
+        <div class="search-bar mt-3">
+            <v-col xs 12>
+                <v-text-field
+                        name="input-1"
+                        label="Search the catalog"
+                        v-model="queryTerm"
+                        v-bind:focused="focused"
+                        prepend-icon="search"
+                ></v-text-field>
+            </v-col>
         </div>
         <section v-if="!search">
             <div class="section mt-4">
@@ -205,7 +210,7 @@
       queryTerm: string;
       router = Router;
       search: boolean = false;
-      height = 420;
+      height = 320;
       @Prop()
       focused: boolean;
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
@@ -236,10 +241,10 @@
       onQueryTermChanged(val: string, oldVal: string) {
         if (val === '') {
           this.search = false;
-          this.height = 420;
+          this.height = 300;
         } else {
           this.search = true;
-          this.height = 100;
+          this.height = 70;
           this.loadData(val, this.currentPage);
         }
       }
@@ -329,6 +334,13 @@
     .banner-container {
         position: relative;
         overflow: hidden;
+    }
+    .search-bar {
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        max-width: 1280px;
+        width: 90%
     }
 
 
