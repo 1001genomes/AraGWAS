@@ -24,15 +24,19 @@
             <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
             </v-parallax>
         </div>
-        <div class="search-bar mt-3">
-            <v-col xs 12>
-                <v-text-field
-                        name="input-1"
-                        label="Search the catalog"
-                        v-model="queryTerm"
-                        v-bind:focused="focused"
-                        prepend-icon="search"
-                ></v-text-field>
+        <div class="container mt-3">
+            <v-col xs12>
+                <v-card>
+                    <div class="pl-4 pt-1 pr-4">
+                        <v-text-field
+                                name="input-1"
+                                label="Search the catalog"
+                                v-model="queryTerm"
+                                v-bind:focused="focused"
+                                prepend-icon="search"
+                        ></v-text-field>
+                    </div>
+                </v-card>
             </v-col>
         </div>
         <section v-if="!search">
@@ -96,7 +100,7 @@
                         <v-col xs8 >
                             <v-row>
                                 <v-col xs6>
-                                <h5 class="light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5><v-divider class="mb-2"></v-divider>
+                                <h5 class="light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
                                         <v-card>
                                             <h6 class="pt-4 pl-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ n_studies }} Studies</h6><v-divider class="mb-4"></v-divider>
                                             <h6 class="pl-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ n_phenotypes }} Phenotypes</h6><v-divider class="mb-4"></v-divider>
@@ -106,12 +110,6 @@
                                 <v-col xs6 >
                                     <h5 class="light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
                                     <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart"></vue-chart>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col xs12 ref="plotCol">
-                                    <h5 class="light"><v-icon class="green--text lighten-1 small-icon">timeline</v-icon> New Studies</h5>
-                                    <line-chart :width="w"></line-chart>
                                 </v-col>
                             </v-row>
                         </v-col>

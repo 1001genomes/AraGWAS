@@ -156,7 +156,7 @@
       currentView: string = 'List of Studies';
       arapheno_link: string = '';
       columns = ['SNP', 'p-value', 'gene', 'study'];
-      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'transformation', 'method', 'N hits']}
+      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']}
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
       sortKey: string = '';
