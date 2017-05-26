@@ -106,7 +106,9 @@
                                 <tbody>
                                 <tr v-for="entry in filteredData">
                                     <td v-for="key in columns">
-                                        {{entry[key]}}
+                                        <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                        <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { geneId: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                        <div v-else>{{entry[key]}}</div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -155,7 +157,7 @@
       phenotypeDescription: string = '';
       currentView: string = 'List of Studies';
       arapheno_link: string = '';
-      columns = ['SNP', 'p-value', 'gene', 'study'];
+      columns = ['SNP', 'pvalue', 'gene', 'study'];
       columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']}
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};

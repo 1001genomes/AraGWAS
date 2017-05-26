@@ -45,7 +45,7 @@
                         style="border-color: transparent;"
                 >
                     <v-row v-if="currentView === 'Study details'">
-                        <v-col xs5>
+                        <v-col xs4>
                                 <br>
                                 <v-col xs12>
                                     <div id="description">
@@ -100,7 +100,7 @@
 
                                 </v-col>
                         </v-col>
-                        <v-col xs7>
+                        <v-col xs8>
                             <br>
                             <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
                             <v-col xs12>
@@ -120,7 +120,8 @@
                                         <tbody>
                                         <tr v-for="entry in filteredData">
                                             <td v-for="key in columns">
-                                                {{entry[key]}}
+                                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                                <div v-else>{{entry[key]}}</div>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -179,7 +180,7 @@
       arapheno_link: string = '';
       currentView: string = 'Study details';
       currentViewIn: string = 'On genes';
-      columns = ['SNP', 'maf', 'p-value', 'beta', 'odds_ratio', 'confidence_interval', 'gene'];
+      columns = ['SNP', 'maf', 'pvalue', 'beta', 'odds_ratio','gene']; // deleted confidence_interval for now
       n = {phenotypes: 0, accessions: 0};
 
       dataChr = {
@@ -274,7 +275,7 @@
       }
       _displayManhattanPlots(data): void {
         for (let i of [1,2,3,4,5]) {
-            this.dataChr[i.toString()] = data['chr'+i.toString()].pvalues.map(function (e, l) {return [e, data['chr'+i.toString()].positions[l]]})
+            this.dataChr[i.toString()] = data['chr'+i.toString()].positions.map(function (e, l) {return [e, data['chr'+i.toString()].pvalues[l]]})
         }
       }
 

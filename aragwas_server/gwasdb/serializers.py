@@ -129,7 +129,9 @@ class AssociationSerializer(serializers.ModelSerializer):
         try:
             return obj.study.phenotype.name
         except:
-            return ""
+            return
+
+
 """
 SNP List Serializer Class (read-only) Could be integrated in the AssociationValue Serializer above...
 """

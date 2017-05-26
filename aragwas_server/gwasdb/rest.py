@@ -1,10 +1,11 @@
 from rest_framework import permissions
 from rest_framework import viewsets, generics, filters
 from rest_framework.views import APIView
+from rest_framework.reverse import reverse
 
 from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
 from gwasdb.serializers import *
-from gwasdb.paginator import CustomSearchPagination
+from gwasdb.paginator import CustomSearchPagination, CustomAssociationsPagination
 
 from rest_framework import status
 from django.db.models import Q
@@ -18,7 +19,7 @@ from gwasdb.tasks import compute_ld
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
 from aragwas.settings import GITHUB_URL
 
-import h5py, numpy
+import h5py, numpy, math
 
 def get_api_version():
     BUILD_STATUS_URL = None
@@ -48,13 +49,58 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
     Retrieves information about GWAS associations
     """
     queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
     def retrieve(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        associations = get_list_or_404(Association, study=pk)
-        serializer = AssociationSerializer(associations)
+        try:
+            page = int(request.query_params.get('page', None))
+        except:
+            page = 1
+        # associations = get_list_or_404(Association, study=pk)
+        try:
+            association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5", 'r')
+        except:
+            raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
+        # Get SNP position in file
 
-        return Response(serializer.data)
+        pval = []
+        chr = []
+        pos = []
+        mafs = []
+
+        # Get top 2500 associations for each chromosome.
+        for i in range(5):
+            pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:25])
+            pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:25])
+            mafs.extend(association_file['pvalues']['chr'+str(i+1)]['mafs'][:25])
+            chr.extend(i for l in range(25))
+
+        pval = numpy.asarray(pval)
+        pos = numpy.asarray(pos)
+        mafs = numpy.asarray(mafs)
+        chr = numpy.asarray(chr)
+
+        i = pval.argsort()[::-1]
+        results = []
+        for l in i:
+            # get associated genes:
+            name = ''
+            pk = ''
+            try:
+                obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
+                gene = Gene.objects.get(pk=obj.gene)
+                name = gene.name
+                pk = gene.pk
+            except:
+                pass
+            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'maf': "{:.3f}".format(mafs[l]), 'gene':{'name': name, 'pk': pk}})
+        # Homemade paginator
+        PAGE_SIZE = 20.
+        page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
+        if page > page_count:
+            page = page_count
+        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
+
+        return Response(data, status=status.HTTP_200_OK)
 
 class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -66,7 +112,7 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
         pk = kwargs['pk']
         # Load hdf5 genotype file:
         try:
-            association_file = h5py.File(pk + ".hdf5", 'r')
+            association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5", 'r') # Absolute path for tests.
         except:
             raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
         # Get SNP position in file
@@ -91,13 +137,60 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AssociationSerializer
     def retrieve(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        # Get study ids
         try:
-            associations = Association.objects.get(study__phenotype=pk).order_by('pvalue')
-            serializer = AssociationSerializer(associations)
-            return Response(serializer.data)
-        except Association.DoesNotExist:
-            raise Http404('Associations do not exist')
+            page = int(request.query_params.get('page', None))
+        except:
+            page = 1
+        # get studies ids
+        studies = Study.objects.filter(phenotype=pk)
+        st_id = []
+        for s in studies:
+            st_id.append(s.pk)
+
+        pval = []
+        chr = []
+        pos = []
+        study = []
+        for study_pk in st_id:
+            try:
+                association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + str(study_pk) + ".hdf5", 'r')
+            except:
+                raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(str(study_pk) + '.hdf5'))
+            # Get top 2500 associations for each chromosome and each study
+            for i in range(5):
+                pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:20])
+                pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:20])
+                chr.extend(i for l in range(20))
+                study.extend(study_pk for l in range(20))
+
+        pval = numpy.asarray(pval)
+        pos = numpy.asarray(pos)
+        chr = numpy.asarray(chr)
+        study = numpy.asarray(study)
+
+        i = pval.argsort()[::-1]
+        results = []
+        for l in i:
+            # get associated genes:
+            name = ''
+            pk = ''
+            try:
+                obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
+                gene = Gene.objects.get(pk=obj.gene)
+                name = gene.name
+                pk = gene.pk
+            except:
+                pass
+            study_name = studies.get(pk=study[l]).name
+            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'gene':{'name': name, 'pk': pk}, 'study':{'name': study_name, 'pk': study[l]}})
+        # Homemade paginator
+        PAGE_SIZE = 20.
+        page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
+        if page > page_count:
+            page = page_count
+        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page,
+                'results': results[int(PAGE_SIZE) * (page - 1):int(PAGE_SIZE) * page]}
+        return Response(data, status=status.HTTP_200_OK)
 
 class AssociationsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
     """
