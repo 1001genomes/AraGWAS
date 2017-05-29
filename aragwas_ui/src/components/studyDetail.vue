@@ -57,10 +57,10 @@
                                         <v-row><v-col xs4><span>Transformation:</span></v-col><v-col xs7>{{ transformation }}</v-col></v-row>
                                         <v-row><v-col xs4><span>Method:</span></v-col><v-col xs7>{{ method }}</v-col></v-row>
                                         <v-row><v-col xs4><span>Publication:</span></v-col><v-col xs7><a v-bind:href=" publication">Link to publication</a></v-col></v-row>
-                                        <v-row><v-col xs4><span>Total associations:</span></v-col><v-col xs7>{{ association_count }}</v-col></v-row>
+                                        <v-row><v-col xs4><span>Total associations:</span></v-col><v-col xs7>{{ associationCount }}</v-col></v-row>
                                         <!--TODO: Add n hits in database-->
-                                        <v-row><v-col xs4><span>N hits (Bonferroni):</span></v-col><v-col xs7>{{  }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>N hits (with permutations):</span></v-col><v-col xs7>{{  }}</v-col></v-row>
+                                        <v-row><v-col xs4><span>N hits (Bonferoni):</span></v-col><v-col xs7>{{ bonferoniHits }}</v-col></v-row>
+                                        <v-row><v-col xs4><span>N hits (with permutations):</span></v-col><v-col xs7>{{ permHits }}</v-col></v-row>
                                         <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href="arapheno_link" target="_blank">{{ phenotype }}</a></v-col></v-row>
                                         <v-row><v-col xs4><span>Accessions detail:</span></v-col><v-col xs7><a href="https://www.arabidopsis.org" target="_blank">arabidopsis.org</a></v-col></v-row>
                                         <div></div>
@@ -91,9 +91,10 @@
                                                 slot="content"
                                         >
                                             <v-card>
-                                                <div id="statistics" class="mt-2">
+                                                <div id="statistics" class="mt-2" v-if=" (bonferoniHits>0) ">
                                                     <vue-chart :columns="sig_as_distibution_columns[i]" :rows="sig_as_distibution_rows[i]" chart-type="PieChart"></vue-chart>
                                                 </div>
+                                                <h6 v-else style="text-align: center" class="mt-4 mb-4">No significant hits.</h6>
                                             </v-card>
                                         </v-tab-content>
                                     </v-tabs>
@@ -119,9 +120,15 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="entry in filteredData">
-                                            <td v-for="key in columns">
-                                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                                <div v-else>{{entry[key]}}</div>
+                                            <td class="regular" v-for="key in columns">
+                                                <div v-if="(parseFloat(entry['pvalue']) > bonferoniThr05)">
+                                                    <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                                    <div v-else class="significant">{{entry[key]}}</div>
+                                                </div>
+                                                <div v-else>
+                                                    <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                                    <div v-else>{{entry[key]}}</div>
+                                                </div>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -176,12 +183,21 @@
       transformation: string;
       method: string;
       publication: string = '';
-      association_count;
+      associationCount;
       arapheno_link: string = '';
       currentView: string = 'Study details';
       currentViewIn: string = 'On genes';
       columns = ['SNP', 'maf', 'pvalue', 'beta', 'odds_ratio','gene']; // deleted confidence_interval for now
       n = {phenotypes: 0, accessions: 0};
+      bonferoniThr05 = 0;
+      bonferoniThr01 = 0;
+      permThr = 0;
+      bonferoniHits = 0;
+      permHits = 0;
+
+      // TODO: add permutation threshold retrieval from hdf5 files
+      // TODO: add threshold choice
+      // TODO: add hover description for Manhattan plots OR simple PNG loading from server
 
       dataChr = {
           '1': [],
@@ -204,14 +220,15 @@
           'On genes': [{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}],
           'On snp type': [{'type': 'string','label': 'Condition'},{'type': 'number','label':'#Count'}]};
       sig_as_distibution_rows = {
-          'On genes': [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]],
-          'On snp type': [['S',23],['SN', 2],['*', 2]]};
+          'On genes': [['te','t']],
+          'On snp type': [['string', 'number']]};
 
       sortOrders = {'snp': 1, 'maf': 1, 'pvalue': 1, 'beta': 1, 'odds_ratio': 1, 'confidence_interval': 1, 'gene': 1};
       sortKey: string = '';
       ordered: string = '';
       filterKey: string = '';
       associations = [];
+      significantAssociations = [];
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
@@ -237,10 +254,6 @@
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(val);
       }
-//      @Watch('currentView')
-//      onCurrentViewChanged(val: number, oldVal: number) {
-//        this.loadData(val);
-//      }
       created(): void {
         if (this.$route.params.studyId) {
           this.studyId = this.$route.params.studyId;
@@ -257,6 +270,43 @@
         this.currentPage = data.current_page;
         this.totalCount = data.count;
         this.pageCount = data.page_count;
+        this.bonferoniThr01 = data.thresholds.bonferoni_threshold01;
+        this.bonferoniThr05 = data.thresholds.bonferoni_threshold05;
+        this.associationCount = data.thresholds.total_associations;
+        for (let i in this.associations) {
+          if (this.associations[i]['pvalue']<this.bonferoniThr05){
+            this.significantAssociations[i] = this.associations[i];
+            this.bonferoniHits = parseInt(i);
+            break
+          }
+        }
+        // Load pie data, get unique genes and SNP types
+        for (let asso of this.significantAssociations) {
+          let found = false;
+          for (let gene of this.sig_as_distibution_rows['On genes']){
+            if (asso['gene']['name'].localeCompare(gene[0])){
+              gene[1] += 1;
+              found = true;
+              break
+            }
+          }
+          if (! found) {
+            this.sig_as_distibution_rows['On genes'].push([asso['gene']['name'], 1])
+          }
+          found = false;
+          for (let type of this.sig_as_distibution_rows['On snp type']){
+            if (asso['type'].localeCompare(type[0])){
+              type[1] += 1;
+              found = true;
+              break
+            }
+          }
+          if (! found) {
+            this.sig_as_distibution_rows['On snp type'].push([asso['type'], 1])
+          }
+
+        }
+
       }
       _displayStudyData(data): void {
         this.studyName = data.name;
@@ -266,7 +316,6 @@
         this.phenotype = data.phenotype;
         this.publication = data.publication;
         this.phenotypeId = data.phenotype_pk;
-        this.association_count = data.association_count;
         this.breadcrumbs[2].text = data.name;
         loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);
       }
@@ -275,7 +324,8 @@
       }
       _displayManhattanPlots(data): void {
         for (let i of [1,2,3,4,5]) {
-            this.dataChr[i.toString()] = data['chr'+i.toString()].positions.map(function (e, l) {return [e, data['chr'+i.toString()].pvalues[l]]})
+            this.dataChr[i.toString()] = data['chr'+i.toString()].positions.map(function (e, l) {return [e, data['chr'+i.toString()].pvalues[l]]});
+            this.options[i.toString()]['bonferoniThreshold'] = data.bonferoni_threshold;
         }
       }
 
@@ -324,6 +374,12 @@
         width: 100%;
         max-width: 100%;
         margin-bottom: 2rem;
+    }
+    .regular {
+        font-weight: normal;
+    }
+    .significant {
+        font-weight: bold;
     }
     .page-container {
         display:flex;

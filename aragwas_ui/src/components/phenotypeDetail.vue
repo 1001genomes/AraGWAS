@@ -158,7 +158,7 @@
       currentView: string = 'List of Studies';
       arapheno_link: string = '';
       columns = ['SNP', 'pvalue', 'gene', 'study'];
-      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'average N hits', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']}
+      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']}
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
       sortKey: string = '';
@@ -170,7 +170,6 @@
       totalCount = 0;
       breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '#/phenotypes'}, {text: this.phenotypeName, href: '', disabled: true}];
 
-//      TODO: Add computation of avg N hits
 //      TODO: add similar phenotypes fetching with Ontology
 
       get filteredData() {

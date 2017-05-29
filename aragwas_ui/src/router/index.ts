@@ -19,7 +19,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Althome,
+      component: Althome, props: true
     },
     {
       path: '/studies',

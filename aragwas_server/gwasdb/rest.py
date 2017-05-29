@@ -66,13 +66,19 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
         chr = []
         pos = []
         mafs = []
+        n_asso = 0
 
         # Get top 2500 associations for each chromosome.
+        TOP = 100
         for i in range(5):
-            pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:25])
-            pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:25])
-            mafs.extend(association_file['pvalues']['chr'+str(i+1)]['mafs'][:25])
-            chr.extend(i for l in range(25))
+            pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:TOP])
+            pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:TOP])
+            mafs.extend(association_file['pvalues']['chr'+str(i+1)]['mafs'][:TOP])
+            chr.extend(i+1 for l in range(TOP))
+            n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
+        bt05 = -math.log(0.05/float(n_asso), 10)
+        bt01 = -math.log(0.01/float(n_asso), 10)
+        thresholds = {'bonferoni_threshold05': bt05,'bonferoni_threshold01': bt01, 'total_associations': n_asso}
 
         pval = numpy.asarray(pval)
         pos = numpy.asarray(pos)
@@ -85,6 +91,7 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
             # get associated genes:
             name = ''
             pk = ''
+            type = ''
             try:
                 obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
                 gene = Gene.objects.get(pk=obj.gene)
@@ -92,13 +99,13 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
                 pk = gene.pk
             except:
                 pass
-            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'maf': "{:.3f}".format(mafs[l]), 'gene':{'name': name, 'pk': pk}})
+            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'maf': "{:.3f}".format(mafs[l]), 'gene':{'name': name, 'pk': pk}, 'type': type})
         # Homemade paginator
         PAGE_SIZE = 20.
         page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
         if page > page_count:
             page = page_count
-        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
+        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -117,6 +124,7 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
             raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
         # Get SNP position in file
         output = {}
+        n_asso = 0
 
         # Get top 2500 associations for each chromosome.
         for i in range(5):
@@ -124,10 +132,10 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
             pos_chr = association_file['pvalues']['chr'+str(i+1)]['positions'][:2500]
             mafs_chr = association_file['pvalues']['chr'+str(i+1)]['mafs'][:2500]
             output['chr'+str(i+1)] = {'pvalues': values_chr, 'positions': pos_chr, 'mafs': mafs_chr}
+            n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
+        output['bonferoni_threshold'] = -math.log(0.05/float(n_asso), 10)
 
         return Response(output, status=status.HTTP_200_OK)
-
-
 
 class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -151,6 +159,8 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         chr = []
         pos = []
         study = []
+        n_asso = 0
+        TOP = 20
         for study_pk in st_id:
             try:
                 association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + str(study_pk) + ".hdf5", 'r')
@@ -158,10 +168,11 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
                 raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(str(study_pk) + '.hdf5'))
             # Get top 2500 associations for each chromosome and each study
             for i in range(5):
-                pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:20])
-                pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:20])
-                chr.extend(i for l in range(20))
-                study.extend(study_pk for l in range(20))
+                pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:TOP])
+                pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:TOP])
+                chr.extend(i+1 for l in range(TOP))
+                study.extend(study_pk for l in range(TOP))
+                n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
 
         pval = numpy.asarray(pval)
         pos = numpy.asarray(pos)
@@ -188,7 +199,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
         if page > page_count:
             page = page_count
-        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page,
+        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'total_associations': n_asso,
                 'results': results[int(PAGE_SIZE) * (page - 1):int(PAGE_SIZE) * page]}
         return Response(data, status=status.HTTP_200_OK)
 
@@ -258,6 +269,25 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             if inverted:
                 queryset = queryset.reverse()
         return queryset
+
+class SimilarPhenotypesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieves information about similar phenotypes
+    """
+    queryset = Phenotype.objects.all()
+    serializer_class = PhenotypeListSerializer
+
+    # Overriding get_queryset to allow for case-insensitive custom ordering
+    def retrieve(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        try:
+            ori_pheno = Phenotype.objects.get(pk=pk)
+        except:
+            raise ValueError('Phenotype with pk {} not found'.format(pk))
+        trait_ontology = ori_pheno.to
+        queryset = Phenotype.objects.filter(to=trait_ontology)
+        serializer = PhenotypeListSerializer(queryset)
+        return Response(serializer.data)
 
 class GeneViewSet(viewsets.ReadOnlyModelViewSet):
     """
