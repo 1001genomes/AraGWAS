@@ -37,6 +37,17 @@ class ApiVersionView(APIView):
         serializer = ApiVersionSerializer(get_api_version(), many=False)
         return Response(serializer.data)
 
+###############
+# ELASTIC SEARCH REST FUNCTIONS
+##############
+class TopAssociationsViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Retrieve information about the best associations for the top associations list
+    """
+    # TODO: pass all top associations with the following fields: SNP, pvalue, phenotype, gene, maf, beta, odds ratio, confidence interval, type, annotation, chr (study?)
+    # TODO: filter fields: MAF, Chr, Annotation, type
+    pass
+
 class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Retrieves information about GWAS associations
@@ -160,7 +171,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         pos = []
         study = []
         n_asso = 0
-        TOP = 20
+        TOP = 25
         for study_pk in st_id:
             try:
                 association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + str(study_pk) + ".hdf5", 'r')
@@ -186,7 +197,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             name = ''
             pk = ''
             try:
-                obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
+                obj = SNP.objects.get(Q(chromosome__exact=chr[l]) & Q(position__exact=pos[l]))
                 gene = Gene.objects.get(pk=obj.gene)
                 name = gene.name
                 pk = gene.pk
@@ -284,9 +295,10 @@ class SimilarPhenotypesViewSet(viewsets.ReadOnlyModelViewSet):
             ori_pheno = Phenotype.objects.get(pk=pk)
         except:
             raise ValueError('Phenotype with pk {} not found'.format(pk))
-        trait_ontology = ori_pheno.to
-        queryset = Phenotype.objects.filter(to=trait_ontology)
-        serializer = PhenotypeListSerializer(queryset)
+        trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
+        queryset = Phenotype.objects.filter(name__exact=trait_ontology)
+        pagephe = self.paginate_queryset(queryset)
+        serializer = PhenotypeListSerializer(pagephe, many=True)
         return Response(serializer.data)
 
 class GeneViewSet(viewsets.ReadOnlyModelViewSet):

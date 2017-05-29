@@ -263,7 +263,7 @@
         loadAssociationsForManhattan(this.studyId).then(this._displayManhattanPlots);
       }
       loadData(page: number): void {
-        loadAssociationsOfStudy(this.studyId, page, this.ordered).then(this._displayData);
+        loadAssociationsOfStudy(this.studyId, page).then(this._displayData);
       }
       _displayData(data): void {
         this.associations = data.results;

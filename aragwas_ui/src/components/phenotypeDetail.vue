@@ -66,18 +66,18 @@
                                                     @click="sortBy(key)"
                                                     :class="{ active: sortKey == key }">
                                                     {{ key | capitalize }}
-                                                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                                            </span>
                                                 </th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-if="currentView === 'List of Studies'" v-for="entry in filteredStudies">
-                                                <td v-for="key in columns_tab[i]">
-                                                    <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                    <p v-else>{{entry[key]}}</p>
-                                                </td>
-                                            </tr>
+                                                <tr v-for="entry in filteredStudies">
+                                                    <td v-for="key in columns_tab[i]">
+                                                        <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                                        <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
+                                                        <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['study_set'].length}}</p>
+                                                        <p v-else>{{entry[key]}}</p>
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </v-card>
@@ -137,7 +137,7 @@
 <script lang="ts">
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Vue from 'vue';
-    import {loadPhenotype, loadAssociationsOfPhenotype, loadStudy} from '../api';
+    import {loadPhenotype, loadAssociationsOfPhenotype, loadStudy, loadSimilarPhenotypes} from '../api';
 
     @Component({
         filters: {
@@ -152,13 +152,13 @@
       phenotypeName: string = '';
       studyNumber = 0;
       studyIDs = [];
-      studyData = [{}];
+      tabData = {};
       avgHitNumber = 0;
       phenotypeDescription: string = '';
       currentView: string = 'List of Studies';
       arapheno_link: string = '';
       columns = ['SNP', 'pvalue', 'gene', 'study'];
-      columns_tab = {'Similar Phenotypes': ['phenotype', 'n studies', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']}
+      columns_tab = {'Similar Phenotypes': ['name', 'n studies', 'description', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']};
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
       sortKey: string = '';
@@ -192,7 +192,7 @@
         if (filterKey) {
           filterKey = filterKey.toLowerCase();
         }
-        let data = this.studyData;
+        let data = this.tabData[this.currentView];
         if (filterKey) {
           data = data.filter((row) => {
             return Object.keys(row).some((key) => {
@@ -212,6 +212,7 @@
           this.phenotypeId = this.$route.params.phenotypeId;
         }
         loadPhenotype(this.phenotypeId).then(this._displayPhenotypeData).then(this.loadStudyList);
+        loadSimilarPhenotypes(this.phenotypeId).then(this._displaySimilarPhenotypes);
         this.loadData(this.currentPage);
       }
 
@@ -224,11 +225,14 @@
         this.studyNumber = data.study_set.length;
         this.studyIDs = data.study_set;
       }
+      _displaySimilarPhenotypes(data): void {
+        this.tabData['Similar Phenotypes'] = data;
+      }
 
 //    ASSOCIATION LOADING
       loadData(page: number): void {
           // Load associations of all cited SNPs
-       loadAssociationsOfPhenotype(this.phenotypeId, page, this.ordered).then(this._displayData)
+       loadAssociationsOfPhenotype(this.phenotypeId, page).then(this._displayData)
       }
       _displayData(data): void {
         this.associations = data.results;
@@ -244,7 +248,7 @@
       }
       _addStudyData(data): void {
         if(Object.keys(this.studyIDs[0]).length === 0){
-          this.studyData = [{
+          this.tabData['List of Studies'] = [{
             'study': data.name,
             'genotype': data.genotype,
             'method': data.method,
@@ -254,7 +258,7 @@
           }]
         }
         else{
-          this.studyData = this.studyData.concat([{
+          this.tabData['List of Studies'] = this.tabData['List of Studies'].concat([{
             'study': data.name,
             'genotype': data.genotype,
             'method': data.method,

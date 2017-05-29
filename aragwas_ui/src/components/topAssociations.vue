@@ -61,7 +61,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="entry in filteredData">
+                            <tr v-for="entry in filteredData" v-if="entry['show']">
                                 <td v-for="key in columns">
                                     <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                     <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
@@ -103,7 +103,7 @@
         ordered: string = '';
         columns = ['SNP', 'p-value', 'phenotype', 'gene','maf','beta', 'odds ratio', 'confidence interval'];
         filterKey: string = '';
-        assocations = [];
+        associations = [];
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
@@ -118,7 +118,7 @@
             if (filterKey) {
                 filterKey = filterKey.toLowerCase();
             }
-            let data = this.assocations;
+            let data = this.associations;
             if (filterKey) {
                 data = data.filter((row) => {
                     return Object.keys(row).some((key) => {
@@ -135,31 +135,34 @@
         }
         @Watch('maf')
         onMafChanged(val: number, oldVal: number) {
-            this.loadData(val);
+            this.filterData(val);
         }
         @Watch('chr')
         onChrChanged(val: number, oldVal: number) {
-            this.loadData(val);
+            this.filterData(val);
         }
         @Watch('annotation')
         onAnnotationChanged(val: number, oldVal: number) {
-            this.loadData(val);
+            this.filterData(val);
         }
         @Watch('type')
         onTypeChanged(val: number, oldVal: number) {
-            this.loadData(val);
+            this.filterData(val);
         }
         created(): void {
             this.loadData(this.currentPage);
         }
         loadData(page: number): void {
-            loadStudies(page, this.ordered).then(this._displayData);
+            loadStudies(page, this.ordered).then(this._displayData); //change this with ES search
         }
         _displayData(data): void {
-            this.assocations = data.results;
+            this.associations = data.results;
             this.currentPage = data.current_page;
             this.totalCount = data.count;
             this.pageCount = data.page_count;
+            for (let i in this.associations) {
+                this.associations[i]['show']=true;
+            }
         }
         sortBy(key): void {
             this.sortKey = key;
@@ -170,6 +173,90 @@
                 this.ordered = key;
             }
             this.loadData(this.currentPage);
+        }
+        filterData(filters): void {
+            for (let i in this.associations) {
+                this.associations[i]['show'] = this.filterAssociation(this.associations[i])
+            }
+        }
+        filterAssociation(asso): boolean {
+            // Check chromosome
+            let is_part;
+            if (this.chr.length<5){
+                let chrom = asso['SNP'][3];
+                is_part = false;
+                for (let i of this.chr) {
+                    if (i === chrom) {
+                        is_part = true;
+                        break
+                    }
+                }
+                if (! is_part) {
+                    return false
+                }
+            }
+            // Check maf
+            if (this.maf.length < 4){
+                let mafasso = asso['maf'];
+                is_part = false;
+                for (let i of this.maf) {
+                    switch (i) {
+                        case '<1':
+                            if (mafasso < 0.01) {
+                                is_part = true;
+                            }
+                            break;
+                        case '1-5':
+                            if (mafasso >= 0.01 && mafasso <= 0.05) {
+                                is_part = true;
+                            }
+                            break;
+                        case '5-10':
+                            if (mafasso > 0.05 && mafasso <= 0.1) {
+                                is_part = true;
+                            }
+                            break;
+                        case '>10':
+                            if (mafasso > 0.1) {
+                                is_part = true;
+                            }
+                    }
+                }
+                if (! is_part) {
+                    return false
+                }
+            }
+            // Check type
+            if (this.type.length < 2) {
+                let typeasso = asso['type'];
+                is_part = false;
+                for (let i of this.type) {
+                    if (i === typeasso) {
+                        is_part = true;
+                        break
+                    }
+                }
+                if (! is_part) {
+                    return false
+                }
+            }
+            if (this.annotation.length<3){
+                // Check chromosome
+                let annoasso = asso['SNP'][3];
+                is_part = false;
+                for (let i of this.annotation) {
+                    if (i === annoasso) {
+                        is_part = true;
+                        break
+                    }
+                }
+                if (! is_part) {
+                    return false
+                }
+            }
+            return true
+
+
         }
     }
 </script>

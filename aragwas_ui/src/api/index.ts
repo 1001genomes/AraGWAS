@@ -30,8 +30,8 @@ export async  function loadStudy(studyId= '1') {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfStudy(studyId= '1', page= 1, ordering= '-pvalue') {
-    return fetch(`/api/associations_of_study/${studyId}/?page=${page}&ordering=${ordering}`)
+export async  function loadAssociationsOfStudy(studyId= '1', page= 1) {
+    return fetch(`/api/associations_of_study/${studyId}/?page=${page}`)
         .then(checkStatus)
         .then(convertToModel);
 }
@@ -55,8 +55,14 @@ export async  function loadPhenotype(phenotypeId = '1') {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfPhenotype(phenotypeId= '1', page= 1, ordering= '-pvalue') {
-    return fetch(`/api/associations_of_phenotype/${phenotypeId}/?page=${page}&ordering=${ordering}`)
+export async  function loadAssociationsOfPhenotype(phenotypeId= '1', page= 1) {
+    return fetch(`/api/associations_of_phenotype/${phenotypeId}/?page=${page}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+// Load similar phenotypes based on ontology
+export async function loadSimilarPhenotypes(phenotypeId= '1') {
+    return fetch(`/api/similar_phenotypes/${phenotypeId}/`)
         .then(checkStatus)
         .then(convertToModel);
 }
