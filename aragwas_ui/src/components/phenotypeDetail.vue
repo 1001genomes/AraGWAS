@@ -70,7 +70,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="entry in filteredStudies">
+                                                <tr v-for="entry in filteredStudiesAndPhenotypes">
                                                     <td v-for="key in columns_tab[i]">
                                                         <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                         <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
@@ -152,10 +152,11 @@
       phenotypeName: string = '';
       studyNumber = 0;
       studyIDs = [];
-      tabData = {};
+      tabNames = {'List of Studies': 'listOfStudies', 'Similar Phenotypes': 'similarPhenotypes'};
+      tabData = {listOfStudies: [{}], similarPhenotypes: []};
       avgHitNumber = 0;
       phenotypeDescription: string = '';
-      currentView: string = 'List of Studies';
+      currentView: string = 'Similar Phenotypes';
       arapheno_link: string = '';
       columns = ['SNP', 'pvalue', 'gene', 'study'];
       columns_tab = {'Similar Phenotypes': ['name', 'n studies', 'description', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']};
@@ -187,12 +188,12 @@
         }
         return data;
       }
-      get filteredStudies() {
+      get filteredStudiesAndPhenotypes() {
         let filterKey = this.filterKey;
         if (filterKey) {
           filterKey = filterKey.toLowerCase();
         }
-        let data = this.tabData[this.currentView];
+        let data = this.tabData[this.tabNames[this.currentView]];
         if (filterKey) {
           data = data.filter((row) => {
             return Object.keys(row).some((key) => {
@@ -215,6 +216,9 @@
         loadSimilarPhenotypes(this.phenotypeId).then(this._displaySimilarPhenotypes);
         this.loadData(this.currentPage);
       }
+      mounted(): void {
+        this.currentView = 'List of Studies';
+      }
 
 //    PHENOTYPE DATA LOADING
       _displayPhenotypeData(data): void {
@@ -226,7 +230,7 @@
         this.studyIDs = data.study_set;
       }
       _displaySimilarPhenotypes(data): void {
-        this.tabData['Similar Phenotypes'] = data;
+        this.tabData.similarPhenotypes = data;
       }
 
 //    ASSOCIATION LOADING
@@ -246,9 +250,12 @@
           loadStudy(key).then(this._addStudyData)
         }
       }
+      changeView(data): void {
+        this.currentView = 'List of Studies'
+      }
       _addStudyData(data): void {
         if(Object.keys(this.studyIDs[0]).length === 0){
-          this.tabData['List of Studies'] = [{
+          this.tabData.listOfStudies = [{
             'study': data.name,
             'genotype': data.genotype,
             'method': data.method,
@@ -258,7 +265,7 @@
           }]
         }
         else{
-          this.tabData['List of Studies'] = this.tabData['List of Studies'].concat([{
+          this.tabData.listOfStudies = this.tabData.listOfStudies.concat([{
             'study': data.name,
             'genotype': data.genotype,
             'method': data.method,

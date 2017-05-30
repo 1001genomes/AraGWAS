@@ -297,6 +297,7 @@ class SimilarPhenotypesViewSet(viewsets.ReadOnlyModelViewSet):
             raise ValueError('Phenotype with pk {} not found'.format(pk))
         trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
         queryset = Phenotype.objects.filter(name__exact=trait_ontology)
+        queryset = queryset.filter(~Q(pk=pk))
         pagephe = self.paginate_queryset(queryset)
         serializer = PhenotypeListSerializer(pagephe, many=True)
         return Response(serializer.data)
