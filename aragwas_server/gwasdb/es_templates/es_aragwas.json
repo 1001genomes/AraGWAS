@@ -1,0 +1,161 @@
+{
+    "template": "aragwas",
+    "settings": {
+        "index.mapper.dynamic": false
+    },
+    "mappings": {
+        "associations": {
+            "dynamic": "strict",
+            "_all": {
+                "enabled": false
+            },
+            "properties": {
+                "mac": {
+                    "type": "integer"
+                },
+                "maf": {
+                    "type": "float"
+                },
+                "overFDR": {
+                    "type": "boolean"
+                },
+                "annotation": {
+                    "type": "keyword"
+                },
+                "pvalue": {
+                    "type": "float"
+                },
+                "beta": {
+                    "type": "float"
+                },
+                "odds_ratio": {
+                    "type": "float"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "snps": {
+                    "type": "object",
+                    "properties": {
+                        "chr": {
+                            "type": "keyword"
+                        },
+                        "position": {
+                            "type": "integer"
+                        },
+                        "ref": {
+                            "type": "keyword"
+                        },
+                        "anc": {
+                            "type": "keyword"
+                        },
+                        "alt": {
+                            "type": "keyword"
+                        },
+                        "coding": {
+                            "type": "boolean"
+                        },
+                        "annotations": {
+                            "type": "nested",
+                            "properties": {
+                                "gene_name": {
+                                    "type": "keyword"
+                                },
+                                "transcript_id": {
+                                    "type": "keyword"
+                                },
+                                "effect": {
+                                    "type": "keyword"
+                                },
+                                "impact": {
+                                    "type": "keyword"
+                                },
+                                "function": {
+                                    "type": "keyword"
+                                },
+                                "codon_change": {
+                                    "type": "keyword"
+                                },
+                                "rank": {
+                                    "type": "integer"
+                                },
+                                "amino_acid_change": {
+                                    "type": "keyword"
+                                }
+                            }
+                        }
+                    }
+                },
+                "study": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "suggest" : {
+                            "type" : "completion"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "transformation": {
+                            "type": "keyword"
+                        },
+                        "method": {
+                            "type": "keyword"
+                        },
+                        "thresholds": {
+                            "type": "nested",
+                            "properties": {
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "value": {
+                                    "type": "float"
+                                }
+                            }
+                        },
+                        "genotype": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "version": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "phenotype": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "suggest" : {
+                                    "type" : "completion"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "date": {
+                                    "type": "date"
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}

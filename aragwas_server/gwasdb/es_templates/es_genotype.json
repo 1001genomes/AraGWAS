@@ -1,0 +1,174 @@
+{
+    "template": "geno_chr*",
+    "aliases": {
+         "genotype" : {}
+    },
+    "settings": {
+        "index.mapper.dynamic": false
+    },
+    "mappings": {
+        "genes": {
+            "properties": {
+                "type": {
+                    "type": "keyword"
+                },
+                "strand": {
+                    "type": "keyword"
+                },
+                "suggest" : {
+                    "type" : "completion"
+                },
+                "name": {
+                    "type": "keyword"
+                },
+                "chr": {
+                    "type": "keyword"
+                },
+                "positions": {
+                    "type": "integer_range"
+                },
+                "aliases": {
+                    "type": "nested",
+                    "properties": {
+                        "symbol": {"type": "keyword"},
+                        "full_name": {"type":"text"}
+                    }
+                },
+                "GO": {
+                    "type": "nested",
+                    "properties": {
+                        "object_name": {
+                            "type":"keyword"
+                        },
+                        "go_id": {"type":"keyword"},
+                        "term": {
+                            "type": "keyword"
+                        },
+                        "slim_term": {
+                            "type": "keyword"
+                        },
+                        "relation": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "isoforms": {
+                    "type": "nested",
+                    "properties": {
+                        "positions": {
+                            "type": "integer_range"
+                        },
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "short_description": {
+                            "type": "text"
+                        },
+                        "three_prime_UTR": {
+                            "type": "object",
+                            "properties": {
+                                "positions": {
+                                    "type": "integer_range"
+                                }
+                            }
+                        },
+                        "exons": {
+                            "type": "nested",
+                            "properties": {
+                                "positions": {
+                                    "type": "integer_range"
+                                }
+                            }
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "strand": {
+                            "type": "keyword"
+                        },
+                        "cds": {
+                            "type": "nested",
+                            "properties": {
+                                "positions": {
+                                    "type": "integer_range"
+                                },
+                                "frame": {
+                                    "type": "integer"
+                                }
+                            }
+                        },
+                        "curator_summary": {
+                            "type": "text"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "five_prime_UTR": {
+                            "type": "object",
+                            "properties": {
+                                "positions": {
+                                    "type": "integer_range"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "snps": {
+            "dynamic": "strict",
+            "_all": {
+                "enabled": false
+            },
+            "properties": {
+                "chr": {
+                    "type": "keyword"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "ref": {
+                    "type": "keyword"
+                },
+                "anc": {
+                    "type": "keyword"
+                },
+                "alt": {
+                    "type": "keyword"
+                },
+                "coding": {
+                    "type": "boolean"
+                },
+                "annotations": {
+                    "type": "nested",
+                    "properties": {
+                        "gene_name": {
+                            "type": "keyword"
+                        },
+                        "transcript_id": {
+                            "type": "keyword"
+                        },
+                        "effect": {
+                            "type": "keyword"
+                        },
+                        "impact": {
+                            "type": "keyword"
+                        },
+                        "function": {
+                            "type": "keyword"
+                        },
+                        "codon_change": {
+                            "type": "keyword"
+                        },
+                        "rank": {
+                            "type": "integer"
+                        },
+                        "amino_acid_change": {
+                            "type": "keyword"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

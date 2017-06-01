@@ -5,3 +5,43 @@ services:
     ports:
      - "8000:8000"
     entrypoint: /srv/web/web-entrypoint.sh
+    networks:
+      - aragwas
+  amqp1:
+    image: "rabbitmq:3-management"
+    hostname: "amqp1"
+    container_name: "amqp1"
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    container_name: elasticsearch1
+    environment:
+      - cluster.name=aragwas
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+      - aragwas
+
+volumes:
+  esdata1:
+    driver: local
+
+networks:
+  esnet:
+  aragwas:

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gwasdb',
+    'gwasdb.apps.GwasdbConfig',
     'rest_framework'
 ]
 
@@ -139,4 +139,6 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'rpc'
+ES_HOST = 'http://elastic:changeme@localhost:9200'
 GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
