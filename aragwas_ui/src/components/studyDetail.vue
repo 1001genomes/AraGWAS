@@ -144,9 +144,8 @@
                         <v-col xs12>
                             <br>
                             <v-col xs12>
-                            <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                            <manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
-                            <vue-line-chart></vue-line-chart>
+                            <v-row><v-col xs11><h5 class="mb-1">Manhattan Plots</h5><v-divider></v-divider></v-col></v-row>
+                            <div ref="manhattan"><manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot></div>
                             </v-col>
                         </v-col>
                     </v-row>
@@ -323,9 +322,13 @@
         this.arapheno_link = data.arapheno_link;
       }
       _displayManhattanPlots(data): void {
+//        this.$nextTick(() => {
+//            var manWidth = this.$refs.manhattan.clientWidth
+//        });
         for (let i of [1,2,3,4,5]) {
             this.dataChr[i.toString()] = data['chr'+i.toString()].positions.map(function (e, l) {return [e, data['chr'+i.toString()].pvalues[l]]});
             this.options[i.toString()]['bonferoniThreshold'] = data.bonferoni_threshold;
+//            this.options[i.toString()]['width'] = manWidth
         }
       }
 

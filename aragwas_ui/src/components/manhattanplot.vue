@@ -91,7 +91,7 @@
                     .append("text").text(val_x*i)
                     .attr("text-anchor", "middle");
             };
-            var val_y = Math.round(options.max_y/3)
+            var val_y = Math.round(options.max_y/3);
             for (var i = 1; (i*val_y) < (options.max_y+1); i++) {
                 svg.append("svg:line")
                     .attr("x1", scaleW(0))
@@ -109,7 +109,7 @@
             svg.append("svg:g")
                 .attr("transform", "translate("+5+","+12+")")
                 .append("text").text("Manhattan-plot for chromosome "+options.chr)
-                .style("font-weight","bold")
+                .style("font-weight","bold");
             svg.append("svg:g")
                 .attr("transform", "matrix(0, -1, 1, 0, 0, 0)").append("svg:g")
                 .attr("transform", "translate("+((padding-h))+","+(padding/3)+")")

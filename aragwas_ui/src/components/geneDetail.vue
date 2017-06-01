@@ -33,8 +33,8 @@
                 <v-col xs12>
                     <div id="genomic-region">
                         <v-row><v-col xs5><h5 class="mb-1">Genomic Region : {{ geneName }}</h5><v-divider></v-divider></v-col>
-                            <v-col xs4 offset-xs3><v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom"></v-slider></v-col></v-row>
-                        <v-col xs12><gene-plot :dataPoints="[1,3]" :options="{width: 1000}"></gene-plot></v-col>
+                            <v-col xs4 offset-xs3><v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min"></v-slider></v-col></v-row>
+                        <v-col xs12><gene-plot :dataPoints="[1,3]" :options="options"></gene-plot></v-col>
                     </div>
                 </v-col>
             </v-row>
@@ -93,19 +93,28 @@
         geneId: string = '';
         geneName: string = '';
         geneDescription: string = '';
-        startPosition = 0;
-        endPosition = 0;
+        startPosition = 12637000;
+        endPosition = 12700000;
+        centerOfGene = 0;
         chromosome = 0;
         snpSet;
         snpCount = 0;
         associationCount = 0;
+        windowStartPosition = 0;
+        windowEndPosition = 0;
+        min = 10;
+        options = {
+            width: 1000,
+            min_x: 1200000,
+            max_x: 1289300,
+        };
 
         // Associations parameters
         ordered: string;
 
 
         breadcrumbs = [{text: 'Home', href: '/'}, {text:'Genes', href: '#/genes'}, {text: this.geneName, href: '', disabled: true}];
-        zoom = 1;
+        zoom = 75;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
@@ -128,6 +137,12 @@
             }
             return data;
         }
+        @Watch('zoom')
+        onZoomChanged(val: number, oldVal: number) {
+            this.$nextTick(function () {
+                this.updateGeneRegion();
+            });
+        }
 
         created(): void {
             if (this.$route.params.geneId) {
@@ -135,6 +150,8 @@
             }
             loadGene(this.geneId).then(this._displayGeneData);
             this.loadData(this.currentPage);
+            this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition)/2;
+            this.updateGeneRegion();
         }
 
         // Gene DATA LOADING
@@ -142,8 +159,8 @@
             this.geneName = data.name;
             this.geneDescription = data.description;
             this.breadcrumbs[2].text = data.name;
-            this.startPosition = data.start_position;
-            this.endPosition = data.end_position;
+//            this.startPosition = data.start_position;
+//            this.endPosition = data.end_position;
             this.chromosome = data.chromosome;
             this.snpSet = data.SNPs;
             this.snpCount = data.SNP_count;
@@ -159,6 +176,11 @@
             this.currentPage = data.current_page;
             this.totalCount = data.count;
             this.pageCount = data.page_count;
+        }
+        updateGeneRegion(): void {
+            let windowsize = Math.round((this.endPosition - this.startPosition)*100/this.zoom);
+            this.windowStartPosition = this.centerOfGene - windowsize/2;
+            this.windowEndPosition = this.centerOfGene + windowsize/2;
         }
 
     }
