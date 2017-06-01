@@ -43,7 +43,7 @@
             <div class="section mt-4">
                 <div class="container">
                     <v-row class="text-xs-center">
-                        <v-col xs12 md6 lg4>
+                        <v-col xs4 offset-xs2>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWAS Studies</h5>
@@ -51,15 +51,15 @@
                                 <v-btn class="btn--large icon--left green lighten-1" router to="/studies"><v-icon left>view_list</v-icon> GWAS Studies</v-btn>
                             </div>
                         </v-col>
-                        <v-col xs12 md6 lg4>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">call_merge</i></h3>
-                                <h5 class="text-xs-center">Meta-Analysis of Associations</h5>
-                                <p class="light justify">Compare associations across phenotypes or for a specific gene region.</p>
-                                <v-btn class="btn--large-focused icon--left green lighten-1" router to="/meta-analysis"><v-icon left>call_merge</v-icon> Meta-Analysis</v-btn>
-                            </div>
-                        </v-col>
-                        <v-col xs12 md6 lg4>
+                        <!--<v-col xs12 md6 lg4>-->
+                            <!--<div class="icon-block">-->
+                                <!--<h3 class="text-xs-center green&#45;&#45;text lighten-1"><i class="material-icons" style="font-size:35px">call_merge</i></h3>-->
+                                <!--<h5 class="text-xs-center">Meta-Analysis of Associations</h5>-->
+                                <!--<p class="light justify">Compare associations across phenotypes or for a specific gene region.</p>-->
+                                <!--<v-btn class="btn&#45;&#45;large-focused icon&#45;&#45;left green lighten-1" router to="/meta-analysis"><v-icon left>call_merge</v-icon> Meta-Analysis</v-btn>-->
+                            <!--</div>-->
+                        <!--</v-col>-->
+                        <v-col xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>

@@ -32,16 +32,9 @@
                 <br>
                 <v-col xs12>
                     <div id="genomic-region">
-                        <v-row><v-col xs5><h5 class="mb-1">Genomic Region</h5><v-divider></v-divider></v-col>
+                        <v-row><v-col xs5><h5 class="mb-1">Genomic Region : {{ geneName }}</h5><v-divider></v-divider></v-col>
                             <v-col xs4 offset-xs3><v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom"></v-slider></v-col></v-row>
-                        <!--INSERT DRAWING HERE-->
-                        <br>
-                        <br>
-                        <br>
-                        <h2 style="justify-content: center; display: flex">INSERT DRAWING HERE</h2>
-                        <br>
-                        <br>
-                        <br>
+                        <v-col xs12><gene-plot :dataPoints="[1,3]" :options="{width: 1000}"></gene-plot></v-col>
                     </div>
                 </v-col>
             </v-row>
@@ -82,12 +75,16 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {loadAssociationsOfGene, loadGene} from '../api';
+    import GenePlot from '../components/geneplot.vue'
 
     @Component({
         filters: {
             capitalize(str) {
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
+        },
+        components: {
+            'gene-plot': GenePlot,
         },
     })
     export default class GeneDetail extends Vue {
