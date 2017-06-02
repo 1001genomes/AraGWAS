@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from gwasdb.hdf5 import getTopAssociations, regroupAssociations
 
 from gwasdb.tasks import compute_ld
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
@@ -66,39 +67,13 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
             page = int(request.query_params.get('page', None))
         except:
             page = 1
-        # associations = get_list_or_404(Association, study=pk)
-        try:
-            association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5", 'r')
-        except:
-            raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
-        # Get SNP position in file
+        association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
+        pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
+        # pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 100, 'top')
+        pval, chr, pos, mafs = regroupAssociations(pval,pos,mafs)
 
-        pval = []
-        chr = []
-        pos = []
-        mafs = []
-        n_asso = 0
-
-        # Get top 2500 associations for each chromosome.
-        TOP = 100
-        for i in range(5):
-            pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:TOP])
-            pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:TOP])
-            mafs.extend(association_file['pvalues']['chr'+str(i+1)]['mafs'][:TOP])
-            chr.extend(i+1 for l in range(TOP))
-            n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
-        bt05 = -math.log(0.05/float(n_asso), 10)
-        bt01 = -math.log(0.01/float(n_asso), 10)
-        thresholds = {'bonferoni_threshold05': bt05,'bonferoni_threshold01': bt01, 'total_associations': n_asso}
-
-        pval = numpy.asarray(pval)
-        pos = numpy.asarray(pos)
-        mafs = numpy.asarray(mafs)
-        chr = numpy.asarray(chr)
-
-        i = pval.argsort()[::-1]
         results = []
-        for l in i:
+        for l in range(len(pval)):
             # get associated genes:
             name = ''
             pk = ''
@@ -111,12 +86,13 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
             except:
                 pass
             results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'maf': "{:.3f}".format(mafs[l]), 'gene':{'name': name, 'pk': pk}, 'type': type})
+
         # Homemade paginator
         PAGE_SIZE = 20.
-        page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
+        page_count = int(math.ceil(float(len(pval)) / PAGE_SIZE))
         if page > page_count:
             page = page_count
-        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
+        data = {'count': len(pval), 'page_count': int(math.ceil(float(len(pval)) / PAGE_SIZE)), 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -128,22 +104,13 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AssociationSerializer
     def retrieve(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        # Load hdf5 genotype file:
-        try:
-            association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5", 'r') # Absolute path for tests.
-        except:
-            raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(pk + '.hdf5'))
-        # Get SNP position in file
-        output = {}
-        n_asso = 0
+        association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
 
-        # Get top 2500 associations for each chromosome.
+        pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 2500, 'top')
+
+        output = {}
         for i in range(5):
-            values_chr = association_file['pvalues']['chr'+str(i+1)]['scores'][:2500]
-            pos_chr = association_file['pvalues']['chr'+str(i+1)]['positions'][:2500]
-            mafs_chr = association_file['pvalues']['chr'+str(i+1)]['mafs'][:2500]
-            output['chr'+str(i+1)] = {'pvalues': values_chr, 'positions': pos_chr, 'mafs': mafs_chr}
-            n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
+            output['chr'+str(i+1)] = {'pvalues': pval[i], 'positions': pos[i], 'mafs': mafs[i]}
         output['bonferoni_threshold'] = -math.log(0.05/float(n_asso), 10)
 
         return Response(output, status=status.HTTP_200_OK)
@@ -171,19 +138,15 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         pos = []
         study = []
         n_asso = 0
-        TOP = 25
         for study_pk in st_id:
-            try:
-                association_file = h5py.File("/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + str(study_pk) + ".hdf5", 'r')
-            except:
-                raise FileNotFoundError("Impossible to find the appropriate study file ({})".format(str(study_pk) + '.hdf5'))
-            # Get top 2500 associations for each chromosome and each study
-            for i in range(5):
-                pval.extend(association_file['pvalues']['chr'+str(i+1)]['scores'][:TOP])
-                pos.extend(association_file['pvalues']['chr'+str(i+1)]['positions'][:TOP])
-                chr.extend(i+1 for l in range(TOP))
-                study.extend(study_pk for l in range(TOP))
-                n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
+            association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
+            pval_st, pos_st, mafs_st, n_asso_st, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
+            pval_st, chr_st, pos_st, mafs_st = regroupAssociations(pval_st, pos_st, mafs_st)
+            pval.extend(pval_st)
+            chr.extend(chr_st)
+            pos.extend(pos_st)
+            study.extend(study_pk for l in range(len(pval_st)))
+            n_asso += n_asso_st
 
         pval = numpy.asarray(pval)
         pos = numpy.asarray(pos)

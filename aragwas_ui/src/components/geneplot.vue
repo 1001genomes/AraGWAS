@@ -19,9 +19,6 @@
         dataPoints;
         @Prop()
         options;
-        // TODO: add other options in props (currently only chr)
-        // TODO: auto adjustment of window size
-        // TODO: add hover functionality
         mounted() {
             //Width and height
             var padding = 40;
