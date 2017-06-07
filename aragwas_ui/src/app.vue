@@ -1,7 +1,7 @@
 <template>
  <v-app top-toolbar footer>
     <v-toolbar class="white toolbar">
-      <v-toolbar-logo class="logo"><router-link :to="{path: '/', props: { queryTerm: '' }}" props="">AraGWAS</router-link></v-toolbar-logo>
+      <v-toolbar-logo class="logo"><router-link :to="{path: '/', props: { queryTerm: '' }}" props="">AraGWASCatalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
         <v-toolbar-item><span class="black--text">Submit GWAS Study</span></v-toolbar-item>
           <v-toolbar-item><span class="black--text">Take a tour?</span></v-toolbar-item>

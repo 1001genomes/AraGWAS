@@ -34,7 +34,7 @@
                     <div id="genomic-region">
                         <v-row><v-col xs5><h5 class="mb-1">Genomic Region : {{ geneName }}</h5><v-divider></v-divider></v-col>
                             <v-col xs4 offset-xs3><v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min"></v-slider></v-col></v-row>
-                        <v-col xs12><gene-plot :dataPoints="[1,3]" :options="options"></gene-plot></v-col>
+                        <v-col xs12><gene-plot :options="options"></gene-plot></v-col>
                     </div>
                 </v-col>
             </v-row>

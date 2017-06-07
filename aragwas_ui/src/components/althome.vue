@@ -6,10 +6,10 @@
                     <div v-if="!search">
                     <div class="banner-title">
                         <br>
-                        <h1 class="white--text text-xs-center">AraGWAS</h1>
+                        <h1 class="white--text text-xs-center">AraGWASCatalog</h1>
                     </div>
                     <div class="banner-subtext">
-                        <h5 class=" text-xs-center">AraGWAS is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                        <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
                         <br>
                         <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
                     </div>
@@ -136,7 +136,7 @@
                         <section style="width: 110%" @click="currentView = i">
                             <div class="bold">Results: {{ i }}</div>
                             <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
-                            <div class="" v-else><span class="arabadge">{{n[i]}} Results</span></div>
+                            <div class="" v-else><span class="arabadge">{{n[i]}}<span v-if="i==='genes' & n[i]===200">+</span> Results</span></div>
                         </section>
                     </v-tab-item>
                     <v-tab-content
@@ -217,8 +217,8 @@
       columnsPhenotypes = ['name', 'description'];
 //      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
 //      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
-      sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, SNPs_count: 1, assicuations_count: 1, description: 1};
-      columnsGenes = ['name', 'chr', 'start_pos', 'end_pos', 'SNPs_count', 'assicuations_count', 'description'];
+      sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, strand: 1, description: 1};
+      columnsGenes = ['name', 'chr', 'start position', 'end position', 'strand', 'description'];
       columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, genes: this.columnsGenes};
       sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, genes: this.sortOrdersGenes};
       sortKey: string = '';
@@ -305,6 +305,15 @@
         }
         if (this.n.genes === 0) {
           this.dataObserved.genes = [];
+        }
+        else {
+            for(let g_idx in this.dataObserved.genes) {
+                this.dataObserved.genes[g_idx]['start position'] = this.dataObserved.genes[g_idx]['positions']['gte'];
+                this.dataObserved.genes[g_idx]['end position'] = this.dataObserved.genes[g_idx]['positions']['lte'];
+                if(this.dataObserved.genes[g_idx]['aliases'].length > 0) {
+                    this.dataObserved.genes[g_idx]['description'] = this.dataObserved.genes[g_idx]['aliases'][0]['full_name']
+                }
+            }
         }
       }
 
