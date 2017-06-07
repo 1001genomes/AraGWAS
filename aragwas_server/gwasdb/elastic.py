@@ -1,14 +1,21 @@
 from elasticsearch import Elasticsearch, helpers
+from elasticsearch_dsl import Search
+
 from aragwas.settings import ES_HOST
 from .parsers import parse_snpeff
 import logging
 import json
 import os
+import numpy as np
+import re
+
+GENE_ID_PATTERN = re.compile('^[a-z]{2}([\\d]{1})G\\w+$', re.IGNORECASE)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 es = Elasticsearch([ES_HOST],timeout=60)
+
 BULK_INDEX_COUNT = 1000
 ES_TEMPLATE_PATH = os.path.join(os.path.join(os.path.dirname(__file__),'es_templates'))
 
@@ -48,6 +55,50 @@ def check_indices():
     es.indices.put_template('aragwas', aragwas_settings)
     # put index template
     es.indices.put_template('geno_*', genotype_settings)
+
+def load_snps(chrom, positions):
+    """Retrieve snp information"""
+    index = 'geno_%s'
+    if len(chrom) > 3:
+        index = index % chrom
+    else:
+        index = index % 'chr' + chrom
+    if isinstance(positions, np.ndarray):
+        pos = positions.tolist()
+    else:
+        pos = positions
+    resp = es.mget(body={'ids':pos}, index=index, doc_type='snps')
+    return [{doc['_id']: doc['_source']} if doc['found'] else  {} for doc in resp['docs']]
+
+
+def autocomplete_genes(term):
+    """For autocomplete searches"""
+    import pdb;pdb.set_trace()
+    resp = es.search(index='genotype',doc_type='genes',_source="suggest",
+        body={"suggest": {
+                "gene-suggest": {
+                    "prefix":term,
+                    "completion": {
+                        "field": "suggest"
+                    }
+                }
+        }})
+    return [{'id':option['_id'], 'text': option['text']} for option in resp['suggest']['gene-suggest'][0]['options']]
+
+
+def load_gene_by_id(id):
+    """Retrive genes by id"""
+    matches = GENE_ID_PATTERN.match(id)
+    if not matches:
+        raise Exception('Wrong Gene ID %s' % id)
+    chrom = matches.group(1)
+    doc = es.get('geno_chr%s' % chrom, id, doc_type='genes', _source=['name','positions','type','strand', 'isoforms'], realtime=False)
+    if not doc['found']:
+        raise Exception('Gene with ID %s not found' %id)
+    return doc['_source']
+
+def load_top_associations():
+    """Retrieve top asssociations"""
 
 def index_associations(study, associations):
     """indexes associations"""
