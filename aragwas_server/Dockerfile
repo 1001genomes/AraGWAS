@@ -23,7 +23,7 @@ WORKDIR /srv/web
 
 
 COPY web-entrypoint.sh .
-RUN chmod 755 web-entrypoint.sh
+RUN chmod 755 web-entrypoint.sh && chmod 755 wait-for-it.sh
 
 RUN addgroup --system aragwas && adduser --system --group aragwas
 RUN chown aragwas -R /srv/web/

@@ -1,12 +1,26 @@
 version: '3'
 services:
-  aragwas:
+  backend:
     image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
     ports:
      - "8000:8000"
-    entrypoint: /srv/web/web-entrypoint.sh
+    entrypoint:
+      - /srv/web/wait-for-it.sh
+      - elasticsearch1:9200
+      - --
+      - sh
+      - /srv/web/web-entrypoint.sh
+    environment:
+      - ES_HOST=http://elastic:changeme@elasticsearch1:9200
+      - ARAGWAS_HDF5_FILE_PATH=/opt/aragwas_data
     networks:
       - aragwas
+    depends_on:
+      - "amqp1"
+      - "elasticsearch1"
+    volumes:
+      - backend:/opt/aragwas_data
+
   amqp1:
     image: "rabbitmq:3-management"
     hostname: "amqp1"
@@ -14,6 +28,8 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
+    networks:
+      - aragwas
 
   elasticsearch1:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
@@ -40,6 +56,8 @@ services:
 
 volumes:
   esdata1:
+    driver: local
+  backend:
     driver: local
 
 networks:
