@@ -359,7 +359,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                             q = QES('range', positions={'gte':s_p, 'lte':s_p})
                         search_gene = search_gene.query(q)
                 else: # other type of request
-                    q = QES('match', name=query_term)
+                    q = QES('match', _all=query_term)
                     search_gene = search_gene.query(q)
             # custom ordering
             ordering = request.query_params.get('ordering', None)
