@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import permissions
 from rest_framework import viewsets, generics, filters
 from rest_framework.views import APIView
@@ -18,7 +20,9 @@ from gwasdb.hdf5 import getTopAssociations, regroupAssociations
 
 from gwasdb.tasks import compute_ld
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
-from aragwas.settings import GITHUB_URL
+from aragwas import settings
+from gwasdb import elastic
+
 
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import Range
@@ -32,7 +36,7 @@ def get_api_version():
     BUILD_STATUS_URL = None
     if __buildurl__ != 'N/A':
         BUILD_STATUS_URL = __buildurl__
-    return {'version':__version__,'date':__date__,'githash':__githash__,'build':__build__,'build_url':BUILD_STATUS_URL,'github_url':GITHUB_URL}
+    return {'version':__version__,'date':__date__,'githash':__githash__,'build':__build__,'build_url':BUILD_STATUS_URL,'github_url':settings.GITHUB_URL}
 
 
 class ApiVersionView(APIView):
@@ -73,10 +77,11 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
             page = int(request.query_params.get('page', None))
         except:
             page = 1
-        association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
+        association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
         pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
         # pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 100, 'top')
         pval, chr, pos, mafs = regroupAssociations(pval,pos,mafs)
+        # associations = get_list_or_404(Association, study=pk)
 
         results = []
         for l in range(len(pval)):
@@ -110,10 +115,8 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AssociationSerializer
     def retrieve(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
-
+        association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
         pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 2500, 'top')
-
         output = {}
         for i in range(5):
             output['chr'+str(i+1)] = {'pvalues': pval[i], 'positions': pos[i], 'mafs': mafs[i]}
@@ -145,7 +148,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         study = []
         n_asso = 0
         for study_pk in st_id:
-            association_file = "/Users/tomatteo/Documents/Projects/AraGWAS/AraGWAS/aragwas_server/gwasdb/" + pk + ".hdf5"
+            association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
             pval_st, pos_st, mafs_st, n_asso_st, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
             pval_st, chr_st, pos_st, mafs_st = regroupAssociations(pval_st, pos_st, mafs_st)
             pval.extend(pval_st)
@@ -153,7 +156,6 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             pos.extend(pos_st)
             study.extend(study_pk for l in range(len(pval_st)))
             n_asso += n_asso_st
-
         pval = numpy.asarray(pval)
         pos = numpy.asarray(pos)
         chr = numpy.asarray(chr)
