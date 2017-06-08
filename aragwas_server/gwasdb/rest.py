@@ -66,6 +66,13 @@ class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Association.objects.all()
     serializer_class = AssociationSerializer
 
+    @list_route(url_path='association_count')
+    def association_count(self, request):
+        client = Elasticsearch([ES_HOST], timeout=60)
+        count = Search().using(client).doc_type('associations').query('match_all').count()
+        return Response(count)
+
+
 class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Retrieves information about GWAS associations
@@ -295,6 +302,14 @@ class GeneViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        id = kwargs['pk']
+        # To get the neighboring hits/SNPs and count them, we would need to query ES for SNPs in that region...
+        gene = elastic.load_gene_by_id(id)
+        snps = elastic.load_snps(gene['chr'], list(range(gene['positions']['gte'],gene['positions']['lte'])))
+        snps = list(filter(None, snps))
+        return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
+
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Allow for search in a viewset
@@ -318,11 +333,6 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 studies = Study.objects.all()
                 phenotypes = Phenotype.objects.all()
                 # Elasticsearch query cannot be made before knowing the ordering and the page number, etc as this is taken into account by elasticsearch.py
-                # search = Search().using(client).query("match")
-                # genes2 = search.execute()
-                # genes = client.search('genotype',doc_type="genes")
-                # print(genes['hits']['total'])
-                # print(genes2.to_dict())
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term)).order_by('name')

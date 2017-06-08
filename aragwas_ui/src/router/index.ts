@@ -48,8 +48,8 @@ export default new Router({
     },
     {
       path: '/althome/',
-      name: 'althome',
-      component: Althome, props: true,
+      name: 'home',
+      component: Home, props: true,
     },
     {
       path: '/study/:studyId?',

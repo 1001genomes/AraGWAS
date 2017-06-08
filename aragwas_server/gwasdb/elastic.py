@@ -68,7 +68,7 @@ def load_snps(chrom, positions):
     else:
         pos = positions
     resp = es.mget(body={'ids':pos}, index=index, doc_type='snps')
-    return [{doc['_id']: doc['_source']} if doc['found'] else  {} for doc in resp['docs']]
+    return [{doc['_id']: doc['_source']} if doc['found'] else {} for doc in resp['docs']]
 
 
 def autocomplete_genes(term):
@@ -92,7 +92,7 @@ def load_gene_by_id(id):
     if not matches:
         raise Exception('Wrong Gene ID %s' % id)
     chrom = matches.group(1)
-    doc = es.get('geno_chr%s' % chrom, id, doc_type='genes', _source=['name','positions','type','strand', 'isoforms'], realtime=False)
+    doc = es.get('geno_chr%s' % chrom, id, doc_type='genes', _source=['name','chr','positions','type','strand', 'isoforms'], realtime=False)
     if not doc['found']:
         raise Exception('Gene with ID %s not found' %id)
     return doc['_source']

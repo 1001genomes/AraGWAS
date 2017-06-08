@@ -41,7 +41,7 @@
             var defaultOptions = {
                 matrix: undefined,
                 species_id: undefined,
-                chr: 0,
+                chr: undefined,
                 alpha: 0.05,
                 max_y: 15,
                 min_x: 3047810,

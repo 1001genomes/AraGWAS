@@ -22,7 +22,8 @@
         <v-container>
             <v-row>
                 <v-col xs4>
-                    <v-text-field name="geneName-search" :value="geneName" prepend-icon="search"></v-text-field>
+                    <v-text-field name="geneName-search" :label="geneName" v-model="searchTerm" prepend-icon="search" single-line><input type="search" @keyup.enter="goToGene()"></v-text-field>
+                    <!--TODO: make this search bar functional-->
                 </v-col>
                 <!--<v-col xs4 offset-xs4>-->
                     <!--<v-slider v-model="zoom" prepend-icon="zoom_in"></v-slider>-->
@@ -76,6 +77,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {loadAssociationsOfGene, loadGene} from '../api';
     import GenePlot from '../components/geneplot.vue'
+    import Router from '@/router/index.ts'
 
     @Component({
         filters: {
@@ -89,31 +91,37 @@
     })
     export default class GeneDetail extends Vue {
         // Gene information
+        router = Router;
         @Prop()
         geneId: string = '';
+        searchTerm: string = '';
         geneName: string = '';
         geneDescription: string = '';
-        startPosition = 12637000;
-        endPosition = 12700000;
+        startPosition = 0;
+        endPosition = 1;
         centerOfGene = 0;
-        chromosome = 0;
         snpSet;
         snpCount = 0;
         associationCount = 0;
         windowStartPosition = 0;
         windowEndPosition = 0;
         min = 10;
-        options = {
-            width: 1000,
-            min_x: 1200000,
-            max_x: 1289300,
+        get options() {
+            return {
+                width: 1000,
+                min_x: 1200000,
+                max_x: 1289300,
+                chr: undefined,
+                w_rect: 0,
+            }
         };
+
 
         // Associations parameters
         ordered: string;
 
 
-        breadcrumbs = [{text: 'Home', href: '/'}, {text:'Genes', href: '#/genes'}, {text: this.geneName, href: '', disabled: true}];
+        breadcrumbs = [{text: 'Home', href: '/'}, {text:'Genes', href: '#/genes', disabled: true}, {text: this.geneName, href: '', disabled: true}];
         zoom = 75;
         pageCount = 5;
         currentPage = 1;
@@ -156,14 +164,15 @@
 
         // Gene DATA LOADING
         _displayGeneData(data): void {
-            this.geneName = data.name;
-            this.geneDescription = data.description;
+            this.geneName = data.gene.name;
             this.breadcrumbs[2].text = data.name;
 //            this.startPosition = data.start_position;
 //            this.endPosition = data.end_position;
-            this.chromosome = data.chromosome;
-            this.snpSet = data.SNPs;
-            this.snpCount = data.SNP_count;
+            this.options.chr = data.gene.chr;
+            this.options.w_rect = data.gene.positions.lte - data.gene.positions.gte;
+            this.centerOfGene = data.gene.positions.gte + this.options.w_rect/2;
+            this.snpSet = data.snps;
+            this.snpCount = data.snp_count;
             this.associationCount = data.associationCount;
         }
         // ASSOCIATION LOADING
@@ -181,6 +190,9 @@
             let windowsize = Math.round((this.endPosition - this.startPosition)*100/this.zoom);
             this.windowStartPosition = this.centerOfGene - windowsize/2;
             this.windowEndPosition = this.centerOfGene + windowsize/2;
+        }
+        goToGene(): void {
+            this.router.push({name: 'geneDetail', params: { geneId: this.searchTerm }});
         }
 
     }

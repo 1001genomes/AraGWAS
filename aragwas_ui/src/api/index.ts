@@ -75,7 +75,7 @@ export async  function loadGenes(page = 1, ordering= '') {
 }
 
 // Import single gene information
-export async  function loadGene(geneId = '1') {
+export async  function loadGene(geneId = '') {
     return fetch(`/api/gene/${geneId}`)
         .then(checkStatus)
         .then(convertToModel);
@@ -90,6 +90,11 @@ export async  function loadAssociationsOfGene(geneId= '1', page= 1, ordering= '-
 // TODO: add strategy to store / quickly retreive top associations across all studies
 export async function loadTopAssociations() {
     return fetch(`/api/top_associations/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async function loadAssociationCount() {
+    return fetch(`/api/associations/association_count/`)
         .then(checkStatus)
         .then(convertToModel);
 }

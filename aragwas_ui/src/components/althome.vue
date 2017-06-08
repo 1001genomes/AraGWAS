@@ -168,6 +168,7 @@
                                                 <router-link v-if="(key==='name' && currentView === 'studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView==='phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='name' && currentView==='genes')" :to="{name: 'geneDetail', params: { geneId: entry[key] }}" >{{entry[key]}}</router-link>
                                                 <div v-else>{{entry[key]}}</div>
                                         </td>
                                         </tr>
@@ -189,7 +190,7 @@
 <script lang="ts">
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import Router from '../router';
-    import {search, loadPhenotypes, loadStudies} from '../api';
+    import {search, loadPhenotypes, loadStudies, loadAssociationCount} from '../api';
     import LineChart from '../components/linechart.vue'
     import Vue from 'vue';
 
@@ -284,6 +285,7 @@
       loadSummaryData(): void {
         loadStudies().then(this._countStudies);
         loadPhenotypes().then(this._countPhenotypes);
+        loadAssociationCount().then(this._countAssociations);
       }
 
       _displayData(data): void {
@@ -322,6 +324,9 @@
       }
       _countPhenotypes(data): void {
         this.n_phenotypes = data.count
+      }
+      _countAssociations(data): void {
+        this.n_associations = data
       }
       sortBy(key): void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
