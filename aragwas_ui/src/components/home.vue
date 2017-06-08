@@ -1,5 +1,6 @@
 <template>
     <div>
+<<<<<<< HEAD:aragwas_ui/src/components/home.vue
         <v-parallax src="/static/img/ara2.jpg" :height="height">
             <v-layout column align-center justify-center class="container" v-if="!search">
                 <div class="banner-title">
@@ -25,6 +26,46 @@
                     ></v-text-field>
                 </div>
             </v-card>
+=======
+        <div class="banner-container white--text" v-bind:style="{ height: height + 'px'}">
+            <div class="container">
+                <!--<transition name="custom-fadeOutUp" leave-active-class="animated fadeOutUp">-->
+                    <div v-if="!search">
+                    <div class="banner-title">
+                        <br>
+                        <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
+                    </div>
+                    <div class="banner-subtext">
+                        <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                        <br>
+                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
+                    </div>
+                    </div>
+                <!--</transition>-->
+                <br>
+                <!--<transition name="bounce">-->
+
+                <!--</transition>-->
+
+            </div>
+            <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
+            </v-parallax>
+        </div>
+        <div class="container mt-3">
+            <v-col xs12>
+                <v-card>
+                    <div class="pl-4 pt-1 pr-4">
+                        <v-text-field
+                                name="input-1"
+                                label="Search the catalog"
+                                v-model="queryTerm"
+                                v-bind:focused="focused"
+                                prepend-icon="search"
+                        ></v-text-field>
+                    </div>
+                </v-card>
+            </v-col>
+>>>>>>> Top genes fetching:aragwas_ui/src/components/althome.vue
         </div>
         <section v-if="!search">
             <div class="section">
@@ -158,7 +199,7 @@
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationCount, loadPhenotypes, loadStudies, search} from "../api";
+    import {search, loadPhenotypes, loadStudies, loadAssociationCount, loadTopGenes} from '../api';
     import LineChart from "../components/linechart.vue";
     import Router from "../router";
 
@@ -244,8 +285,8 @@
       }
       created(): void {
         this.loadData(this.queryTerm, this.currentPage);
-        this.currentView = "studies";
-        this.loadSummaryData(); // TODO: find a faster (server-side?) way to count total number of associations.
+        this.currentView = 'studies';
+        this.loadSummaryData();
       }
       loadData(queryTerm: string, page: number): void {
         search(queryTerm, page, this.ordered).then(this._displayData);
@@ -254,6 +295,7 @@
         loadStudies().then(this._countStudies);
         loadPhenotypes().then(this._countPhenotypes);
         loadAssociationCount().then(this._countAssociations);
+        loadTopGenes().then(this._displayTopGenes)
       }
 
       _displayData(data): void {
@@ -284,6 +326,9 @@
                 }
             }
         }
+      }
+      _displayTopGenes(data): void {
+//        this.plot
       }
 
       _countStudies(data): void {

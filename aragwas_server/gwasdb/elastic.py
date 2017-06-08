@@ -1,5 +1,5 @@
 from elasticsearch import Elasticsearch, helpers
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, Q
 
 from aragwas.settings import ES_HOST
 from .parsers import parse_snpeff
@@ -8,6 +8,7 @@ import json
 import os
 import numpy as np
 import re
+import operator
 
 GENE_ID_PATTERN = re.compile('^[a-z]{2}([\\d]{1})G\\w+$', re.IGNORECASE)
 
@@ -107,6 +108,46 @@ def load_gene_by_id(id):
     gene = doc['_source']
     gene['id'] = doc['_id']
     return gene
+
+def load_gene_associations(id):
+    """Retrive associations by neighboring gene id"""
+    matches = GENE_ID_PATTERN.match(id)
+    if not matches:
+        raise Exception('Wrong Gene ID %s' % id)
+    chrom = matches.group(1)
+    asso_search = Search(using=es).doc_type('associations').source(exclude=['isoforms','GO'])
+    q = Q({'nested':{'path':'snps.annotations', 'query':{'match':{'snps.annotations.gene_name':id}}}})
+    asso_search = asso_search.query(q).sort('-pvalue')
+    results = asso_search[0:min(500, asso_search.count())].execute()
+    associations = results.to_dict()['hits']['hits']
+    return [{association['_id']: association['_source']} if association['found'] else {} for association in associations]
+
+def load_gene_snps(id):
+    """Retrive associations by neighboring gene id"""
+    snp_search = Search(using=es).doc_type('snps')
+    q = Q({'nested':{'path':'annotations', 'query':{'match':{'annotations.gene_name':id}}}})
+    snp_search = snp_search.query(q).sort('position')
+    results = snp_search[0:min(500, snp_search.count())].execute()
+    associations = results.to_dict()['hits']['hits']
+    return [{association['_id']: association['_source']} for association in associations]
+
+def get_top_genes():
+    """Retrive associations by neighboring gene id"""
+    # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
+    # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue)
+    s = Search(using=es, doc_type='associations')
+    results = s.query('range', pvalue={'lte': 1e-7}).sort('-pvalue').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
+    gene_scores = {}
+    for snp in results:
+        if 'gene_name' in snp['annotations'].keys():
+            id = snp['annotations']['gene_name']
+            if id in gene_scores.keys():
+                gene_scores[id] += 1
+            else:
+                gene_scores[id] = 1
+    gene_scores = sorted(gene_scores.items, key=operator.itemgetter(1))[::-1]
+    return gene_scores[:min(8, len(gene_scores))]
+
 
 def load_top_associations():
     """Retrieve top asssociations"""

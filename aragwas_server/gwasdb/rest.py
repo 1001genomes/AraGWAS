@@ -199,15 +199,29 @@ class AssociationsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Association.objects.all()
     serializer_class = AssociationSerializer
     def retrieve(self, request, *args, **kwargs):
-        pk = kwargs['pk']
+        id = kwargs['pk']
         # Get study ids
         try:
-            associations = Association.objects.get(SNP__gene=pk).order_by('pvalue')
-            serializer = AssociationSerializer(associations)
-            return Response(serializer.data)
+            asso = elastic.load_gene_associations(id)
+            paginated_asso = self.paginate_queryset(asso)
+            return self.get_paginated_response(paginated_asso)
         except Association.DoesNotExist:
             raise Http404('Associations do not exist')
-
+"""
+Mockup class to test es nested queries
+class SnpsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SNP.objects.all()
+    serializer_class = AssociationSerializer
+    def retrieve(self, request, *args, **kwargs):
+        id = kwargs['pk']
+        # Get study ids
+        try:
+            asso = elastic.load_gene_snps(id)
+            paginated_asso = self.paginate_queryset(asso)
+            return self.get_paginated_response(paginated_asso)
+        except Association.DoesNotExist:
+            raise Http404('Associations do not exist')
+"""
 
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -308,6 +322,28 @@ class GeneViewSet(viewsets.ReadOnlyModelViewSet):
         gene = elastic.load_gene_by_id(id)
         gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
         return Response(gene)
+        # snps = elastic.load_gene_snps(id)
+        # snps = list(filter(None, snps))
+        # return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
+
+class TopGeneViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Compute most associated genes and return top 8 genes for landing page plot
+    """
+    queryset = Gene.objects.all()
+    serializer_class = GeneListSerializer
+
+    # Overriding get_queryset to allow for case-insensitive custom ordering
+    def get_queryset(self):
+        return(elastic.get_top_genes())
+
+    def retrieve(self, request, *args, **kwargs):
+        id = kwargs['pk']
+        # To get the neighboring hits/SNPs and count them, we would need to query ES for SNPs in that region...
+        gene = elastic.load_gene_by_id(id)
+        snps = elastic.load_gene_snps(id)
+        snps = list(filter(None, snps))
+        return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     """

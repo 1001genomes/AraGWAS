@@ -92,6 +92,11 @@ export async function loadTopAssociations() {
         .then(checkStatus)
         .then(convertToModel);
 }
+export async  function loadTopGenes() {
+    return fetch(`/api/top_gene/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 export async function loadAssociationCount() {
     return fetch(`/api/associations/association_count/`)
         .then(checkStatus)
