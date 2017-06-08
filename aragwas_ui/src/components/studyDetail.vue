@@ -173,16 +173,16 @@
       },
     })
     export default class StudyDetail extends Vue {
-      @Prop()
-      studyId: string = '';
+      @Prop({required: true})
+      id: number;
       studyName: string = '';
       phenotype: string = '';
-      phenotypeId: string = '';
+      phenotypeId: number = 0;
       genotype: string = '';
-      transformation: string;
-      method: string;
+      transformation: string = '';
+      method: string = '';
       publication: string = '';
-      associationCount;
+      associationCount: number = 0 ;
       arapheno_link: string = '';
       currentView: string = 'Study details';
       currentViewIn: string = 'On genes';
@@ -249,20 +249,27 @@
         return data;
       }
 
+      @Watch('id')
+      onChangeId(val: number, oldVal: number) {
+          this.loadData();
+      }
+
       @Watch('currentPage')
       onCurrentPageChanged(val: number, oldVal: number) {
-        this.loadData(val);
+        loadAssociationsOfStudy(this.id, val).then(this._displayData);
       }
       created(): void {
-        if (this.$route.params.studyId) {
-          this.studyId = this.$route.params.studyId;
-        }
-        loadStudy(this.studyId).then(this._displayStudyData);
-        this.loadData(this.currentPage);
-        loadAssociationsForManhattan(this.studyId).then(this._displayManhattanPlots);
+        this.loadData();
       }
-      loadData(page: number): void {
-        loadAssociationsOfStudy(this.studyId, page).then(this._displayData);
+      loadData(): void {
+        try {
+            loadStudy(this.id).then(this._displayStudyData);
+            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
+            loadAssociationsOfStudy(this.id, this.currentPage).then(this._displayData);
+        }
+        catch (err) {
+            console.log(err);
+        }
       }
       _displayData(data): void {
         this.associations = data.results;
@@ -340,7 +347,7 @@
         } else {
           this.ordered = key;
         }
-        this.loadData(this.currentPage);
+        loadAssociationsOfStudy(this.id, this.currentPage).then(this._displayData);
       }
       // TODO: add association injection for manhattan plots
     }

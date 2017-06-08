@@ -1,8 +1,6 @@
-import Althome from '@/components/althome.vue';
 import GeneDetail from '@/components/geneDetail.vue';
 import Genes from '@/components/genes.vue';
 import Home from '@/components/home.vue';
-import HomeLayout from '@/components/homelayout.vue';
 import PhenotypeDetail from '@/components/phenotypeDetail.vue';
 import Phenotypes from '@/components/phenotypes.vue';
 import Results from '@/components/results.vue';
@@ -14,12 +12,18 @@ import Router from 'vue-router';
 
 Vue.use(Router);
 
+function idToNumber(route: any): any {
+  return {
+    id: Number(route.params.id),
+  };
+}
+
 export default new Router({
   routes: [
     {
       path: '/',
       name: 'home',
-      component: Althome, props: true,
+      component: Home, props: true,
     },
     {
       path: '/studies',
@@ -48,28 +52,23 @@ export default new Router({
     },
     {
       path: '/althome/',
-      name: 'home',
+      name: 'althome',
       component: Home, props: true,
     },
     {
-      path: '/study/:studyId?',
+      path: '/study/:id',
       name: 'studyDetail',
-      component: StudyDetail, props: true,
+      component: StudyDetail, props: idToNumber,
     },
     {
-      path: '/phenotype/:phenotypeId?',
+      path: '/phenotype/:id',
       name: 'phenotypeDetail',
-      component: PhenotypeDetail, props: true,
+      component: PhenotypeDetail, props: idToNumber,
     },
     {
       path: '/gene/:geneId?',
       name: 'geneDetail',
       component: GeneDetail, props: true,
-    },
-    {
-      path: '/layout/',
-      name: 'layout',
-      component: HomeLayout, props: true,
     },
   ],
 });

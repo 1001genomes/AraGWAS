@@ -147,8 +147,8 @@
         },
     })
     export default class PhenotypeDetail extends Vue {
-      @Prop()
-      phenotypeId: string = '';
+      @Prop({required: true})
+      id: number;
       phenotypeName: string = '';
       studyNumber = 0;
       studyIDs = [];
@@ -204,17 +204,17 @@
         return data;
       }
 
+      @Watch('id')
+      onChangeId(val: number, oldVal: number) {
+          this.loadData();
+      }
+
       @Watch('currentPage')
       onCurrentPageChanged(val: number, oldVal: number) {
-        this.loadData(val);
+        loadAssociationsOfPhenotype(this.id, val).then(this._displayData)
       }
       created(): void {
-        if (this.$route.params.phenotypeId) {
-          this.phenotypeId = this.$route.params.phenotypeId;
-        }
-        loadPhenotype(this.phenotypeId).then(this._displayPhenotypeData).then(this.loadStudyList);
-        loadSimilarPhenotypes(this.phenotypeId).then(this._displaySimilarPhenotypes);
-        this.loadData(this.currentPage);
+        this.loadData();
       }
       mounted(): void {
         this.currentView = 'List of Studies';
@@ -234,9 +234,16 @@
       }
 
 //    ASSOCIATION LOADING
-      loadData(page: number): void {
-          // Load associations of all cited SNPs
-       loadAssociationsOfPhenotype(this.phenotypeId, page).then(this._displayData)
+
+      loadData(): void {
+        try {
+            loadPhenotype(this.id).then(this._displayPhenotypeData).then(this.loadStudyList);
+            loadSimilarPhenotypes(this.id).then(this._displaySimilarPhenotypes);
+            loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData)
+        }
+        catch (err) {
+            console.log(err);
+        }
       }
       _displayData(data): void {
         this.associations = data.results;
@@ -285,7 +292,7 @@
         } else {
           this.ordered = key;
         }
-        this.loadData(this.currentPage);
+        loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData)
       }
     }
 </script>
