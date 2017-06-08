@@ -1,13 +1,13 @@
 import Althome from '@/components/althome.vue';
+import GeneDetail from '@/components/geneDetail.vue';
+import Genes from '@/components/genes.vue';
 import Home from '@/components/home.vue';
-import HomeLayout from '@/components/homelayout.vue'
+import HomeLayout from '@/components/homelayout.vue';
+import PhenotypeDetail from '@/components/phenotypeDetail.vue';
+import Phenotypes from '@/components/phenotypes.vue';
 import Results from '@/components/results.vue';
 import Studies from '@/components/studies.vue';
 import StudyDetail from '@/components/studyDetail.vue';
-import Phenotypes from '@/components/phenotypes.vue';
-import PhenotypeDetail from '@/components/phenotypeDetail.vue';
-import Genes from '@/components/genes.vue'
-import GeneDetail from '@/components/geneDetail.vue'
 import TopAssociations from '@/components/topAssociations.vue';
 import Vue from 'vue';
 import Router from 'vue-router';
@@ -19,7 +19,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Althome, props: true
+      component: Althome, props: true,
     },
     {
       path: '/studies',

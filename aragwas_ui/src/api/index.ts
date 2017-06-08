@@ -2,7 +2,6 @@ import ApiVersion from '../models/apiversion';
 import Page from '../models/page';
 import Study from '../models/study';
 
-
 // TODO convert to Typescript
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -85,7 +84,6 @@ export async  function loadAssociationsOfGene(geneId= '1', page= 1, ordering= '-
         .then(checkStatus)
         .then(convertToModel);
 }
-
 
 // TODO: add strategy to store / quickly retreive top associations across all studies
 export async function loadTopAssociations() {
