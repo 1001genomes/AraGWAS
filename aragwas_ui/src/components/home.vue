@@ -58,8 +58,9 @@
                         <v-text-field
                                 name="input-1"
                                 label="Search the catalog"
-                                v-model="queryTerm"
+                                type="String"
                                 v-bind:focused="focused"
+                                :input="debounceInput()"
                                 prepend-icon="search"
                         ></v-text-field>
                     </div>
@@ -202,6 +203,7 @@
     import {search, loadPhenotypes, loadStudies, loadAssociationCount, loadTopGenes} from '../api';
     import LineChart from "../components/linechart.vue";
     import Router from "../router";
+    import debounce from 'debounce';
 
     @Component({
       filters: {
@@ -243,7 +245,7 @@
       nStudies = 0;
       nPhenotypes = 0;
       nAssociations = 0;
-//      w = ;
+      flag = true;
 
       @Watch("queryTerm") // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {
@@ -277,6 +279,13 @@
           });
         }
         return data;
+      }
+//      get dv() {
+//          return debounce(this.queryTerm, this.delay)
+//      }
+      debounceInput() {
+          debounce(function (e) {this.queryTerm = e.target.value;}, 200)
+          this.flag = !this.flag
       }
 
       @Watch("currentPage")
