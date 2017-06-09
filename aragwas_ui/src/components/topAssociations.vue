@@ -82,11 +82,12 @@
 
 
 <script lang="ts">
-    import {Component, Watch} from 'vue-property-decorator';
-    import {loadStudies} from '../api';
-    import Page from '../models/page';
-    import Study from '../models/study';
-    import Vue from 'vue';
+    import Vue from "vue";
+    import {Component, Watch} from "vue-property-decorator";
+
+    import {loadStudies} from "../api";
+    import Page from "../models/page";
+    import Study from "../models/study";
 
     @Component({
         filters: {
@@ -99,19 +100,19 @@
         loading: boolean = false;
         studyPage: Page<Study>;
         sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-        sortKey: string = '';
-        ordered: string = '';
-        columns = ['SNP', 'p-value', 'phenotype', 'gene','maf','beta', 'odds ratio', 'confidence interval'];
-        filterKey: string = '';
+        sortKey: string = "";
+        ordered: string = "";
+        columns = ["SNP", "p-value", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        filterKey: string = "";
         associations = [];
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
-        breadcrumbs = [{text: 'Home', href: '/'}, {text:'Top Associations', href: '#/top-associations', disabled: true},];
-        maf = ['<1', '1-5', '5-10', '>10'];
-        chr = ['1','2','3','4','5'];
-        annotation = ['NS', 'S', '*'];
-        type = ['genic','non-genic'];
+        breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
+        maf = ["<1", "1-5", "5-10", ">10"];
+        chr = ["1", "2", "3", "4", "5"];
+        annotation = ["NS", "S", "*"];
+        type = ["genic", "non-genic"];
 
         get filteredData() {
             let filterKey = this.filterKey;
@@ -129,23 +130,23 @@
             return data;
         }
 
-        @Watch('currentPage')
+        @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
             this.loadData(val);
         }
-        @Watch('maf')
+        @Watch("maf")
         onMafChanged(val: number, oldVal: number) {
             this.filterData(val);
         }
-        @Watch('chr')
+        @Watch("chr")
         onChrChanged(val: number, oldVal: number) {
             this.filterData(val);
         }
-        @Watch('annotation')
+        @Watch("annotation")
         onAnnotationChanged(val: number, oldVal: number) {
             this.filterData(val);
         }
-        @Watch('type')
+        @Watch("type")
         onTypeChanged(val: number, oldVal: number) {
             this.filterData(val);
         }
@@ -153,110 +154,108 @@
             this.loadData(this.currentPage);
         }
         loadData(page: number): void {
-            loadStudies(page, this.ordered).then(this._displayData); //change this with ES search
+            loadStudies(page, this.ordered).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;
             this.currentPage = data.current_page;
             this.totalCount = data.count;
             this.pageCount = data.page_count;
-            for (let i in this.associations) {
-                this.associations[i]['show']=true;
+            for (const i of Object.keys(this.associations)) {
+                this.associations[i]["show"] = true;
             }
         }
         sortBy(key): void {
             this.sortKey = key;
             this.sortOrders[key] = this.sortOrders[key] * -1;
             if (this.sortOrders[key] < 0) {
-                this.ordered = '-' + key;
+                this.ordered = "-" + key;
             } else {
                 this.ordered = key;
             }
             this.loadData(this.currentPage);
         }
         filterData(filters): void {
-            for (let i in this.associations) {
-                this.associations[i]['show'] = this.filterAssociation(this.associations[i])
+            for (const i of Object.keys(this.associations)) {
+                this.associations[i]["show"] = this.filterAssociation(this.associations[i]);
             }
         }
         filterAssociation(asso): boolean {
             // Check chromosome
-            let is_part;
-            if (this.chr.length<5){
-                let chrom = asso['SNP'][3];
-                is_part = false;
-                for (let i of this.chr) {
+            let isPart;
+            if (this.chr.length < 5) {
+                const chrom = asso["SNP"][3];
+                isPart = false;
+                for (const i of this.chr) {
                     if (i === chrom) {
-                        is_part = true;
-                        break
+                        isPart = true;
+                        break;
                     }
                 }
-                if (! is_part) {
-                    return false
+                if (! isPart) {
+                    return false;
                 }
             }
             // Check maf
-            if (this.maf.length < 4){
-                let mafasso = asso['maf'];
-                is_part = false;
-                for (let i of this.maf) {
+            if (this.maf.length < 4) {
+                const mafasso = asso["maf"];
+                isPart = false;
+                for (const i of this.maf) {
                     switch (i) {
-                        case '<1':
+                        case "<1":
                             if (mafasso < 0.01) {
-                                is_part = true;
+                                isPart = true;
                             }
                             break;
-                        case '1-5':
+                        case "1-5":
                             if (mafasso >= 0.01 && mafasso <= 0.05) {
-                                is_part = true;
+                                isPart = true;
                             }
                             break;
-                        case '5-10':
+                        case "5-10":
                             if (mafasso > 0.05 && mafasso <= 0.1) {
-                                is_part = true;
+                                isPart = true;
                             }
                             break;
-                        case '>10':
+                        case ">10":
                             if (mafasso > 0.1) {
-                                is_part = true;
+                                isPart = true;
                             }
                     }
                 }
-                if (! is_part) {
-                    return false
+                if (! isPart) {
+                    return false;
                 }
             }
             // Check type
             if (this.type.length < 2) {
-                let typeasso = asso['type'];
-                is_part = false;
-                for (let i of this.type) {
+                const typeasso = asso["type"];
+                isPart = false;
+                for (const i of this.type) {
                     if (i === typeasso) {
-                        is_part = true;
-                        break
+                        isPart = true;
+                        break;
                     }
                 }
-                if (! is_part) {
-                    return false
+                if (! isPart) {
+                    return false;
                 }
             }
-            if (this.annotation.length<3){
+            if (this.annotation.length < 3) {
                 // Check chromosome
-                let annoasso = asso['SNP'][3];
-                is_part = false;
-                for (let i of this.annotation) {
+                const annoasso = asso["SNP"][3];
+                isPart = false;
+                for (const i of this.annotation) {
                     if (i === annoasso) {
-                        is_part = true;
-                        break
+                        isPart = true;
+                        break;
                     }
                 }
-                if (! is_part) {
-                    return false
+                if (! isPart) {
+                    return false;
                 }
             }
-            return true
-
-
+            return true;
         }
     }
 </script>

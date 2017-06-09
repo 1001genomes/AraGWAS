@@ -36,26 +36,27 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue';
-  import Component from 'vue-class-component';
-  import {loadStudies, loadApiVersion} from './api';
-  import ApiVersion from './models/apiversion';
+  import Vue from "vue";
+  import Component from "vue-class-component";
+
+  import {loadApiVersion, loadStudies} from "./api";
+  import ApiVersion from "./models/apiversion";
 
   @Component({})
   export default class AppComponent extends Vue {
     versionInfo: ApiVersion = {} as ApiVersion;
 
     async created() {
-      let data: ApiVersion = await loadApiVersion();
+      const data: ApiVersion = await loadApiVersion();
       this.versionInfo = data;
     }
   }
 </script>
 
 <style lang="stylus">
-  @import './assets/css/main.css'
-  @import './assets/css/animate.css'
-  @import './stylus/main'
+  @import "./assets/css/main.css"
+  @import "./assets/css/animate.css"
+  @import "./stylus/main"
 
   #main-content {
     padding-top:0;

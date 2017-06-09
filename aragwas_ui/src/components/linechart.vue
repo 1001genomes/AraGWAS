@@ -6,9 +6,9 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import * as d3 from 'd3';
-    import Vue from 'vue';
+    import * as d3 from "d3";
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
 
     interface ChartData {
         readonly x: number;
@@ -16,8 +16,8 @@
     }
 
     @Component({
-        name: 'line-chart',
-        props: ['width']
+        name: "line-chart",
+        props: ["width"],
     })
     export default class LineChart extends Vue {
         values: ChartData[] = [ { x: 0, y: 30 }, { x: 50, y: 20 }, { x: 100, y: 40 }, { x: 150, y: 80 }, { x: 200, y: 95 }];
@@ -43,10 +43,9 @@
             const line: any = d3.line<ChartData>()
                 .x((d) => x(d.x))
                 .y((d) => y(d.y));
-            svg.append('g').attr('transform', 'translate(25,25)').call(axis).append('path').attr('stroke-width', 2).attr('d', line(this.values));
+            svg.append("g").attr("transform", "translate(25,25)").call(axis).append("path").attr("stroke-width", 2).attr("d", line(this.values));
         }
     }
-
 </script>
 <style >
     #chart {

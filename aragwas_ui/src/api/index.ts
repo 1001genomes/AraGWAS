@@ -1,6 +1,6 @@
-import ApiVersion from '../models/apiversion';
-import Page from '../models/page';
-import Study from '../models/study';
+import ApiVersion from "../models/apiversion";
+import Page from "../models/page";
+import Study from "../models/study";
 
 // TODO convert to Typescript
 function checkStatus(response) {
@@ -17,7 +17,7 @@ function convertToModel(response) {
     return response.json();
 }
 // Study list
-export async function loadStudies(page: number = 1, ordering= '') {
+export async function loadStudies(page: number = 1, ordering = "") {
     return fetch(`/api/studies/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
@@ -42,7 +42,7 @@ export async  function loadAssociationsForManhattan(studyId: number) {
 }
 
 // Phenotype list
-export async  function loadPhenotypes(page: number = 1, ordering= '') {
+export async  function loadPhenotypes(page: number = 1, ordering= "") {
     return fetch(`/api/phenotype/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
@@ -67,19 +67,19 @@ export async function loadSimilarPhenotypes(phenotypeId: number) {
 }
 
 // Gene list
-export async  function loadGenes(page: number = 1, ordering= '') {
+export async  function loadGenes(page: number = 1, ordering= "") {
     return fetch(`/api/gene/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 // Import single gene information
-export async  function loadGene(geneId = '') {
+export async  function loadGene(geneId = "") {
     return fetch(`/api/gene/${geneId}`)
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfGene(geneId= '1', page: number = 1, ordering= '-pvalue') {
+export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ordering= "-pvalue") {
     return fetch(`/api/associations_of_gene/${geneId}/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
@@ -97,8 +97,8 @@ export async function loadAssociationCount() {
         .then(convertToModel);
 }
 
-export async function search(queryTerm= '', page: number = 1, ordering= '') {
-    if (queryTerm === '') {
+export async function search(queryTerm= "", page: number = 1, ordering= "") {
+    if (queryTerm === "") {
         return fetch(`/api/search/search_results/?page=${page}&ordering=${ordering}`)
             .then(checkStatus)
             .then(convertToModel);
@@ -110,7 +110,7 @@ export async function search(queryTerm= '', page: number = 1, ordering= '') {
 
 }
 export async  function loadApiVersion(): Promise<ApiVersion> {
-    return fetch('/api/version/')
+    return fetch("/api/version/")
         .then(checkStatus)
         .then(convertToModel);
 }

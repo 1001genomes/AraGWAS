@@ -102,9 +102,9 @@
                                 <v-col xs6>
                                 <h5 class="light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
                                         <v-card>
-                                            <h6 class="pt-4 pl-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ n_studies }} Studies</h6><v-divider class="mb-4"></v-divider>
-                                            <h6 class="pl-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ n_phenotypes }} Phenotypes</h6><v-divider class="mb-4"></v-divider>
-                                            <h6 class="pl-4 pb-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ n_associations }} Associations</h6>
+                                            <h6 class="pt-4 pl-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</h6><v-divider class="mb-4"></v-divider>
+                                            <h6 class="pl-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</h6><v-divider class="mb-4"></v-divider>
+                                            <h6 class="pl-4 pb-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Associations</h6>
                                         </v-card>
                                 </v-col>
                                 <v-col xs6 >
@@ -188,11 +188,12 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import Router from '../router';
-    import {search, loadPhenotypes, loadStudies, loadAssociationCount} from '../api';
-    import LineChart from '../components/linechart.vue'
-    import Vue from 'vue';
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
+
+    import {loadAssociationCount, loadPhenotypes, loadStudies, search} from "../api";
+    import LineChart from "../components/linechart.vue";
+    import Router from "../router";
 
     @Component({
       filters: {
@@ -201,8 +202,8 @@
         },
       },
       components: {
-          'line-chart': LineChart,
-      }
+          "line-chart": LineChart,
+      },
     })
     export default class Althome extends Vue {
       @Prop()
@@ -213,32 +214,32 @@
       @Prop()
       focused: boolean;
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-      columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
+      columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
-      columnsPhenotypes = ['name', 'description'];
+      columnsPhenotypes = ["name", "description"];
 //      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
-//      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
+//      columnsAssociations = ["snp", "maf", "pvalue", "beta", "odds_ratio", "confidence_interval", "phenotype", "study"];
       sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, strand: 1, description: 1};
-      columnsGenes = ['name', 'chr', 'start position', 'end position', 'strand', 'description'];
+      columnsGenes = ["name", "chr", "start position", "end position", "strand", "description"];
       columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, genes: this.columnsGenes};
       sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, genes: this.sortOrdersGenes};
-      sortKey: string = '';
-      ordered: string = '';
-      filterKey: string = '';
+      sortKey: string = "";
+      ordered: string = "";
+      filterKey: string = "";
       currentPage = 1;
       dataObserved = {studies: [], phenotypes: [], genes: []};
-      observed = {studies: 'Study', phenotypes: 'Phenotype', genes: 'Gene'};
-      currentView: string = '';
+      observed = {studies: "Study", phenotypes: "Phenotype", genes: "Gene"};
+      currentView: string = "";
       n = {studies: 0, phenotypes: 0, genes: 0};
       pageCount = {studies: 5, phenotypes: 5, genes: 5};
-      n_studies = 500;
-      n_phenotypes = 200;
-      n_associations = 1110000;
+      nStudies = 0;
+      nPhenotypes = 0;
+      nAssociations = 0;
 //      w = ;
 
-      @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
+      @Watch("queryTerm") // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {
-        if (val === '') {
+        if (val === "") {
           this.search = false;
           this.height = 300;
         } else {
@@ -248,7 +249,7 @@
         }
       }
       loadResults() {
-        this.router.push('/results/' + this.queryTerm);
+        this.router.push("/results/" + this.queryTerm);
       }
       moveTextUp() {
         this.search = false;
@@ -270,13 +271,13 @@
         return data;
       }
 
-      @Watch('currentPage')
+      @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(this.queryTerm, val);
       }
       created(): void {
         this.loadData(this.queryTerm, this.currentPage);
-        this.currentView = 'studies';
+        this.currentView = "studies";
         this.loadSummaryData(); // TODO: find a faster (server-side?) way to count total number of associations.
       }
       loadData(queryTerm: string, page: number): void {
@@ -307,31 +308,30 @@
         }
         if (this.n.genes === 0) {
           this.dataObserved.genes = [];
-        }
-        else {
-            for(let g_idx in this.dataObserved.genes) {
-                this.dataObserved.genes[g_idx]['start position'] = this.dataObserved.genes[g_idx]['positions']['gte'];
-                this.dataObserved.genes[g_idx]['end position'] = this.dataObserved.genes[g_idx]['positions']['lte'];
-                if(this.dataObserved.genes[g_idx]['aliases'].length > 0) {
-                    this.dataObserved.genes[g_idx]['description'] = this.dataObserved.genes[g_idx]['aliases'][0]['full_name']
+        } else {
+            for (const gIdx of Object.keys(this.dataObserved.genes)) {
+                this.dataObserved.genes[gIdx]["start position"] = this.dataObserved.genes[gIdx]["positions"]["gte"];
+                this.dataObserved.genes[gIdx]["end position"] = this.dataObserved.genes[gIdx]["positions"]["lte"];
+                if (this.dataObserved.genes[gIdx]["aliases"].length > 0) {
+                    this.dataObserved.genes[gIdx]["description"] = this.dataObserved.genes[gIdx]["aliases"][0]["full_name"];
                 }
             }
         }
       }
 
       _countStudies(data): void {
-        this.n_studies = data.count
+        this.nStudies = data.count;
       }
       _countPhenotypes(data): void {
-        this.n_phenotypes = data.count
+        this.nPhenotypes = data.count;
       }
       _countAssociations(data): void {
-        this.n_associations = data
+        this.nAssociations = data;
       }
       sortBy(key): void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
         if (this.sortOrders[this.currentView][key] < 0) {
-          this.ordered = '-' + key;
+          this.ordered = "-" + key;
         } else {
           this.ordered = key;
         }

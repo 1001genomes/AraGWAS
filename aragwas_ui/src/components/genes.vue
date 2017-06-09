@@ -55,16 +55,17 @@
 
 
 <script lang="ts">
-    import {Component, Watch} from 'vue-property-decorator';
-    import {loadGenes} from '../api';
-    import Page from '../models/page';
-    import Study from '../models/study';
-    import Vue from 'vue';
+    import Vue from "vue";
+    import {Component, Watch} from "vue-property-decorator";
+
+    import {loadGenes} from "../api";
+    import Page from "../models/page";
+    import Study from "../models/study";
 
     @Component({
         filters: {
             capitalize(str) {
-                str = str.split('_').join(' ');
+                str = str.split("_").join(" ");
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
         },
@@ -73,15 +74,15 @@
         loading: boolean = false;
         studyPage: Page<Study>;
         sortOrders = {name: 1, description: 1, n_studies: 1};
-        sortKey: string = '';
-        ordered: string = '';
-        columns: string[] = ['name','chromosome', 'start_position','end_position','SNP_count','association_count', 'description'];
-        filterKey: string = '';
+        sortKey: string = "";
+        ordered: string = "";
+        columns: string[] = ["name", "chromosome", "start_position", "end_position", "SNP_count", "association_count", "description"];
+        filterKey: string = "";
         genes = [];
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
-        breadcrumbs = [{text: 'Home', href: '/'}, {text:'Genes', href: '#/genes', disabled: true},];
+        breadcrumbs = [{text: "Home", href: "/"}, {text: "Genes", href: "#/genes", disabled: true}];
 
         get filteredData() {
             let filterKey = this.filterKey;
@@ -99,7 +100,7 @@
             return data;
         }
 
-        @Watch('currentPage')
+        @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
             this.loadData(val);
         }
@@ -119,7 +120,7 @@
             this.sortKey = key;
             this.sortOrders[key] = this.sortOrders[key] * -1;
             if (this.sortOrders[key] < 0) {
-                this.ordered = '-' + key;
+                this.ordered = "-" + key;
             } else {
                 this.ordered = key;
             }

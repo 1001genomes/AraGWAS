@@ -76,10 +76,10 @@
 
 
 <script lang="ts">
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {search} from '../api';
-    import Vue from 'vue';
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
 
+    import {search} from "../api";
 
     @Component({
       filters: {
@@ -92,22 +92,22 @@
       loading: boolean = false;
 //      resultsPage: Page<Study>
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-      columnsStudies = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
+      columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
-      columnsPhenotypes = ['name', 'description'];
+      columnsPhenotypes = ["name", "description"];
       sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
-      columnsAssociations = ['snp', 'maf', 'pvalue', 'beta', 'odds_ratio', 'confidence_interval', 'phenotype', 'study'];
+      columnsAssociations = ["snp", "maf", "pvalue", "beta", "odds_ratio", "confidence_interval", "phenotype", "study"];
       columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, associations: this.columnsAssociations};
       sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, associations: this.sortOrdersAssociations};
-      sortKey: string = '';
-      ordered: string = '';
-      filterKey: string = '';
+      sortKey: string = "";
+      ordered: string = "";
+      filterKey: string = "";
       currentPage = 1;
       @Prop()
       queryTerm: string;
       dataObserved = {studies: [], phenotypes: [], associations: []};
-      observed = {studies: 'Study', phenotypes: 'Phenotype', associations: 'Association'};
-      currentView: string = '';
+      observed = {studies: "Study", phenotypes: "Phenotype", associations: "Association"};
+      currentView: string = "";
       n = {studies: 0, phenotypes: 0, associations: 0};
       pageCount = {studies: 5, phenotypes: 5, associations: 5};
 
@@ -127,11 +127,11 @@
         return data;
       }
 
-      @Watch('currentPage')
+      @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(this.queryTerm, val);
       }
-      @Watch('queryTerm') // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
+      @Watch("queryTerm") // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
       onQueryTermChanged(val: string, oldVal: string) {
         this.loadData(val, this.currentPage);
       }
@@ -140,7 +140,7 @@
           this.queryTerm = this.$route.params.queryTerm;
         }
         this.loadData(this.queryTerm, this.currentPage);
-        this.currentView = 'studies';
+        this.currentView = "studies";
       }
       loadData(queryTerm: string, page: number): void {
         search(queryTerm, page, this.ordered).then(this._displayData);
@@ -169,7 +169,7 @@
       sortBy(key): void {
         this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
         if (this.sortOrders[this.currentView][key] < 0) {
-          this.ordered = '-' + key;
+          this.ordered = "-" + key;
         } else {
           this.ordered = key;
         }

@@ -6,13 +6,13 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import * as d3 from 'd3';
-    import Vue from 'vue';
+    import * as d3 from "d3";
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
 
     @Component({
-        name: 'gene-plot',
-        props: ['dataPoints', 'options']
+        name: "gene-plot",
+        props: ["dataPoints", "options"],
     })
     export default class GenePlot extends Vue {
         @Prop()
@@ -20,25 +20,21 @@
         @Prop()
         options;
         mounted() {
-            //Width and height
-            var padding = 40;
-            var w = this.options.width;
-//            if( typeof w === 'undefined' ) {
-//                w = 1200;
-//            }
-            var w_rect = this.options.w_rect;
-            if( typeof w_rect === 'undefined' ) {
+            const padding = 40;
+            const w = this.options.width;
+            let w_rect = this.options.w_rect;
+            if (typeof w_rect === "undefined") {
                 w_rect = 400;
             }
-            var rect_center = this.options.rect_center;
-            if( typeof rect_center === 'undefined' ) {
-                rect_center = w/2;
+            let rect_center = this.options.rect_center;
+            if (typeof rect_center === "undefined") {
+                rect_center = w / 2;
             }
-            var h = 450;
-            var scaleW = d3.scaleLinear();
-            var scaleH = d3.scaleLinear();
+            const h = 450;
+            const scaleW = d3.scaleLinear();
+            const scaleH = d3.scaleLinear();
 
-            var defaultOptions = {
+            const defaultOptions = {
                 matrix: undefined,
                 species_id: undefined,
                 chr: undefined,
@@ -54,115 +50,113 @@
                 legend1: "",
                 legend2: "",
                 color: this.options.chr,
-                limited:0,
+                limited: 0,
             };
-            var options = this.options;
+            const options = this.options;
             // Add the missing parameters
-            for( var key of Object.keys(defaultOptions) ) {
-                if( typeof options[key] === 'undefined') {
-                    options[key] = defaultOptions[key]
+            for (const key of Object.keys(defaultOptions)) {
+                if (typeof options[key] === "undefined") {
+                    options[key] = defaultOptions[key];
                 }
             }
 
             // define scaling options
             scaleW.domain([options.min_x, options.max_x]);
-            scaleW.range([padding, (w-padding)]);
-            scaleH.domain([0, options.max_y+1]);
-            scaleH.range([h-padding, padding]);
+            scaleW.range([padding, (w - padding)]);
+            scaleH.domain([0, options.max_y + 1]);
+            scaleH.range([h - padding, padding]);
 
             // define colors
-            var blue = 204 - (options.color) * 40;
-            var red = 51 + (options.color) * 40;
+            const blue = 204 - (options.color) * 40;
+            const red = 51 + (options.color) * 40;
             // get data
-            var data = options.matrix;
-            var d2 = [[options.min_x,options.bonferoniThreshold],[options.max_x,options.bonferoniThreshold]];
+            const data = options.matrix;
+            const d2 = [[options.min_x, options.bonferoniThreshold], [options.max_x, options.bonferoniThreshold]];
             // draw svg
-            var svg = d3.select(this.$refs.svg as Element)
+            const svg = d3.select(this.$refs.svg as Element)
                 .append("svg")
                 .attr("width", w)
                 .attr("height", h);
-            var dif = options.max_x - options.min_x;
-            var len = Math.pow(10,((String(Math.round(dif/5)).length-1)));
-            var val_x = Math.round(dif/(5*len))*len;
+            const dif = options.max_x - options.min_x;
+            const len = Math.pow(10, ((String(Math.round(dif / 5)).length - 1)));
+            const valX = Math.round(dif / (5 * len)) * len;
             // draw graph help-lines in background
-            for (var i = 0; (options.min_x + val_x*i) < options.max_x ; i++) {
+            for (let i = 0; (options.min_x + valX * i) < options.max_x ; i++) {
                 svg.append("svg:g")
-                    .attr("transform", "translate("+scaleW(options.min_x + val_x*i)+","+(h-padding/1.5)+")")
-                    .append("text").text(options.min_x + val_x*i)
+                    .attr("transform", "translate(" + scaleW(options.min_x + valX * i) + "," + (h - padding / 1.5) + ")")
+                    .append("text").text(options.min_x + valX * i)
                     .attr("text-anchor", "middle");
-            };
-            var val_y = Math.round(options.max_y/3)
-            for (var i = 1; (i*val_y) < (options.max_y+1); i++) {
+            }
+            const valY = Math.round(options.max_y / 3);
+            for (let i = 1; (i * valY) < (options.max_y + 1); i++) {
                 svg.append("svg:g")
-                    .attr("transform", "translate("+(padding/1.5)+","+scaleH(val_y*i)+")")
-                    .append("text").text(val_y*i)
+                    .attr("transform", "translate(" + (padding / 1.5) + "," + scaleH(valY * i) + ")")
+                    .append("text").text(valY * i)
                     .attr("text-anchor", "middle");
-            };
+            }
             // write text-information to axis and draw graph-elements
             svg.append("svg:g")
                 .attr("transform", "matrix(0, -1, 1, 0, 0, 0)").append("svg:g")
-                .attr("transform", "translate("+((-3*padding))+","+(padding/3)+")")
+                .attr("transform", "translate(" + ((-3 * padding)) + "," + (padding / 3) + ")")
                 .append("text").text("-log10(p-value)");
             svg.append("svg:g")
-                .attr("transform", "translate("+((w-padding)/2)+","+(h-padding/5)+")")
-                .append("text").text("chromosomal position [Chr "+options.chr+"]")
+                .attr("transform", "translate(" + ((w - padding) / 2) + "," + (h - padding / 5) + ")")
+                .append("text").text("chromosomal position [Chr " + options.chr + "]")
                 .attr("text-anchor", "middle");
             svg.append("rect")
                 .attr("x", padding)
-                .attr("y", padding/2)
-                .attr("width", padding/2.5)
-                .attr("height", padding/3.5)
+                .attr("y", padding / 2)
+                .attr("width", padding / 2.5)
+                .attr("height", padding / 3.5)
                 .style("fill", "rgb(0,100,0)");
             svg.append("svg:g")
-                .attr("transform", "translate("+(padding+25)+","+(padding/1.3)+")")
-                .append("text").text("Bonferroni threshold ["+options.alpha+"]");
+                .attr("transform", "translate(" + (padding + 25) + "," + (padding / 1.3) + ")")
+                .append("text").text("Bonferroni threshold [" + options.alpha + "]");
             svg.append("svg:line")
                 .attr("x1", scaleW(options.min_x))
                 .attr("y1", scaleH(3))
                 .attr("x2", scaleW(options.min_x))
-                .attr("y2", scaleH(options.max_y+1))
+                .attr("y2", scaleH(options.max_y + 1))
                 .style("stroke", "#000000")
-                .style("stroke-width",1);
+                .style("stroke-width", 1);
             svg.append("svg:line")
                 .attr("x1", scaleW(options.min_x))
                 .attr("y1", scaleH(0))
                 .attr("x2", scaleW(options.max_x))
                 .attr("y2", scaleH(0))
                 .style("stroke", "#000000")
-                .style("stroke-width",1);
+                .style("stroke-width", 1);
             svg.append("svg:line")
                 .attr("x1", scaleW(d2[0][0]))
                 .attr("y1", scaleH(d2[0][1]))
                 .attr("x2", scaleW(d2[1][0]))
                 .attr("y2", scaleH(d2[1][1]))
                 .style("stroke", "rgb(0,100,0)")
-                .style("stroke-width",1.5 );
+                .style("stroke-width", 1.5 );
             // draw gene rectangle
             svg.append("svg:rect")
-                .attr("x", rect_center-w_rect/2)
+                .attr("x", rect_center - w_rect / 2)
                 .attr("y", 350)
                 .attr("width", w_rect)
                 .attr("height", 50)
                 .style("fill", "rgb(255,255,255)")
                 .style("stroke", "rgb(0,100,0)")
-                .style("stroke-width",4 );
+                .style("stroke-width", 4);
             // draw datapoints
             svg.selectAll("circle")
                 .data(this.dataPoints)
                 .enter()
                 .append("circle")
-                .attr("cx", function(d) {
+                .attr("cx", (d) => {
                     return scaleW(d[0]);
                 })
-                .attr("cy", function(d) {
+                .attr("cy", (d) => {
                     return scaleH(d[1]);
                 })
                 .attr("r", 2.1)
-                .style("fill", "rgb("+red+",102,"+blue+")")
-        };
-
+                .style("fill", "rgb(" + red + ",102," + blue + ")");
+        }
     }
-
 </script>
 <style >
     #chart {

@@ -56,11 +56,12 @@
 
 
 <script lang="ts">
-  import {Component, Watch} from 'vue-property-decorator';
-  import {loadStudies} from '../api';
-  import Page from '../models/page';
-  import Study from '../models/study';
-  import Vue from 'vue';
+  import Vue from "vue";
+  import {Component, Watch} from "vue-property-decorator";
+
+  import {loadStudies} from "../api";
+  import Page from "../models/page";
+  import Study from "../models/study";
 
   @Component({
     filters: {
@@ -73,15 +74,15 @@
     loading: boolean = false;
     studyPage: Page<Study>;
     sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-    sortKey: string = '';
-    ordered: string = '';
-    columns: string[] = ['name', 'phenotype', 'transformation', 'method', 'genotype'];
-    filterKey: string = '';
+    sortKey: string = "";
+    ordered: string = "";
+    columns: string[] = ["name", "phenotype", "transformation", "method", "genotype"];
+    filterKey: string = "";
     studies = [];
     currentPage = 1;
     pageCount = 5;
     totalCount = 0;
-    breadcrumbs = [{text: 'Home', href: '/'}, {text:'Studies', href: '#/studies', disabled: true},];
+    breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "#/studies", disabled: true}];
 
     get filteredData() {
       let filterKey = this.filterKey;
@@ -99,7 +100,7 @@
       return data;
     }
 
-    @Watch('currentPage')
+    @Watch("currentPage")
     onCurrentPageChanged(val: number, oldVal: number) {
       this.loadData(val);
     }
@@ -119,7 +120,7 @@
       this.sortKey = key;
       this.sortOrders[key] = this.sortOrders[key] * -1;
       if (this.sortOrders[key] < 0) {
-        this.ordered = '-' + key;
+        this.ordered = "-" + key;
       } else {
         this.ordered = key;
       }

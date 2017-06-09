@@ -73,11 +73,11 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {loadAssociationsOfGene, loadGene} from '../api';
-    import GenePlot from '../components/geneplot.vue'
-    import Router from '@/router/index.ts'
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
+    import {loadAssociationsOfGene, loadGene} from "../api";
+    import GenePlot from "../components/geneplot.vue";
+    import Router from "../router";
 
     @Component({
         filters: {
@@ -86,17 +86,17 @@
             },
         },
         components: {
-            'gene-plot': GenePlot,
+            "gene-plot": GenePlot,
         },
     })
     export default class GeneDetail extends Vue {
         // Gene information
         router = Router;
         @Prop()
-        geneId: string = '';
-        searchTerm: string = '';
-        geneName: string = '';
-        geneDescription: string = '';
+        geneId: string = "";
+        searchTerm: string = "";
+        geneName: string = "";
+        geneDescription: string = "";
         startPosition = 0;
         endPosition = 1;
         centerOfGene = 0;
@@ -113,21 +113,17 @@
                 max_x: 1289300,
                 chr: undefined,
                 w_rect: 0,
-            }
-        };
-
-
+            };
+        }
         // Associations parameters
         ordered: string;
-
-
-        breadcrumbs = [{text: 'Home', href: '/'}, {text:'Genes', href: '#/genes', disabled: true}, {text: this.geneName, href: '', disabled: true}];
+        breadcrumbs = [{text: "Home", href: "/"}, {text: "Genes", href: "#/genes", disabled: true}, {text: this.geneName, href: "", disabled: true}];
         zoom = 75;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
-        columns = ['SNP', 'p-value', 'phenotype', 'gene','maf','beta', 'odds ratio', 'confidence interval'];
-        filterKey: string = '';
+        columns = ["SNP", "p-value", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        filterKey: string = "";
         associations = [];
 
         get filteredData() {
@@ -145,9 +141,9 @@
             }
             return data;
         }
-        @Watch('zoom')
+        @Watch("zoom")
         onZoomChanged(val: number, oldVal: number) {
-            this.$nextTick(function () {
+            this.$nextTick(function() {
                 this.updateGeneRegion();
             });
         }
@@ -158,7 +154,7 @@
             }
             loadGene(this.geneId).then(this._displayGeneData);
             this.loadData(this.currentPage);
-            this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition)/2;
+            this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition) / 2;
             this.updateGeneRegion();
         }
 
@@ -170,7 +166,7 @@
 //            this.endPosition = data.end_position;
             this.options.chr = data.gene.chr;
             this.options.w_rect = data.gene.positions.lte - data.gene.positions.gte;
-            this.centerOfGene = data.gene.positions.gte + this.options.w_rect/2;
+            this.centerOfGene = data.gene.positions.gte + this.options.w_rect / 2;
             this.snpSet = data.snps;
             this.snpCount = data.snp_count;
             this.associationCount = data.associationCount;
@@ -178,7 +174,7 @@
         // ASSOCIATION LOADING
         loadData(page: number): void {
             // Load associations of all cited SNPs
-            loadAssociationsOfGene(this.geneId, page, this.ordered).then(this._displayData)
+            loadAssociationsOfGene(this.geneId, page, this.ordered).then(this._displayData);
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -187,17 +183,15 @@
             this.pageCount = data.page_count;
         }
         updateGeneRegion(): void {
-            let windowsize = Math.round((this.endPosition - this.startPosition)*100/this.zoom);
-            this.windowStartPosition = this.centerOfGene - windowsize/2;
-            this.windowEndPosition = this.centerOfGene + windowsize/2;
+            const windowsize = Math.round((this.endPosition - this.startPosition) * 100 / this.zoom);
+            this.windowStartPosition = this.centerOfGene - windowsize / 2;
+            this.windowEndPosition = this.centerOfGene + windowsize / 2;
         }
         goToGene(): void {
-            this.router.push({name: 'geneDetail', params: { geneId: this.searchTerm }});
+            this.router.push({name: "geneDetail", params: { geneId: this.searchTerm }});
         }
-
     }
 </script>
-
 <style scoped>
     .page-container {
         display:flex;

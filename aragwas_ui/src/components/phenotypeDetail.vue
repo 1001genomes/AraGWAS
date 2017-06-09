@@ -30,7 +30,7 @@
                             <v-row><v-col xs4><span>Name:</span></v-col><v-col xs7>{{ phenotypeName }}</v-col></v-row>
                             <v-row><v-col xs4><span>Number of studies:</span></v-col><v-col xs7>{{ studyNumber }}</v-col></v-row>
                             <v-row><v-col xs4><span>Average number of hits:</span></v-col><v-col xs7>{{ avgHitNumber }}</v-col></v-row>
-                            <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href=" arapheno_link " target="_blank">{{ phenotypeName }}</a></v-col></v-row>
+                            <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href=" araPhenoLink " target="_blank">{{ phenotypeName }}</a></v-col></v-row>
                             <v-row><v-col xs4><span>Description:</span></v-col><v-col xs7>{{ phenotypeDescription }}</v-col></v-row>
                             <div></div>
                         </div>
@@ -62,7 +62,7 @@
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th v-for="key in columns_tab[i]"
+                                                <th v-for="key in columnsTab[i]"
                                                     @click="sortBy(key)"
                                                     :class="{ active: sortKey == key }">
                                                     {{ key | capitalize }}
@@ -71,7 +71,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr v-for="entry in filteredStudiesAndPhenotypes">
-                                                    <td v-for="key in columns_tab[i]">
+                                                    <td v-for="key in columnsTab[i]">
                                                         <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                         <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
                                                         <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['study_set'].length}}</p>
@@ -135,9 +135,10 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import Vue from 'vue';
-    import {loadPhenotype, loadAssociationsOfPhenotype, loadStudy, loadSimilarPhenotypes} from '../api';
+    import Vue from "vue";
+    import {Component, Prop, Watch} from "vue-property-decorator";
+
+    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudy} from "../api";
 
     @Component({
         filters: {
@@ -149,27 +150,27 @@
     export default class PhenotypeDetail extends Vue {
       @Prop({required: true})
       id: number;
-      phenotypeName: string = '';
+      phenotypeName: string = "";
       studyNumber = 0;
       studyIDs = [];
-      tabNames = {'List of Studies': 'listOfStudies', 'Similar Phenotypes': 'similarPhenotypes'};
+      tabNames = {"List of Studies": "listOfStudies", "Similar Phenotypes": "similarPhenotypes"};
       tabData = {listOfStudies: [{}], similarPhenotypes: []};
       avgHitNumber = 0;
-      phenotypeDescription: string = '';
-      currentView: string = 'Similar Phenotypes';
-      arapheno_link: string = '';
-      columns = ['SNP', 'pvalue', 'gene', 'study'];
-      columns_tab = {'Similar Phenotypes': ['name', 'n studies', 'description', 'associated genes'], 'List of Studies': ['study', 'genotype', 'method', 'N hits']};
+      phenotypeDescription: string = "";
+      currentView: string = "Similar Phenotypes";
+      araPhenoLink: string = "";
+      columns = ["SNP", "pvalue", "gene", "study"];
+      columnsTab = {"Similar Phenotypes": ["name", "n studies", "description", "associated genes"], "List of Studies": ["study", "genotype", "method", "N hits"]};
       n = {phenotypes: 0, accessions: 0};
       sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
-      sortKey: string = '';
-      ordered: string = '';
-      filterKey: string = '';
+      sortKey: string = "";
+      ordered: string = "";
+      filterKey: string = "";
       associations = [];
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: 'Home', href: '/'}, {text:'Phenotypes', href: '#/phenotypes'}, {text: this.phenotypeName, href: '', disabled: true}];
+      breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "#/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
 //      TODO: add similar phenotypes fetching with Ontology
 
@@ -204,27 +205,27 @@
         return data;
       }
 
-      @Watch('id')
+      @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
       }
 
-      @Watch('currentPage')
+      @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
-        loadAssociationsOfPhenotype(this.id, val).then(this._displayData)
+        loadAssociationsOfPhenotype(this.id, val).then(this._displayData);
       }
       created(): void {
         this.loadData();
       }
       mounted(): void {
-        this.currentView = 'List of Studies';
+        this.currentView = "List of Studies";
       }
 
 //    PHENOTYPE DATA LOADING
       _displayPhenotypeData(data): void {
         this.phenotypeName = data.name;
         this.phenotypeDescription = data.description;
-        this.arapheno_link = data.arapheno_link;
+        this.araPhenoLink = data.araPhenoLink;
         this.breadcrumbs[2].text = data.name;
         this.studyNumber = data.study_set.length;
         this.studyIDs = data.study_set;
@@ -239,9 +240,8 @@
         try {
             loadPhenotype(this.id).then(this._displayPhenotypeData).then(this.loadStudyList);
             loadSimilarPhenotypes(this.id).then(this._displaySimilarPhenotypes);
-            loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData)
-        }
-        catch (err) {
+            loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData);
+        } catch (err) {
             console.log(err);
         }
       }
@@ -253,33 +253,32 @@
       }
 //    STUDIES FETCHING
       loadStudyList(data): void {
-        for (let key of this.studyIDs) {
-          loadStudy(key).then(this._addStudyData)
+        for (const key of this.studyIDs) {
+          loadStudy(key).then(this._addStudyData);
         }
       }
       changeView(data): void {
-        this.currentView = 'List of Studies'
+        this.currentView = "List of Studies";
       }
       _addStudyData(data): void {
-        if(Object.keys(this.studyIDs[0]).length === 0){
+        if (Object.keys(this.studyIDs[0]).length === 0) {
           this.tabData.listOfStudies = [{
-            'study': data.name,
-            'genotype': data.genotype,
-            'method': data.method,
-            'transformation': data.transformation,
-            'N hits': data.association_count, // TODO: Add proper number of hits in database
-            'pk': data.pk,
-          }]
-        }
-        else{
+            "study": data.name,
+            "genotype": data.genotype,
+            "method": data.method,
+            "transformation": data.transformation,
+            "N hits": data.association_count, // TODO: Add proper number of hits in database
+            "pk": data.pk,
+          }];
+        } else {
           this.tabData.listOfStudies = this.tabData.listOfStudies.concat([{
-            'study': data.name,
-            'genotype': data.genotype,
-            'method': data.method,
-            'transformation': data.transformation,
-            'N hits': data.association_count,
-            'pk': data.pk,
-          }])
+            "study": data.name,
+            "genotype": data.genotype,
+            "method": data.method,
+            "transformation": data.transformation,
+            "N hits": data.association_count,
+            "pk": data.pk,
+          }]);
         }
       }
 
@@ -288,11 +287,11 @@
         this.sortKey = key;
         this.sortOrders[key] = this.sortOrders[key] * -1;
         if (this.sortOrders[key] < 0) {
-          this.ordered = '-' + key;
+          this.ordered = "-" + key;
         } else {
           this.ordered = key;
         }
-        loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData)
+        loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData);
       }
     }
 </script>
