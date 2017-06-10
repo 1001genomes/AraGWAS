@@ -128,10 +128,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .parallax {
-      margin: -24px;
-    }
-
     .section {
         padding-top: 1rem;
     }

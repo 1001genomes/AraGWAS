@@ -128,9 +128,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .parallax {
-      margin: -24px;
-    }
     .banner-container {
         position: relative;
         overflow: hidden;
