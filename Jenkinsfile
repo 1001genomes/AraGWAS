@@ -27,7 +27,7 @@ pipeline {
                     def ui_img = docker.build("aragwas_ui","aragwas_ui")
                     ui_img.inside('-u root') {
                         sh """
-                        ln -s /srv/aragwas_ui/node_modules/
+                        ln -s /srv/aragwas_ui/node_modules/ || true
                         cd aragwas_ui && npm run build
                         rm node_modules
                         """
