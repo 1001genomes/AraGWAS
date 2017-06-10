@@ -27,8 +27,9 @@ pipeline {
                     def ui_img = docker.build("aragwas_ui","aragwas_ui")
                     ui_img.inside('-u root') {
                         sh """
-                        export NODE_PATH=/srv/aragwas_ui/node_modules/
+                        ln -s /srv/aragwas_ui/node_modules/
                         cd aragwas_ui && npm run build
+                        rm node_modules
                         """
                     }
                     //ui_img.run('-a -v $WORKSPACE/dist:/srv/aragwas_server/gwasdb')
