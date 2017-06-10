@@ -1,75 +1,63 @@
 <template>
-    <div>
-        <div class="banner-container" style="height: 70px">
-            <div class="section" id="head">
-                <div class="container mt-3">
-                    <v-breadcrumbs icons divider="chevron_right" class="left">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h5 v-if="item.disabled">{{ item.text }}</h5>
-                            <h5 v-else class="green--text">{{ item.text }}</h5>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
+    <v-layout column>
+        <v-flex xs12>
+             <v-breadcrumbs icons divider="chevron_right" class="left">
+                <v-breadcrumbs-item
+                        v-for="item in breadcrumbs" :key="item"
+                        :disabled="item.disabled"
+                        class="breadcrumbsitem"
+                        :href="{name: item.href}"
+                        router
+                >
+                    <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
+                </v-breadcrumbs-item>
+            </v-breadcrumbs>
+            <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm4>
+            <v-text-field name="geneName-search" :label="geneName" v-model="searchTerm" prepend-icon="search" single-line><input type="search" @keyup.enter="goToGene()"></v-text-field>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout row justify-space-around>
+                <div>
+                    <h5 class="mb-1">Genomic Region : {{ geneName }}</h5>
                     <v-divider></v-divider>
                 </div>
+                <div class="flex"></div>
+                <div style="width:300px;">
+                    <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min" ></v-slider>
+                </div>
+            </v-layout>
+        </v-flex>
+        <v-flex xs12>
+            <gene-plot class="flex" :options="options"></gene-plot>
+        </v-flex>
+        <v-flex xs12>
+            <h5 class="mb-1">Associations List</h5>
+            <v-divider></v-divider>
+            <v-card class="mt-3">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th v-for="key in columns">
+                            {{ key | capitalize }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="entry in filteredData">
+                        <td v-for="key in columns">
+                            <div>{{entry[key]}}</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </v-card>
+            <div class="page-container mt-5 mb-3">
+                <v-pagination :length.number="pageCount" v-model="currentPage" />
             </div>
-        </div>
-        <v-container>
-            <v-row>
-                <v-col xs4>
-                    <v-text-field name="geneName-search" :label="geneName" v-model="searchTerm" prepend-icon="search" single-line><input type="search" @keyup.enter="goToGene()"></v-text-field>
-                    <!--TODO: make this search bar functional-->
-                </v-col>
-                <!--<v-col xs4 offset-xs4>-->
-                    <!--<v-slider v-model="zoom" prepend-icon="zoom_in"></v-slider>-->
-                <!--</v-col>-->
-            </v-row>
-            <v-row>
-                <br>
-                <v-col xs12>
-                    <div id="genomic-region">
-                        <v-row><v-col xs5><h5 class="mb-1">Genomic Region : {{ geneName }}</h5><v-divider></v-divider></v-col>
-                            <v-col xs4 offset-xs3><v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min"></v-slider></v-col></v-row>
-                        <v-col xs12><gene-plot :options="options"></gene-plot></v-col>
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row>
-                <br>
-                <v-col xs12>
-                    <div id="associations-list">
-                        <v-row><v-col xs5><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                        <v-card class="mt-3">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th v-for="key in columns">
-                                        {{ key | capitalize }}
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="entry in filteredData">
-                                    <td v-for="key in columns">
-                                        <div>{{entry[key]}}</div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </v-card>
-                        <div class="page-container mt-5 mb-3">
-                            <v-pagination :length.number="pageCount" v-model="currentPage" />
-                        </div>
-                    </div>
-                </v-col>
-            </v-row>
-        </v-container>
-    </div>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -93,7 +81,7 @@
         // Gene information
         router = Router;
         @Prop()
-        geneId: string = "";
+        geneId: string;
         searchTerm: string = "";
         geneName: string = "";
         geneDescription: string = "";
@@ -117,7 +105,7 @@
         }
         // Associations parameters
         ordered: string;
-        breadcrumbs = [{text: "Home", href: "/"}, {text: "Genes", href: "#/genes", disabled: true}, {text: this.geneName, href: "", disabled: true}];
+        breadcrumbs = [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.geneName, href: "", disabled: true}];
         zoom = 75;
         pageCount = 5;
         currentPage = 1;
@@ -141,6 +129,11 @@
             }
             return data;
         }
+        @Watch("geneId")
+        onGeneIdChanged(val: number, oldVal: number) {
+            this.loadData();
+        }
+
         @Watch("zoom")
         onZoomChanged(val: number, oldVal: number) {
             this.$nextTick(function() {
@@ -149,13 +142,7 @@
         }
 
         created(): void {
-            if (this.$route.params.geneId) {
-                this.geneId = this.$route.params.geneId;
-            }
-            loadGene(this.geneId).then(this._displayGeneData);
-            this.loadData(this.currentPage);
-            this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition) / 2;
-            this.updateGeneRegion();
+            this.loadData();
         }
 
         // Gene DATA LOADING
@@ -172,9 +159,16 @@
             this.associationCount = data.associationCount;
         }
         // ASSOCIATION LOADING
-        loadData(page: number): void {
+        loadData(): void {
             // Load associations of all cited SNPs
-            loadAssociationsOfGene(this.geneId, page, this.ordered).then(this._displayData);
+            try {
+                loadGene(this.geneId).then(this._displayGeneData);
+                loadAssociationsOfGene(this.geneId, this.currentPage, this.ordered).then(this._displayData);
+                this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition) / 2;
+                this.updateGeneRegion();
+            } catch (err) {
+                console.log(err);
+            }
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -196,5 +190,8 @@
     .page-container {
         display:flex;
         justify-content:center;
+    }
+    ul.breadcrumbs {
+        padding-left:0;
     }
 </style>

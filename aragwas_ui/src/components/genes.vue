@@ -1,26 +1,23 @@
 <template>
     <div class="mt-0">
-        <div class="banner-container" style="height: 80px">
-            <div class="section">
-                <div class="container mt-2">
-                    <v-breadcrumbs icons divider="chevron_right" class="left" style="font-size: 24pt">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h4 v-if="item.disabled" class="grey--text text--lighten-2">{{ item.text }}</h4>
-                            <h4 v-else class="white--text">{{ item.text }}</h4>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                    <v-divider></v-divider>
-                </div>
+        <v-parallax src="/static/img/ara1.jpg" height="80">
+    <div class="section">
+        <div class="container mt-2">
+            <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
+            <v-breadcrumbs-item
+                    v-for="item in breadcrumbs" :key="item"
+                    :disabled="item.disabled"
+                    class="breadcrumbsitem"
+                    :href="{name: item.href}"
+                    router
+            >
+                <span :class="['display-1', {'white--text': !item.disabled}]">{{ item.text}}</span>
+            </v-breadcrumbs-item>
+            </v-breadcrumbs>
+            <v-divider></v-divider>
             </div>
-            <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="80">
-            </v-parallax>
         </div>
+    </v-parallax>
         <div class="container">
             <div class="section">
                 <table class="table">
@@ -82,7 +79,7 @@
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
-        breadcrumbs = [{text: "Home", href: "/"}, {text: "Genes", href: "#/genes", disabled: true}];
+        breadcrumbs = [{text: "Home", href: "home"}, {text: "Genes", href: "genes", disabled: true}];
 
         get filteredData() {
             let filterKey = this.filterKey;
@@ -131,17 +128,16 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .banner-container {
-        position: relative;
-        overflow: hidden;
+    .parallax {
+      margin: -24px;
     }
+
     .section {
         padding-top: 1rem;
     }
     .table {
         width: 100%;
         max-width: 100%;
-        margin-bottom: 2rem;
     }
     .parallax-container  {
         position:absolute;
@@ -171,7 +167,9 @@
         border-right: 4px solid transparent;
         border-top: 4px solid green;
     }
-
+    .table th {
+        text-align:left;
+    }
     th.active {
         color:black;
     }

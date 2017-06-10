@@ -1,26 +1,23 @@
 <template>
     <div class="mt-0">
-        <div class="banner-container" style="height: 80px">
-            <div class="section">
-                <div class="container mt-2">
-                    <v-breadcrumbs icons divider="chevron_right" class="left" style="font-size: 24pt">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h4 v-if="item.disabled" class="grey--text text--lighten-2">{{ item.text }}</h4>
-                            <h4 v-else class="white--text">{{ item.text }}</h4>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                    <v-divider></v-divider>
+        <v-parallax src="/static/img/ara2.jpg" height="80">
+        <div class="section">
+            <div class="container mt-2">
+                <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
+                <v-breadcrumbs-item
+                        v-for="item in breadcrumbs" :key="item"
+                        :disabled="item.disabled"
+                        class="breadcrumbsitem"
+                        :href="{name: item.href}"
+                        router
+                >
+                    <span :class="['display-1', {'white--text': !item.disabled}]">{{ item.text}}</span>
+                </v-breadcrumbs-item>
+                </v-breadcrumbs>
+                <v-divider></v-divider>
                 </div>
             </div>
-            <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="80">
-            </v-parallax>
-        </div>
+        </v-parallax>
         <div class="container">
             <div class="section">
                 <table class="table">
@@ -39,7 +36,7 @@
                     <tbody>
                         <tr v-for="entry in filteredData">
                             <td v-for="key in columns">
-                                <router-link v-if="(key==='name')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry[key] }}</router-link>
+                                <router-link v-if="(key==='name')" :to="{name: 'phenotypeDetail', params: { id: entry['pk'] }}" >{{ entry[key] }}</router-link>
                                 <div v-else-if="(key==='n_studies')" >{{ entry['study_set'].length }}</div>
                                 <div v-else>{{ entry[key] }}</div>
                             </td>
@@ -83,7 +80,7 @@
         currentPage = 1;
         pageCount = 5;
         totalCount = 0;
-        breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "#/phenotypes", disabled: true}];
+        breadcrumbs = [{text: "Home", href: "home"}, {text: "Phenotypes", href: "phenotypes", disabled: true}];
 
         get filteredData() {
             let filterKey = this.filterKey;
@@ -172,6 +169,9 @@
         border-left: 4px solid transparent;
         border-right: 4px solid transparent;
         border-top: 4px solid green;
+    }
+    .table th {
+        text-align:left;
     }
 
     th.active {

@@ -1,136 +1,105 @@
 <template>
-    <div>
-        <div class="banner-container" style="height: 70px">
-            <div class="section" id="head">
-                <div class="container mt-3">
-                    <v-breadcrumbs icons divider="chevron_right" class="left">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h5 v-if="item.disabled">{{ item.text }}</h5>
-                            <h5 v-else class="green--text">{{ item.text }}</h5>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                    <v-divider></v-divider>
+    <div >
+        <v-layout column align-start>
+            <v-flex xs12>
+                <v-breadcrumbs icons divider="chevron_right" class="left">
+                    <v-breadcrumbs-item
+                            v-for="item in breadcrumbs" :key="item"
+                            :disabled="item.disabled"
+                            class="breadcrumbsitem"
+                            :href="{name: item.href}"
+                            router
+                    >
+                        <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
+                    </v-breadcrumbs-item>
+                </v-breadcrumbs>
+                <v-divider></v-divider>
+            </v-flex>
+        </v-layout>
+        <v-layout row-sm wrap column class="mt-4">
+            <v-flex xs12 sm6 md4>
+                <v-flex xs12>
+                    <v-layout column>
+                        <h5 class="mb-1">Description</h5>
+                        <v-divider></v-divider>
+                        <v-layout row wrap class="mt-4">
+                            <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotypeName }}</v-flex>
+                            <v-flex xs5 md3>Number of studies:</v-flex><v-flex xs7 md9 >{{ studyNumber }}</v-flex>
+                            <v-flex xs5 md3>Average number of hits:</v-flex><v-flex xs7 mm9>{{ avgHitNumber }}</v-flex>
+                            <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotypeName }}</a></v-flex>
+                            <v-flex xs5 md3>Description:</v-flex><v-flex xs7 mm9>{{ phenotypeDescription }}</v-flex>
+                        </v-layout>
+                    </v-layout>
+                </v-flex>
+                <v-flex xs12 class="mt-4">
+                    <v-tabs id="similar-tabs" grow scroll-bars v:model="currentView">
+                        <v-tabs-bar slot="activators">
+                            <v-tabs-slider></v-tabs-slider>
+                            <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
+                                    v-for="i in ['List of Studies', 'Similar Phenotypes']" :key="i">
+                                    <div>{{ i }}</div>
+                                </v-tabs-item>
+                        </v-tabs-bar>
+                        <v-tabs-content :id="i" v-for="i in ['List of Studies','Similar Phenotypes']" :key="i">
+                            <v-card>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th v-for="key in columnsTab[i]"
+                                            @click="sortBy(key)"
+                                            :class="{ active: sortKey == key }">
+                                            {{ key | capitalize }}
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="entry in filteredStudiesAndPhenotypes">
+                                            <td v-for="key in columnsTab[i]">
+                                                <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
+                                                <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['study_set'].length}}</p>
+                                                <p v-else>{{entry[key]}}</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </v-card>
+                        </v-tabs-content>
+                    </v-tabs>
+                </v-flex>
+            </v-flex>
+            <v-flex xs12 sm6 md8>
+                <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
+                <v-card class="mt-2">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th v-for="key in columns"
+                                @click="sortBy(key)"
+                                :class="{ active: sortKey == key }">
+                                {{ key | capitalize }}
+                                <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                                    </span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="entry in filteredData">
+                            <td v-for="key in columns">
+                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry                ['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { geneId: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                <div v-else>{{entry[key]}}</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </v-card>
+                <div class="page-container mt-5 mb-3">
+                    <v-pagination :length.number="pageCount" v-model="currentPage" />
                 </div>
-            </div>
-        </div>
-        <v-container>
-            <v-row>
-                <v-col xs6>
-                    <br>
-                    <v-col xs12>
-                        <div id="description" class="mb-5">
-                            <v-row><v-col xs11><h5 class="mb-1">Description</h5><v-divider></v-divider></v-col></v-row>
-                            <div class="mt-4"></div>
-                            <v-row><v-col xs4><span>Name:</span></v-col><v-col xs7>{{ phenotypeName }}</v-col></v-row>
-                            <v-row><v-col xs4><span>Number of studies:</span></v-col><v-col xs7>{{ studyNumber }}</v-col></v-row>
-                            <v-row><v-col xs4><span>Average number of hits:</span></v-col><v-col xs7>{{ avgHitNumber }}</v-col></v-row>
-                            <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href=" araPhenoLink " target="_blank">{{ phenotypeName }}</a></v-col></v-row>
-                            <v-row><v-col xs4><span>Description:</span></v-col><v-col xs7>{{ phenotypeDescription }}</v-col></v-row>
-                            <div></div>
-                        </div>
-                        <v-row class="mt-4"><v-col xs12>
-                            <v-tabs
-                                id="mobile-tabs-1"
-                                grow
-                                scroll-bars
-                                :model="currentView"
-                            >
-                                <v-tab-item
-                                        v-for="i in ['List of Studies', 'Similar Phenotypes']" :key="i"
-                                        :href="'#' + i"
-                                        ripple
-                                        slot="activators"
-                                        class="grey lighten-4 black--text"
-                                >
-                                    <section style="width: 110%" @click="currentView = i">
-                                        <div v-if="currentView === i" class="black--text">{{ i }}</div>
-                                        <div v-else class="grey--text"> {{ i }}</div>
-                                    </section>
-                                </v-tab-item>
-                                <v-tab-content
-                                        v-for="i in ['List of Studies','Similar Phenotypes']" :key="i"
-                                        :id="i"
-                                        slot="content"
-                                >
-                                    <v-card>
-                                        <table class="table">
-                                            <thead>
-                                            <tr>
-                                                <th v-for="key in columnsTab[i]"
-                                                    @click="sortBy(key)"
-                                                    :class="{ active: sortKey == key }">
-                                                    {{ key | capitalize }}
-                                                </th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="entry in filteredStudiesAndPhenotypes">
-                                                    <td v-for="key in columnsTab[i]">
-                                                        <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                        <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
-                                                        <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['study_set'].length}}</p>
-                                                        <p v-else>{{entry[key]}}</p>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </v-card>
-                                </v-tab-content>
-                        </v-tabs>
-                        </v-col></v-row>
-                    </v-col>
-                </v-col>
-                <v-col xs6>
-                    <br>
-                    <v-row><v-col xs12><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                    <v-col xs12>
-                        <v-card class="mt-2">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th v-for="key in columns"
-                                        @click="sortBy(key)"
-                                        :class="{ active: sortKey == key }">
-                                        {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                                            </span>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="entry in filteredData">
-                                    <td v-for="key in columns">
-                                        <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                        <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { geneId: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                        <div v-else>{{entry[key]}}</div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                        </v-card>
-                        <div class="page-container mt-5 mb-3">
-                            <v-pagination :length.number="pageCount" v-model="currentPage" />
-                        </div>
-                    </v-col>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col xs12>
-                    <v-col xs12>
-
-                    </v-col>
-
-
-                </v-col>
-            </v-row>
-        </v-container>
+            </v-flex>
+        </v-layout>
     </div>
 </template>
 
@@ -146,6 +115,7 @@
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
         },
+
     })
     export default class PhenotypeDetail extends Vue {
       @Prop({required: true})
@@ -170,7 +140,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "#/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "home"}, {text: "Phenotypes", href: "phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
 //      TODO: add similar phenotypes fetching with Ontology
 
@@ -243,6 +213,7 @@
             loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData);
         } catch (err) {
             console.log(err);
+
         }
       }
       _displayData(data): void {
@@ -256,9 +227,6 @@
         for (const key of this.studyIDs) {
           loadStudy(key).then(this._addStudyData);
         }
-      }
-      changeView(data): void {
-        this.currentView = "List of Studies";
       }
       _addStudyData(data): void {
         if (Object.keys(this.studyIDs[0]).length === 0) {
@@ -299,10 +267,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .banner-container {
-        position: relative;
-        overflow: hidden;
-    }
+
     .breadcrumbsitem {
         font-size: 18pt;
     }
@@ -311,6 +276,10 @@
         margin:0 auto;
         max-width: 1280px;
         width: 90%
+    }
+
+    ul.breadcrumbs {
+        padding-left:0;
     }
 
     .banner-title h1 {
@@ -326,7 +295,6 @@
     .table {
         width: 100%;
         max-width: 100%;
-        margin-bottom: 2rem;
     }
     .page-container {
         display:flex;

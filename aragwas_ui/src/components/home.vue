@@ -1,80 +1,59 @@
 <template>
     <div>
-        <div class="banner-container white--text" v-bind:style="{ height: height + 'px'}">
-            <div class="container">
-                <!--<transition name="custom-fadeOutUp" leave-active-class="animated fadeOutUp">-->
-                    <div v-if="!search">
-                    <div class="banner-title">
-                        <br>
-                        <h1 class="white--text text-xs-center">AraGWASCatalog</h1>
-                    </div>
-                    <div class="banner-subtext">
-                        <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
-                        <br>
-                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
-                    </div>
-                    </div>
-                <!--</transition>-->
-                <br>
-                <!--<transition name="bounce">-->
-
-                <!--</transition>-->
-
-            </div>
-            <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
-            </v-parallax>
-        </div>
-        <div class="container mt-3">
-            <v-col xs12>
-                <v-card>
-                    <div class="pl-4 pt-1 pr-4">
-                        <v-text-field
-                                name="input-1"
-                                label="Search the catalog"
-                                v-model="queryTerm"
-                                v-bind:focused="focused"
-                                prepend-icon="search"
-                        ></v-text-field>
-                    </div>
-                </v-card>
-            </v-col>
+        <v-parallax src="/static/img/ara2.jpg" :height="height">
+            <v-layout column align-center justify-center class="container" v-if="!search">
+                <div class="banner-title">
+                    <br>
+                    <h1 class="white--text text-xs-center">AraGWASCatalog</h1>
+                </div>
+                <div class="banner-subtext">
+                    <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                    <br>
+                    <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
+                </div>
+            </v-layout>
+        </v-parallax>
+        <div class="container mt-3 pa-0">
+            <v-card>
+                <div class="pl-4 pt-1 pr-4">
+                    <v-text-field
+                            name="input-1"
+                            label="Search the catalog"
+                            v-model="queryTerm"
+                            v-bind:focused="focused"
+                            prepend-icon="search"
+                    ></v-text-field>
+                </div>
+            </v-card>
         </div>
         <section v-if="!search">
-            <div class="section mt-4">
+            <div class="section">
                 <div class="container">
-                    <v-row class="text-xs-center">
-                        <v-col xs4 offset-xs2>
+                    <v-layout class="text-xs-center">
+                        <v-flex xs4 offset-xs2>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWAS Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" router to="/studies"><v-icon left>view_list</v-icon> GWAS Studies</v-btn>
+                                <v-btn class="btn--large icon--left green lighten-1" light router to="/studies"><v-icon left light>view_list</v-icon> GWAS Studies</v-btn>
                             </div>
-                        </v-col>
-                        <!--<v-col xs12 md6 lg4>-->
-                            <!--<div class="icon-block">-->
-                                <!--<h3 class="text-xs-center green&#45;&#45;text lighten-1"><i class="material-icons" style="font-size:35px">call_merge</i></h3>-->
-                                <!--<h5 class="text-xs-center">Meta-Analysis of Associations</h5>-->
-                                <!--<p class="light justify">Compare associations across phenotypes or for a specific gene region.</p>-->
-                                <!--<v-btn class="btn&#45;&#45;large-focused icon&#45;&#45;left green lighten-1" router to="/meta-analysis"><v-icon left>call_merge</v-icon> Meta-Analysis</v-btn>-->
-                            <!--</div>-->
-                        <!--</v-col>-->
-                        <v-col xs4>
+                        </v-flex>
+                        <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn class="btn--large green lighten-1 icon--left " router to="/top-associations"><v-icon left>trending_up</v-icon>Top Associations</v-btn>
+                                <v-btn class="btn--large green lighten-1 icon--left " light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
                             </div>
-                        </v-col>
-                    </v-row>
+                        </v-flex>
+                    </v-layout>
                 </div>
             </div>
-            <div class="container mt-5 mb-5">
+            <div class="container">
                 <div class="section">
-                    <v-row>
-                        <v-col xs4 >
-                            <h5 class="light"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
+                    <v-layout>
+                        <v-flex xs4 >
+                            <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
                             <v-card>
                                 <v-card-text>
                                     <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
@@ -96,54 +75,43 @@
                                     </div>
                                 </v-card-text>
                             </v-card>
-                        </v-col>
-                        <v-col xs8 >
-                            <v-row>
-                                <v-col xs6>
-                                <h5 class="light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
+                        </v-flex>
+                        <v-flex xs8 >
+                            <v-layout>
+                                <v-flex xs6>
+                                <h5 class="black--text light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
                                         <v-card>
-                                            <h6 class="pt-4 pl-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</h6><v-divider class="mb-4"></v-divider>
-                                            <h6 class="pl-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</h6><v-divider class="mb-4"></v-divider>
-                                            <h6 class="pl-4 pb-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Associations</h6>
+                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</div><v-divider></v-divider>
+                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</div><v-divider ></v-divider>
+                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Associations</div>
                                         </v-card>
-                                </v-col>
-                                <v-col xs6 >
-                                    <h5 class="light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
+                                </v-flex>
+                                <v-flex xs6 >
+                                    <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
                                     <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart"></vue-chart>
-                                </v-col>
-                            </v-row>
-                        </v-col>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
 
-                    </v-row>
+                    </v-layout>
                 </div>
             </div>
         </section>
-        <section v-if="search">
-            <div class="container">
-                <v-tabs
-                        id="mobile-tabs-1"
-                        grow
-                        scroll-bars
-                        :model="currentView"
-                >
-                    <v-tab-item
-                            v-for="i in ['studies','phenotypes','genes']" :key="i"
-                            :href="'#' + i"
-                            ripple
-                            slot="activators"
-                            class="green lighten-1"
-                    >
-                        <section style="width: 110%" @click="currentView = i">
-                            <div class="bold">Results: {{ i }}</div>
-                            <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
-                            <div class="" v-else><span class="arabadge">{{n[i]}}<span v-if="i==='genes' & n[i]===200">+</span> Results</span></div>
-                        </section>
-                    </v-tab-item>
-                    <v-tab-content
-                            v-for="i in ['studies','phenotypes','genes']" :key="i"
-                            :id="i"
-                            slot="content"
-                    >
+
+        <section v-if="search" class="container">
+                <v-tabs id="search-result-tabs" grow scroll-bars light v-model="currentView">
+                    <v-tabs-bar slot="activators">
+                        <v-tabs-slider></v-tabs-slider>
+                        <v-tabs-item :href="i" ripple class="green lighten-1"
+                                v-for="i in ['studies','phenotypes','genes']" :key="i">
+                            <section>
+                                <div class="bold">Results: {{ i }}</div>
+                                <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
+                                <div class="" v-else><span class="arabadge">{{n[i]}}<span v-if="i==='genes' & n[i]===200">+</span> Results</span></div>
+                            </section>
+                        </v-tabs-item>
+                    </v-tabs-bar>
+                    <v-tabs-content :id="i" v-for="i in ['studies','phenotypes','genes']" :key="i">
                         <v-card>
                             <v-card-text>
                                 <div id="results" class="col s12"><br>
@@ -177,12 +145,11 @@
                                 </div>
                             </v-card-text>
                         </v-card>
-                    </v-tab-content>
+                    </v-tabs-content>
                 </v-tabs>
                 <div class="page-container mt-3 mb-3">
                         <v-pagination v-bind:length.number="pageCount[currentView]" v-model="currentPage"/>
                 </div>
-            </div>
         </section>
     </div>
 </template>
@@ -343,26 +310,16 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .banner-container {
-        position: relative;
-        overflow: hidden;
+    .parallax {
+        margin:-24px;
     }
+
     .search-bar {
         position: relative;
         overflow: hidden;
         margin: 0 auto;
         max-width: 1280px;
         width: 90%
-    }
-
-
-    .parallax-container  {
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        z-index:-1;
     }
 
     .small-icon {
@@ -381,19 +338,12 @@
         margin-bottom: 2rem;
     }
 
-    .banner-title {
-
-    }
-
-    .banner-title h1 {
+      .banner-title h1 {
         font-size: 4.2rem;
         line-height: 110%;
         margin: 2.1rem 0 1.68rem 0;
     }
 
-    .banner-subtext {
-
-    }
 
     .banner-subtext h5 {
         font-weight:300;
@@ -442,6 +392,9 @@
         border-top: 4px solid green;
     }
 
+    .table th {
+        text-align:left;
+    }
     th.active {
         color:black;
     }

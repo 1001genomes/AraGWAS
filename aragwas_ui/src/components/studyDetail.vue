@@ -1,157 +1,121 @@
 <template>
     <div>
-        <div class="banner-container" style="height: 70px">
-            <div class="section" id="head">
-                <div class="container mt-3">
-                    <v-breadcrumbs icons divider="chevron_right" class="left">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h5 v-if="item.disabled">{{ item.text }}</h5>
-                            <h5 v-else class="green--text">{{ item.text }}</h5>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                    <v-divider></v-divider>
-                </div>
-            </div>
-        </div>
-        <v-container>
-            <v-tabs
-                    id="mobile-tabs-1"
-                    grow
-                    scroll-bars
-                    :model="currentView"
-            >
-                <v-tab-item
-                        v-for="i in ['Study details','Manhattan plots']" :key="i"
-                        :href="'#' + i"
-                        ripple
-                        slot="activators"
-                        class="grey lighten-4 black--text"
-                >
-                    <section style="width: 110%; display: block;" @click="currentView = i" >
-                        <div v-if="currentView === i" class="black--text">{{ i }}</div>
-                        <div v-else class="grey--text"> {{ i }}</div>
-                    </section>
-                </v-tab-item>
-                <v-tab-content
-                        v-for="i in ['Study details','Manhattan plots']" :key="i"
-                        :id="i"
-                        slot="content"
-                        style="border-color: transparent;"
-                >
-                    <v-row v-if="currentView === 'Study details'">
-                        <v-col xs4>
-                                <br>
-                                <v-col xs12>
-                                    <div id="description">
-                                        <v-row><v-col xs11><h5 class="mb-1">Description</h5><v-divider></v-divider></v-col></v-row>
-                                        <div class="mt-4"></div>
-                                        <v-row><v-col xs4><span>Name:</span></v-col><v-col xs7>{{ studyName }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>Phenotype:</span></v-col><v-col xs7> <router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: phenotypeId }}">{{ phenotype }}</router-link></v-col></v-row>
-                                        <v-row><v-col xs4><span>Genotype:</span></v-col><v-col xs7>{{ genotype }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>Transformation:</span></v-col><v-col xs7>{{ transformation }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>Method:</span></v-col><v-col xs7>{{ method }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>Publication:</span></v-col><v-col xs7><a v-bind:href=" publication">Link to publication</a></v-col></v-row>
-                                        <v-row><v-col xs4><span>Total associations:</span></v-col><v-col xs7>{{ associationCount }}</v-col></v-row>
-                                        <!--TODO: Add n hits in database-->
-                                        <v-row><v-col xs4><span>N hits (Bonferoni):</span></v-col><v-col xs7>{{ bonferoniHits }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>N hits (with permutations):</span></v-col><v-col xs7>{{ permHits }}</v-col></v-row>
-                                        <v-row><v-col xs4><span>AraPheno link:</span></v-col><v-col xs7><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-col></v-row>
-                                        <v-row><v-col xs4><span>Accessions detail:</span></v-col><v-col xs7><a href="https://www.arabidopsis.org" target="_blank">arabidopsis.org</a></v-col></v-row>
-                                        <div></div>
-                                    </div>
-                                    <v-row><v-col xs11><h5 class="mb-1 mt-4">Distribution of significant associations</h5><v-divider></v-divider></v-col></v-row>
-                                    <v-tabs
-                                            id="mobile-tabs-1"
-                                            class="mt-2"
-                                            grow
-                                            scroll-bars
-                                            :model="currentViewIn"
-                                    >
-                                        <v-tab-item
-                                                v-for="i in ['On genes', 'On snp type']" :key="i"
-                                                :href="'#' + i"
-                                                ripple
-                                                slot="activators"
-                                                class="grey lighten-4 black--text"
-                                        >
-                                            <section style="width: 110%" @click="currentViewIn = i">
-                                                <div v-if="currentViewIn === i" class="black--text">{{ i }}</div>
-                                                <div v-else class="grey--text"> {{ i }}</div>
-                                            </section>
-                                        </v-tab-item>
-                                        <v-tab-content
-                                                v-for="i in ['On genes', 'On snp type']" :key="i"
-                                                :id="i"
-                                                slot="content"
-                                        >
-                                            <v-card>
-                                                <div id="statistics" class="mt-2" v-if=" (bonferoniHits>0) ">
-                                                    <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
-                                                </div>
-                                                <h6 v-else style="text-align: center" class="mt-4 mb-4">No significant hits.</h6>
-                                            </v-card>
-                                        </v-tab-content>
-                                    </v-tabs>
+        <v-layout column align-start>
+            <v-flex xs12>
+                <v-breadcrumbs icons divider="chevron_right" class="left">
+                    <v-breadcrumbs-item
+                            v-for="item in breadcrumbs" :key="item"
+                            :disabled="item.disabled"
+                            class="breadcrumbsitem"
+                            :href="{name: item.href}"
+                            router
+                    >
+                        <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
+                    </v-breadcrumbs-item>
+                </v-breadcrumbs>
+                <v-divider></v-divider>
+            </v-flex>
+        </v-layout>
+        <v-tabs id="study-detail-tabs" grow scroll-bars v:model="currentView" class="mt-3">
+            <v-tabs-bar slot="activators">
+                <v-tabs-slider></v-tabs-slider>
+                <v-tabs-item href="#study-detail-tabs-details" ripple class="grey lighten-4 black--text">
+                    <div>Study Details</div>
+                </v-tabs-item>
+                <v-tabs-item href="#study-detail-tabs-manhattan" ripple class="grey lighten-4 black--text" >
+                    <div>Manhattan plots</div>
+                </v-tabs-item>
+                </v-tabs-bar>
+            <v-tabs-content id="study-detail-tabs-details" class="pa-4" >
+                <v-layout row-sm wrap column >
+                    <v-flex xs12 sm6 md4>
+                        <v-flex xs12 >
+                            <v-layout column>
+                                <h5 class="mb-1">Description</h5>
+                                <v-divider></v-divider>
+                                <v-layout row wrap class="mt-4">
+                                    <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ studyName }}</v-flex>
+                                    <v-flex xs5 md3>Phenotype:</v-flex><v-flex xs7 md9 ><router-link :to="{name: 'phenotypeDetail', params: { id: phenotypeId }}">{{ phenotype }}</router-link></v-flex>
+                                    <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
+                                    <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
+                                    <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
+                                    <v-flex xs5 md3>Publication:</v-flex><v-flex xs7 mm9><a v-bind:href=" publication">Link to publication</a></v-flex>
 
-                                </v-col>
-                        </v-col>
-                        <v-col xs8>
-                            <br>
-                            <v-row><v-col xs11><h5 class="mb-1">Associations List</h5><v-divider></v-divider></v-col></v-row>
-                            <v-col xs12>
-                                <v-card class="mt-2">
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th v-for="key in columns"
-                                                @click="sortBy(key)"
-                                                :class="{ active: sortKey == key }">
-                                                {{ key | capitalize }}
-                                                <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                                    <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
+                                    <v-flex xs5 md3>N hits (Bonferoni):</v-flex><v-flex xs7 mm9>{{ bonferoniHits }}</v-flex>
+                                    <v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
+                                </v-layout>
+                            </v-layout>
+                        </v-flex>
+                        <v-flex xs12 class="mt-4">
+                            <h5 class="mb-1">Distribution of significant associations</h5>
+                            <v-tabs id="similar-tabs" grow scroll-bars v:model="currentViewIn">
+                                <v-tabs-bar slot="activators">
+                                    <v-tabs-slider></v-tabs-slider>
+                                    <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
+                                            v-for="i in ['On genes', 'On snp type']" :key="i">
+                                            <div>{{ i }}</div>
+                                        </v-tabs-item>
+                                </v-tabs-bar>
+                                <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
+                                    <div id="statistics" class="mt-2" v-if=" (bonferoniHits>0) ">
+                                        <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
+                                    </div>
+                                    <h6 v-else style="text-align: center" >No significant hits.</h6>
+                                </v-tabs-content>
+                            </v-tabs>
+                        </v-flex>
+                    </v-flex>
+                    <v-flex xs12 sm6 md8>
+                        <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
+                        <v-card class="mt-2">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th v-for="key in columns"
+                                        @click="sortBy(key)"
+                                        :class="{ active: sortKey == key }">
+                                        {{ key | capitalize }}
+                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
                                             </span>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="entry in filteredData">
-                                            <td class="regular" v-for="key in columns">
-                                                <div v-if="(parseFloat(entry['pvalue']) > bonferoniThr05)">
-                                                    <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                                    <div v-else class="significant">{{entry[key]}}</div>
-                                                </div>
-                                                <div v-else>
-                                                    <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                                    <div v-else>{{entry[key]}}</div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </v-card>
-                                <div class="page-container mt-5 mb-3">
-                                    <v-pagination :length.number="pageCount" v-model="currentPage" />
-                                </div>
-                            </v-col>
-                        </v-col>
-                    </v-row>
-                    <v-row v-else>
-                        <v-col xs12>
-                            <br>
-                            <v-col xs12>
-                            <v-row><v-col xs11><h5 class="mb-1">Manhattan Plots</h5><v-divider></v-divider></v-col></v-row>
-                            <div ref="manhattan"><manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot></div>
-                            </v-col>
-                        </v-col>
-                    </v-row>
-                </v-tab-content>
-            </v-tabs>
-        </v-container>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="entry in filteredData">
+                                    <td class="regular" v-for="key in columns">
+                                        <div v-if="(parseFloat(entry['pvalue']) > bonferoniThr05)">
+                                            <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                            <div v-else class="significant">{{entry[key]}}</div>
+                                        </div>
+                                        <div v-else>
+                                            <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                            <div v-else>{{entry[key]}}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </v-card>
+                        <div class="page-container mt-5 mb-3">
+                            <v-pagination :length.number="pageCount" v-model="currentPage" />
+                        </div>
+                    </v-flex>
+                </v-layout>
+            </v-tabs-content>
+            <v-tabs-content id="study-detail-tabs-manhattan" class="pa-4" >
+                <v-layout column child-flex>
+                    <v-flex xs12>
+                        <h5 class="mb-1">Manhattan Plots</h5>
+                        <v-divider></v-divider>
+                    </v-flex>
+                    <v-flex xs12>
+                        <manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
+                    </v-flex>
+                </v-layout>
+            </v-tabs-content>
+        </v-tabs>
     </div>
 </template>
 
@@ -233,7 +197,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "#/studies"}, {text: this.studyName, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "home"}, {text: "Studies", href: "studies"}, {text: this.studyName, href: "", disabled: true}];
 
       get filteredData () {
         let filterKey = this.filterKey;
@@ -384,7 +348,6 @@
     .table {
         width: 100%;
         max-width: 100%;
-        margin-bottom: 2rem;
     }
     .regular {
         font-weight: normal;
@@ -392,9 +355,16 @@
     .significant {
         font-weight: bold;
     }
+
+    ul.breadcrumbs {
+        padding-left:0;
+    }
     .page-container {
         display:flex;
         justify-content:center;
+    }
+    .toolbar__item--active {
+        color: #000;
     }
 
     @media only screen and (min-width: 601px) {

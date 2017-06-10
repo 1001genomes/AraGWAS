@@ -1,5 +1,5 @@
 <template>
- <v-app top-toolbar footer>
+ <v-app>
     <v-toolbar class="white toolbar">
       <v-toolbar-logo class="logo"><router-link :to="{path: '/', props: { queryTerm: '' }}" props="">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
@@ -9,11 +9,9 @@
       </v-toolbar-items>
     </v-toolbar>
     <main>
-      <v-content id="main-content">
-        <v-container fluid>
-          <router-view></router-view>
-        </v-container>
-      </v-content>
+      <v-container fluid>
+        <router-view></router-view>
+      </v-container>
     </main>
     <v-footer class="green" >
       <div >
