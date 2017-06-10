@@ -1,6 +1,6 @@
 # Dockerfile to run AraGWAS
 
-FROM node:latest
+FROM node:6
 MAINTAINER uemit.serenr@gmi.oeaw.ac.at
 
 RUN mkdir /srv/aragwas_ui
