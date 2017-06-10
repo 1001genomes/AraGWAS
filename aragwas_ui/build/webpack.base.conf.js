@@ -22,6 +22,9 @@ module.exports = {
       '@': resolve('src')
     }
   },
+  resolveLoader: {
+    modules: ['node_modules',process.env.NODE_PATH]
+  },
   module: {
     rules: [
       {
