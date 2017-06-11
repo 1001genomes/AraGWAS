@@ -1,4 +1,5 @@
 import ApiVersion from "../models/apiversion";
+import Gene from "../models/gene";
 import Page from "../models/page";
 import Study from "../models/study";
 
@@ -13,7 +14,7 @@ function checkStatus(response) {
 }
 
 // TODO convert to Typescript
-function convertToModel(response) {
+function convertToModel<T>(response): T {
     return response.json();
 }
 // Study list
@@ -74,7 +75,7 @@ export async  function loadGenes(page: number = 1, ordering= "") {
 }
 
 // Import single gene information
-export async  function loadGene(geneId = "") {
+export async function loadGene(geneId = ""): Promise<Gene> {
     return fetch(`/api/gene/${geneId}`)
         .then(checkStatus)
         .then(convertToModel);
@@ -109,7 +110,7 @@ export async function search(queryTerm= "", page: number = 1, ordering= "") {
     }
 }
 
-export async function autoCompleteGenes(queryTerm: string): Promise<any> {
+export async function autoCompleteGenes(queryTerm: string): Promise<Gene[]> {
     return fetch(`/api/autocomplete/genes/${queryTerm}`)
         .then(checkStatus)
         .then(convertToModel);

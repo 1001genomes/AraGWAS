@@ -9,6 +9,7 @@
         max-height="auto"
         autocomplete
         item-value="id"
+        item-text="name"
         @input.native="changeQueryTerm"
         return-object
     ></v-select>
@@ -18,14 +19,15 @@
     import {Component, Model, Prop, Watch} from "vue-property-decorator";
 
     import {autoCompleteGenes} from "../api";
+    import Gene from "../models/gene";
 
     @Component({})
     export default class GeneSearch extends Vue {
-        genes: any[] = [];
+        genes: Gene[] = [];
         @Model("selected")
         @Prop()
-        selectedGene: any;
-        selectedItem: any = null;
+        selectedGene: Gene;
+        selectedItem: Gene | null = null;
         searchTerm: string = "";
 
         @Watch("searchTerm")
@@ -39,7 +41,7 @@
         }
 
         @Watch("selectedGene")
-        async onSelectedGeneChanged(val, oldVal) {
+        async onSelectedGeneChanged(val: Gene, oldVal: Gene) {
             if (!this.isGeneInAvailableList(val)) {
                 this.genes = [val];
             }
@@ -50,7 +52,7 @@
             this.searchTerm = event.target.value;
         }
 
-        isGeneInAvailableList(gene): boolean {
+        isGeneInAvailableList(gene: Gene): boolean {
             if (this.genes.length === 0 || gene === null) {
                 return false;
             }

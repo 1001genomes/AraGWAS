@@ -20,7 +20,7 @@
         <v-flex xs12>
             <v-layout row justify-space-around>
                 <div>
-                    <h5 class="mb-1">Genomic Region : {{ selectedGene.text }}</h5>
+                    <h5 class="mb-1">Genomic Region : {{ selectedGene.name }}</h5>
                     <v-divider></v-divider>
                 </div>
                 <div class="flex"></div>
@@ -63,10 +63,13 @@
 <script lang="ts">
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
-    import {loadAssociationsOfGene, loadGene} from "../api";
+
     import GenePlot from "../components/geneplot.vue";
     import GeneSearch from "../components/geneSearch.vue";
     import Router from "../router";
+
+    import {loadAssociationsOfGene, loadGene} from "../api";
+    import Gene from "../models/gene";
 
     @Component({
         filters: {
@@ -84,28 +87,11 @@
         router = Router;
         @Prop()
         geneId: string;
-        selectedGene = {id:null, text: null};
+        selectedGene: Gene = {id: '', name: '', strand: '',chr: '', type: '', positions: {gte: 0, lte: 0 }}
         searchTerm: string = "";
-        geneDescription: string = "";
-        // TODO define all those paramters inside the selectedGene type
-        startPosition = 0;
-        endPosition = 1;
-        centerOfGene = 0;
-        snpSet;
-        snpCount = 0;
         associationCount = 0;
-        windowStartPosition = 0;
-        windowEndPosition = 0;
         min = 10;
-        get options() {
-            return {
-                width: 1000,
-                min_x: 1200000,
-                max_x: 1289300,
-                chr: undefined,
-                w_rect: 0,
-            };
-        }
+
         // Associations parameters
         ordered: string;
         zoom = 75;
@@ -115,6 +101,17 @@
         columns = ["SNP", "p-value", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
         filterKey: string = "";
         associations = [];
+
+        get options() {
+            return {
+                width: 1000,
+                min_x: 1200000,
+                max_x: 1289300,
+                gene: this.selectedGene,
+                w_rect: 0,
+                zoom: this.zoom,
+            };
+        }
 
         get filteredData() {
             let filterKey = this.filterKey;
@@ -133,12 +130,12 @@
         }
 
         get breadcrumbs() {
-            return [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.selectedGene.id, href: "", disabled: true}];
+            return [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
         }
 
         @Watch("selectedGene")
         onSelectedGeneChanged(val, oldVal) {
-            if (val.id !== oldVal.id) {
+            if (oldVal === null || val.id !== oldVal.id) {
                 this.$router.push({ name: 'geneDetail', params: { geneId: val.id }})
             }
         }
@@ -148,28 +145,13 @@
             this.loadData();
         }
 
-        @Watch("zoom")
-        onZoomChanged(val: number, oldVal: number) {
-            this.$nextTick(function() {
-                this.updateGeneRegion();
-            });
-        }
-
         created(): void {
             this.loadData();
         }
 
         // Gene DATA LOADING
-        _displayGeneData(data): void {
-            this.selectedGene = {id: data.gene.name, text: data.gene.name};
-//            this.startPosition = data.start_position;
-//            this.endPosition = data.end_position;
-            this.options.chr = data.gene.chr;
-            this.options.w_rect = data.gene.positions.lte - data.gene.positions.gte;
-            this.centerOfGene = data.gene.positions.gte + this.options.w_rect / 2;
-            this.snpSet = data.snps;
-            this.snpCount = data.snp_count;
-            this.associationCount = data.associationCount;
+        _displayGeneData(data: Gene): void {
+            this.selectedGene = data;
         }
         // ASSOCIATION LOADING
         loadData(): void {
@@ -177,8 +159,6 @@
             try {
                 loadGene(this.geneId).then(this._displayGeneData);
                 loadAssociationsOfGene(this.geneId, this.currentPage, this.ordered).then(this._displayData);
-                this.centerOfGene = this.startPosition + (this.endPosition - this.startPosition) / 2;
-                this.updateGeneRegion();
             } catch (err) {
                 console.log(err);
             }
@@ -188,11 +168,6 @@
             this.currentPage = data.current_page;
             this.totalCount = data.count;
             this.pageCount = data.page_count;
-        }
-        updateGeneRegion(): void {
-            const windowsize = Math.round((this.endPosition - this.startPosition) * 100 / this.zoom);
-            this.windowStartPosition = this.centerOfGene - windowsize / 2;
-            this.windowEndPosition = this.centerOfGene + windowsize / 2;
         }
         goToGene(): void {
             this.router.push({name: "geneDetail", params: { geneId: this.searchTerm }});

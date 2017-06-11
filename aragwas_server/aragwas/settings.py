@@ -48,7 +48,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'gwasdb.paginator.CustomPagination',
     'PAGE_SIZE': 25

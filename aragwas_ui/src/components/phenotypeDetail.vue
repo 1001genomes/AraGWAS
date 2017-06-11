@@ -57,7 +57,7 @@
                                             <td v-for="key in columnsTab[i]">
                                                 <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
-                                                <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['study_set'].length}}</p>
+                                                <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['studySet'].length}}</p>
                                                 <p v-else>{{entry[key]}}</p>
                                             </td>
                                         </tr>
@@ -197,8 +197,8 @@
         this.phenotypeDescription = data.description;
         this.araPhenoLink = data.araPhenoLink;
         this.breadcrumbs[2].text = data.name;
-        this.studyNumber = data.study_set.length;
-        this.studyIDs = data.study_set;
+        this.studyNumber = data.studySet.length;
+        this.studyIDs = data.studySet;
       }
       _displaySimilarPhenotypes(data): void {
         this.tabData.similarPhenotypes = data;

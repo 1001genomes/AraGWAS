@@ -134,7 +134,7 @@
                                             <td v-for="key in columns[currentView]">
                                                 <!--TODO: add links to studies views, need to be generated from study id-->
                                                 <router-link v-if="(key==='name' && currentView === 'studies')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotypePk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView==='phenotypes')" :to="{name: 'phenotypeDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView==='genes')" :to="{name: 'geneDetail', params: { geneId: entry[key] }}" >{{entry[key]}}</router-link>
                                                 <div v-else>{{entry[key]}}</div>
@@ -172,7 +172,7 @@
           "line-chart": LineChart,
       },
     })
-    export default class Althome extends Vue {
+    export default class Home extends Vue {
       @Prop()
       queryTerm: string;
       router = Router;
@@ -257,13 +257,13 @@
       }
 
       _displayData(data): void {
-        this.dataObserved.studies = data.results.study_search_results;
-        this.dataObserved.phenotypes = data.results.phenotype_search_results;
-        this.dataObserved.genes = data.results.gene_search_results;
-        this.currentPage = data.current_page;
-        this.pageCount.studies = data.page_count[2];
-        this.pageCount.phenotypes = data.page_count[1];
-        this.pageCount.genes = data.page_count[0];
+        this.dataObserved.studies = data.results.studySearchResults;
+        this.dataObserved.phenotypes = data.results.phenotypeSearchResults;
+        this.dataObserved.genes = data.results.geneSearchResults;
+        this.currentPage = data.currentPage;
+        this.pageCount.studies = data.pageCount[2];
+        this.pageCount.phenotypes = data.pageCount[1];
+        this.pageCount.genes = data.pageCount[0];
         this.n.studies = data.count[2];
         this.n.phenotypes = data.count[1];
         this.n.genes = data.count[0];

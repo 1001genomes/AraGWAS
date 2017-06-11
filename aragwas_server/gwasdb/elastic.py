@@ -56,6 +56,16 @@ def check_indices():
     # put index template
     es.indices.put_template('geno_*', genotype_settings)
 
+def load_snps_by_region(chrom, start, end):
+    """Retrieve snp information by region"""
+    index = 'geno_%s'
+    if len(chrom) > 3:
+        index = index % chrom
+    else:
+        index = index % 'chr' + chrom
+    search_snps = Search().using(es).doc_type('snps').index(index).filter("range", position={"lte": end, "gte":start})
+    return {snp.position: snp.to_dict() for snp in search_snps.scan() }
+
 def load_snps(chrom, positions):
     """Retrieve snp information"""
     index = 'geno_%s'
@@ -73,7 +83,7 @@ def load_snps(chrom, positions):
 
 def autocomplete_genes(term):
     """For autocomplete searches"""
-    resp = es.search(index='genotype',doc_type='genes',_source="suggest",
+    resp = es.search(index='genotype',doc_type='genes',_source=["suggest", "positions","strand","chr","type"],
         body={"suggest": {
                 "gene-suggest": {
                     "prefix":term,
@@ -82,7 +92,7 @@ def autocomplete_genes(term):
                     }
                 }
         }})
-    return [{'id':option['_id'], 'text': option['text']} for option in resp['suggest']['gene-suggest'][0]['options']]
+    return [{'id':option['_id'], 'name': option['text'],'strand': option['_source']['strand'], 'chr': option['_source']['chr'], 'type': option['_source']['type'], 'positions':option['_source']['positions']} for option in resp['suggest']['gene-suggest'][0]['options']]
 
 
 def load_gene_by_id(id):
@@ -94,7 +104,9 @@ def load_gene_by_id(id):
     doc = es.get('geno_chr%s' % chrom, id, doc_type='genes', _source=['name','chr','positions','type','strand', 'isoforms'], realtime=False)
     if not doc['found']:
         raise Exception('Gene with ID %s not found' %id)
-    return doc['_source']
+    gene = doc['_source']
+    gene['id'] = doc['_id']
+    return gene
 
 def load_top_associations():
     """Retrieve top asssociations"""

@@ -37,7 +37,7 @@
          <tr v-for="entry in filteredData">
            <td v-for="key in columns">
              <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-             <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+             <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotypePk'] }}" >{{entry[key]}}</router-link>
              <div v-else>{{entry[key]}}</div>
            </td>
          </tr>
@@ -109,9 +109,9 @@
     }
     _displayData(data): void {
       this.studies = data.results;
-      this.currentPage = data.current_page;
+      this.currentPage = data.currentPage;
       this.totalCount = data.count;
-      this.pageCount = data.page_count;
+      this.pageCount = data.pageCount;
     }
     sortBy(key): void {
       this.sortKey = key;

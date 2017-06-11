@@ -238,12 +238,12 @@
       }
       _displayData(data): void {
         this.associations = data.results;
-        this.currentPage = data.current_page;
+        this.currentPage = data.currentPage;
         this.totalCount = data.count;
-        this.pageCount = data.page_count;
-        this.bonferoniThr01 = data.thresholds.bonferoni_threshold01;
-        this.bonferoniThr05 = data.thresholds.bonferoni_threshold05;
-        this.associationCount = data.thresholds.total_associations;
+        this.pageCount = data.pageCount;
+        this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
+        this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
+        this.associationCount = data.thresholds.totalAssociations;
         for (const i in this.associations) {
           if (this.associations[i]["pvalue"] < this.bonferoniThr05) {
             this.significantAssociations[i] = this.associations[i];
@@ -286,7 +286,7 @@
         this.method = data.method;
         this.phenotype = data.phenotype;
         this.publication = data.publication;
-        this.phenotypeId = data.phenotype_pk;
+        this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.name;
         loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);
       }
@@ -299,7 +299,7 @@
 //        });
         for (const i of [1, 2, 3, 4, 5]) {
             this.dataChr[i.toString()] = data["chr" + i.toString()].positions.map( (e, l) => [e, data["chr" + i.toString()].pvalues[l]]);
-            this.options[i.toString()]["bonferoniThreshold"] = data.bonferoni_threshold;
+            this.options[i.toString()]["bonferoniThreshold"] = data.bonferoniThreshold;
 //            this.options[i.toString()]["width"] = manWidth
         }
       }

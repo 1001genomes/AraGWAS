@@ -306,9 +306,8 @@ class GeneViewSet(viewsets.ReadOnlyModelViewSet):
         id = kwargs['pk']
         # To get the neighboring hits/SNPs and count them, we would need to query ES for SNPs in that region...
         gene = elastic.load_gene_by_id(id)
-        snps = elastic.load_snps(gene['chr'], list(range(gene['positions']['gte'],gene['positions']['lte'])))
-        snps = list(filter(None, snps))
-        return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
+        gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
+        return Response(gene)
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     """
