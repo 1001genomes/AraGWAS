@@ -61,7 +61,6 @@ router.register(r'associations_of_phenotype', rest.AssociationsOfPhenotypeViewSe
 router.register(r'associations_of_gene', rest.AssociationsOfGeneViewSet)
 router.register(r'associations_manhattan', rest.AssociationsForManhattanPlotViewSet)
 
-# router.register(r'search', rest.SearchViewSet)
 router.register(r'snp', rest.SNPLocalViewSet)
 srouter = SearchRouter()
 srouter.register(r'search', rest.SearchViewSet)
@@ -69,6 +68,7 @@ srouter.register(r'search', rest.SearchViewSet)
 
 urlpatterns = [
     url(r'^$', views.index, name="index"),
+    url(r'autocomplete/genes/(?P<search_term>\w+)/$', rest.autocomplete_genes),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls)),

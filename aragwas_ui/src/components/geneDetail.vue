@@ -15,12 +15,12 @@
             <v-divider></v-divider>
         </v-flex>
         <v-flex xs12 sm4>
-            <v-text-field name="geneName-search" :label="geneName" v-model="searchTerm" prepend-icon="search" single-line><input type="search" @keyup.enter="goToGene()"></v-text-field>
+            <gene-search v-model="selectedGene"></gene-search>
         </v-flex>
         <v-flex xs12>
             <v-layout row justify-space-around>
                 <div>
-                    <h5 class="mb-1">Genomic Region : {{ geneName }}</h5>
+                    <h5 class="mb-1">Genomic Region : {{ selectedGene.text }}</h5>
                     <v-divider></v-divider>
                 </div>
                 <div class="flex"></div>
@@ -65,6 +65,7 @@
     import {Component, Prop, Watch} from "vue-property-decorator";
     import {loadAssociationsOfGene, loadGene} from "../api";
     import GenePlot from "../components/geneplot.vue";
+    import GeneSearch from "../components/geneSearch.vue";
     import Router from "../router";
 
     @Component({
@@ -75,6 +76,7 @@
         },
         components: {
             "gene-plot": GenePlot,
+            "gene-search": GeneSearch,
         },
     })
     export default class GeneDetail extends Vue {
@@ -82,9 +84,10 @@
         router = Router;
         @Prop()
         geneId: string;
+        selectedGene = {id:null, text: null};
         searchTerm: string = "";
-        geneName: string = "";
         geneDescription: string = "";
+        // TODO define all those paramters inside the selectedGene type
         startPosition = 0;
         endPosition = 1;
         centerOfGene = 0;
@@ -105,7 +108,6 @@
         }
         // Associations parameters
         ordered: string;
-        breadcrumbs = [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.geneName, href: "", disabled: true}];
         zoom = 75;
         pageCount = 5;
         currentPage = 1;
@@ -129,6 +131,18 @@
             }
             return data;
         }
+
+        get breadcrumbs() {
+            return [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.selectedGene.id, href: "", disabled: true}];
+        }
+
+        @Watch("selectedGene")
+        onSelectedGeneChanged(val, oldVal) {
+            if (val.id !== oldVal.id) {
+                this.$router.push({ name: 'geneDetail', params: { geneId: val.id }})
+            }
+        }
+
         @Watch("geneId")
         onGeneIdChanged(val: number, oldVal: number) {
             this.loadData();
@@ -147,8 +161,7 @@
 
         // Gene DATA LOADING
         _displayGeneData(data): void {
-            this.geneName = data.gene.name;
-            this.breadcrumbs[2].text = data.name;
+            this.selectedGene = {id: data.gene.name, text: data.gene.name};
 //            this.startPosition = data.start_position;
 //            this.endPosition = data.end_position;
             this.options.chr = data.gene.chr;

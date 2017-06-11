@@ -73,7 +73,6 @@ def load_snps(chrom, positions):
 
 def autocomplete_genes(term):
     """For autocomplete searches"""
-    import pdb;pdb.set_trace()
     resp = es.search(index='genotype',doc_type='genes',_source="suggest",
         body={"suggest": {
                 "gene-suggest": {

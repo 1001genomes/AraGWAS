@@ -107,8 +107,14 @@ export async function search(queryTerm= "", page: number = 1, ordering= "") {
             .then(checkStatus)
             .then(convertToModel);
     }
-
 }
+
+export async function autoCompleteGenes(queryTerm: string): Promise<any> {
+    return fetch(`/api/autocomplete/genes/${queryTerm}`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+
 export async  function loadApiVersion(): Promise<ApiVersion> {
     return fetch("/api/version/")
         .then(checkStatus)

@@ -489,3 +489,9 @@ class SNPLocalViewSet(viewsets.ViewSet):
         return Response({'top_ld_snps': serializer.data,
                          'ld_values': ordered_ld,
                          'top_snps_positions': ordered_positions})
+
+@api_view()
+@permission_classes((IsAuthenticatedOrReadOnly,))
+def autocomplete_genes(request, search_term):
+    genes = elastic.autocomplete_genes(search_term)
+    return Response(genes)
