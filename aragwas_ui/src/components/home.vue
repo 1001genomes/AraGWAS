@@ -191,8 +191,6 @@
       columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
       columnsPhenotypes = ["name", "description"];
-//      sortOrdersAssociations = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, phenotype: 1, study: 1};
-//      columnsAssociations = ["snp", "maf", "pvalue", "beta", "odds_ratio", "confidence_interval", "phenotype", "study"];
       sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, strand: 1, description: 1};
       columnsGenes = ["name", "chr", "start position", "end position", "strand", "description"];
       columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, genes: this.columnsGenes};
@@ -221,7 +219,12 @@
           this.search = true;
           this.height = 70;
           this.loadData(val, this.currentPage);
-          window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm + "&"+this.currentPage)
+          if(typeof this.queryTerm !== "undefined") {
+            window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm+"&"+this.currentPage);
+          } else {
+            this.search = false;
+            this.height = 300;
+          }
         }
       }
       loadResults() {
@@ -246,9 +249,6 @@
         }
         return data;
       }
-//      get dv() {
-//          return debounce(this.queryTerm, this.delay)
-//      }
       debounceInput() {
           debounce(this.updateQuery,  2000, false);
       }
@@ -259,7 +259,9 @@
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(this.queryTerm, val);
-        window.history.replaceState({path: '/results', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm)
+        if(typeof this.queryTerm !== "undefined") {
+            window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm+"&"+this.currentPage);
+        }
       }
       created(): void {
         if (this.$route.params.queryTerm) {
