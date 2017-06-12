@@ -46,9 +46,9 @@ export default new Router({
       component: TopAssociations,
     },
     {
-      path: "/results/:queryTerm?",
+      path: "/results/:queryTerm?&:currentPage?",
       name: "results",
-      component: Results, props: true,
+      component: Home, props: true,
     },
     {
       path: "/study/:id",

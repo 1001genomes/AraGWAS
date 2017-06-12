@@ -1,20 +1,23 @@
 <template>
     <div>
-<<<<<<< HEAD:aragwas_ui/src/components/home.vue
         <v-parallax src="/static/img/ara2.jpg" :height="height">
             <v-layout column align-center justify-center class="container" v-if="!search">
                 <div class="banner-title">
                     <br>
-                    <h1 class="white--text text-xs-center">AraGWASCatalog</h1>
+                    <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
                 </div>
                 <div class="banner-subtext">
-                    <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
+                    <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
                     <br>
-                    <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
+                    <!--<h5 class="white&#45;&#45;text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h5>-->
                 </div>
             </v-layout>
         </v-parallax>
         <div class="container mt-3 pa-0">
+            <div v-if="!search">
+                <br>
+                <h6 class="black--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
+            </div>
             <v-card>
                 <div class="pl-4 pt-1 pr-4">
                     <v-text-field
@@ -26,47 +29,6 @@
                     ></v-text-field>
                 </div>
             </v-card>
-=======
-        <div class="banner-container white--text" v-bind:style="{ height: height + 'px'}">
-            <div class="container">
-                <!--<transition name="custom-fadeOutUp" leave-active-class="animated fadeOutUp">-->
-                    <div v-if="!search">
-                    <div class="banner-title">
-                        <br>
-                        <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
-                    </div>
-                    <div class="banner-subtext">
-                        <h5 class=" text-xs-center">AraGWASCatalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWAS studies.</h5>
-                        <br>
-                        <h5 class="light text-xs-center">This Database allows to search and filter for public GWAS studies, phenotypes and genes and to obtain additional meta-information.</h5>
-                    </div>
-                    </div>
-                <!--</transition>-->
-                <br>
-                <!--<transition name="bounce">-->
-
-                <!--</transition>-->
-
-            </div>
-            <v-parallax class="parallax-container" src="/static/img/ara2.jpg" v-bind:height=" height ">
-            </v-parallax>
-        </div>
-        <div class="container mt-3">
-            <v-col xs12>
-                <v-card>
-                    <div class="pl-4 pt-1 pr-4">
-                        <v-text-field
-                                name="input-1"
-                                label="Search the catalog"
-                                v-model="queryTerm"
-                                v-bind:focused="focused"
-                                @input="debounceInput"
-                                prepend-icon="search"
-                        ></v-text-field>
-                    </div>
-                </v-card>
-            </v-col>
->>>>>>> Top genes fetching:aragwas_ui/src/components/althome.vue
         </div>
         <section v-if="!search">
             <div class="section">
@@ -219,7 +181,7 @@
       @Prop()
       queryTerm: string;
       @Prop()
-      fastChange: string;
+      fastChange: string = "";
       router = Router;
       search: boolean = false;
       height = 320;
@@ -238,6 +200,7 @@
       sortKey: string = "";
       ordered: string = "";
       filterKey: string = "";
+      @Prop()
       currentPage = 1;
       dataObserved = {studies: [], phenotypes: [], genes: []};
       observed = {studies: "Study", phenotypes: "Phenotype", genes: "Gene"};
@@ -258,9 +221,7 @@
           this.search = true;
           this.height = 70;
           this.loadData(val, this.currentPage);
-          this.router.replace({path: '/', params: {queryTerm: this.queryTerm}});
-//          this.$route.params.queryTerm = this.queryTerm;
-//          window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm}}, '', '')
+          window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm + "&"+this.currentPage)
         }
       }
       loadResults() {
@@ -289,7 +250,7 @@
 //          return debounce(this.queryTerm, this.delay)
 //      }
       debounceInput() {
-          debounce(function (e) {this.fastChange = this.fastChange},  2000, true);
+          debounce(this.updateQuery,  2000, false);
       }
       updateQuery() {
           this.queryTerm = this.fastChange;
@@ -298,17 +259,26 @@
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(this.queryTerm, val);
+        window.history.replaceState({path: '/results', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm)
       }
       created(): void {
         if (this.$route.params.queryTerm) {
           this.queryTerm = this.$route.params.queryTerm;
+          this.currentPage = +this.$route.params.currentPage;
+          this.search = true;
+          this.height = 70;
         }
         this.loadData(this.queryTerm, this.currentPage);
         this.currentView = 'studies';
         this.loadSummaryData();
       }
+      loadDebouncedData(): void {debounce(this.loadDataNo, 500, true)}
       loadData(queryTerm: string, page: number): void {
         search(queryTerm, page, this.ordered).then(this._displayData);
+      }
+      loadDataNo(): void {
+        search(this.queryTerm, this.currentPage, this.ordered).then(this._displayData);
+        this.flag = !this.flag
       }
       loadSummaryData(): void {
         loadStudies().then(this._countStudies);
@@ -372,7 +342,7 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attribute to limit CSS to this component only --  >
 <style scoped>
     .parallax {
         margin-bottom:-24px;
