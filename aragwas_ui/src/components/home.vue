@@ -23,9 +23,10 @@
                     <v-text-field
                             name="input-1"
                             label="Search the catalog"
-                            v-model="queryTerm"
+                            v-model="fastChange"
                             v-bind:focused="focused"
                             prepend-icon="search"
+                            @input="debounceInput"
                     ></v-text-field>
                 </div>
             </v-card>
@@ -166,7 +167,7 @@
     import Router from "../router";
     import debounce from '../../node_modules/debounce';
 
-
+    Component.registerHooks(['beforeRouteLeave']);
     @Component({
       filters: {
         capitalize(str) {
@@ -181,12 +182,15 @@
       @Prop()
       queryTerm: string;
       @Prop()
-      fastChange: string = "";
+      currentView: string;
+      @Prop()
+      currentPage = 1;
+      @Prop()
+      focused: boolean;
+      fastChange: string;
       router = Router;
       search: boolean = false;
       height = 320;
-      @Prop()
-      focused: boolean;
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
       columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
@@ -198,19 +202,25 @@
       sortKey: string = "";
       ordered: string = "";
       filterKey: string = "";
-      @Prop()
-      currentPage = 1;
       dataObserved = {studies: [], phenotypes: [], genes: []};
       observed = {studies: "Study", phenotypes: "Phenotype", genes: "Gene"};
-      currentView: string = "";
       n = {studies: 0, phenotypes: 0, genes: 0};
       pageCount = {studies: 5, phenotypes: 5, genes: 5};
       nStudies = 0;
       nPhenotypes = 0;
       nAssociations = 0;
-      flag = true;
 
-      @Watch("queryTerm") // TODO: add debounce for queries to api (https://vuejs.org/v2/guide/migration.html#debounce-Param-Attribute-for-v-model-removed)
+      beforeRouteLeave (to, from, next) {
+          window.history.replaceState({path: '/', params: {currentView: this.currentView, queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.currentView+"&"+this.queryTerm+"&"+this.currentPage)
+          next();
+      }
+      debounceInput() {
+        debounce(this.updateQuery,  300, false)();
+      }
+      updateQuery() {
+        this.queryTerm = this.fastChange;
+      }
+      @Watch("queryTerm")
       onQueryTermChanged(val: string, oldVal: string) {
         if (val === "") {
           this.search = false;
@@ -219,12 +229,6 @@
           this.search = true;
           this.height = 70;
           this.loadData(val, this.currentPage);
-          if(typeof this.queryTerm !== "undefined") {
-            window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm+"&"+this.currentPage);
-          } else {
-            this.search = false;
-            this.height = 300;
-          }
         }
       }
       loadResults() {
@@ -249,38 +253,26 @@
         }
         return data;
       }
-      debounceInput() {
-          debounce(this.updateQuery,  2000, false);
-      }
-      updateQuery() {
-          this.queryTerm = this.fastChange;
-      }
 
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
         this.loadData(this.queryTerm, val);
-        if(typeof this.queryTerm !== "undefined") {
-            window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.queryTerm+"&"+this.currentPage);
-        }
       }
       created(): void {
+        this.currentView = 'studies';
         if (this.$route.params.queryTerm) {
           this.queryTerm = this.$route.params.queryTerm;
+          this.fastChange = this.queryTerm
           this.currentPage = +this.$route.params.currentPage;
+          this.currentView = this.$route.params.currentView;
           this.search = true;
           this.height = 70;
         }
         this.loadData(this.queryTerm, this.currentPage);
-        this.currentView = 'studies';
         this.loadSummaryData();
       }
-      loadDebouncedData(): void {debounce(this.loadDataNo, 500, true)}
       loadData(queryTerm: string, page: number): void {
         search(queryTerm, page, this.ordered).then(this._displayData);
-      }
-      loadDataNo(): void {
-        search(this.queryTerm, this.currentPage, this.ordered).then(this._displayData);
-        this.flag = !this.flag
       }
       loadSummaryData(): void {
         loadStudies().then(this._countStudies);
