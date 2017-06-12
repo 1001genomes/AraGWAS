@@ -601,3 +601,9 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 return self.get_paginated_response(data)
             else:
                 return Response({'results': {i:data[i] for i in data if i!='counts'}, 'count':counts, 'page_count':[0,0,0]})
+
+@api_view()
+@permission_classes((IsAuthenticatedOrReadOnly,))
+def genes_by_region(request, chrom, start, end):
+    genes = elastic.load_genes_by_region(chrom,start,end,'features' in request.GET)
+    return Response(genes)

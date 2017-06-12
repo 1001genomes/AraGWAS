@@ -47,7 +47,7 @@
         }
     }
 </script>
-<style >
+<style scoped>
     #chart {
         margin:25px;
     }

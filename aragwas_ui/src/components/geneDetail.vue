@@ -1,40 +1,27 @@
 <template>
-    <v-layout column>
+    <v-layout row wrap>
         <v-flex xs12>
             <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </v-flex>
         <v-flex xs12 sm4 class="pl-4 pr-4">
-            <div class="container">
-                <gene-search v-model="selectedGene" class="gene-search"></gene-search>
+            <gene-search v-model="selectedGene" class="gene-search"></gene-search>
+        </v-flex>
+        <v-flex xs12 sm4 offset-sm4 class="pl-4 pr-4">
+            <div style="width:300px;" class="gene-zoom">
+                <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" max="20" min="0"  ></v-slider>
             </div>
         </v-flex>
-        <v-flex xs12 class="pl-4 pr-4">
-            <div class="container">
-            <v-layout row justify-space-between>
-                <div>
-                    <h5 class="mb-1">Genomic Region : {{ selectedGene.name }}</h5>
-                    <v-divider></v-divider>
-                </div>
-                <div class="flex"></div>
-                <div style="width:300px;" class="gene-zoom">
-                    <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" max="20" min="0" ></v-slider>
-                </div>
-            </v-layout>
-            </div>
+        <v-flex xs12>
+            <gene-plot class="flex" :genes="genes" :region="region" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations"></gene-plot>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
-            <div class="container">
-                <gene-plot class="flex gene-plot" :options="options"></gene-plot>
-            </div>
-        </v-flex>
-        <v-flex xs12 class="pl-4 pr-4">
-            <div class="container">
+            <div >
                     <h5 class="mb-1 gene-associations">Associations List</h5>
                     <v-divider></v-divider>
-                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView"></top-associations>
+                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView" v-model="associations" v-on:load="onLoadAssociations" v-on:association="onHighlightAssocInTable" ></top-associations>
             </div>
         </v-flex>
-    </v-layout>
+    </v-layout >
 </template>
 
 <script lang="ts">
@@ -47,10 +34,14 @@
     import Router from "../router";
     import TopAssociationsComponent from "./topasso.vue"
 
-    import {loadAssociationsOfGene, loadGene} from "../api";
-    import Gene from "../models/gene";
+    import {loadAssociationsOfGene, loadGene, loadGenesByRegion} from "../api";
+
+    import Association from "../models/association"
+    import Gene, {GenePlotOptions} from "../models/gene";
 
     import tourMixin from "../mixins/tour.js";
+
+    import _ from "lodash";
 
     @Component({
         filters: {
@@ -74,17 +65,18 @@
         selectedGene: Gene = {id: '', name: '', strand: '',chr: '', type: '', positions: {gte: 0, lte: 0 }};
         searchTerm: string = "";
         associationCount = 0;
-        min = 10;
+        genes: Gene[] = [];
 
         // Associations parameters
         ordered: string;
-        zoom = 10;
+        zoom = 0;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
         columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
         filterKey: string = "";
         associations = [];
+        highlightedAssociations: Association[] = [];
 
 
         maf = ["5-10", "10"];
@@ -94,38 +86,66 @@
         hideFields = [];
         showControls = ["maf","annotation","type"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-        geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
+        deboundedLoadGenes = _.debounce(this.loadGenesInRegion, 300);
 
-        @Watch("zoom")
-        onZoomChanged(val: number, oldVal: number) {
-            this.geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
+        get startRegion(): number  {
+            if (this.selectedGene) {
+                return this.selectedGene.positions.gte - this.zoom * 1000 / 2;
+            }
+            return 0;
+        }
+        get endRegion(): number   {
+            if (this.selectedGene) {
+                return this.selectedGene.positions.lte + this.zoom * 1000 / 2 ;
+            }
+            return 0;
         }
 
-        get options() {
-            return {
-                width: 1000,
-                min_x: 1200000,
-                max_x: 1289300,
-                gene: this.selectedGene,
-                w_rect: 0,
-                zoom: this.zoom,
-            };
+        get region(): number[] {
+            return [this.startRegion, this.endRegion];
+        }
+
+        get options(): GenePlotOptions {
+            const zoom = this.zoom * 1000 / 2;
+            const chr = this.selectedGene.chr;
+            const maxScore = 15;
+            const bonferoniThreshold = 5;
+            return new GenePlotOptions(chr, this.startRegion, this.endRegion, maxScore, bonferoniThreshold);
         }
 
         get breadcrumbs() {
             return [{text: "Home", href: "/"}, {text: "Genes", href: "genes", disabled: true}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
         }
 
+        get geneView() {
+            return {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
+        }
+
+        onLoadAssociations(associations) {
+            this.associations = associations
+        }
+
+        onHighlightAssocInTable(association: Association) {
+            // TODO use array operators
+            this.highlightedAssociations = [association];
+        }
+
         @Watch("selectedGene")
         onSelectedGeneChanged(val, oldVal) {
             if (oldVal === null || val.id !== oldVal.id) {
                 this.$router.push({ name: 'geneDetail', params: { geneId: val.id }})
+                this.loadGenesInRegion();
             }
         }
 
         @Watch("geneId")
         onGeneIdChanged(val: number, oldVal: number) {
             this.loadData();
+        }
+
+        @Watch("zoom")
+        onZoomChanged() {
+            this.deboundedLoadGenes();
         }
 
         created(): void {
@@ -141,10 +161,24 @@
         loadData(): void {
             // Load associations of all cited SNPs
             try {
-                loadGene(this.geneId).then(this._displayGeneData);
+                loadGene(this.geneId)
+                    .then((gene) => {
+                        this.selectedGene = gene
+                });
             } catch (err) {
                 console.log(err);
             }
+        }
+
+        loadGenesInRegion(): void {
+            loadGenesByRegion(this.selectedGene.chr, this.startRegion, this.endRegion, true).then( (genes) => this.genes = genes);
+        }
+
+        _displayData(data): void {
+            this.associations = data.results;
+            this.currentPage = data.current_page;
+            this.totalCount = data.count;
+            this.pageCount = data.page_count;
         }
         goToGene(): void {
             this.router.push({name: "geneDetail", params: { geneId: this.searchTerm }});

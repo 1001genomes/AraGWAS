@@ -5,6 +5,14 @@ interface SNPMap {
     [pos: number]: SNP;
 }
 
+export class GenePlotOptions {
+    constructor(readonly chr: string,
+                readonly startPos: number, readonly endPos: number,
+                readonly maxScore: number, readonly bonferoniThreshold: number,
+                ) {
+    }
+}
+
 interface Annotation {
     readonly effect: string;
     readonly impact: string;

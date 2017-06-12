@@ -281,6 +281,7 @@
         onHighAssoChanged(val, oldVal) {
             this.searchForAsso(val);
         }
+
         mounted(): void {
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);
@@ -323,6 +324,7 @@
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
             this.lastElement = data.lastel;
+            this.$emit('load', this.associations);;
         }
         hideHeaders(fields): void {
             for(let i = this.headers.length-1; i>= 0; i--) {

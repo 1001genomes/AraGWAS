@@ -61,21 +61,13 @@ def check_indices():
 
 def load_snps_by_region(chrom, start, end):
     """Retrieve snp information by region"""
-    index = 'geno_%s'
-    if len(chrom) > 3:
-        index = index % chrom
-    else:
-        index = index % 'chr' + chrom
+    index = _get_index_from_chr(chrom)
     search_snps = Search().using(es).doc_type('snps').index(index).filter("range", position={"lte": end, "gte":start})
     return {snp.position: snp.to_dict() for snp in search_snps.scan() }
 
 def load_snps(chrom, positions):
     """Retrieve snp information"""
-    index = 'geno_%s'
-    if len(chrom) > 3:
-        index = index % chrom
-    else:
-        index = index % 'chr' + chrom
+    index = _get_index_from_chr(chrom)
     if isinstance(positions, np.ndarray):
         pos = positions.tolist()
     else:
@@ -154,6 +146,17 @@ def get_top_genes_and_snp_type_for_study(study_id):
     s.aggs.bucket('snp_type_count', agg_snp_type)
     agg_results = s.execute().aggregations
     return agg_results.gene_count.buckets, agg_results.snp_type_count.buckets
+
+
+
+def load_genes_by_region(chrom, start, end, features):
+    """Retrieve genes by region"""
+    index = _get_index_from_chr(chrom)
+    search_genes = Search().using(es).doc_type('genes').index(index).filter("range", positions={"lte": end, "gte":start})
+    if not features:
+        search_genes.source(exclude=['isoforms'])
+    return [gene.to_dict() for gene in search_genes.scan() ]
+
 
 def filter_association_search(s, filters):
     if 'score' in filters:
@@ -292,3 +295,11 @@ def _get_snps_document(snpeff_file):
             snp = parse_snpeff(fields, is_custom_snp_eff)
             action = {'_index':'geno_%s' % snp['chr'].lower(),'_type':'snps','_id':snp['position'],'_source':snp}
             yield action
+
+def _get_index_from_chr(chrom):
+    index = 'geno_%s'
+    if len(chrom) > 3:
+        index = index % chrom
+    else:
+        index = index % 'chr' + chrom
+    return index
