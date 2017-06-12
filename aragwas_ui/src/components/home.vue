@@ -1,24 +1,22 @@
 <template>
     <div>
         <v-parallax src="/static/img/ara2.jpg" :height="height">
-            <v-layout column align-center justify-center class="container" v-if="!search">
-                <div class="banner-title">
-                    <br>
-                    <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
-                </div>
-                <div class="banner-subtext">
-                    <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
-                    <br>
-                    <!--<h5 class="white&#45;&#45;text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h5>-->
-                </div>
-            </v-layout>
+            <v-container>
+                <v-layout column align-center justify-center v-if="!search">
+                    <div class="banner-title">
+                        <br>
+                        <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
+                    </div>
+                    <div class="banner-subtext">
+                        <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
+                        <br>
+                        <h6 class="white--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
+                    </div>
+                </v-layout>
+            </v-container>
         </v-parallax>
-        <div class="container mt-3 pa-0">
-            <div v-if="!search">
-                <br>
-                <h6 class="black--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
-            </div>
-            <v-card>
+        <v-container class="mt-3 pa-0">
+            <v-card style="max-width: 800px;margin:0 auto;">
                 <div class="pl-4 pt-1 pr-4">
                     <v-text-field
                             name="input-1"
@@ -30,10 +28,10 @@
                     ></v-text-field>
                 </div>
             </v-card>
-        </div>
+        </v-container>
         <section v-if="!search">
             <div class="section">
-                <div class="container">
+                <v-container>
                     <v-layout class="text-xs-center">
                         <v-flex xs4 offset-xs2>
                             <div class="icon-block">
@@ -52,9 +50,9 @@
                             </div>
                         </v-flex>
                     </v-layout>
-                </div>
+                </v-container>
             </div>
-            <div class="container">
+            <v-container>
                 <div class="section">
                     <v-layout>
                         <v-flex xs4 >
@@ -100,7 +98,7 @@
 
                     </v-layout>
                 </div>
-            </div>
+            </v-container>
         </section>
 
         <section v-if="search" class="container">
@@ -336,7 +334,7 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only --  >
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .parallax {
         margin-bottom:-24px;
@@ -352,12 +350,6 @@
 
     .small-icon {
         vertical-align: middle;
-    }
-
-    .container {
-        margin:0 auto;
-        max-width: 1280px;
-        width: 90%
     }
 
     .table {
@@ -378,18 +370,6 @@
         color:black;
     }
 
-
-    @media only screen and (min-width: 601px) {
-        .container {
-            width:85%
-        }
-    }
-
-    @media only screen and (min-width: 993px) {
-        .container {
-            width:70%;
-        }
-    }
     .page-container {
         display:flex;
         justify-content:center;
