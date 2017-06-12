@@ -58,9 +58,9 @@
                         <v-text-field
                                 name="input-1"
                                 label="Search the catalog"
-                                type="String"
+                                v-model="queryTerm"
                                 v-bind:focused="focused"
-                                :input="debounceInput()"
+                                @input="debounceInput"
                                 prepend-icon="search"
                         ></v-text-field>
                     </div>
@@ -174,13 +174,12 @@
                                         <tbody>
                                         <tr v-for="entry in filteredData">
                                             <td v-for="key in columns[currentView]">
-                                                <!--TODO: add links to studies views, need to be generated from study id-->
                                                 <router-link v-if="(key==='name' && currentView === 'studies')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotypePk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView==='phenotypes')" :to="{name: 'phenotypeDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView==='genes')" :to="{name: 'geneDetail', params: { geneId: entry[key] }}" >{{entry[key]}}</router-link>
                                                 <div v-else>{{entry[key]}}</div>
-                                        </td>
+                                            </td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -203,7 +202,8 @@
     import {search, loadPhenotypes, loadStudies, loadAssociationCount, loadTopGenes} from '../api';
     import LineChart from "../components/linechart.vue";
     import Router from "../router";
-    import debounce from 'debounce';
+    import debounce from '../../node_modules/debounce';
+
 
     @Component({
       filters: {
@@ -218,6 +218,8 @@
     export default class Home extends Vue {
       @Prop()
       queryTerm: string;
+      @Prop()
+      fastChange: string;
       router = Router;
       search: boolean = false;
       height = 320;
@@ -256,6 +258,9 @@
           this.search = true;
           this.height = 70;
           this.loadData(val, this.currentPage);
+          this.router.replace({path: '/', params: {queryTerm: this.queryTerm}});
+//          this.$route.params.queryTerm = this.queryTerm;
+//          window.history.replaceState({path: '/', params: {queryTerm: this.queryTerm}}, '', '')
         }
       }
       loadResults() {
@@ -284,8 +289,10 @@
 //          return debounce(this.queryTerm, this.delay)
 //      }
       debounceInput() {
-          debounce(function (e) {this.queryTerm = e.target.value;}, 200)
-          this.flag = !this.flag
+          debounce(function (e) {this.fastChange = this.fastChange},  2000, true);
+      }
+      updateQuery() {
+          this.queryTerm = this.fastChange;
       }
 
       @Watch("currentPage")
@@ -293,6 +300,9 @@
         this.loadData(this.queryTerm, val);
       }
       created(): void {
+        if (this.$route.params.queryTerm) {
+          this.queryTerm = this.$route.params.queryTerm;
+        }
         this.loadData(this.queryTerm, this.currentPage);
         this.currentView = 'studies';
         this.loadSummaryData();
