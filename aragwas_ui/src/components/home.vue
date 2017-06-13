@@ -91,7 +91,7 @@
                                 </v-flex>
                                 <v-flex xs6 >
                                     <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart"></vue-chart>
+                                    <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart" :width="150"></vue-chart>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
@@ -211,11 +211,17 @@
       nAssociations = 0;
 
       beforeRouteLeave (to, from, next) {
-          window.history.replaceState({path: '/', params: {currentView: this.currentView, queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.currentView+"&"+this.queryTerm+"&"+this.currentPage)
-          if(to.path === '/') {
-              this.currentView = '';
+          if(to.path === '/studies' || to.path === '/top-associations'){
+              next()
           }
-          next();
+          else {
+              window.history.replaceState({path: '/', params: {currentView: this.currentView, queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.currentView+"&"+this.queryTerm+"&"+this.currentPage)
+              if(to.path === '/') {
+                  this.currentView = '';
+              }
+              next();
+          }
+
       }
 //      beforeRouteUpdate (to, from, next) {
 //          console.log('Update')

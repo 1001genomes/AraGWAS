@@ -65,7 +65,6 @@ class TopAssociationsViewSet(viewsets.ReadOnlyModelViewSet):
         filters['maf'] = self.request.query_params.get('maf', None).split(',')
         filters['annotation'] = self.request.query_params.get('anno', None).split(',')
         filters['type'] = self.request.query_params.get('type', None).split(',')
-        page = self.request.query_params.get('page', None)
         # Get study ids
         try:
             asso = elastic.load_filtered_top_associations(filters)

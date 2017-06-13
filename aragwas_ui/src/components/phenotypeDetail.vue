@@ -2,18 +2,7 @@
     <div >
         <v-layout column align-start>
             <v-flex xs12>
-                <v-breadcrumbs icons divider="chevron_right" class="left">
-                    <v-breadcrumbs-item
-                            v-for="item in breadcrumbs" :key="item"
-                            :disabled="item.disabled"
-                            class="breadcrumbsitem"
-                            :href="{name: item.href}"
-                            router
-                    >
-                        <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
-                    </v-breadcrumbs-item>
-                </v-breadcrumbs>
-                <v-divider></v-divider>
+                <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
         </v-layout>
         <v-layout row-sm wrap column class="mt-4">
@@ -108,6 +97,7 @@
     import {Component, Prop, Watch} from "vue-property-decorator";
 
     import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudy} from "../api";
+    import Breadcrumbs from "./breadcrumbs.vue"
 
     @Component({
         filters: {
@@ -115,7 +105,9 @@
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
         },
-
+        components: {
+            "breadcrumbs": Breadcrumbs,
+        },
     })
     export default class PhenotypeDetail extends Vue {
       @Prop({required: true})
@@ -140,7 +132,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: "Home", href: "home"}, {text: "Phenotypes", href: "phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
 //      TODO: add similar phenotypes fetching with Ontology
 

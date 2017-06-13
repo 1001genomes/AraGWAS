@@ -87,7 +87,7 @@ export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ord
 }
 
 export async function loadTopAssociations(filter) {
-    return fetch(`/api/top_associations/?chr=${filter['chr']}&maf=${filter['maf']}&anno=${filter['annotation']}&type=${filter['type']}&page=${filter['page']}`)
+    return fetch(`/api/top_associations/?chr=${filter["chr"]}&maf=${filter["maf"]}&anno=${filter["annotation"]}&type=${filter["type"]}&page=${filter["page"]}`)
         .then(checkStatus)
         .then(convertToModel);
 }

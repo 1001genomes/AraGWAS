@@ -1,18 +1,7 @@
 <template>
     <v-layout column>
         <v-flex xs12>
-             <v-breadcrumbs icons divider="chevron_right" class="left">
-                <v-breadcrumbs-item
-                        v-for="item in breadcrumbs" :key="item"
-                        :disabled="item.disabled"
-                        class="breadcrumbsitem"
-                        :href="{name: item.href}"
-                        router
-                >
-                    <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
-                </v-breadcrumbs-item>
-            </v-breadcrumbs>
-            <v-divider></v-divider>
+            <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </v-flex>
         <v-flex xs12 sm4>
             <gene-search v-model="selectedGene"></gene-search>
@@ -66,6 +55,7 @@
 
     import GenePlot from "../components/geneplot.vue";
     import GeneSearch from "../components/geneSearch.vue";
+    import Breadcrumbs from "./breadcrumbs.vue"
     import Router from "../router";
 
     import {loadAssociationsOfGene, loadGene} from "../api";
@@ -80,6 +70,7 @@
         components: {
             "gene-plot": GenePlot,
             "gene-search": GeneSearch,
+            "breadcrumbs": Breadcrumbs,
         },
     })
     export default class GeneDetail extends Vue {

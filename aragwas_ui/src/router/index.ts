@@ -3,7 +3,7 @@ import Genes from "@/components/genes.vue";
 import Home from "@/components/home.vue";
 import PhenotypeDetail from "@/components/phenotypeDetail.vue";
 import Phenotypes from "@/components/phenotypes.vue";
-import Results from "@/components/results.vue";
+import FAQ from "@/components/faq.vue";
 import Studies from "@/components/studies.vue";
 import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
@@ -39,6 +39,11 @@ export default new Router({
       path: "/genes",
       name: "genes",
       component: Genes,
+    },
+    {
+      path: "/faq",
+      name: "FAQ",
+      component: FAQ,
     },
     {
       path: "/top-associations",

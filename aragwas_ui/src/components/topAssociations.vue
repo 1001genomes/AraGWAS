@@ -1,80 +1,68 @@
 <template>
     <div class="mt-0">
-        <div class="banner-container" style="height: 80px">
+        <v-parallax class="parallax-container" src="/static/img/ara5.jpg" height="80">
             <div class="section">
                 <div class="container mt-2">
-                    <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
-                        <v-breadcrumbs-item
-                                v-for="item in breadcrumbs" :key="item"
-                                :disabled="item.disabled"
-                                class="breadcrumbsitem"
-                                :href=" item.href "
-                                target="_self"
-                        >
-                            <h4 v-if="item.disabled" class="grey--text text--lighten-2">{{ item.text }}</h4>
-                            <h4 v-else class="white--text">{{ item.text }}</h4>
-                        </v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                    <v-divider></v-divider>
+                    <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
                 </div>
             </div>
-            <v-parallax class="parallax-container" src="/static/img/ara5.jpg" height="80">
-            </v-parallax>
-        </div>
+        </v-parallax>
         <div class="container">
             <div class="section">
-                <v-layout row>
-                    <v-layout col xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-layout>
-                </v-layout>
-                <v-layout row>
-                    <v-col xs3>
-                        <h6 class="mt-4">MAF</h6>
-                            <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="<1" class="mb-0"></v-switch>
-                            <v-checkbox v-model="maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="maf" primary label=">10% ( % of SNPs)" value=">10" class="mt-0"></v-checkbox>
-                        <h6 class="mt-4">Chromosomes</h6>
-                            <v-checkbox v-model="chr" warning label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                            <v-checkbox v-model="chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="chr" info label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="chr" error label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="chr" label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
-                        <h6 class="mt-4">Annotation</h6>
-                            <v-checkbox v-model="annotation" primary label="NS ( % of SNPs)" value="NS" class="mb-0"></v-checkbox>
-                            <v-checkbox v-model="annotation" primary label="S ( % of SNPs)" value="S" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="annotation" primary label="* ( % of SNPs)" value="*" class="mt-0 mb-0"></v-checkbox>
-                        <h6 class="mt-4">Type</h6>
-                            <v-checkbox v-model="type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
-                            <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
-                    </v-col>
-                    <v-col xs9>
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th v-for="key in columns"
-                                    @click="sortBy(key)"
-                                    :class="{ active: sortKey == key }"
-                                    style="font-size: 11pt">
-                                    {{ key | capitalize }}
-                                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="entry in filteredData" v-if="entry['show']">
-                                <td v-for="key in columns">
-                                    <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                    <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
-                                    <div v-else>{{entry[key]}}</div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="page-container mt-5 mb-3">
-                            <v-pagination :length.number="pageCount" v-model="currentPage" />
-                        </div>
-                    </v-col>
-                </v-layout>
+                <v-container fluid>
+                    <v-layout row>
+                        <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
+                    </v-layout>
+                    <v-layout row wrap>
+                        <v-flex xs3 wrap>
+                            <h6 class="mt-4">MAF</h6>
+                                <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="<1" class="mb-0"></v-switch>
+                                <v-checkbox v-model="maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="maf" primary label=">10% ( % of SNPs)" value=">10" class="mt-0"></v-checkbox>
+                            <h6 class="mt-4">Chromosomes</h6>
+                                <v-checkbox v-model="chr" warning label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
+                                <v-checkbox v-model="chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="chr" info label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="chr" error label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="chr" label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
+                            <h6 class="mt-4">Annotation</h6>
+                                <v-checkbox v-model="annotation" primary label="NS ( % of SNPs)" value="NS" class="mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="S ( % of SNPs)" value="S" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="* ( % of SNPs)" value="*" class="mt-0 mb-0"></v-checkbox>
+                            <h6 class="mt-4">Type</h6>
+                                <v-checkbox v-model="type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
+                                <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                        </v-flex>
+                        <v-flex xs9 wrap>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th v-for="key in columns"
+                                        @click="sortBy(key)"
+                                        :class="{ active: sortKey == key }"
+                                        style="font-size: 11pt">
+                                        {{ key | capitalize }}
+                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="entry in filteredData" v-if="entry['show']">
+                                    <td v-for="key in columns">
+                                        <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                        <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+                                        <div v-else>{{entry[key]}}</div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="page-container mt-5 mb-3">
+                                <v-pagination :length.number="pageCount" v-model="currentPage" />
+                            </div>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
             </div>
         </div>
     </div>
@@ -88,12 +76,16 @@
     import {loadTopAssociations} from "../api";
     import Page from "../models/page";
     import Study from "../models/study";
+    import Breadcrumbs from './breadcrumbs.vue'
 
     @Component({
         filters: {
             capitalize(str) {
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
+        },
+        components: {
+            "breadcrumbs": Breadcrumbs,
         },
     })
     export default class TopAssociations extends Vue {
@@ -154,7 +146,7 @@
             this.loadData(this.currentPage);
         }
         loadData(page): void {
-            loadTopAssociations({'chr': this.chr, 'annotation': this.annotation, 'maf': this.maf, 'type': this.type, 'page': page}).then(this._displayData); // change this with ES search
+            loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type, page: page}).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -175,88 +167,89 @@
             }
             this.loadData(this.currentPage);
         }
-        filterData(filters): void {
-            for (const i of Object.keys(this.associations)) {
-                this.associations[i]["show"] = this.filterAssociation(this.associations[i]);
-            }
-        }
-        filterAssociation(asso): boolean {
-            // Check chromosome
-            let isPart;
-            if (this.chr.length < 5) {
-                const chrom = asso["SNP"][3];
-                isPart = false;
-                for (const i of this.chr) {
-                    if (i === chrom) {
-                        isPart = true;
-                        break;
-                    }
-                }
-                if (! isPart) {
-                    return false;
-                }
-            }
-            // Check maf
-            if (this.maf.length < 4) {
-                const mafasso = asso["maf"];
-                isPart = false;
-                for (const i of this.maf) {
-                    switch (i) {
-                        case "<1":
-                            if (mafasso < 0.01) {
-                                isPart = true;
-                            }
-                            break;
-                        case "1-5":
-                            if (mafasso >= 0.01 && mafasso <= 0.05) {
-                                isPart = true;
-                            }
-                            break;
-                        case "5-10":
-                            if (mafasso > 0.05 && mafasso <= 0.1) {
-                                isPart = true;
-                            }
-                            break;
-                        case ">10":
-                            if (mafasso > 0.1) {
-                                isPart = true;
-                            }
-                    }
-                }
-                if (! isPart) {
-                    return false;
-                }
-            }
-            // Check type
-            if (this.type.length < 2) {
-                const typeasso = asso["type"];
-                isPart = false;
-                for (const i of this.type) {
-                    if (i === typeasso) {
-                        isPart = true;
-                        break;
-                    }
-                }
-                if (! isPart) {
-                    return false;
-                }
-            }
-            if (this.annotation.length < 3) {
-                // Check chromosome
-                const annoasso = asso["SNP"][3];
-                isPart = false;
-                for (const i of this.annotation) {
-                    if (i === annoasso) {
-                        isPart = true;
-                        break;
-                    }
-                }
-                if (! isPart) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        // FRONT END filtering, not needed
+//        filterData(filters): void {
+//            for (const i of Object.keys(this.associations)) {
+//                this.associations[i]["show"] = this.filterAssociation(this.associations[i]);
+//            }
+//        }
+//        filterAssociation(asso): boolean {
+//            // Check chromosome
+//            let isPart;
+//            if (this.chr.length < 5) {
+//                const chrom = asso["SNP"][3];
+//                isPart = false;
+//                for (const i of this.chr) {
+//                    if (i === chrom) {
+//                        isPart = true;
+//                        break;
+//                    }
+//                }
+//                if (! isPart) {
+//                    return false;
+//                }
+//            }
+//            // Check maf
+//            if (this.maf.length < 4) {
+//                const mafasso = asso["maf"];
+//                isPart = false;
+//                for (const i of this.maf) {
+//                    switch (i) {
+//                        case "<1":
+//                            if (mafasso < 0.01) {
+//                                isPart = true;
+//                            }
+//                            break;
+//                        case "1-5":
+//                            if (mafasso >= 0.01 && mafasso <= 0.05) {
+//                                isPart = true;
+//                            }
+//                            break;
+//                        case "5-10":
+//                            if (mafasso > 0.05 && mafasso <= 0.1) {
+//                                isPart = true;
+//                            }
+//                            break;
+//                        case ">10":
+//                            if (mafasso > 0.1) {
+//                                isPart = true;
+//                            }
+//                    }
+//                }
+//                if (! isPart) {
+//                    return false;
+//                }
+//            }
+//            // Check type
+//            if (this.type.length < 2) {
+//                const typeasso = asso["type"];
+//                isPart = false;
+//                for (const i of this.type) {
+//                    if (i === typeasso) {
+//                        isPart = true;
+//                        break;
+//                    }
+//                }
+//                if (! isPart) {
+//                    return false;
+//                }
+//            }
+//            if (this.annotation.length < 3) {
+//                // Check chromosome
+//                const annoasso = asso["SNP"][3];
+//                isPart = false;
+//                for (const i of this.annotation) {
+//                    if (i === annoasso) {
+//                        isPart = true;
+//                        break;
+//                    }
+//                }
+//                if (! isPart) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
     }
 </script>
 

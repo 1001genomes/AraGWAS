@@ -3,20 +3,9 @@
         <v-parallax src="/static/img/ara1.jpg" height="80">
     <div class="section">
         <div class="container mt-2">
-            <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
-            <v-breadcrumbs-item
-                    v-for="item in breadcrumbs" :key="item"
-                    :disabled="item.disabled"
-                    class="breadcrumbsitem"
-                    :href="{name: item.href}"
-                    router
-            >
-                <span :class="['display-1', {'white--text': !item.disabled}]">{{ item.text}}</span>
-            </v-breadcrumbs-item>
-            </v-breadcrumbs>
-            <v-divider></v-divider>
-            </div>
+            <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </div>
+    </div>
     </v-parallax>
         <div class="container">
             <div class="section">
@@ -58,6 +47,7 @@
     import {loadGenes} from "../api";
     import Page from "../models/page";
     import Study from "../models/study";
+    import Breadcrumbs from './breadcrumbs.vue'
 
     @Component({
         filters: {
@@ -65,6 +55,9 @@
                 str = str.split("_").join(" ");
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
+        },
+        components: {
+            "breadcrumbs": Breadcrumbs,
         },
     })
     export default class Genes extends Vue {

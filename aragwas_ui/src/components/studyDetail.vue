@@ -2,18 +2,7 @@
     <div>
         <v-layout column align-start>
             <v-flex xs12>
-                <v-breadcrumbs icons divider="chevron_right" class="left">
-                    <v-breadcrumbs-item
-                            v-for="item in breadcrumbs" :key="item"
-                            :disabled="item.disabled"
-                            class="breadcrumbsitem"
-                            :href="{name: item.href}"
-                            router
-                    >
-                        <span :class="['title', {'green--text': !item.disabled}]">{{ item.text}}</span>
-                    </v-breadcrumbs-item>
-                </v-breadcrumbs>
-                <v-divider></v-divider>
+                <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
         </v-layout>
         <v-tabs id="study-detail-tabs" grow scroll-bars v:model="currentView" class="mt-3">
@@ -126,6 +115,7 @@
 
     import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy} from "../api";
     import ManhattanPlot from "../components/manhattanplot.vue";
+    import Breadcrumbs from "./breadcrumbs.vue"
 
     @Component({
       filters: {
@@ -136,6 +126,7 @@
       },
       components: {
           "manhattan-plot": ManhattanPlot,
+          "breadcrumbs": Breadcrumbs,
       },
     })
     export default class StudyDetail extends Vue {
@@ -197,7 +188,7 @@
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
-      breadcrumbs = [{text: "Home", href: "home"}, {text: "Studies", href: "studies"}, {text: this.studyName, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
       get filteredData () {
         let filterKey = this.filterKey;
