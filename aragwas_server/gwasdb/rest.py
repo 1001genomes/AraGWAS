@@ -146,9 +146,9 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
         top_associations, thresholds = get_top_associations(association_file, 2500, 'top')
         output = {}
         for chrom in range(1, 6):
-            chr_idx = top_associations['chr'].searchsorted(str(i+1))
-            output['chr %s' % i] = {'pvalues': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
-        output['bonferoni_threshold'] = -math.log(0.05/float(thresholds['num_assocations']), 10)
+            chr_idx = top_associations['chr'].searchsorted(str(chrom))
+            output['chr %s' % chrom] = {'pvalues': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
+        output['bonferoni_threshold'] = float(thresholds['bonferoni_threshold05'])
         return Response(output, status=status.HTTP_200_OK)
 
 class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
