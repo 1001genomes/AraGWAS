@@ -1,6 +1,25 @@
 from __future__ import absolute_import, unicode_literals
+import os
+from celery.utils.log import get_task_logger
+logger = get_task_logger(__name__)
 from celery import shared_task
 import h5py, numpy
+from gwasdb.models import Study
+from gwasdb import elastic
+from gwasdb import hdf5
+from aragwas import settings
+
+
+@shared_task
+def index_study(study_id):
+    study = Study.objects.get(pk=study_id)
+    """ used to index a study in elasticseach """
+    hdf5_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' %  study.pk)
+    top_associations, thresholds = hdf5.get_top_associations(hdf5_file, val=1e-5, top_or_threshold='threshold' )
+    return elastic.index_associations(study, top_associations, thresholds)
+
+
+
 
 @shared_task
 def compute_ld(chromosome, position, genotype_name, N=20):
