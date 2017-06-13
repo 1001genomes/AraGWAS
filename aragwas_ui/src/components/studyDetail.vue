@@ -285,13 +285,16 @@
         this.araPhenoLink = data.araPhenoLink;
       }
       _displayManhattanPlots(data): void {
-//        this.$nextTick(() => {
-//            var manWidth = this.$refs.manhattan.clientWidth
-//        });
-        for (const i of [1, 2, 3, 4, 5]) {
-            this.dataChr[i.toString()] = data["chr" + i.toString()].positions.map( (e, l) => [e, data["chr" + i.toString()].pvalues[l]]);
+        for (let i=1; i <=5; i++) {
+            let chrom = "chr" + i.toString();
+            const positions = data[chrom].positions;
+            const chrData: any[] = [];
+            for (let j = 1; j < positions.length; j++) {
+                const assoc = [positions[j],data[chrom].scores[j]];
+                chrData.push(assoc);
+            }
+            this.dataChr[chrom] =  chrData;
             this.options[i.toString()]["bonferoniThreshold"] = data.bonferoniThreshold;
-//            this.options[i.toString()]["width"] = manWidth
         }
       }
 
