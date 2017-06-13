@@ -150,7 +150,9 @@
                     </v-tabs-content>
                 </v-tabs>
                 <div class="page-container mt-3 mb-3">
+                    <v-layout align-center justify-center >
                         <v-pagination v-bind:length.number="pageCount[currentView]" v-model="currentPage"/>
+                    </v-layout>
                 </div>
         </section>
     </div>
@@ -188,7 +190,7 @@
       fastChange: string;
       router = Router;
       search: boolean = false;
-      height = 320;
+      height = 280;
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
       columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
@@ -210,8 +212,15 @@
 
       beforeRouteLeave (to, from, next) {
           window.history.replaceState({path: '/', params: {currentView: this.currentView, queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.currentView+"&"+this.queryTerm+"&"+this.currentPage)
+          if(to.path === '/') {
+              this.currentView = '';
+          }
           next();
       }
+//      beforeRouteUpdate (to, from, next) {
+//          console.log('Update')
+//          this.currentView = '';
+//      }
       debounceInput() {
         debounce(this.updateQuery,  300, false)();
       }
@@ -222,7 +231,7 @@
       onQueryTermChanged(val: string, oldVal: string) {
         if (val === "") {
           this.search = false;
-          this.height = 300;
+          this.height = 280;
         } else {
           this.search = true;
           this.height = 70;
@@ -257,8 +266,8 @@
         this.loadData(this.queryTerm, val);
       }
       created(): void {
-        this.currentView = 'studies';
-        if (this.$route.params.queryTerm) {
+        this.currentView = "studies";
+        if (this.$route.params.queryTerm && this.$route.params.queryTerm !== "") {
           this.queryTerm = this.$route.params.queryTerm;
           this.fastChange = this.queryTerm
           this.currentPage = +this.$route.params.currentPage;

@@ -23,10 +23,10 @@
         </div>
         <div class="container">
             <div class="section">
-                <v-row>
-                    <v-col xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-col>
-                </v-row>
-                <v-row>
+                <v-layout row>
+                    <v-layout col xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-layout>
+                </v-layout>
+                <v-layout row>
                     <v-col xs3>
                         <h6 class="mt-4">MAF</h6>
                             <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="<1" class="mb-0"></v-switch>
@@ -74,7 +74,7 @@
                             <v-pagination :length.number="pageCount" v-model="currentPage" />
                         </div>
                     </v-col>
-                </v-row>
+                </v-layout>
             </div>
         </div>
     </div>
@@ -85,7 +85,7 @@
     import Vue from "vue";
     import {Component, Watch} from "vue-property-decorator";
 
-    import {loadStudies} from "../api";
+    import {loadTopAssociations} from "../api";
     import Page from "../models/page";
     import Study from "../models/study";
 
@@ -109,7 +109,7 @@
         pageCount = 5;
         totalCount = 0;
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
-        maf = ["<1", "1-5", "5-10", ">10"];
+        maf = ["1", "1-5", "5-10", "10"];
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["NS", "S", "*"];
         type = ["genic", "non-genic"];
@@ -132,29 +132,29 @@
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
-            this.loadData(val);
+            this.loadData(this.currentPage);
         }
         @Watch("maf")
         onMafChanged(val: number, oldVal: number) {
-            this.filterData(val);
+            this.loadData(this.currentPage);
         }
         @Watch("chr")
         onChrChanged(val: number, oldVal: number) {
-            this.filterData(val);
+            this.loadData(this.currentPage);
         }
         @Watch("annotation")
         onAnnotationChanged(val: number, oldVal: number) {
-            this.filterData(val);
+            this.loadData(this.currentPage);
         }
         @Watch("type")
         onTypeChanged(val: number, oldVal: number) {
-            this.filterData(val);
+            this.loadData(this.currentPage);
         }
         created(): void {
             this.loadData(this.currentPage);
         }
-        loadData(page: number): void {
-            loadStudies(page, this.ordered).then(this._displayData); // change this with ES search
+        loadData(page): void {
+            loadTopAssociations({'chr': this.chr, 'annotation': this.annotation, 'maf': this.maf, 'type': this.type, 'page': page}).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -275,14 +275,14 @@
         max-width: 100%;
         margin-bottom: 2rem;
     }
-    .parallax-container  {
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        z-index:-1;
-    }
+    /*.parallax-container  {*/
+        /*position:absolute;*/
+        /*top:0;*/
+        /*left:0;*/
+        /*right:0;*/
+        /*bottom:0;*/
+        /*z-index:-1;*/
+    /*}*/
     .arrow {
         display: inline-block;
         vertical-align: middle;

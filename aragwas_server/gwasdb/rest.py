@@ -55,8 +55,25 @@ class TopAssociationsViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Retrieve information about the best associations for the top associations list
     """
-    # TODO: pass all top associations with the following fields: SNP, pvalue, phenotype, gene, maf, beta, odds ratio, confidence interval, type, annotation, chr (study?)
-    # TODO: filter fields: MAF, Chr, Annotation, type
+    queryset = Association.objects.all()
+    serializer_class = AssociationSerializer
+    # Fetch top associations in es with appropriate filters.
+    def list(self, request, *args, **kwargs):
+        # retrieve and sort filters.
+        filters = {}
+        filters['chr']= self.request.query_params.get('chr', None).split(',')
+        filters['maf'] = self.request.query_params.get('maf', None).split(',')
+        filters['annotation'] = self.request.query_params.get('anno', None).split(',')
+        filters['type'] = self.request.query_params.get('type', None).split(',')
+        page = self.request.query_params.get('page', None)
+        # Get study ids
+        try:
+            asso = elastic.load_filtered_top_associations(filters)
+            # TODO: aggregate results for neighboring snps with shared study
+            paginated_asso = self.paginate_queryset(asso)
+            return self.get_paginated_response(paginated_asso)
+        except Association.DoesNotExist:
+            raise Http404('Associations do not exist')
     pass
 
 class AssociationViewSet(viewsets.ReadOnlyModelViewSet):

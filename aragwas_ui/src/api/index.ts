@@ -86,9 +86,8 @@ export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ord
         .then(convertToModel);
 }
 
-// TODO: add strategy to store / quickly retreive top associations across all studies
-export async function loadTopAssociations() {
-    return fetch(`/api/top_associations/`)
+export async function loadTopAssociations(filter) {
+    return fetch(`/api/top_associations/?chr=${filter['chr']}&maf=${filter['maf']}&anno=${filter['annotation']}&type=${filter['type']}&page=${filter['page']}`)
         .then(checkStatus)
         .then(convertToModel);
 }

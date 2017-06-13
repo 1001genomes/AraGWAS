@@ -3,7 +3,6 @@
     <v-toolbar class="white toolbar">
       <v-toolbar-logo class="logo"><router-link :to="{path: '/', props: { currentView: '', queryTerm: '', currentPage: 1 }}">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
-        <v-toolbar-item><span class="black--text">Submit GWAS Study</span></v-toolbar-item>
           <v-toolbar-item><span class="black--text">Take a tour?</span></v-toolbar-item>
           <v-toolbar-item><span class="black--text">FAQ & Tutorials</span></v-toolbar-item>
       </v-toolbar-items>

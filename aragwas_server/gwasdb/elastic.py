@@ -115,7 +115,7 @@ def load_gene_associations(id):
     if not matches:
         raise Exception('Wrong Gene ID %s' % id)
     chrom = matches.group(1)
-    asso_search = Search(using=es).doc_type('associations').source(exclude=['isoforms','GO'])
+    asso_search = Search(using=es).doc_type('snps').source(exclude=['isoforms','GO'])
     q = Q({'nested':{'path':'snps.annotations', 'query':{'match':{'snps.annotations.gene_name':id}}}})
     asso_search = asso_search.query(q).sort('-pvalue')
     results = asso_search[0:min(500, asso_search.count())].execute()
@@ -155,7 +155,39 @@ def load_top_associations():
 def index_associations(study, associations):
     """indexes associations"""
 
-
+def load_filtered_top_associations(filters):
+    """Retrieves top associations and filter them through the tickable options"""
+    s = Search(using=es, doc_type='associations')
+    results = s.query('range', pvalue={'lte': 1e-7}).sort('-pvalue')
+    # Check if filters are inclusive:
+    if len(filters['chr']) < 5:
+        # use exclusive filtering to keep in non-chromosomal snps
+        to_exclude = ['chr'+ str(i+1) for i in range(5)]
+        for c in filters['chr']:
+            to_exclude.remove('chr'+str(c))
+        for e in to_exclude:
+            results.exclude({'nested':{'path': 'associations.snps', 'query': {'term': {'associations.snps.chr': e}}}})
+    if len(filters['maf']) < 4:
+        for maf in filters['maf']:
+            maf = maf.split('-')
+            # check if range or not:
+            if len(maf) > 1:
+                results.filter('range', maf={'lte':float(maf[1])/100., 'gte':float(maf[1])/100.})
+            else:
+                if maf[0] == '1':
+                    results.filter('range', maf={'lte':float(maf[0])/100.})
+                else:
+                    results.filter('range', maf={'gte': float(maf[0])/100.})
+    if len(filters['annotation']) < 3:
+        for anno in filters['annotation']:
+            results.filter('term', annotation=anno)
+    if len(filters['type']) == 1:
+        if filters['type'][0] == 'genic':
+            results.filter('term', coding='T')
+        else:
+            results.filter('term', coding='F')
+    results = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
+    return [{association['_id']: association['_source']} for association in results]
 
 def index_genes(genes):
     """Indexes the genes"""
