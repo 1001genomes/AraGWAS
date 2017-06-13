@@ -2,6 +2,7 @@ from elasticsearch import Elasticsearch, helpers
 from elasticsearch_dsl import Search, Q
 
 from aragwas.settings import ES_HOST
+from gwasdb import serializers
 from .parsers import parse_snpeff
 import logging
 import json
@@ -9,6 +10,7 @@ import os
 import numpy as np
 import re
 import operator
+import datetime
 
 GENE_ID_PATTERN = re.compile('^[a-z]{2}([\\d]{1})G\\w+$', re.IGNORECASE)
 
@@ -78,8 +80,10 @@ def load_snps(chrom, positions):
         pos = positions.tolist()
     else:
         pos = positions
+    if len(pos) == 0:
+        return {}
     resp = es.mget(body={'ids':pos}, index=index, doc_type='snps')
-    return [{doc['_id']: doc['_source']} if doc['found'] else {} for doc in resp['docs']]
+    return {doc['_id']: doc['_source'] if doc['found'] else {} for doc in resp['docs'] }
 
 
 def autocomplete_genes(term):
@@ -152,8 +156,30 @@ def get_top_genes():
 def load_top_associations():
     """Retrieve top asssociations"""
 
-def index_associations(study, associations):
+def index_associations(study, associations, thresholds):
     """indexes associations"""
+    lowest_threshold = min(filter(None, [thresholds['bonferoni_threshold05'], thresholds['bonferoni_threshold01'], thresholds['bh_threshold']]))
+    thresholds = [{'name': key, 'value': val} for key, val in thresholds.items() ]
+    # first filter by chr to fetch annotations
+    associations.sort(order = 'chr')
+    annotations = {}
+    for chrom in range(1, 6):
+        chrom_pos = associations['position'][np.where(associations['chr'] == str(chrom))]
+        annotations[str(chrom)] = load_snps(str(chrom),chrom_pos)
+    documents = []
+    for assoc in associations:
+        _id = '%s_%s_%s' % (study.pk, assoc['chr'], assoc['position'])
+        study_data = serializers.EsStudySerializer(study).data
+        study_data['thresholds'] = thresholds
+        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'pvalue': float(assoc['score']), 'created': datetime.datetime.now(),'study':study_data, 'overFDR': bool(assoc['score'] > lowest_threshold)}
+        snp = annotations[assoc['chr']].get(str(assoc['position']), None)
+        if snp:
+            _source['snp']  = snp
+        documents.append({'_index':'aragwas','_type':'associations','_id': _id, '_source': _source })
+    if len(documents) == 0:
+        return 0,0
+    success, errors = helpers.bulk(es,documents, chunk_size=1000, stats_only=True)
+    return success, errors
 
 def load_filtered_top_associations(filters):
     """Retrieves top associations and filter them through the tickable options"""
@@ -188,6 +214,7 @@ def load_filtered_top_associations(filters):
             results.filter('term', coding='F')
     results = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
     return [{association['_id']: association['_source']} for association in results]
+
 
 def index_genes(genes):
     """Indexes the genes"""

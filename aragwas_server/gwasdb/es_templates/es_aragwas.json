@@ -34,7 +34,7 @@
                 "created": {
                     "type": "date"
                 },
-                "snps": {
+                "snp": {
                     "type": "object",
                     "properties": {
                         "chr": {

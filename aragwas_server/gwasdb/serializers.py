@@ -12,6 +12,41 @@ class ApiVersionSerializer(serializers.Serializer):
     github_url = serializers.URLField(read_only=True)
     date = serializers.DateField(read_only=True)
 
+class EsPhenotypeSerializer(serializers.ModelSerializer):
+    """Serializer for elasticserach"""
+    suggest = serializers.SerializerMethodField()
+
+    def get_suggest(self, instance):
+        return [instance.name]
+
+    class Meta:
+        model = Phenotype
+        fields = ('id', 'suggest', 'name', 'description', 'date')
+
+
+class EsGenotypeSerializer(serializers.ModelSerializer):
+    """Serializer for elasticserach"""
+
+    class Meta:
+        model = Genotype
+        fields = ('id', 'name', 'description', 'version')
+
+
+class EsStudySerializer(serializers.ModelSerializer):
+    """Serializer for elasticserach"""
+    suggest = serializers.SerializerMethodField()
+    genotype = EsGenotypeSerializer(many=False)
+    phenotype = EsPhenotypeSerializer(many=False)
+
+
+    def get_suggest(self, instance):
+        return [instance.name]
+
+    class Meta:
+        model = Study
+        fields = ('id', 'suggest', 'name', 'transformation', 'method', 'genotype', 'phenotype')
+
+
 """
 Study List Serializer Class (read-only)
 """

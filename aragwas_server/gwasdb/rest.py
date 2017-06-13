@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
-from gwasdb.hdf5 import getTopAssociations, regroupAssociations
+from gwasdb.hdf5 import get_top_associations, regroup_associations
 
 from gwasdb.tasks import compute_ld
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
@@ -100,18 +100,22 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
             page = int(request.query_params.get('page', None))
         except:
             page = 1
-        association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
-        pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
-        # pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 100, 'top')
-        pval, chr, pos, mafs = regroupAssociations(pval,pos,mafs)
-        # associations = get_list_or_404(Association, study=pk)
+        association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
+        top_associations, thresholds = get_top_associations(association_file, 1e-4, 'threshold')
+        top_associations = regroup_associations(top_associations)
+        num_assoc = len(top_associations)
 
         results = []
-        for l in range(len(pval)):
+        for assoc in top_associations:
+            score = assoc['score']
+            chrom = assoc['chr']
+            pos = assoc['position']
+            maf = assoc['maf']
+            mac = assoc['mac']
             # get associated genes:
             name = ''
             pk = ''
-            type = ''
+            snp_type = ''
             try:
                 obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
                 gene = Gene.objects.get(pk=obj.gene)
@@ -119,14 +123,14 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
                 pk = gene.pk
             except:
                 pass
-            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'maf': "{:.3f}".format(mafs[l]), 'gene':{'name': name, 'pk': pk}, 'type': type})
+            results.append({'pvalue': "{:.5f}".format(score),'SNP': 'Chr'+str(chrom)+':'+str(pos), 'maf': "{:.3f}".format(maf), 'gene':{'name': name, 'pk': pk}, 'type': snp_type})
 
         # Homemade paginator
         PAGE_SIZE = 20.
-        page_count = int(math.ceil(float(len(pval)) / PAGE_SIZE))
+        page_count = int(math.ceil(float(num_assoc) / PAGE_SIZE))
         if page > page_count:
             page = page_count
-        data = {'count': len(pval), 'page_count': int(math.ceil(float(len(pval)) / PAGE_SIZE)), 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
+        data = {'count': num_assoc, 'page_count': page_count, 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -139,12 +143,12 @@ class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         pk = kwargs['pk']
         association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
-        pval, pos, mafs, n_asso, thresholds = getTopAssociations(association_file, 2500, 'top')
+        top_associations, thresholds = get_top_associations(association_file, 2500, 'top')
         output = {}
-        for i in range(5):
-            output['chr'+str(i+1)] = {'pvalues': pval[i], 'positions': pos[i], 'mafs': mafs[i]}
-        output['bonferoni_threshold'] = -math.log(0.05/float(n_asso), 10)
-
+        for chrom in range(1, 6):
+            chr_idx = top_associations['chr'].searchsorted(str(i+1))
+            output['chr %s' % i] = {'pvalues': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
+        output['bonferoni_threshold'] = -math.log(0.05/float(thresholds['num_assocations']), 10)
         return Response(output, status=status.HTTP_200_OK)
 
 class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -166,22 +170,23 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             st_id.append(s.pk)
 
         pval = []
-        chr = []
+        chrom = []
         pos = []
         study = []
         n_asso = 0
         for study_pk in st_id:
             association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
-            pval_st, pos_st, mafs_st, n_asso_st, thresholds = getTopAssociations(association_file, 1e-4, 'threshold')
-            pval_st, chr_st, pos_st, mafs_st = regroupAssociations(pval_st, pos_st, mafs_st)
-            pval.extend(pval_st)
-            chr.extend(chr_st)
-            pos.extend(pos_st)
-            study.extend(study_pk for l in range(len(pval_st)))
-            n_asso += n_asso_st
+            top_assocations, thresholds = get_top_associations(association_file, 1e-4, 'threshold')
+            num_assoc = len(top_assocations)
+            top_assocations = regroup_associations(top_assocations)
+            pval.extend(top_assocations['score'])
+            chrom.extend(top_assocations['chr'])
+            pos.extend(top_assocations['position'])
+            study.extend(study_pk for l in range(num_assoc))
+            n_asso += num_assoc
         pval = numpy.asarray(pval)
         pos = numpy.asarray(pos)
-        chr = numpy.asarray(chr)
+        chrom = numpy.asarray(chrom)
         study = numpy.asarray(study)
 
         i = pval.argsort()[::-1]
