@@ -9,6 +9,7 @@ from gwasdb import rest
 from rest_framework import status
 from gwasdb import hdf5
 import numpy as np
+from gwasdb import elastic
 
 
 # Create your tests here.
@@ -163,3 +164,14 @@ class HDF5LoadingTests(TestCase):
         top_associations = hdf5.regroup_associations(top_associations)
         top_associations[0].tolist() == ('4',   429928,  6.55541645,  0.42335766, 58)
         top_associations[-1].tolist() == ('5', 18606578,  5.07844918,  0.47445255, 65)
+
+
+class AssociationsFilteringTests(TestCase):
+
+    def __init__(self, *args, **kwargs):
+        self.hdf5_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/gwas.hdf5')
+        super(AssociationsFilteringTests, self).__init__(*args, **kwargs)
+
+    def test_load_top_associations_by_top_hits(self):
+        #TODO: implement tests
+        pass

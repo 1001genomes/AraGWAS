@@ -59,11 +59,14 @@ class TopAssociationsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AssociationSerializer
     # Fetch top associations in es with appropriate filters.
     def list(self, request, *args, **kwargs):
+        annos_dict = {'ns': 'NON_SYNONYMOUS_CODING', 's': 'SYNONYMOUS_CODING', 'i': 'INTERGENIC', 'in': 'INTRON'}
         # retrieve and sort filters.
-        filters = {}
+        filters = {'chr': [], 'maf': [], 'annotation':[], 'type':[]}
         filters['chr']= self.request.query_params.get('chr', None).split(',')
         filters['maf'] = self.request.query_params.get('maf', None).split(',')
-        filters['annotation'] = self.request.query_params.get('anno', None).split(',')
+        annos = self.request.query_params.get('anno', None).split(',')
+        if annos[0] != '':
+            filters['annotation'] = [annos_dict[k] for k in annos]
         filters['type'] = self.request.query_params.get('type', None).split(',')
         # Get study ids
         try:

@@ -140,7 +140,7 @@ def get_top_genes():
     # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
     # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue/high scores)
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', score={'gte': 7}).sort('score').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
+    results = s.filter('range', score={'gte': 7}).sort('-score').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
     gene_scores = {}
     for snp in results:
         if 'gene_name' in snp['annotations'].keys():
@@ -184,37 +184,51 @@ def index_associations(study, associations, thresholds):
 def load_filtered_top_associations(filters):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', score={'gte': 7}).sort('score')
+    results = s.filter('range', score={'gte': 4}).sort('-score')
     # Check if filters are inclusive:
     if len(filters['chr']) < 5:
         # use exclusive filtering to keep in non-chromosomal snps
+        print('bla')
         to_exclude = ['chr'+ str(i+1) for i in range(5)]
-        for c in filters['chr']:
-            to_exclude.remove('chr'+str(c))
+        if filters['chr'][0] != '':
+            for c in filters['chr']:
+                to_exclude.remove('chr'+str(c))
         for e in to_exclude:
-            results.exclude({'nested':{'path': 'associations.snps', 'query': {'term': {'associations.snps.chr': e}}}})
+            results = results.exclude('term', snp__chr=e)
     if len(filters['maf']) < 4:
+        f = Q('term', maf='1000')
         for maf in filters['maf']:
+            if maf == '':
+                break
             maf = maf.split('-')
             # check if range or not:
             if len(maf) > 1:
-                results.filter('range', maf={'lte':float(maf[1])/100., 'gte':float(maf[1])/100.})
+                f = f | Q('range', maf={'lte':float(maf[1])/100., 'gte':float(maf[0])/100.})
             else:
                 if maf[0] == '1':
-                    results.filter('range', maf={'lte':float(maf[0])/100.})
+                    f = f | Q('range', maf={'lte':float(maf[0])/100.})
                 else:
-                    results.filter('range', maf={'gte': float(maf[0])/100.})
-    if len(filters['annotation']) < 3:
-        for anno in filters['annotation']:
-            results.filter('term', annotation=anno)
+                    f = f | Q('range', maf={'gte': float(maf[0])/100.})
+            print(f.to_dict())
+        results = results.filter(f)
+    if len(filters['annotation']) < 4:
+        # exclusive filtering here as well
+        s = ['NON_SYNONYMOUS_CODING', 'SYNONYMOUS_CODING', 'INTERGENIC', 'INTRON']
+        for anno in s:
+            if anno in filters['annotation']:
+                continue
+            else:
+                results = results.exclude('nested',path='snp.annotations', query=Q('term', snp__annotations__effect=anno))
     if len(filters['type']) == 1:
         if filters['type'][0] == 'genic':
-            results.filter('term', coding='T')
+            results = results.filter('term', snp__coding='T')
+        elif filters['type'][0] == 'non-genic':
+            results = results.filter('term', snp__coding='F')
         else:
-            results.filter('term', coding='F')
+            results = results.exclude('terms', snp__coding=['T','F'])
     print(json.dumps(results.to_dict()))
-    results = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
-    return [association['_source'] for association in results]
+    associations = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
+    return [association['_source'] for association in associations]
 
 
 def index_genes(genes):

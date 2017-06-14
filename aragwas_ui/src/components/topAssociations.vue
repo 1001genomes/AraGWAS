@@ -16,10 +16,10 @@
                     <v-layout row wrap>
                         <v-flex xs3 wrap>
                             <h6 class="mt-4">MAF</h6>
-                                <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="<1" class="mb-0"></v-switch>
+                                <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-switch>
                                 <v-checkbox v-model="maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
                                 <v-checkbox v-model="maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                                <v-checkbox v-model="maf" primary label=">10% ( % of SNPs)" value=">10" class="mt-0"></v-checkbox>
+                                <v-checkbox v-model="maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
                             <h6 class="mt-4">Chromosomes</h6>
                                 <v-checkbox v-model="chr" warning label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
                                 <v-checkbox v-model="chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
@@ -27,14 +27,32 @@
                                 <v-checkbox v-model="chr" error label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
                                 <v-checkbox v-model="chr" label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
                             <h6 class="mt-4">Annotation</h6>
-                                <v-checkbox v-model="annotation" primary label="NS ( % of SNPs)" value="NS" class="mb-0"></v-checkbox>
-                                <v-checkbox v-model="annotation" primary label="S ( % of SNPs)" value="S" class="mt-0 mb-0"></v-checkbox>
-                                <v-checkbox v-model="annotation" primary label="* ( % of SNPs)" value="*" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
+                                <v-checkbox v-model="annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
                             <h6 class="mt-4">Type</h6>
                                 <v-checkbox v-model="type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
                                 <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                         </v-flex>
                         <v-flex xs9 wrap>
+                            <!--<v-data-table-->
+                                    <!--v-bind:headers="headers"-->
+                                    <!--:items="associations"-->
+                                    <!--hide-actions-->
+                                    <!--class="elevation-1"-->
+                            <!--&gt;-->
+                                <!--<template slot="items" scope="props">-->
+                                    <!--<td>{{ props.item.name }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.calories }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.fat }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.carbs }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.protein }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.sodium }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.calcium }}</td>-->
+                                    <!--<td class="text-xs-right">{{ props.item.iron }}</td>-->
+                                <!--</template>-->
+                            <!--</v-data-table>-->
                             <table class="table">
                                 <thead>
                                 <tr>
@@ -50,8 +68,10 @@
                                 <tbody>
                                 <tr v-for="entry in filteredData" v-if="entry['show']">
                                     <td v-for="key in columns">
-                                        <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                        <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['phenotype_pk'] }}" >{{entry[key]}}</router-link>
+                                        <div v-if="(key==='study')"><router-link :to="{name: 'studyDetail', params: { studyId: entry['study']['id'] }}" >{{entry['study']['id']}}</router-link></div>
+                                        <div v-else-if="(key==='phenotype')"><router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['study']['phenotype']['id'] }}" >{{entry['study']['phenotype']['name']}}</router-link></div>
+                                        <!--<div v-else-if="(key==='gene')">{{ entry['snp']['geneName'] }}</div>-->
+                                        <!--<div v-else-if="(key==='SNP')">{{ entry['snp']['chr'] }}</div>-->
                                         <div v-else>{{entry[key]}}</div>
                                     </td>
                                 </tr>
@@ -94,7 +114,7 @@
         sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval", "study"];
         filterKey: string = "";
         associations = [];
         currentPage = 1;
@@ -103,7 +123,7 @@
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
         maf = ["1", "1-5", "5-10", "10"];
         chr = ["1", "2", "3", "4", "5"];
-        annotation = ["NS", "S", "*"];
+        annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
 
         get filteredData() {
