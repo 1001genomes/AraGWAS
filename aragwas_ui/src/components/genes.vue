@@ -102,9 +102,9 @@
         }
         _displayData(data): void {
             this.genes = data.results;
-            this.currentPage = data.current_page;
+            this.currentPage = data.currentPage;
             this.totalCount = data.count;
-            this.pageCount = data.page_count;
+            this.pageCount = data.pageCount;
         }
         sortBy(key): void {
             this.sortKey = key;
