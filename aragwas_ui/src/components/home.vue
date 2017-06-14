@@ -211,7 +211,7 @@
       nAssociations = 0;
 
       beforeRouteLeave (to, from, next) {
-          if(to.path === '/studies' || to.path === '/top-associations'){
+          if(to.path === '/studies' || to.path === '/top-associations'|| to.path === '/faq'){
               next()
           }
           else {

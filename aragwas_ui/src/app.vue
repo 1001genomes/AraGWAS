@@ -3,8 +3,8 @@
     <v-toolbar class="white toolbar">
       <v-toolbar-logo class="logo"><router-link :to="{path: '/', props: { currentView: '', queryTerm: '', currentPage: 1 }}">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
-          <v-toolbar-item><span class="black--text">Take a tour?</span></v-toolbar-item>
-          <v-toolbar-item><span class="black--text">FAQ & Tutorials</span></v-toolbar-item>
+          <v-toolbar-item class="links"><router-link :to="{path: '/', props: { currentView: '', queryTerm: '', currentPage: 1 }}"><span class="black--text">Take a tour?</span></router-link></v-toolbar-item>
+          <v-toolbar-item class="links"><router-link :to="{path: '/faq'}"><span class="black--text">FAQs</span></router-link></v-toolbar-item>
       </v-toolbar-items>
     </v-toolbar>
     <main>
@@ -63,6 +63,10 @@
     color:black;
     text-decoration:none;
     font-weight:300;
+  }
+  .links a {
+      color:black;
+      text-decoration:none;
   }
   .version {
     float:right;
