@@ -121,10 +121,10 @@
       phenotypeDescription: string = "";
       currentView: string = "Similar Phenotypes";
       araPhenoLink: string = "";
-      columns = ["SNP", "pvalue", "gene", "study"];
+      columns = ["SNP", "score", "gene", "study"];
       columnsTab = {"Similar Phenotypes": ["name", "n studies", "description", "associated genes"], "List of Studies": ["study", "genotype", "method", "N hits"]};
       n = {phenotypes: 0, accessions: 0};
-      sortOrders = {snp: 1, pvalue: 1, gene: 1, study: 1};
+      sortOrders = {snp: 1, score: 1, gene: 1, study: 1};
       sortKey: string = "";
       ordered: string = "";
       filterKey: string = "";

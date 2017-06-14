@@ -73,7 +73,7 @@
                                 <tbody>
                                 <tr v-for="entry in filteredData">
                                     <td class="regular" v-for="key in columns">
-                                        <div v-if="(parseFloat(entry['pvalue']) > bonferoniThr05)">
+                                        <div v-if="(parseFloat(entry['score']) > bonferoniThr05)">
                                             <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
                                             <div v-else class="significant">{{entry[key]}}</div>
                                         </div>
@@ -143,7 +143,7 @@
       araPhenoLink: string = "";
       currentView: string = "Study details";
       currentViewIn: string = "On genes";
-      columns = ["SNP", "maf", "pvalue", "beta", "odds_ratio", "gene"]; // deleted confidence_interval for now
+      columns = ["SNP", "maf", "score", "beta", "odds_ratio", "gene"]; // deleted confidence_interval for now
       n = {phenotypes: 0, accessions: 0};
       bonferoniThr05 = 0;
       bonferoniThr01 = 0;
@@ -179,7 +179,7 @@
           "On genes": [["te", "t"]],
           "On snp type": [["string", "number"]]};
 
-      sortOrders = {snp: 1, maf: 1, pvalue: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, gene: 1};
+      sortOrders = {snp: 1, maf: 1, score: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, gene: 1};
       sortKey: string = "";
       ordered: string = "";
       filterKey: string = "";
@@ -236,7 +236,7 @@
         this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
         this.associationCount = data.thresholds.totalAssociations;
         for (const i in this.associations) {
-          if (this.associations[i]["pvalue"] < this.bonferoniThr05) {
+          if (this.associations[i]["score"] < this.bonferoniThr05) {
             this.significantAssociations[i] = this.associations[i];
             this.bonferoniHits = parseInt(i, 10);
             break;

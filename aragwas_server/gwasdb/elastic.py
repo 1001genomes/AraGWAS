@@ -121,7 +121,7 @@ def load_gene_associations(id):
     chrom = matches.group(1)
     asso_search = Search(using=es).doc_type('snps').source(exclude=['isoforms','GO'])
     q = Q({'nested':{'path':'snps.annotations', 'query':{'match':{'snps.annotations.gene_name':id}}}})
-    asso_search = asso_search.filter(q).sort('-pvalue')
+    asso_search = asso_search.filter(q).sort('score')
     results = asso_search[0:min(500, asso_search.count())].execute()
     associations = results.to_dict()['hits']['hits']
     return [{association['_id']: association['_source']} if association['found'] else {} for association in associations]
@@ -138,9 +138,9 @@ def load_gene_snps(id):
 def get_top_genes():
     """Retrive associations by neighboring gene id"""
     # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
-    # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue)
+    # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue/high scores)
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', pvalue={'lte': 1e-7}).sort('-pvalue').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
+    results = s.filter('range', score={'gte': 7}).sort('score').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
     gene_scores = {}
     for snp in results:
         if 'gene_name' in snp['annotations'].keys():
@@ -171,7 +171,7 @@ def index_associations(study, associations, thresholds):
         _id = '%s_%s_%s' % (study.pk, assoc['chr'], assoc['position'])
         study_data = serializers.EsStudySerializer(study).data
         study_data['thresholds'] = thresholds
-        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'pvalue': float(assoc['score']), 'created': datetime.datetime.now(),'study':study_data, 'overFDR': bool(assoc['score'] > lowest_threshold)}
+        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'created': datetime.datetime.now(),'study':study_data, 'overFDR': bool(assoc['score'] > lowest_threshold)}
         snp = annotations[assoc['chr']].get(str(assoc['position']), None)
         if snp:
             _source['snp']  = snp
@@ -184,7 +184,7 @@ def index_associations(study, associations, thresholds):
 def load_filtered_top_associations(filters):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', pvalue={'gte': 7}).sort('-pvalue')
+    results = s.filter('range', score={'gte': 7}).sort('score')
     # Check if filters are inclusive:
     if len(filters['chr']) < 5:
         # use exclusive filtering to keep in non-chromosomal snps

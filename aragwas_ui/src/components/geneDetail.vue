@@ -89,7 +89,7 @@
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
-        columns = ["SNP", "p-value", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
         filterKey: string = "";
         associations = [];
 

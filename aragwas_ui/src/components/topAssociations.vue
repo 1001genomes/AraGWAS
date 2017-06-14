@@ -94,7 +94,7 @@
         sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = ["SNP", "pvalue", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
         filterKey: string = "";
         associations = [];
         currentPage = 1;

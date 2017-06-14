@@ -123,7 +123,7 @@ class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
                 pk = gene.pk
             except:
                 pass
-            results.append({'pvalue': "{:.5f}".format(score),'SNP': 'Chr'+str(chrom)+':'+str(pos), 'maf': "{:.3f}".format(maf), 'gene':{'name': name, 'pk': pk}, 'type': snp_type})
+            results.append({'score': "{:.5f}".format(score),'SNP': 'Chr'+str(chrom)+':'+str(pos), 'maf': "{:.3f}".format(maf), 'gene':{'name': name, 'pk': pk}, 'type': snp_type})
 
         # Homemade paginator
         PAGE_SIZE = 20.
@@ -169,7 +169,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         for s in studies:
             st_id.append(s.pk)
 
-        pval = []
+        score = []
         chrom = []
         pos = []
         study = []
@@ -179,17 +179,17 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             top_assocations, thresholds = get_top_associations(association_file, 1e-4, 'threshold')
             num_assoc = len(top_assocations)
             top_assocations = regroup_associations(top_assocations)
-            pval.extend(top_assocations['score'])
+            score.extend(top_assocations['score'])
             chrom.extend(top_assocations['chr'])
             pos.extend(top_assocations['position'])
             study.extend(study_pk for l in range(num_assoc))
             n_asso += num_assoc
-        pval = numpy.asarray(pval)
+        score = numpy.asarray(score)
         pos = numpy.asarray(pos)
         chrom = numpy.asarray(chrom)
         study = numpy.asarray(study)
 
-        i = pval.argsort()[::-1]
+        i = score.argsort()[::-1]
         results = []
         for l in i:
             # get associated genes:
@@ -203,7 +203,7 @@ class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
             except:
                 pass
             study_name = studies.get(pk=study[l]).name
-            results.append({'pvalue': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'gene':{'name': name, 'pk': pk}, 'study':{'name': study_name, 'pk': study[l]}})
+            results.append({'score': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'gene':{'name': name, 'pk': pk}, 'study':{'name': study_name, 'pk': study[l]}})
         # Homemade paginator
         PAGE_SIZE = 20.
         page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))

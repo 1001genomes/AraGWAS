@@ -62,32 +62,32 @@ def get_top_associations(hdf5_file, val=100, top_or_threshold='top'):
         raise FileNotFoundError("Study file not found ({})".format(hdf5_file))
 
     # Get SNP position in file
-    pval = []
+    score = []
     pos = []
     mafs = []
     n_asso = 0
     # TODO comnbine both branches. 1.) assume hdf5 file is sorted 2.) get the index which satitises predicate (top numbers or threshold) 3.) slice them out.
     if top:
         for i in range(5):
-            pval.append(association_file['pvalues']['chr'+str(i+1)]['scores'][:val])
+            score.append(association_file['pvalues']['chr'+str(i+1)]['scores'][:val])
             pos.append(association_file['pvalues']['chr'+str(i+1)]['positions'][:val])
             mafs.append(association_file['pvalues']['chr'+str(i+1)]['mafs'][:val])
             n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
     else:
         for i in range(5):
-            local_pval = []
+            local_score = []
             local_pos = []
             local_mafs = []
             for j in range(10000):
                 if float(association_file['pvalues']['chr'+str(i+1)]['scores'][j]) >= val:
-                    local_pval.append(association_file['pvalues']['chr'+str(i+1)]['scores'][j])
+                    local_score.append(association_file['pvalues']['chr'+str(i+1)]['scores'][j])
                     local_pos.append(association_file['pvalues']['chr' + str(i + 1)]['positions'][j])
                     local_mafs.append(association_file['pvalues']['chr' + str(i + 1)]['mafs'][j])
                 else:
                     # check next one and break:
                     if float(association_file['pvalues']['chr' + str(i + 1)]['scores'][j+1]) < val:
                         break
-            pval.append(local_pval)
+            score.append(local_score)
             pos.append(local_pos)
             mafs.append(local_mafs)
             n_asso += len(association_file['pvalues']['chr'+str(i+1)]['scores'])
@@ -96,7 +96,7 @@ def get_top_associations(hdf5_file, val=100, top_or_threshold='top'):
     bt01 = -math.log(0.01/float(n_asso), 10)
     thresholds = {'bonferoni_threshold05': bt05,'bonferoni_threshold01': bt01, 'total_associations': n_asso}
 
-    return pval, pos, mafs, n_asso, thresholds
+    return score, pos, mafs, n_asso, thresholds
 
 def regroup_associations(top_associations):
     """regroups associations from a hdf5 file to generate an ordered top list, not chromosome-specific"""
