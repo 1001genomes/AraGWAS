@@ -94,7 +94,7 @@
         sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = ["SNP", "p-value", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
+        columns = ["SNP", "pvalue", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval"];
         filterKey: string = "";
         associations = [];
         currentPage = 1;
@@ -145,14 +145,14 @@
         created(): void {
             this.loadData(this.currentPage);
         }
-        loadData(page): void {
-            loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type, page: page}).then(this._displayData); // change this with ES search
+        loadData(pageToLoad): void {
+            loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type, page: pageToLoad}).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;
-            this.currentPage = data.current_page;
+            this.currentPage = data.currentPage;
             this.totalCount = data.count;
-            this.pageCount = data.page_count;
+            this.pageCount = data.pageCount;
             for (const i of Object.keys(this.associations)) {
                 this.associations[i]["show"] = true;
             }

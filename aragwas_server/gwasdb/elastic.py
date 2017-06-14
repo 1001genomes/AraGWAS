@@ -184,7 +184,7 @@ def index_associations(study, associations, thresholds):
 def load_filtered_top_associations(filters):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
-    results = s.query('range', pvalue={'lte': 1e-7}).sort('-pvalue')
+    results = s.filter('range', pvalue={'gte': 7}).sort('-pvalue')
     # Check if filters are inclusive:
     if len(filters['chr']) < 5:
         # use exclusive filtering to keep in non-chromosomal snps
@@ -212,8 +212,9 @@ def load_filtered_top_associations(filters):
             results.filter('term', coding='T')
         else:
             results.filter('term', coding='F')
+    print(json.dumps(results.to_dict()))
     results = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
-    return [{association['_id']: association['_source']} for association in results]
+    return [association['_source'] for association in results]
 
 
 def index_genes(genes):
