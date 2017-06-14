@@ -121,7 +121,7 @@ def load_gene_associations(id):
     chrom = matches.group(1)
     asso_search = Search(using=es).doc_type('snps').source(exclude=['isoforms','GO'])
     q = Q({'nested':{'path':'snps.annotations', 'query':{'match':{'snps.annotations.gene_name':id}}}})
-    asso_search = asso_search.query(q).sort('-pvalue')
+    asso_search = asso_search.filter(q).sort('-pvalue')
     results = asso_search[0:min(500, asso_search.count())].execute()
     associations = results.to_dict()['hits']['hits']
     return [{association['_id']: association['_source']} if association['found'] else {} for association in associations]
@@ -130,7 +130,7 @@ def load_gene_snps(id):
     """Retrive associations by neighboring gene id"""
     snp_search = Search(using=es).doc_type('snps')
     q = Q({'nested':{'path':'annotations', 'query':{'match':{'annotations.gene_name':id}}}})
-    snp_search = snp_search.query(q).sort('position')
+    snp_search = snp_search.filter(q).sort('position')
     results = snp_search[0:min(500, snp_search.count())].execute()
     associations = results.to_dict()['hits']['hits']
     return [{association['_id']: association['_source']} for association in associations]
@@ -140,7 +140,7 @@ def get_top_genes():
     # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
     # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue)
     s = Search(using=es, doc_type='associations')
-    results = s.query('range', pvalue={'lte': 1e-7}).sort('-pvalue').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
+    results = s.filter('range', pvalue={'lte': 1e-7}).sort('-pvalue').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
     gene_scores = {}
     for snp in results:
         if 'gene_name' in snp['annotations'].keys():
