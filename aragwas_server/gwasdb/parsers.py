@@ -72,10 +72,11 @@ def _parse_snpeff_infos(genotype, info):
     infos = info.split(";")[-1].split("=")[-1].split(",")
     annotations = []
     coding = False
+    gene_name = None
     for info in infos:
         matches = SNPEFF_REGEX.match(info)
         if not matches or len(matches.groups()) != 2:
-            return (coding, annotations)
+            return (coding, annotations, gene_name)
         annotation = {'effect':matches.group(1)}
         fields = matches.group(2).split("|")
         if genotype != None and fields[-1] != genotype:
@@ -89,6 +90,8 @@ def _parse_snpeff_infos(genotype, info):
             annotation['amino_acid_change'] = fields[3]
         if fields[5] != '':
             annotation['gene_name'] = fields[5]
+            if gene_name is None:
+                gene_name = annotation['gene_name']
             coding = True
         if fields[8] != '':
             annotation['transcript_id'] = fields[8]
@@ -98,7 +101,7 @@ def _parse_snpeff_infos(genotype, info):
             except:
                 pass
         annotations.append(annotation)
-    return coding, annotations
+    return coding, annotations, gene_name
 
 def parse_snpeff(snp, is_custom_snp_eff):
     """parses the snpeff fields"""
@@ -124,8 +127,10 @@ def parse_snpeff(snp, is_custom_snp_eff):
         info = snp[7]
     document = {'chr': chrom, 'position': pos, 'ref': ref, 'alt': alt, 'anc': anc}
 
-    coding, annotations = _parse_snpeff_infos(genotype, info)
+    coding, annotations, gene_name = _parse_snpeff_infos(genotype, info)
     document['coding'] = coding
+    if coding and gene_name:
+        document['gene_name'] = gene_name
     document['annotations'] = annotations
     return document
 

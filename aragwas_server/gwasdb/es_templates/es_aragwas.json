@@ -55,6 +55,9 @@
                         "coding": {
                             "type": "boolean"
                         },
+                        "gene_name": {
+                            "type": "keyword"
+                        },
                         "annotations": {
                             "type": "nested",
                             "properties": {
