@@ -31,73 +31,73 @@ export async  function loadStudy(studyId: number) {
         .then(convertToModel);
 }
 export async  function loadAssociationsOfStudy(studyId: number, page= 1) {
-    return fetch(`/api/associations_of_study/${studyId}/?page=${page}`)
+    return fetch(`/api/studies/${studyId}/associations/?page=${page}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 // Load associations for manhattan plots
 export async  function loadAssociationsForManhattan(studyId: number) {
-    return fetch(`/api/associations_manhattan/${studyId}`)
+    return fetch(`/api/studies/${studyId}/gwas/?filter=2500&filter_type=top`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 // Phenotype list
 export async  function loadPhenotypes(page: number = 1, ordering= "") {
-    return fetch(`/api/phenotype/?page=${page}&ordering=${ordering}`)
+    return fetch(`/api/phenotypes/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 // Import single phenotype information
 export async  function loadPhenotype(phenotypeId: number) {
-    return fetch(`/api/phenotype/${phenotypeId}`)
+    return fetch(`/api/phenotypes/${phenotypeId}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 export async  function loadAssociationsOfPhenotype(phenotypeId: number, page: number= 1) {
-    return fetch(`/api/associations_of_phenotype/${phenotypeId}/?page=${page}`)
+    return fetch(`/api/phenotypes/${phenotypeId}/associations/?page=${page}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 // Load similar phenotypes based on ontology
 export async function loadSimilarPhenotypes(phenotypeId: number) {
-    return fetch(`/api/similar_phenotypes/${phenotypeId}/`)
+    return fetch(`/api/phenotypes/${phenotypeId}/similar/`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 // Gene list
 export async  function loadGenes(page: number = 1, ordering= "") {
-    return fetch(`/api/gene/?page=${page}&ordering=${ordering}`)
+    return fetch(`/api/genes/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 // Import single gene information
 export async function loadGene(geneId = ""): Promise<Gene> {
-    return fetch(`/api/gene/${geneId}`)
+    return fetch(`/api/genes/${geneId}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ordering= "-pvalue") {
-    return fetch(`/api/associations_of_gene/${geneId}/?page=${page}&ordering=${ordering}`)
+    return fetch(`/api/genes/${geneId}/associations/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 export async function loadTopAssociations(filter) {
-    return fetch(`/api/top_associations/?chr=${filter["chr"]}&maf=${filter["maf"]}&anno=${filter["annotation"]}&type=${filter["type"]}&page=${filter["page"]}`)
+    return fetch(`/api/associations/?chr=${filter["chr"]}&maf=${filter["maf"]}&anno=${filter["annotation"]}&type=${filter["type"]}&page=${filter["page"]}`)
         .then(checkStatus)
         .then(convertToModel);
 }
 export async  function loadTopGenes() {
-    return fetch(`/api/top_genes/`)
+    return fetch(`/api/genes/top/`)
         .then(checkStatus)
         .then(convertToModel);
 }
 export async function loadAssociationCount() {
-    return fetch(`/api/associations/association_count/`)
+    return fetch(`/api/associations/count/`)
         .then(checkStatus)
         .then(convertToModel);
 }
@@ -115,7 +115,7 @@ export async function search(queryTerm= "", page: number = 1, ordering= "") {
 }
 
 export async function autoCompleteGenes(queryTerm: string): Promise<Gene[]> {
-    return fetch(`/api/autocomplete/genes/${queryTerm}`)
+    return fetch(`/api/genes/autocomplete/?term=${queryTerm}`)
         .then(checkStatus)
         .then(convertToModel);
 }

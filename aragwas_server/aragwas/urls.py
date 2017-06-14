@@ -51,27 +51,18 @@ class SearchRouter(DefaultRouter):
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'associations', rest.AssociationViewSet)
+router.register(r'genotypes', rest.GenotypeViewSet)
 router.register(r'studies', rest.StudyViewSet)
-router.register(r'phenotype', rest.PhenotypeViewSet)
-router.register(r'similar_phenotypes', rest.SimilarPhenotypesViewSet)
-router.register(r'gene', rest.GeneViewSet)
-router.register(r'associations_of_study', rest.AssociationsOfStudyViewSet)
-router.register(r'associations_of_phenotype', rest.AssociationsOfPhenotypeViewSet)
-router.register(r'associations_of_gene', rest.AssociationsOfGeneViewSet)
-router.register(r'top_genes', rest.TopGeneViewSet)
-router.register(r'top_associations', rest.TopAssociationsViewSet)
-# router.register(r'snps_of_gene', rest.SnpsOfGeneViewSet)
-router.register(r'associations_manhattan', rest.AssociationsForManhattanPlotViewSet)
+router.register(r'phenotypes', rest.PhenotypeViewSet)
+router.register(r'associations', rest.AssociationViewSet, base_name="associations")
+router.register(r'genes', rest.GeneViewSet, base_name="genes")
+router.register(r'snps', rest.SNPViewSet, base_name="snps")
 
-router.register(r'snp', rest.SNPLocalViewSet)
 srouter = SearchRouter()
 srouter.register(r'search', rest.SearchViewSet)
 
-
 urlpatterns = [
     url(r'^$', views.index, name="index"),
-    url(r'autocomplete/genes/(?P<search_term>\w+)/$', rest.autocomplete_genes),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls)),

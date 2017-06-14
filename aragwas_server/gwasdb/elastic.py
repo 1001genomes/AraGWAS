@@ -139,6 +139,7 @@ def get_top_genes():
     """Retrive associations by neighboring gene id"""
     # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
     # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue/high scores)
+    # TODO can be replaced by a facetted search by summing over all scores
     s = Search(using=es, doc_type='associations')
     results = s.filter('range', score={'gte': 4}).sort('-score').source('snp')[0:500].execute().to_dict()['hits']['hits']
     gene_scores = {}
@@ -153,12 +154,9 @@ def get_top_genes():
             else:
                 gene_scores[id] = 1
     gene_scores = sorted(gene_scores.items(), key=operator.itemgetter(1))[::-1]
-    print(gene_scores)
     return gene_scores[:min(8, len(gene_scores))]
 
 
-def load_top_associations():
-    """Retrieve top asssociations"""
 
 def index_associations(study, associations, thresholds):
     """indexes associations"""

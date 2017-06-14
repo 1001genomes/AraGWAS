@@ -1,7 +1,7 @@
 from django.views.generic import DetailView
 
 from django.shortcuts import render
-from gwasdb.models import (Study,Association,SNP,Gene,Genotype,Phenotype)
+from gwasdb.models import (Study,Genotype,Phenotype)
 from gwasdb.serializers import *
 
 
