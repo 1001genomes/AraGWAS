@@ -22,7 +22,7 @@
                 "annotation": {
                     "type": "keyword"
                 },
-                "pvalue": {
+                "score": {
                     "type": "float"
                 },
                 "beta": {
