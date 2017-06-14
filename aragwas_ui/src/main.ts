@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueAnalytics from "vue-analytics";
 import VueCharts from "vue-charts";
 import VueTimeago from "vue-timeago";
 import locale from "vue-timeago/locales/en-US.json";
@@ -17,6 +18,14 @@ Vue.use(VueTimeago, {
   locales: {
     // you will need json-loader in webpack 1
     "en-US": locale,
+  },
+});
+
+Vue.use(VueAnalytics, {
+  id: "UA-26150757-9",
+  router,
+  autoTracking: {
+    exception: true,
   },
 });
 
