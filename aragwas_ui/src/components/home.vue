@@ -118,7 +118,7 @@
                         <v-card>
                             <v-card-text>
                                 <div id="results" class="col s12"><br>
-                                    <h5 class="brown-text center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
+                                    <h5 class="center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
                                     <table v-else class="table">
                                         <thead>
                                         <tr>
@@ -391,7 +391,7 @@
 
     }
     .tabs__slider {
-        background: #f4d76c;
+        background: #2e7d32;
     }
 
     .arrow {
