@@ -2,39 +2,37 @@
 <div class="mt-0">
    <v-parallax src="/static/img/ara2.jpg" height="80">
    <div class="section">
-      <div class="container mt-2">
+      <div class="container mb-2">
         <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </div>
     </div>
   </v-parallax>
   <div class="container">
    <div class="section">
-     <table class="table">
-       <thead>
-         <tr>
-           <th v-for="key in columns"
-           @click="sortBy(key)"
-           :class="{ active: sortKey == key }"
-           style="font-size: 11pt">
-           {{ key | capitalize }}
-           <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-           </span>
-           </th>
-         </tr>
-       </thead>
-       <tbody>
-         <tr v-for="entry in filteredData">
-           <td v-for="key in columns">
-             <router-link v-if="(key==='name')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-             <router-link v-else-if="(key==='phenotype')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotypePk'] }}" >{{entry[key]}}</router-link>
-             <div v-else>{{entry[key]}}</div>
-           </td>
-         </tr>
-       </tbody>
-     </table>
+     <v-data-table
+             v-bind:headers="columns"
+             v-bind:items="studies"
+             v-bind:pagination.sync="pagination"
+             hide-actions
+             :loading="loading"
+             class="elevation-1"
+     >
+       <template slot="headers" scope="props">
+        <span v-tooltip:bottom="{ 'html': props.item.text }">
+          {{ props.item.text | capitalize }}
+        </span>
+       </template>
+       <template slot="items" scope="props">
+         <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
+         <td  class="text-xs-right"><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+         <td  class="text-xs-right">{{ props.item.transformation }}</td>
+         <td  class="text-xs-right">{{ props.item.method }}</td>
+         <td  class="text-xs-right">{{ props.item.genotype }}</td>
+       </template>
+     </v-data-table>
    </div>
   </div>
-  <div class="page-container mt-5 mb-3">
+  <div class="page-container mt-2 mb-3">
     <v-pagination :length.number="pageCount" v-model="currentPage" />
   </div>
 </div>
@@ -63,58 +61,49 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-    sortKey: string = "";
-    ordered: string = "";
-    columns: string[] = ["name", "phenotype", "transformation", "method", "genotype"];
-    filterKey: string = "";
+    columns = [{text: "name", value: "name",},{text:  "phenotype", value: "name",},{text:  "transformation", value: "name",},{text:  "method", value: "name",},{text:  "genotype", value: "name",}];
     studies = [];
+    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name};
+    search: string = '';
     currentPage = 1;
     pageCount = 5;
-    totalCount = 0;
     breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "studies", disabled: true}];
 
-    get filteredData() {
-      let filterKey = this.filterKey;
-      if (filterKey) {
-        filterKey = filterKey.toLowerCase();
-      }
-      let data = this.studies;
-      if (filterKey) {
-        data = data.filter((row) => {
-          return Object.keys(row).some((key) => {
-            return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-          });
-        });
-      }
-      return data;
+    @Watch("pagination")
+    onPaginationChanged(val: {}, oldVal: {}) {
+      this.loading = true;
+      this.loadData(val, this.currentPage);
     }
-
     @Watch("currentPage")
-    onCurrentPageChanged(val: number, oldVal: number) {
-      this.loadData(val);
+    onPaginationPageChanged(val: number, oldVal: number) {
+      this.loading = true;
+      this.loadData(this.pagination, val);
     }
     created(): void {
-      this.loadData(this.currentPage);
+      this.loading = true;
+      this.loadData(this.pagination, this.currentPage);
     }
-    loadData(page: number): void {
-      loadStudies(page, this.ordered).then(this._displayData);
+    loadData(pagination, page: number): void {
+      const {sortBy, descending} = pagination;
+
+      let ordered = '';
+      if (sortBy === null){
+          ordered = '';
+      } else {
+        if (descending) {
+          ordered = "-"+sortBy;
+        } else {
+          ordered = sortBy;
+        }
+      }
+      loadStudies(page, ordered).then(this._displayData);
     }
     _displayData(data): void {
       this.studies = data.results;
       this.currentPage = data.currentPage;
-      this.totalCount = data.count;
+      this.pagination.totalItems = data.count;
       this.pageCount = data.pageCount;
-    }
-    sortBy(key): void {
-      this.sortKey = key;
-      this.sortOrders[key] = this.sortOrders[key] * -1;
-      if (this.sortOrders[key] < 0) {
-        this.ordered = "-" + key;
-      } else {
-        this.ordered = key;
-      }
-      this.loadData(this.currentPage);
+      this.loading = false;
     }
   }
 </script>
