@@ -5,7 +5,7 @@
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
         </v-layout>
-        <v-layout row-sm wrap column class="mt-4">
+        <v-layout row-sm wrap column class="mt-4 pl-4 pr-4">
             <v-flex xs12 sm6 md4>
                 <v-flex xs12>
                     <v-layout column>
