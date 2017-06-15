@@ -5,7 +5,7 @@ from rest_framework import viewsets, generics, filters, renderers
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 
-from gwasdb.models import Phenotype, SNP, Association, Study, Gene, Genotype
+from gwasdb.models import Phenotype, Study, Genotype
 from gwasdb.serializers import *
 from gwasdb.paginator import CustomSearchPagination, CustomAssociationsPagination
 
@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.settings import api_settings
 from gwasdb.hdf5 import get_top_associations, regroup_associations
 
 from gwasdb.tasks import compute_ld
@@ -30,6 +31,7 @@ from elasticsearch_dsl.query import Q as QES
 from elasticsearch import Elasticsearch
 from aragwas.settings import ES_HOST
 
+
 import numpy, math
 
 def get_api_version():
@@ -39,217 +41,70 @@ def get_api_version():
     return {'version':__version__,'date':__date__,'githash':__githash__,'build':__build__,'build_url':BUILD_STATUS_URL,'github_url':settings.GITHUB_URL}
 
 
+class EsViewSetMixin(object):
+
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
+    @property
+    def paginator(self):
+        """
+        The paginator instance associated with the view, or `None`.
+        """
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = self.pagination_class()
+        return self._paginator
+
+    def get_paginated_response(self, data):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data)
+
+    def paginate_queryset(self, queryset):
+        """
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
 class ApiVersionView(APIView):
-    """Displays git and version information"""
+    """ API for version information """
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request):
+        """ Returns the git hash commit and version information """
         serializer = ApiVersionSerializer(get_api_version(), many=False)
         return Response(serializer.data)
 
-###############
-# ELASTIC SEARCH REST FUNCTIONS
-##############
-class TopAssociationsViewSet(viewsets.ReadOnlyModelViewSet):
+class GenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Retrieve information about the best associations for the top associations list
+    API for genotypes
+
+    list:
+    Lists avaialble genotypes
+
+    retrieve:
+    Retreives information about one specific genotype
     """
-    queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
-    # Fetch top associations in es with appropriate filters.
-    def list(self, request, *args, **kwargs):
-        annos_dict = {'ns': 'NON_SYNONYMOUS_CODING', 's': 'SYNONYMOUS_CODING', 'i': 'INTERGENIC', 'in': 'INTRON'}
-        # retrieve and sort filters.
-        filters = {'chr': [], 'maf': [], 'annotation':[], 'type':[]}
-        filters['chr']= self.request.query_params.get('chr', None).split(',')
-        filters['maf'] = self.request.query_params.get('maf', None).split(',')
-        annos = self.request.query_params.get('anno', None).split(',')
-        if annos[0] != '':
-            filters['annotation'] = [annos_dict[k] for k in annos]
-        filters['type'] = self.request.query_params.get('type', None).split(',')
-        # Get study ids
-        try:
-            asso = elastic.load_filtered_top_associations(filters)
-            # TODO: aggregate results for neighboring snps with shared study
-            paginated_asso = self.paginate_queryset(asso)
-            return self.get_paginated_response(paginated_asso)
-        except Association.DoesNotExist:
-            raise Http404('Associations do not exist')
-    pass
+    queryset = Genotype.objects.all()
+    serializer_class = GenotypeSerializer
 
-class AssociationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information about GWAS associations
-    """
-    queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
-
-    @list_route(url_path='association_count')
-    def association_count(self, request):
-        client = Elasticsearch([ES_HOST], timeout=60)
-        count = Search().using(client).doc_type('associations').query('match_all').count()
-        return Response(count)
-
-
-class AssociationsOfStudyViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information about GWAS associations
-    """
-    queryset = Association.objects.all()
-    def retrieve(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        try:
-            page = int(request.query_params.get('page', None))
-        except:
-            page = 1
-        association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
-        top_associations, thresholds = get_top_associations(association_file, 1e-4, 'threshold')
-        top_associations = regroup_associations(top_associations)
-        num_assoc = len(top_associations)
-
-        results = []
-        for assoc in top_associations:
-            score = assoc['score']
-            chrom = assoc['chr']
-            pos = assoc['position']
-            maf = assoc['maf']
-            mac = assoc['mac']
-            # get associated genes:
-            name = ''
-            pk = ''
-            snp_type = ''
-            try:
-                obj = SNP.objects.get(Q(chromosome=chr[l]) & Q(position=pos[l]))
-                gene = Gene.objects.get(pk=obj.gene)
-                name = gene.name
-                pk = gene.pk
-            except:
-                pass
-            results.append({'score': "{:.5f}".format(score),'SNP': 'Chr'+str(chrom)+':'+str(pos), 'maf': "{:.3f}".format(maf), 'gene':{'name': name, 'pk': pk}, 'type': snp_type})
-
-        # Homemade paginator
-        PAGE_SIZE = 20.
-        page_count = int(math.ceil(float(num_assoc) / PAGE_SIZE))
-        if page > page_count:
-            page = page_count
-        data = {'count': num_assoc, 'page_count': page_count, 'current_page': page, 'thresholds': thresholds, 'results': results[int(PAGE_SIZE)*(page-1):int(PAGE_SIZE)*page]}
-
-        return Response(data, status=status.HTTP_200_OK)
-
-class AssociationsForManhattanPlotViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Fetch associations in hdf5 file for manhattan plots
-    """
-    queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
-    def retrieve(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
-        top_associations, thresholds = get_top_associations(association_file, 2500, 'top')
-        output = {}
-        for chrom in range(1, 6):
-            chr_idx = top_associations['chr'].searchsorted(str(chrom+1))
-            output['chr%s' % chrom] = {'scores': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
-        output['bonferoni_threshold'] = float(thresholds['bonferoni_threshold05'])
-        return Response(output, status=status.HTTP_200_OK)
-
-class AssociationsOfPhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information about GWAS associations of a specific phenotype
-    """
-    queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
-    def retrieve(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        try:
-            page = int(request.query_params.get('page', None))
-        except:
-            page = 1
-        # get studies ids
-        studies = Study.objects.filter(phenotype=pk)
-        st_id = []
-        for s in studies:
-            st_id.append(s.pk)
-
-        score = []
-        chrom = []
-        pos = []
-        study = []
-        n_asso = 0
-        for study_pk in st_id:
-            association_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' % pk)
-            top_assocations, thresholds = get_top_associations(association_file, 1e-4, 'threshold')
-            num_assoc = len(top_assocations)
-            top_assocations = regroup_associations(top_assocations)
-            score.extend(top_assocations['score'])
-            chrom.extend(top_assocations['chr'])
-            pos.extend(top_assocations['position'])
-            study.extend(study_pk for l in range(num_assoc))
-            n_asso += num_assoc
-        score = numpy.asarray(score)
-        pos = numpy.asarray(pos)
-        chrom = numpy.asarray(chrom)
-        study = numpy.asarray(study)
-
-        i = score.argsort()[::-1]
-        results = []
-        for l in i:
-            # get associated genes:
-            name = ''
-            pk = ''
-            try:
-                obj = SNP.objects.get(Q(chromosome__exact=chr[l]) & Q(position__exact=pos[l]))
-                gene = Gene.objects.get(pk=obj.gene)
-                name = gene.name
-                pk = gene.pk
-            except:
-                pass
-            study_name = studies.get(pk=study[l]).name
-            results.append({'score': "{:.5f}".format(pval[l]),'SNP': 'Chr'+str(chr[l])+':'+str(pos[l]), 'gene':{'name': name, 'pk': pk}, 'study':{'name': study_name, 'pk': study[l]}})
-        # Homemade paginator
-        PAGE_SIZE = 20.
-        page_count = int(math.ceil(float(len(i)) / PAGE_SIZE))
-        if page > page_count:
-            page = page_count
-        data = {'count': len(i), 'page_count': int(math.ceil(float(len(i)) / PAGE_SIZE)), 'current_page': page, 'total_associations': n_asso,
-                'results': results[int(PAGE_SIZE) * (page - 1):int(PAGE_SIZE) * page]}
-        return Response(data, status=status.HTTP_200_OK)
-
-class AssociationsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information about GWAS associations of a specific phenotype
-    """
-    queryset = Association.objects.all()
-    serializer_class = AssociationSerializer
-    def retrieve(self, request, *args, **kwargs):
-        id = kwargs['pk']
-        # Get study ids
-        try:
-            asso = elastic.load_gene_associations(id)
-            paginated_asso = self.paginate_queryset(asso)
-            return self.get_paginated_response(paginated_asso)
-        except Association.DoesNotExist:
-            raise Http404('Associations do not exist')
-"""
-Mockup class to test es nested queries
-class SnpsOfGeneViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = SNP.objects.all()
-    serializer_class = AssociationSerializer
-    def retrieve(self, request, *args, **kwargs):
-        id = kwargs['pk']
-        # Get study ids
-        try:
-            asso = elastic.load_gene_snps(id)
-            paginated_asso = self.paginate_queryset(asso)
-            return self.get_paginated_response(paginated_asso)
-        except Association.DoesNotExist:
-            raise Http404('Associations do not exist')
-"""
 
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Retrieves information about GWAS study
+    API for studies
+
+    list:
+    Lists all available GWAS studies
+
+    retrieve:
+    Retrieves information about a specific GWAS study
     """
     queryset = Study.objects.all()
     serializer_class = StudySerializer
@@ -271,9 +126,41 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
+    @detail_route(methods=['GET'], url_path='assocations')
+    def top_assocations(self, request, pk):
+        """ Retrieves the top assocations for the study """
+        pass
+
+    @detail_route(methods=['GET'], url_path='gwas')
+    def assocations_from_hdf5(self, request, pk):
+        """ Retrieves assocations from the HDF5 file"""
+        filter_type = request.query_params.get('type', 'threshold')
+        if filter_type not in ('threshold', 'top'):
+            raise ValueError('filter_type must be either "threshold" or "top"')
+        threshold_or_top = float(request.query_params.get('filter', 1))
+        if filter_type == 'top':
+            threshold_or_top = int(threshold_or_top)
+
+        association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
+        import pdb; pdb.set_trace()
+        top_associations, thresholds = get_top_associations(association_file, threshold_or_top, filter_type)
+        output = {}
+        for chrom in range(1, 6):
+            chr_idx = top_associations['chr'].searchsorted(str(chrom+1))
+            output['chr%s' % chrom] = {'scores': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
+        output['bonferoni_threshold'] = float(thresholds['bonferoni_threshold05'])
+        return Response(output, status=status.HTTP_200_OK)
+
+
 class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Retrieves information about phenotypes
+    API for phenotypes
+
+    list:
+    Lists available phenotypes
+
+    retrieve:
+    Retrieves information about a specific phenotype
     """
     queryset = Phenotype.objects.all()
     serializer_class = PhenotypeListSerializer
@@ -297,20 +184,10 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
-class SimilarPhenotypesViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information about similar phenotypes
-    """
-    queryset = Phenotype.objects.all()
-    serializer_class = PhenotypeListSerializer
-
-    # Overriding get_queryset to allow for case-insensitive custom ordering
-    def retrieve(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        try:
-            ori_pheno = Phenotype.objects.get(pk=pk)
-        except:
-            raise ValueError('Phenotype with pk {} not found'.format(pk))
+    @detail_route(methods=['GET'], url_path='similar')
+    def similar(self, requests, pk):
+        """ Lists similar phenotypes """
+        ori_pheno = Phenotype.objects.get(pk=pk)
         trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
         queryset = Phenotype.objects.filter(name__exact=trait_ontology)
         queryset = queryset.filter(~Q(pk=pk))
@@ -318,62 +195,118 @@ class SimilarPhenotypesViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = PhenotypeListSerializer(pagephe, many=True)
         return Response(serializer.data)
 
-class GeneViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Retrieves information genes
-    """
-    queryset = Gene.objects.all()
-    serializer_class = GeneListSerializer
+    @detail_route(methods=['GET'], url_path='assocations')
+    def top_assocations(self, request, pk):
+        """ Retrieves the top assocations for a phenotype """
+        pass
 
-    # Overriding get_queryset to allow for case-insensitive custom ordering
-    def get_queryset(self):
-        queryset = self.queryset
-        ordering = self.request.query_params.get('ordering', None)
-        if ordering is not None and ordering != '':
-            from django.db.models.functions import Lower
-            inverted = False
-            if ordering.startswith('-'):
-                ordering = ordering[1:]
-                inverted = True
-            queryset = queryset.order_by(Lower(ordering))
-            if inverted:
-                queryset = queryset.reverse()
-        return queryset
 
-    def retrieve(self, request, *args, **kwargs):
-        id = kwargs['pk']
-        # To get the neighboring hits/SNPs and count them, we would need to query ES for SNPs in that region...
-        gene = elastic.load_gene_by_id(id)
+class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
+    """ API for associations """
+
+    def list(self, request):
+        """ Lists all associations sorted by score """
+        annos_dict = {'ns': 'NON_SYNONYMOUS_CODING', 's': 'SYNONYMOUS_CODING', 'i': 'INTERGENIC', 'in': 'INTRON'}
+        # retrieve and sort filters.
+        filters = {'chr': [], 'maf': [], 'annotation':[], 'type':[]}
+        filters['chr']= self.request.query_params.get('chr', None).split(',')
+        filters['maf'] = self.request.query_params.get('maf', None).split(',')
+        annos = self.request.query_params.get('anno', None).split(',')
+        if annos[0] != '':
+            filters['annotation'] = [annos_dict[k] for k in annos]
+        filters['type'] = self.request.query_params.get('type', None).split(',')
+        # TODO properly paginate results
+        asso = elastic.load_filtered_top_associations(filters)
+        paginated_asso = self.paginate_queryset(asso)
+        return self.get_paginated_response(paginated_asso)
+
+
+    @list_route(url_path='count')
+    def count(self, request):
+        """  Retrieves the number of available associations """
+        client = Elasticsearch([ES_HOST], timeout=60)
+        count = Search().using(client).doc_type('associations').query('match_all').count()
+        return Response(count)
+
+
+
+class GeneViewSet(viewsets.ViewSet):
+    """ API for genes """
+
+    def list(self, request):
+        """ Retrieves information genes """
+        pass
+
+    def retrieve(self, request, pk):
+        """ Retrieves information about a specific gene """
+        gene = elastic.load_gene_by_id(pk)
+        return Response(gene)
+
+    @list_route(methods=['GET'], url_path='autocomplete')
+    def autocomplete(self, request):
+        """ Autocompletes based on query term """
+        search_term = request.query_params.get('term', '')
+        genes = elastic.autocomplete_genes(search_term)
+        return Response(genes)
+
+    @detail_route(methods=['GET'], url_path='associations')
+    def associations(self, request, pk):
+        """ Returns top assocations for that gene """
+        gene = elastic.load_gene_by_id(pk)
         gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
         return Response(gene)
-        # snps = elastic.load_gene_snps(id)
-        # snps = list(filter(None, snps))
-        # return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
 
-class TopGeneViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Compute most associated genes and return top 8 genes for landing page plot
-    """
-    queryset = Study.objects.all()
-    serializer_class = GeneListSerializer
-    # Need to use default class because we return tuples
-    renderer_classes = (renderers.JSONRenderer,)
+    @list_route(methods=['GET'], url_path='top')
+    def top(self, requests):
+        """ Retrieves the top genes based on the assocations """
+        top_genes = elastic.get_top_genes()
+        return Response(map(list,top_genes))
 
-    def list(self, request, *args, **kwargs):
-        return Response(elastic.get_top_genes())
+class SNPViewSet(viewsets.ViewSet):
+    """ API for SNPs """
 
-    def retrieve(self, request, *args, **kwargs):
-        id = kwargs['pk']
-        # To get the neighboring hits/SNPs and count them, we would need to query ES for SNPs in that region...
-        gene = elastic.load_gene_by_id(id)
-        snps = elastic.load_gene_snps(id)
-        snps = list(filter(None, snps))
-        return Response({'gene': gene, 'snps':snps, 'snp_count': len(snps)})
+    def list(self, request):
+        """ Retrieves a list of SNPs """
+        pass
+
+    def retrieve(self, request, pk):
+        """ Retrieves information about a SNP """
+        pass
+
+    @detail_route(methods=['GET'], url_path='neighboring')
+    def neighboring_snps(self, request, pk):
+        """
+        Returns list of the neighboring SNPs, no information about LD (this will be retrieved or computed later)
+        """
+        window_size=request.GET.get('window_size', 1000000)
+        include = 'include' in request.GET
+        # TODO implement
+        return Response({})
+
+    @detail_route(methods=['GET'], url_path='ld')
+    def snps_in_ld(request, pk):
+        """
+        Returns list of the neighboring SNPs in high LD
+        """
+        N = request.GET.get('N',20)
+        # TODO implement
+        ordered_positions, ordered_ld = compute_ld(snp.chromosome, snp.position, genotype_name)
+
+        # return highest N SNPs
+        snps = SNP.objects.filter(chromosome__equals=snp.chromosome).filter(position__in=ordered_positions)
+
+        # Serialize
+        serializer = SNPListSerializer(snps)
+        # Attach correlation information
+        return Response({'top_ld_snps': serializer.data,
+                         'ld_values': ordered_ld,
+                         'top_snps_positions': ordered_positions})
+
+
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Allow for search in a viewset
-    """
+    """ API for search """
+
     queryset = Study.objects.all()
     query_term = None
     serializer_class = StudySerializer
@@ -382,10 +315,12 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
 
     @list_route(url_path='search_results')
     def search_result(self, request):
+        """ Displays results without search term """
         return self.search_results(request, query_term=None)
 
     @detail_route()
     def search_results(self, request, query_term):
+        """ Displays results based on search term """
         if request.method == "GET":
             client = Elasticsearch([ES_HOST], timeout=60)
             search_gene = Search().using(client).doc_type('genes').source(exclude=['isoforms','GO'])#'isoforms.cds','GO'])
@@ -406,7 +341,6 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 import re
                 pattern = re.compile("(Chr|CHR|chr)+\s?([0-9]{1,2})+(-|:)?(\d*)\s*(-|:|)?\s*(\d+|)")
                 if isnum: # Only a number, look for neighboring genes on all chromosomes.
-                    genes = Gene.objects.filter(Q(start_position__lte=query_term) & Q(end_position__gte=query_term)).order_by('name')
                     q = QES('range', positions={"gte":int(query_term), 'lte':int(query_term)})
                     search_gene = search_gene.query(q)
                 elif pattern.match(query_term): # Specific genomic range
@@ -497,61 +431,3 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 return self.get_paginated_response(data)
             else:
                 return Response({'results': {i:data[i] for i in data if i!='counts'}, 'count':counts, 'page_count':[0,0,0]})
-
-
-
-class SNPLocalViewSet(viewsets.ViewSet):
-    """
-    Retrieve information about a SNP
-    """
-    queryset = SNP.objects.none()
-
-    @detail_route()
-    def neighboring_snps(self, request, pk):
-        """
-        Returns list of the neighboring SNPs, no information about LD (this will be retrieved or computed later)
-        """
-        window_size=request.GET.get('window_size', 1000000)
-        include = 'include' in request.GET
-        chromosome = SNP.objects.get(pk=pk).chromosome
-        position = SNP.objects.get(pk=pk).position
-        window_of_interest = [min(int(position) - window_size / 2, 0), int(
-            position) + window_size / 2]  # no need to get chromosome size (since we'll run > or < queries)
-        # Here we need to decide whether we include the original SNP or not.
-        neighboring_s = SNP.objects.filter(chromosome=chromosome).filter(
-            position__range=(window_of_interest[0], window_of_interest[1]))
-        if not include:
-            # Exclude original SNP
-            neighboring_s = neighboring_s.filter(~Q(pk=pk))
-
-        serializer = SNPListSerializer(neighboring_s, many=True)
-        return Response(serializer.data)
-
-    @detail_route()
-    def snps_in_ld(request, pk):
-        """
-        Returns list of the neighboring SNPs in high LD
-        """
-        N = request.GET.get('N',20)
-        snp = SNP.objects.get(pk=pk)
-        # Get genotype
-        genotype_name = snp.genotype
-
-        # Call the celery task
-        ordered_positions, ordered_ld = compute_ld(snp.chromosome, snp.position, genotype_name)
-
-        # return highest N SNPs
-        snps = SNP.objects.filter(chromosome__equals=snp.chromosome).filter(position__in=ordered_positions)
-
-        # Serialize
-        serializer = SNPListSerializer(snps)
-        # Attach correlation information
-        return Response({'top_ld_snps': serializer.data,
-                         'ld_values': ordered_ld,
-                         'top_snps_positions': ordered_positions})
-
-@api_view()
-@permission_classes((IsAuthenticatedOrReadOnly,))
-def autocomplete_genes(request, search_term):
-    genes = elastic.autocomplete_genes(search_term)
-    return Response(genes)

@@ -10,6 +10,9 @@ class Phenotype(models.Model):
     # to = models.CharField(max_length=255) # Trait ontology that regroups similar phenotypes TODO: add trait ontology to all phenotypes
     arapheno_link = models.URLField(blank=True, null=True) # link to phenotype entry in AraPheno
 
+    def __str__(self):
+        return "Phenotype: %s" % (self.name)
+
 class Study(models.Model):
     """
     GWA Study model, associated with ONE phenotype, if possible links to easyGWAS
@@ -35,44 +38,7 @@ class Genotype(models.Model):
     description = models.TextField(blank=True, null=True)  # short description
     version = models.CharField(max_length=255) # version of the dataset
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} {}".format(self.name, self.version)
 
-class SNP(models.Model):
-    """
-    SNP model, might be incorporated directly into Association
-    """
-    chromosome = models.IntegerField() # chromosome on which the SNP is located
-    position = models.IntegerField() # position of the SNP on the chromosome
-    annotation = models.CharField(max_length=255) # genome annotation used to refer to the position (TAIR10, etc)
-    genotype = models.ForeignKey("Genotype") # foreign key to a Genotype
-    gene = models.ManyToManyField("Gene", blank=True) # key(s) to associated genes
-
-    def get_name(self):
-        return "Chr{}: {}".format(self.chromosome, self.position)
-
-    def __unicode__(self):
-        return u"Chr{}: {}".format(self.chromosome, self.position)
-
-class Association(models.Model):
-    """
-    Association model, core of the catalog,  associations found by multiple studies will represent multiple entries
-    """
-    study = models.ForeignKey("Study") # foreign key to study highlighting association
-    snp = models.ForeignKey("SNP") # foreign key to the SNP of interest
-    maf = models.FloatField() # minor allele frequency
-    pvalue = models.FloatField() # reported association p-value
-    beta = models.FloatField(blank=True, null=True) # beta of the regression model
-    odds_ratio = models.FloatField(blank=True, null=True) # odds ratio (OR)
-    confidence_interval = models.CharField(max_length=255,blank=True, null=True) # 95% confidence interval for OR or Beta
-
-class Gene(models.Model):
-    """
-    Gene model, could be integrated in association table
-    """
-    name = models.CharField(max_length=255)  # name of the gene
-    chromosome = models.IntegerField()  # chromosome on which the gene is located
-    start_position = models.IntegerField()  # start position of the gene on the chromosome
-    end_position = models.IntegerField()  # end position of the gene on the chromosome
-    description = models.TextField(blank=True, null=True)  # short description
 
