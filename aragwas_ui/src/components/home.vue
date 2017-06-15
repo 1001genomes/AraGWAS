@@ -89,9 +89,9 @@
                                             <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Associations</div>
                                         </v-card>
                                 </v-flex>
-                                <v-flex xs6 >
+                                <v-flex xs6>
                                     <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{'pieHole': 0.4}" chart-type="PieChart" :width="150"></vue-chart>
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.4, title: 'Top 8 genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
