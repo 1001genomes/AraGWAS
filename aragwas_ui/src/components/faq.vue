@@ -10,7 +10,7 @@
         </v-parallax>
         <div class="container">
             <div class="section">
-                <v-card class="mt-3"  v-for="faq in faqs" :key="faq">
+                <v-card class="mt-3" v-for="faq in faqs" :key="faq">
                     <h5 class="pl-4 pt-3 pr-4 green--text text--darken-2">
                         {{ faq.question }}
                     </h5>
@@ -39,10 +39,8 @@
     export default class FAQ extends Vue {
         breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQs", href: "/faq", disabled: true}];
         faqs = [
-            {question: "Why?",
-                answer: "Because!!"},
             {question: "Why did you recompute all the GWASs?",
-                answer: "We wanted to provide you with truly comparable data, and to ensure that across different published results, we needed to generate results using a standardized method."},
+                answer: "We wanted to provide truly comparable data, and to ensure that across different published results, we needed to generate results using a standardized method."},
             {question: "What standardized method did you use to generate the results?",
                 answer: "The provided p-values and association results were obtained using a mixed linear model (via the EMMAX algorithm) on boxcox corrected phenotype data."},
         ]

@@ -6,6 +6,7 @@ import locale from "vue-timeago/locales/en-US.json";
 import Vuetify from "vuetify";
 import App from "./app.vue";
 import router from "./router";
+import introJs from "../node_modules/intro.js"
 
 Vue.config.productionTip = false;
 
@@ -35,3 +36,10 @@ const app = new Vue({
   router,
   render: h => h(App),
 });
+
+import hintDirective from './directives/hint'
+import introDirective from './directives/intro'
+
+// Register the directives.
+Vue.directive('hint', hintDirective);
+Vue.directive('intro', introDirective);

@@ -5,7 +5,7 @@
                 <v-layout column align-center justify-center v-if="!search">
                     <div class="banner-title">
                         <br>
-                        <h1 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog</h1>
+                        <h1 class="white--text text-xs-center" v-hint>Ara<b>GWAS</b>Catalog</h1>
                     </div>
                     <div class="banner-subtext">
                         <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
@@ -190,7 +190,7 @@
       fastChange: string;
       router = Router;
       search: boolean = false;
-      height = 280;
+      height = 300;
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
       columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
@@ -239,7 +239,7 @@
       onQueryTermChanged(val: string, oldVal: string) {
         if (val === "") {
           this.search = false;
-          this.height = 280;
+          this.height = 300;
         } else {
           this.search = true;
           this.height = 70;

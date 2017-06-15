@@ -36,47 +36,51 @@
                                 <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                         </v-flex>
                         <v-flex xs9 wrap>
-                            <!--<v-data-table-->
-                                    <!--v-bind:headers="headers"-->
-                                    <!--:items="associations"-->
-                                    <!--hide-actions-->
-                                    <!--class="elevation-1"-->
-                            <!--&gt;-->
-                                <!--<template slot="items" scope="props">-->
-                                    <!--<td>{{ props.item.name }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.calories }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.fat }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.carbs }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.protein }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.sodium }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.calcium }}</td>-->
-                                    <!--<td class="text-xs-right">{{ props.item.iron }}</td>-->
-                                <!--</template>-->
-                            <!--</v-data-table>-->
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th v-for="key in columns"
-                                        @click="sortBy(key)"
-                                        :class="{ active: sortKey == key }"
-                                        style="font-size: 11pt">
-                                        {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="entry in filteredData" v-if="entry['show']">
-                                    <td v-for="key in columns">
-                                        <div v-if="(key==='study')"><router-link :to="{name: 'studyDetail', params: { studyId: entry['study']['id'] }}" >{{entry['study']['id']}}</router-link></div>
-                                        <div v-else-if="(key==='phenotype')"><router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['study']['phenotype']['id'] }}" >{{entry['study']['phenotype']['name']}}</router-link></div>
-                                        <!--<div v-else-if="(key==='gene')">{{ entry['snp']['geneName'] }}</div>-->
-                                        <!--<div v-else-if="(key==='SNP')">{{ entry['snp']['chr'] }}</div>-->
-                                        <div v-else>{{entry[key]}}</div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                            <v-data-table
+                                    v-bind:headers="columns"
+                                    v-bind:items="associations"
+                                    v-bind:pagination.sync="pagination"
+                                    hide-actions
+                                    :loading="loading"
+                                    class="elevation-1"
+                            >
+                                <template slot="headers" scope="props">
+                                    <span v-tooltip:bottom="{ 'html': props.item.text }">
+                                      {{ props.item.text | capitalize }}
+                                    </span>
+                                </template>
+                                <template slot="items" scope="props">
+                                    <td>{{ props.item.snp.chr }}:{{ props.item.snp.position }}</td>
+                                    <td  class="text-xs-right"><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+                                    <td  class="text-xs-right">{{ props.item.transformation }}</td>
+                                    <td  class="text-xs-right">{{ props.item.method }}</td>
+                                    <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                                </template>
+                            </v-data-table>
+                            <!--<table class="table">-->
+                                <!--<thead>-->
+                                <!--<tr>-->
+                                    <!--<th v-for="key in columns"-->
+                                        <!--@click="sortBy(key)"-->
+                                        <!--:class="{ active: sortKey == key }"-->
+                                        <!--style="font-size: 11pt">-->
+                                        <!--{{ key | capitalize }}-->
+                                        <!--<span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>-->
+                                    <!--</th>-->
+                                <!--</tr>-->
+                                <!--</thead>-->
+                                <!--<tbody>-->
+                                <!--<tr v-for="entry in filteredData" v-if="entry['show']">-->
+                                    <!--<td v-for="key in columns">-->
+                                        <!--<div v-if="(key==='study')"><router-link :to="{name: 'studyDetail', params: { studyId: entry['study']['id'] }}" >{{entry['study']['id']}}</router-link></div>-->
+                                        <!--<div v-else-if="(key==='phenotype')"><router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['study']['phenotype']['id'] }}" >{{entry['study']['phenotype']['name']}}</router-link></div>-->
+                                        <!--&lt;!&ndash;<div v-else-if="(key==='gene')">{{ entry['snp']['geneName'] }}</div>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<div v-else-if="(key==='SNP')">{{ entry['snp']['chr'] }}</div>&ndash;&gt;-->
+                                        <!--<div v-else>{{entry[key]}}</div>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--</tbody>-->
+                            <!--</table>-->
                             <div class="page-container mt-5 mb-3">
                                 <v-pagination :length.number="pageCount" v-model="currentPage" />
                             </div>
@@ -114,7 +118,7 @@
         sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = ["SNP", "score", "phenotype", "gene", "maf", "beta", "odds ratio", "confidence interval", "study"];
+        columns = [{text: "SNP", },{text: "score",},{text:  "phenotype",},{text:  "gene",},{text:  "maf",},{text:  "beta",},{text:  "odds ratio",},{text:  "confidence interval",},{text:  "study"}];
         filterKey: string = "";
         associations = [];
         currentPage = 1;
