@@ -166,7 +166,7 @@
             this.loadData(this.currentPage);
         }
         loadData(pageToLoad): void {
-            loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type, page: pageToLoad}).then(this._displayData); // change this with ES search
+            loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type}, pageToLoad).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;

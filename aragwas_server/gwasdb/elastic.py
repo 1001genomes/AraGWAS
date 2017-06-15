@@ -183,54 +183,41 @@ def index_associations(study, associations, thresholds):
     success, errors = helpers.bulk(es,documents, chunk_size=1000, stats_only=True)
     return success, errors
 
-def load_filtered_top_associations(filters):
+def load_filtered_top_associations(filters, start=0, size=50):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', score={'gte': 4}).sort('-score')
-    # Check if filters are inclusive:
-    if len(filters['chr']) < 5:
-        # use exclusive filtering to keep in non-chromosomal snps
-        print('bla')
-        to_exclude = ['chr'+ str(i+1) for i in range(5)]
-        if filters['chr'][0] != '':
-            for c in filters['chr']:
-                to_exclude.remove('chr'+str(c))
-        for e in to_exclude:
-            results = results.exclude('term', snp__chr=e)
-    if len(filters['maf']) < 4:
-        f = Q('term', maf='1000')
+    s = s.sort('-score')
+    if 'score' in filters:
+        s = s.filter('range', score={'gte': filter})
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        s = s.filter(Q('bool', should=[Q('term', snp__chr='chr%s' % chrom) for chrom in filters['chr']]))
+    if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
+        maf_filters = []
         for maf in filters['maf']:
-            if maf == '':
-                break
             maf = maf.split('-')
-            # check if range or not:
             if len(maf) > 1:
-                f = f | Q('range', maf={'lte':float(maf[1])/100., 'gte':float(maf[0])/100.})
+                maf_filters.append(Q('range', maf={'lte': float(maf[1]),'gte':float(maf[0])}))
             else:
                 if maf[0] == '1':
-                    f = f | Q('range', maf={'lte':float(maf[0])/100.})
+                    maf_filters.append(Q('range', maf={'lte':float(maf[0])}))
                 else:
-                    f = f | Q('range', maf={'gte': float(maf[0])/100.})
-            print(f.to_dict())
-        results = results.filter(f)
-    if len(filters['annotation']) < 4:
-        # exclusive filtering here as well
-        s = ['NON_SYNONYMOUS_CODING', 'SYNONYMOUS_CODING', 'INTERGENIC', 'INTRON']
-        for anno in s:
-            if anno in filters['annotation']:
-                continue
-            else:
-                results = results.exclude('nested',path='snp.annotations', query=Q('term', snp__annotations__effect=anno))
-    if len(filters['type']) == 1:
-        if filters['type'][0] == 'genic':
-            results = results.filter('term', snp__coding='T')
-        elif filters['type'][0] == 'non-genic':
-            results = results.filter('term', snp__coding='F')
-        else:
-            results = results.exclude('terms', snp__coding=['T','F'])
-    print(json.dumps(results.to_dict()))
-    associations = results[0:min(results.count(),500)].execute().to_dict()['hits']['hits']
-    return [association['_source'] for association in associations]
+                    maf_filters.append(Q('range', maf={'gte':float(maf[0])}))
+        s = s.filter(Q('bool',should = maf_filters))
+    if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
+        annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
+        s = s.filter(Q('nested', path='snp.annotations', query=Q('bool', should=annot_filter)))
+    if 'type' in filters and len(filters['type'])==1:
+        s = s.filter('term', snp__coding='T' if filters['type'][0] == 'genic' else 'F')
+    if 'study_id' in filters and len(filters['study_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__id = study_id) for study_id in filters['study_id']]))
+    if 'phenotype_id' in filters and len(filters['phenotype_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
+    if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
+    print(json.dumps(s.to_dict()))
+    result = s[start:size].execute()
+    associations = result['hits']['hits']
+    return [association['_source'].to_dict() for association in associations], result['hits']['total']
 
 
 def index_genes(genes):

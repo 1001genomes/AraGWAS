@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 
 from gwasdb.models import Phenotype, Study, Genotype
 from gwasdb.serializers import *
-from gwasdb.paginator import CustomSearchPagination, CustomAssociationsPagination
+from gwasdb.paginator import CustomSearchPagination, CustomAssociationsPagination, EsPagination
 
 from rest_framework import status
 from django.db.models import Q
@@ -40,10 +40,41 @@ def get_api_version():
         BUILD_STATUS_URL = __buildurl__
     return {'version':__version__,'date':__date__,'githash':__githash__,'build':__build__,'build_url':BUILD_STATUS_URL,'github_url':settings.GITHUB_URL}
 
+def _get_filter_from_params(params):
+    annos_dict = {'ns': 'NON_SYNONYMOUS_CODING', 's': 'SYNONYMOUS_CODING', 'i': 'INTERGENIC', 'in': 'INTRON'}
+    # retrieve and sort filters.
+    filter_chr = params.getlist('chr')
+    filter_maf = params.getlist('maf')
+    annos = params.getlist('annotation')
+    filter_annot = [annos_dict[k] for k in annos]
+    filter_type = params.getlist('type')
+    filter_study = params.getlist('study_id')
+    filter_phenotype = params.getlist('phenotype_id')
+    filter_genotype = params.getlist('genotype_id')
+    filters = {'chr':filter_chr, 'maf': filter_maf, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype}
+    return filters
+
+
+class EsQuerySet(object):
+
+    def __init__(self, data, count):
+        self._count = count
+        self._data = data
+
+    def count(self):
+        return self._count
+
+    @property
+    def data(self):
+        return self._data
+
+    def __getitem__(self, key):
+        return self._data
+
 
 class EsViewSetMixin(object):
 
-    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    pagination_class = EsPagination
 
     @property
     def paginator(self):
@@ -56,6 +87,7 @@ class EsViewSetMixin(object):
             else:
                 self._paginator = self.pagination_class()
         return self._paginator
+
 
     def get_paginated_response(self, data):
         """
@@ -126,10 +158,18 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
-    @detail_route(methods=['GET'], url_path='assocations')
+    @detail_route(methods=['GET'], url_path='associations')
     def top_assocations(self, request, pk):
         """ Retrieves the top assocations for the study """
-        pass
+        filters = _get_filter_from_params(request.query_params)
+        filters['study_id'] = [pk]
+        paginator = EsPagination()
+        limit = paginator.get_limit(request)
+        offset = paginator.get_offset(request)
+        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        queryset = EsQuerySet(associations, count)
+        paginated_asso = self.paginate_queryset(queryset)
+        return self.get_paginated_response(paginated_asso)
 
     @detail_route(methods=['GET'], url_path='gwas')
     def assocations_from_hdf5(self, request, pk):
@@ -142,7 +182,6 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
             threshold_or_top = int(threshold_or_top)
 
         association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
-        import pdb; pdb.set_trace()
         top_associations, thresholds = get_top_associations(association_file, threshold_or_top, filter_type)
         output = {}
         for chrom in range(1, 6):
@@ -195,10 +234,18 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = PhenotypeListSerializer(pagephe, many=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['GET'], url_path='assocations')
+    @detail_route(methods=['GET'], url_path='associations')
     def top_assocations(self, request, pk):
         """ Retrieves the top assocations for a phenotype """
-        pass
+        filters = _get_filter_from_params(request.query_params)
+        filters['phenotype_id'] = [pk]
+        paginator = EsPagination()
+        limit = paginator.get_limit(request)
+        offset = paginator.get_offset(request)
+        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        queryset = EsQuerySet(associations, count)
+        paginated_asso = self.paginate_queryset(queryset)
+        return self.get_paginated_response(paginated_asso)
 
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
@@ -206,18 +253,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
 
     def list(self, request):
         """ Lists all associations sorted by score """
-        annos_dict = {'ns': 'NON_SYNONYMOUS_CODING', 's': 'SYNONYMOUS_CODING', 'i': 'INTERGENIC', 'in': 'INTRON'}
-        # retrieve and sort filters.
-        filters = {'chr': [], 'maf': [], 'annotation':[], 'type':[]}
-        filters['chr']= self.request.query_params.get('chr', None).split(',')
-        filters['maf'] = self.request.query_params.get('maf', None).split(',')
-        annos = self.request.query_params.get('anno', None).split(',')
-        if annos[0] != '':
-            filters['annotation'] = [annos_dict[k] for k in annos]
-        filters['type'] = self.request.query_params.get('type', None).split(',')
-        # TODO properly paginate results
-        asso = elastic.load_filtered_top_associations(filters)
-        paginated_asso = self.paginate_queryset(asso)
+        filters = _get_filter_from_params(request.query_params)
+        limit = self.paginator.get_limit(request)
+        offset = self.paginator.get_offset(request)
+        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        queryset = EsQuerySet(associations, count)
+        paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)
 
 

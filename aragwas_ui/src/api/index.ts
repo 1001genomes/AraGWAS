@@ -86,8 +86,24 @@ export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ord
         .then(convertToModel);
 }
 
-export async function loadTopAssociations(filter) {
-    return fetch(`/api/associations/?chr=${filter["chr"]}&maf=${filter["maf"]}&anno=${filter["annotation"]}&type=${filter["type"]}&page=${filter["page"]}`)
+export async function loadTopAssociations(filter, page) {
+    let queryParam: string = ""
+    for (const key of Object.keys(filter)) {
+        let filterParam = "";
+        for (let i = 0; i < filter[key].length; i++) {
+            const val = filter[key][i];
+            if (i > 0) {
+                filterParam += "&";
+            }
+            filterParam += `${key}=${val}`;
+        }
+        queryParam += "&" + filterParam;
+    }
+    let url = `/api/associations/?page=${page}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
         .then(checkStatus)
         .then(convertToModel);
 }
