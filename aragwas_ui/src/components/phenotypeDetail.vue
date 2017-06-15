@@ -44,7 +44,7 @@
                                     <tbody>
                                         <tr v-for="entry in filteredStudiesAndPhenotypes">
                                             <td v-for="key in columnsTab[i]">
-                                                <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { studyId: entry['pk'] }}" >{{entry[key]}}</router-link>
+                                                <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
                                                 <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
                                                 <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['studySet'].length}}</p>
                                                 <p v-else>{{entry[key]}}</p>
@@ -75,8 +75,8 @@
                         <tbody>
                         <tr v-for="entry in filteredData">
                             <td v-for="key in columns">
-                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry                ['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { geneId: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
+                                <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { id: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
                                 <div v-else>{{entry[key]}}</div>
                             </td>
                         </tr>
@@ -187,7 +187,7 @@
       _displayPhenotypeData(data): void {
         this.phenotypeName = data.name;
         this.phenotypeDescription = data.description;
-        this.araPhenoLink = data.araPhenoLink;
+        this.araPhenoLink = data.araphenoLink;
         this.breadcrumbs[2].text = data.name;
         this.studyNumber = data.studySet.length;
         this.studyIDs = data.studySet;

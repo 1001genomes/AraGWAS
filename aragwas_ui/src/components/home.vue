@@ -91,7 +91,7 @@
                                 </v-flex>
                                 <v-flex xs6 >
                                     <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="[{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}]" :rows="[['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]]" :options="{'pieHole': 0.4}" chart-type="PieChart" :width="150"></vue-chart>
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{'pieHole': 0.4}" chart-type="PieChart" :width="150"></vue-chart>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
@@ -209,6 +209,8 @@
       nStudies = 0;
       nPhenotypes = 0;
       nAssociations = 0;
+      plotRows = [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]];
+      plotColumns = [{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}];
 
       beforeRouteLeave (to, from, next) {
           if(to.path === '/studies' || to.path === '/top-associations'|| to.path === '/faq'){
@@ -324,7 +326,7 @@
         }
       }
       _displayTopGenes(data): void {
-//        this.plot
+        this.plotRows = data;
       }
 
       _countStudies(data): void {

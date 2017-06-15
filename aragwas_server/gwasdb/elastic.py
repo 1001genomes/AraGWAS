@@ -140,16 +140,20 @@ def get_top_genes():
     # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
     # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue/high scores)
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', score={'gte': 7}).sort('-score').source(['snps'])[0:500].execute().to_dict()['hits']['hits']
+    results = s.filter('range', score={'gte': 4}).sort('-score').source('snp')[0:500].execute().to_dict()['hits']['hits']
     gene_scores = {}
-    for snp in results:
-        if 'gene_name' in snp['annotations'].keys():
-            id = snp['annotations']['gene_name']
+    for asso in results:
+        asso = asso['_source']
+        if not 'snp' in asso.keys():
+            continue
+        if 'gene_name' in asso['snp'].keys():
+            id = asso['snp']['gene_name']
             if id in gene_scores.keys():
                 gene_scores[id] += 1
             else:
                 gene_scores[id] = 1
-    gene_scores = sorted(gene_scores.items, key=operator.itemgetter(1))[::-1]
+    gene_scores = sorted(gene_scores.items(), key=operator.itemgetter(1))[::-1]
+    print(gene_scores)
     return gene_scores[:min(8, len(gene_scores))]
 
 

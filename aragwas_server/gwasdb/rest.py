@@ -1,7 +1,7 @@
 import os
 
 from rest_framework import permissions
-from rest_framework import viewsets, generics, filters
+from rest_framework import viewsets, generics, filters, renderers
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 
@@ -354,12 +354,13 @@ class TopGeneViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Compute most associated genes and return top 8 genes for landing page plot
     """
-    queryset = Gene.objects.all()
+    queryset = Study.objects.all()
     serializer_class = GeneListSerializer
+    # Need to use default class because we return tuples
+    renderer_classes = (renderers.JSONRenderer,)
 
-    # Overriding get_queryset to allow for case-insensitive custom ordering
-    def get_queryset(self):
-        return(elastic.get_top_genes())
+    def list(self, request, *args, **kwargs):
+        return Response(elastic.get_top_genes())
 
     def retrieve(self, request, *args, **kwargs):
         id = kwargs['pk']

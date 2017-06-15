@@ -92,7 +92,7 @@ export async function loadTopAssociations(filter) {
         .then(convertToModel);
 }
 export async  function loadTopGenes() {
-    return fetch(`/api/top_gene/`)
+    return fetch(`/api/top_genes/`)
         .then(checkStatus)
         .then(convertToModel);
 }
