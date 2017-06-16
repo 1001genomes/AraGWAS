@@ -87,7 +87,7 @@ export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ord
 }
 
 export async function loadTopAssociations(filter, page) {
-    let queryParam: string = ""
+    let queryParam: string = "";
     for (const key of Object.keys(filter)) {
         let filterParam = "";
         for (let i = 0; i < filter[key].length; i++) {
@@ -99,7 +99,8 @@ export async function loadTopAssociations(filter, page) {
         }
         queryParam += "&" + filterParam;
     }
-    let url = `/api/associations/?page=${page}`;
+    let offset = 25*(page-1);
+    let url = `/api/associations/?limit=25&offset=${offset}`;
     if (queryParam) {
         url += queryParam;
     }

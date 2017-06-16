@@ -196,12 +196,12 @@ def load_filtered_top_associations(filters, start=0, size=50):
         for maf in filters['maf']:
             maf = maf.split('-')
             if len(maf) > 1:
-                maf_filters.append(Q('range', maf={'lte': float(maf[1]),'gte':float(maf[0])}))
+                maf_filters.append(Q('range', maf={'lte': float(maf[1]),'gte':float(maf[0])/100}))
             else:
                 if maf[0] == '1':
-                    maf_filters.append(Q('range', maf={'lte':float(maf[0])}))
+                    maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))
                 else:
-                    maf_filters.append(Q('range', maf={'gte':float(maf[0])}))
+                    maf_filters.append(Q('range', maf={'gte':float(maf[0])/100}))
         s = s.filter(Q('bool',should = maf_filters))
     if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
         annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
@@ -219,7 +219,7 @@ def load_filtered_top_associations(filters, start=0, size=50):
     if 'end' in filters:
         s = s.filter('range', snp__position={'lte': int(filters['end'])})
     print(json.dumps(s.to_dict()))
-    result = s[start:size].execute()
+    result = s[start:start+size].execute()
     associations = result['hits']['hits']
     return [association['_source'].to_dict() for association in associations], result['hits']['total']
 
