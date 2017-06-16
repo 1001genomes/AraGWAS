@@ -9,32 +9,28 @@
         </v-parallax>
         <div class="container">
             <div class="section">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th v-for="key in columns"
-                            @click="sortBy(key)"
-                            :class="{ active: sortKey == key }"
-                            style="font-size: 11pt">
-                            {{ key | capitalize }}
-                            <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                            </span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="entry in filteredData">
-                            <td v-for="key in columns">
-                                <router-link v-if="(key==='name')" :to="{name: 'phenotypeDetail', params: { id: entry['pk'] }}" >{{ entry[key] }}</router-link>
-                                <div v-else-if="(key==='n_studies')" >{{ entry['studySet'].length }}</div>
-                                <div v-else>{{ entry[key] }}</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <v-data-table
+                        v-bind:headers="columns"
+                        v-bind:items="phenotypes"
+                        v-bind:pagination.sync="pagination"
+                        hide-actions
+                        :loading="loading"
+                        class="elevation-1"
+                >
+                    <template slot="headers" scope="props" class="text-xs-left">
+                        <span class="text-xs-left">
+                          {{ props.item.text | capitalize }}
+                        </span>
+                    </template>
+                    <template slot="items" scope="props">
+                        <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
+                        <td>{{ props.item.description }}</td>
+                        <td  class="text-xs-right">{{ props.item.studySet.length }}</td>
+                    </template>
+                </v-data-table>
             </div>
         </div>
-        <div class="page-container mt-5 mb-3">
+        <div class="page-container mt-2 mb-3">
             <v-pagination :length.number="pageCount" v-model="currentPage" />
         </div>
     </div>
@@ -67,7 +63,9 @@
         sortOrders = {name: 1, description: 1, n_studies: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns: string[] = ["name", "description", "n_studies"];
+        columns = [{text: "name", value: "name"},{text: "description", value: "description"},{text: "n_studies", value: "n_studies"}];
+        pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name};
+        search: string = '';
         filterKey: string = "";
         phenotypes = [];
         currentPage = 1;
@@ -75,48 +73,43 @@
         totalCount = 0;
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "phenotypes", disabled: true}];
 
-        get filteredData() {
-            let filterKey = this.filterKey;
-            if (filterKey) {
-                filterKey = filterKey.toLowerCase();
-            }
-            let data = this.phenotypes;
-            if (filterKey) {
-                data = data.filter((row) => {
-                    return Object.keys(row).some((key) => {
-                        return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-                    });
-                });
-            }
-            return data;
+        @Watch("pagination")
+        onPaginationChanged(val: {}, oldVal: {}) {
+            this.loading = true;
+            this.loadData(val, this.currentPage);
         }
-
         @Watch("currentPage")
-        onCurrentPageChanged(val: number, oldVal: number) {
-            this.loadData(val);
+        onPaginationPageChanged(val: number, oldVal: number) {
+            this.loading = true;
+            this.loadData(this.pagination, val);
         }
         created(): void {
-            this.loadData(this.currentPage);
+            this.loading = true;
+            this.loadData(this.pagination, this.currentPage);
         }
-        loadData(page: number): void {
-            loadPhenotypes(page, this.ordered).then(this._displayData);
+        loadData(pagination, page: number): void {
+            const {sortBy, descending} = pagination;
+
+            let ordered = '';
+            if (sortBy === null){
+                ordered = '';
+            } else {
+                if (descending) {
+                    ordered = "-"+sortBy;
+                } else {
+                    ordered = sortBy;
+                }
+            }
+            loadPhenotypes(page, ordered).then(this._displayData);
         }
         _displayData(data): void {
             this.phenotypes = data.results;
             this.currentPage = data.currentPage;
-            this.totalCount = data.count;
+            this.pagination.totalItems = data.count;
             this.pageCount = data.pageCount;
+            this.loading = false;
         }
-        sortBy(key): void {
-            this.sortKey = key;
-            this.sortOrders[key] = this.sortOrders[key] * -1;
-            if (this.sortOrders[key] < 0) {
-                this.ordered = "-" + key;
-            } else {
-                this.ordered = key;
-            }
-            this.loadData(this.currentPage);
-        }
+
     }
 </script>
 

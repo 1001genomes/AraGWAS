@@ -225,10 +225,6 @@
           }
 
       }
-//      beforeRouteUpdate (to, from, next) {
-//          console.log('Update')
-//          this.currentView = '';
-//      }
       debounceInput() {
         debounce(this.updateQuery,  300, false)();
       }

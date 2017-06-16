@@ -42,7 +42,7 @@
                                     v-bind:pagination.sync="pagination"
                                     hide-actions
                                     :loading="loading"
-                                    class="elevation-1"
+                                    class="elevation-1 mt-2"
                             >
                                 <template slot="headers" scope="props">
                                     <span v-tooltip:bottom="{ 'html': props.item.text }">
@@ -50,37 +50,14 @@
                                     </span>
                                 </template>
                                 <template slot="items" scope="props">
-                                    <td>{{ props.item.snp.chr }}:{{ props.item.snp.position }}</td>
-                                    <td  class="text-xs-right"><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
-                                    <td  class="text-xs-right">{{ props.item.transformation }}</td>
-                                    <td  class="text-xs-right">{{ props.item.method }}</td>
-                                    <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                                    <td v-if="'snp' in props.item ">{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</td> <td v-else>Missing info</td>
+                                    <td  class="text-xs-right">{{ props.item.score | round }}</td>
+                                    <td  class="text-xs-right"><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                                    <td  class="text-xs-right" v-if="'snp' in props.item "><router-link :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link></td><td v-else class="text-xs-right">Missing info</td>
+                                    <td  class="text-xs-right">{{ props.item.maf | round }}</td>
+                                    <td  class="text-xs-right"><router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}">{{ props.item.study.name }}</router-link></td>
                                 </template>
                             </v-data-table>
-                            <!--<table class="table">-->
-                                <!--<thead>-->
-                                <!--<tr>-->
-                                    <!--<th v-for="key in columns"-->
-                                        <!--@click="sortBy(key)"-->
-                                        <!--:class="{ active: sortKey == key }"-->
-                                        <!--style="font-size: 11pt">-->
-                                        <!--{{ key | capitalize }}-->
-                                        <!--<span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>-->
-                                    <!--</th>-->
-                                <!--</tr>-->
-                                <!--</thead>-->
-                                <!--<tbody>-->
-                                <!--<tr v-for="entry in filteredData" v-if="entry['show']">-->
-                                    <!--<td v-for="key in columns">-->
-                                        <!--<div v-if="(key==='study')"><router-link :to="{name: 'studyDetail', params: { studyId: entry['study']['id'] }}" >{{entry['study']['id']}}</router-link></div>-->
-                                        <!--<div v-else-if="(key==='phenotype')"><router-link :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['study']['phenotype']['id'] }}" >{{entry['study']['phenotype']['name']}}</router-link></div>-->
-                                        <!--&lt;!&ndash;<div v-else-if="(key==='gene')">{{ entry['snp']['geneName'] }}</div>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<div v-else-if="(key==='SNP')">{{ entry['snp']['chr'] }}</div>&ndash;&gt;-->
-                                        <!--<div v-else>{{entry[key]}}</div>-->
-                                    <!--</td>-->
-                                <!--</tr>-->
-                                <!--</tbody>-->
-                            <!--</table>-->
                             <div class="page-container mt-5 mb-3">
                                 <v-pagination :length.number="pageCount" v-model="currentPage" />
                             </div>
@@ -107,6 +84,9 @@
             capitalize(str) {
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
+            round(number) {
+                return Math.round( number * 1000) / 1000;
+            }
         },
         components: {
             "breadcrumbs": Breadcrumbs,
@@ -114,12 +94,7 @@
     })
     export default class TopAssociations extends Vue {
         loading: boolean = false;
-        studyPage: Page<Study>;
-        sortOrders = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-        sortKey: string = "";
-        ordered: string = "";
-        columns = [{text: "SNP", },{text: "score",},{text:  "phenotype",},{text:  "gene",},{text:  "maf",},{text:  "beta",},{text:  "odds ratio",},{text:  "confidence interval",},{text:  "study"}];
-        filterKey: string = "";
+        columns = [{text: "SNP", value: "snp.chr"},{text: "score", value: "score"},{text: "phenotype",value: "study.phenotype.name"},{text: "gene",value: "snp.geneName"},{text: "maf",value: "maf"},{text: "study", value: "study.name"}];
         associations = [];
         currentPage = 1;
         pageCount = 5;
@@ -129,22 +104,7 @@
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
-
-        get filteredData() {
-            let filterKey = this.filterKey;
-            if (filterKey) {
-                filterKey = filterKey.toLowerCase();
-            }
-            let data = this.associations;
-            if (filterKey) {
-                data = data.filter((row) => {
-                    return Object.keys(row).some((key) => {
-                        return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-                    });
-                });
-            }
-            return data;
-        }
+        pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: 'score', descending: true};
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -170,6 +130,7 @@
             this.loadData(this.currentPage);
         }
         loadData(pageToLoad): void {
+            this.loading = true;
             loadTopAssociations({chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type}, pageToLoad).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
@@ -177,103 +138,9 @@
             this.currentPage = data.currentPage;
             this.totalCount = data.count;
             this.pageCount = data.pageCount;
-            for (const i of Object.keys(this.associations)) {
-                this.associations[i]["show"] = true;
-            }
+            this.loading = false;
         }
-        sortBy(key): void {
-            this.sortKey = key;
-            this.sortOrders[key] = this.sortOrders[key] * -1;
-            if (this.sortOrders[key] < 0) {
-                this.ordered = "-" + key;
-            } else {
-                this.ordered = key;
-            }
-            this.loadData(this.currentPage);
-        }
-        // FRONT END filtering, not needed
-//        filterData(filters): void {
-//            for (const i of Object.keys(this.associations)) {
-//                this.associations[i]["show"] = this.filterAssociation(this.associations[i]);
-//            }
-//        }
-//        filterAssociation(asso): boolean {
-//            // Check chromosome
-//            let isPart;
-//            if (this.chr.length < 5) {
-//                const chrom = asso["SNP"][3];
-//                isPart = false;
-//                for (const i of this.chr) {
-//                    if (i === chrom) {
-//                        isPart = true;
-//                        break;
-//                    }
-//                }
-//                if (! isPart) {
-//                    return false;
-//                }
-//            }
-//            // Check maf
-//            if (this.maf.length < 4) {
-//                const mafasso = asso["maf"];
-//                isPart = false;
-//                for (const i of this.maf) {
-//                    switch (i) {
-//                        case "<1":
-//                            if (mafasso < 0.01) {
-//                                isPart = true;
-//                            }
-//                            break;
-//                        case "1-5":
-//                            if (mafasso >= 0.01 && mafasso <= 0.05) {
-//                                isPart = true;
-//                            }
-//                            break;
-//                        case "5-10":
-//                            if (mafasso > 0.05 && mafasso <= 0.1) {
-//                                isPart = true;
-//                            }
-//                            break;
-//                        case ">10":
-//                            if (mafasso > 0.1) {
-//                                isPart = true;
-//                            }
-//                    }
-//                }
-//                if (! isPart) {
-//                    return false;
-//                }
-//            }
-//            // Check type
-//            if (this.type.length < 2) {
-//                const typeasso = asso["type"];
-//                isPart = false;
-//                for (const i of this.type) {
-//                    if (i === typeasso) {
-//                        isPart = true;
-//                        break;
-//                    }
-//                }
-//                if (! isPart) {
-//                    return false;
-//                }
-//            }
-//            if (this.annotation.length < 3) {
-//                // Check chromosome
-//                const annoasso = asso["SNP"][3];
-//                isPart = false;
-//                for (const i of this.annotation) {
-//                    if (i === annoasso) {
-//                        isPart = true;
-//                        break;
-//                    }
-//                }
-//                if (! isPart) {
-//                    return false;
-//                }
-//            }
-//            return true;
-//        }
+
     }
 </script>
 

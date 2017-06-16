@@ -61,7 +61,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "name", value: "name",},{text:  "phenotype", value: "name",},{text:  "transformation", value: "name",},{text:  "method", value: "name",},{text:  "genotype", value: "name",}];
+    columns = [{text: "name", value: "name",},{text:  "phenotype", value: "phenotype",},{text:  "transformation", value: "transformation",},{text:  "method", value: "method",},{text:  "genotype", value: "genotype",}];
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name};
     search: string = '';
