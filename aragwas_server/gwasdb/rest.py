@@ -271,7 +271,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
 
 
 
-class GeneViewSet(viewsets.ViewSet):
+class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
 
     def list(self, request):
@@ -290,12 +290,28 @@ class GeneViewSet(viewsets.ViewSet):
         genes = elastic.autocomplete_genes(search_term)
         return Response(genes)
 
-    @detail_route(methods=['GET'], url_path='associations')
-    def associations(self, request, pk):
-        """ Returns top assocations for that gene """
+    @detail_route(methods=['GET'], url_path='snps')
+    def snps(self, request, pk):
+        """ Returns associations for that gene """
         gene = elastic.load_gene_by_id(pk)
         gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
         return Response(gene)
+
+    @detail_route(methods=['GET'], url_path='associations')
+    def associations(self, request, pk):
+        """ Returns snps for that gene """
+        gene = elastic.load_gene_by_id(pk)
+        zoom = int(request.query_params.get('zoom', 0))
+        filters = _get_filter_from_params(request.query_params)
+        filters['chr'] = [gene['chr']]
+        filters['start'] = gene['positions']['gte'] + zoom
+        filters['end'] = gene['positions']['lte'] + zoom
+        limit = self.paginator.get_limit(request)
+        offset = self.paginator.get_offset(request)
+        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        queryset = EsQuerySet(associations, count)
+        paginated_asso = self.paginate_queryset(queryset)
+        return self.get_paginated_response(paginated_asso)
 
     @list_route(methods=['GET'], url_path='top')
     def top(self, requests):

@@ -190,7 +190,7 @@ def load_filtered_top_associations(filters, start=0, size=50):
     if 'score' in filters:
         s = s.filter('range', score={'gte': filter})
     if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
-        s = s.filter(Q('bool', should=[Q('term', snp__chr='chr%s' % chrom) for chrom in filters['chr']]))
+        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in filters['chr']]))
     if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
         maf_filters = []
         for maf in filters['maf']:
@@ -214,6 +214,10 @@ def load_filtered_top_associations(filters, start=0, size=50):
         s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
     if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
         s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
+    if 'start' in filters:
+        s = s.filter('range', snp__position={'gte': int(filters['start'])})
+    if 'end' in filters:
+        s = s.filter('range', snp__position={'lte': int(filters['end'])})
     print(json.dumps(s.to_dict()))
     result = s[start:size].execute()
     associations = result['hits']['hits']
