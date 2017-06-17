@@ -13,7 +13,7 @@
       </v-container>
     </main>
     <v-footer class="green" >
-      <div >
+      <div style="width:100%;" >
           AraGWAS is a public database for <em>Arabidopsis thaliana</em> GWAS studies.
         <div class="version">
           <ul>
