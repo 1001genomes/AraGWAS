@@ -26,11 +26,14 @@
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
+    import tourMixin from "../mixins/tour.js";
+
     @Component({
         components: {
             "breadcrumbs": Breadcrumbs,
             "top-associations": TopAssociationsComponent,
         },
+        mixins: [tourMixin],
     })
     export default class TopAssociations extends Vue {
         loading: boolean = false;
@@ -41,7 +44,23 @@
         type = ["genic", "non-genic"];
         hideFields = ["name"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-        showControls = ["maf","chr","annotation","type"]
+        showControls = ["maf","chr","annotation","type"];
+
+        tourOptions = {
+            steps: [
+                {
+                    element: '.association-table-container',
+                    intro: 'This table shows all top associations (sorted by score) that are stored in the database',
+                    position: "left"
+                },
+                {
+                    element: ".associations-control-container",
+                    intro: "You can use these controls to filter the top associations list",
+                    position: "right"
+                }
+            ],
+            nextPage: {name: "geneDetail", params:{geneId: "AT1G54180"}}
+        };
     }
 </script>
 

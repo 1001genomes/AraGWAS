@@ -16,7 +16,7 @@
             </v-container>
         </v-parallax>
         <v-container class="mt-3 pa-0">
-            <v-card style="max-width: 800px;margin:0 auto;">
+            <v-card style="max-width: 800px;margin:0 auto;" class="search-container">
                 <div class="pl-4 pt-1 pr-4">
                     <v-text-field
                             name="input-1"
@@ -37,7 +37,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWAS Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" light router to="/studies"><v-icon left light>view_list</v-icon> GWAS Studies</v-btn>
+                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>view_list</v-icon> GWAS Studies</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -45,7 +45,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn class="btn--large green lighten-1 icon--left " light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
+                                <v-btn class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>
@@ -166,6 +166,8 @@
     import Router from "../router";
     import _ from 'lodash';
 
+    import tourMixin from "../mixins/tour.js";
+
     Component.registerHooks(['beforeRouteLeave']);
     @Component({
       filters: {
@@ -176,6 +178,7 @@
       components: {
           "line-chart": LineChart,
       },
+      mixins: [tourMixin]
     })
     export default class Home extends Vue {
       @Prop()
@@ -208,6 +211,37 @@
       nAssociations = 0;
       plotRows = [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]];
       plotColumns = [{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}];
+
+      tourOptions = {
+        steps : [
+        {
+          element: '.parallax',
+          intro: 'AraGWAS is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features',
+          position: "bottom-middle-aligned"
+        },
+        {
+          element: '.search-container',
+          intro: 'The global search form allows the user to search across all phenotypes and studies'
+        },
+        {
+          element: '#faq-link',
+          intro: 'The FAQ section provides tutorials of the various features of AraPheno'
+        },
+        {
+          element: '#studies-button',
+          intro: 'You can access the list of available GWAS studies by clicking here'
+        },
+        {
+          element: '#top-assocations-button',
+          intro: 'To see the the top associations that are stored in the catalogue, press here. To find out how to browse the top associations list, click on "Next Page"'
+        }
+        ],
+        nextPage: {name: 'topAssociations'},
+
+      }
+
+
+
 
       updateUrl() {
           _.debounce(() => {

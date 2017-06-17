@@ -4,7 +4,7 @@
       <v-toolbar-logo class="logo"><router-link :to="{name: 'home'}">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
           <v-toolbar-item class="links"><span class="black--text" @click="starttour">Take a tour?</span></v-toolbar-item>
-          <v-toolbar-item class="links"><router-link :to="{path: '/faq'}"><span class="black--text">FAQs</span></router-link></v-toolbar-item>
+          <v-toolbar-item class="links" id="faq-link"><router-link :to="{path: '/faq'}"><span class="black--text">FAQs</span></router-link></v-toolbar-item>
       </v-toolbar-items>
     </v-toolbar>
     <main>
@@ -35,7 +35,7 @@
 <script lang="ts">
   import Vue from "vue";
   import Component from "vue-class-component";
-  import introJs from "../node_modules/intro.js"
+
 
   import {loadApiVersion, loadStudies} from "./api";
   import ApiVersion from "./models/apiversion";
@@ -45,28 +45,7 @@
     versionInfo: ApiVersion = {} as ApiVersion;
 
     starttour(): void {
-      var steps = [
-        {
-          element: 'header',
-          intro: 'AraPheno is a public database collection of <em>Arabidopsis thaliana</em> phenotypes. This tour will show the important features'
-        },
-        {
-          element: '#search_box',
-          intro: 'The global search form allows the user to search across all phenotypes and studies'
-        },
-        {
-          element: '#faq_button',
-          intro: 'The FAQ section provides tutorials of the various features of AraPheno'
-        },
-        {
-          element: '#rest_button',
-          intro: 'AraPheno provides a well-documented REST API for programmatic access to the data'
-        },
-        {
-          element: '#view_phenotypes_button',
-          intro: 'Users can view a list of public phenotypes and studies'
-        }
-      ];
+      this.$router.push({name:'home', query:{tour:'true'}})
     }
 
     async created() {
@@ -80,6 +59,8 @@
   @import "./assets/css/main.css"
   @import "./assets/css/animate.css"
   @import "./stylus/main"
+  @import "../node_modules/intro.js/introjs.css";
+
 
   #main-content {
     padding-top:0;

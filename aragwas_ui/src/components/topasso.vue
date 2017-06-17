@@ -4,7 +4,7 @@
             <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
         </v-layout>
         <v-layout row wrap justify-space-around>
-            <v-flex xs3 wrap v-if="showControls.length>0">
+            <v-flex xs3 wrap v-if="showControls.length>0" class="associations-control-container">
                 <div v-if="showControls.indexOf('maf')>-1">
                     <h6 class="mt-4">MAF</h6>
                     <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-switch>
@@ -33,7 +33,7 @@
                     <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                 </div>
             </v-flex>
-            <v-flex xs9 wrap fill-height>
+            <v-flex xs9 wrap fill-height class="association-table-container">
                 <v-data-table
                         v-bind:headers="headers"
                         v-bind:items="associations"

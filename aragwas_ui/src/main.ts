@@ -7,10 +7,6 @@ import Vuetify from "vuetify";
 import App from "./app.vue";
 import router from "./router";
 
-import hintDirective from "./directives/hint";
-import introDirective from "./directives/intro";
-
-
 Vue.config.productionTip = false;
 
 Vue.use(VueCharts);
@@ -39,7 +35,3 @@ const app = new Vue({
   router,
   render: h => h(App),
 });
-
-// Register the directives.
-Vue.directive("hint", hintDirective);
-Vue.directive("intro", introDirective);
