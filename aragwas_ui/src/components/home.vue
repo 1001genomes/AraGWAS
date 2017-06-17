@@ -5,7 +5,7 @@
                 <v-layout column align-center justify-center v-if="!search">
                     <div class="banner-title">
                         <br>
-                        <h1 class="white--text text-xs-center" v-hint>Ara<b>GWAS</b>Catalog</h1>
+                        <h1 class="white--text text-xs-center" >Ara<b>GWAS</b>Catalog</h1>
                     </div>
                     <div class="banner-subtext">
                         <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
@@ -21,10 +21,9 @@
                     <v-text-field
                             name="input-1"
                             label="Search the catalog"
-                            v-model="fastChange"
+                            v-model="searchQuery"
                             v-bind:focused="focused"
                             prepend-icon="search"
-                            @input="debounceInput"
                     ></v-text-field>
                 </div>
             </v-card>
@@ -165,7 +164,7 @@
     import {search, loadPhenotypes, loadStudies, loadAssociationCount, loadTopGenes} from '../api';
     import LineChart from "../components/linechart.vue";
     import Router from "../router";
-    import debounce from '../../node_modules/debounce';
+    import _ from 'lodash';
 
     Component.registerHooks(['beforeRouteLeave']);
     @Component({
@@ -182,15 +181,13 @@
       @Prop()
       queryTerm: string;
       @Prop()
-      currentView: string;
+      view: string;
       @Prop()
-      currentPage = 1;
-      @Prop()
-      focused: boolean;
-      fastChange: string;
-      router = Router;
-      search: boolean = false;
-      height = 300;
+      page: number;
+      currentView: string = "studies";
+      currentPage: number = 1;
+      focused: boolean = false;
+      searchQuery: string = "";
       sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
       columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
       sortOrdersPhenotypes = {name: 1, description: 1};
@@ -212,41 +209,58 @@
       plotRows = [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]];
       plotColumns = [{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}];
 
-      beforeRouteLeave (to, from, next) {
-          if(to.path === '/studies' || to.path === '/top-associations'|| to.path === '/faq'){
-              next()
-          }
-          else {
-              window.history.replaceState({path: '/', params: {currentView: this.currentView, queryTerm: this.queryTerm, currentPage: this.currentPage}}, '', '#/results/'+this.currentView+"&"+this.queryTerm+"&"+this.currentPage)
-              if(to.path === '/') {
-                  this.currentView = '';
-              }
-              next();
-          }
+      updateUrl() {
+          _.debounce(() => {
+            if (this.searchQuery && this.searchQuery != "") {
+                let page = this.currentPage ? this.currentPage.toString() : "1";
+                let query = {queryTerm: this.searchQuery, view: this.currentView, page};
+                this.$router.push({name: "home", query: query });
+            }
+            else  {
+                this.$router.push({name: "home"});
+            }
+          }, 300)();
+      }
 
+      @Watch("searchQuery")
+      onSearchQueryChanged(val: string, oldVal: string) {
+          if (val !== oldVal) {
+            this.updateUrl();
+          }
       }
-      debounceInput() {
-        debounce(this.updateQuery,  300, false)();
+
+      @Watch("page")
+      onPageChanged(val: number, oldVal: number) {
+          this.currentPage = val;
+          this.loadData(this.queryTerm, this.currentPage);
       }
-      updateQuery() {
-        this.queryTerm = this.fastChange;
+      @Watch("view")
+      onViewChanged(val: string, oldVal: string) {
+          this.currentView = val;
       }
+
+      @Watch("currentView")
+      onCurrentViewChanged() {
+          this.updateUrl();
+      }
+
       @Watch("queryTerm")
       onQueryTermChanged(val: string, oldVal: string) {
-        if (val === "") {
-          this.search = false;
-          this.height = 300;
-        } else {
-          this.search = true;
-          this.height = 70;
-          this.loadData(val, this.currentPage);
+        this.searchQuery = val;
+        if (val != "") {
+            this.loadData(val, this.currentPage);
         }
       }
-      loadResults() {
-        this.router.push("/results/" + this.queryTerm);
+
+      get search() {
+          return (this.queryTerm && this.queryTerm != "");
       }
-      moveTextUp() {
-        this.search = false;
+
+      get height() {
+        if (this.search) {
+            return 70;
+        }
+        return 300;
       }
 
       get filteredData () {
@@ -267,19 +281,21 @@
 
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
-        this.loadData(this.queryTerm, val);
+          if (val != oldVal) {
+            this.updateUrl();
+          }
       }
       created(): void {
-        this.currentView = "studies";
-        if (this.$route.params.queryTerm && this.$route.params.queryTerm !== "") {
-          this.queryTerm = this.$route.params.queryTerm;
-          this.fastChange = this.queryTerm
-          this.currentPage = +this.$route.params.currentPage;
-          this.currentView = this.$route.params.currentView;
-          this.search = true;
-          this.height = 70;
+        if (this.view && this.view != "") {
+            this.currentView = this.view;
         }
-        this.loadData(this.queryTerm, this.currentPage);
+        if (this.page) {
+            this.currentPage = this.page;
+        }
+        if (this.queryTerm && this.queryTerm != "") {
+            this.loadData(this.queryTerm, this.currentPage);
+            this.searchQuery = this.queryTerm;
+        }
         this.loadSummaryData();
       }
       loadData(queryTerm: string, page: number): void {

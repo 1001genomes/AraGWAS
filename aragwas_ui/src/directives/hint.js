@@ -1,4 +1,4 @@
-const intro = require('intro.js');
+import intro from "intro.js";
 
 const hintDirective = {
 
@@ -26,15 +26,15 @@ const hintDirective = {
         const viewModel = this.vm;
 
         tour.onhintclick(function() {
-            viewModel.$dispatch('hint:click', arguments);
+            viewModel.$dispatch("hint:click", arguments);
         });
 
         tour.onhintsadded(function() {
-            viewModel.$dispatch('hint:added', arguments);
+            viewModel.$dispatch("hint:added", arguments);
         });
 
         tour.onhintclose(function() {
-            viewModel.$dispatch('hint:close', arguments);
+            viewModel.$dispatch("hint:close", arguments);
         });
     },
 
@@ -46,7 +46,7 @@ const hintDirective = {
         const tours = viewModel.$intro;
         const hint = Object.assign({}, newValue, {element: element});
 
-        if (!tours[name]._options.hasOwnProperty('hints')) {
+        if (!tours[name]._options.hasOwnProperty("hints")) {
             tours[name]._options.hints = [];
         }
 
@@ -63,7 +63,7 @@ const hintDirective = {
         if (tours.hasOwnProperty(name)) {
             delete tours[name];
         }
-    }
+    },
 };
 
-module.exports = hintDirective;
+export default hintDirective;

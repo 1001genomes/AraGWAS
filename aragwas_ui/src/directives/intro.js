@@ -1,4 +1,4 @@
-const intro = require('intro.js');
+import intro from "intro.js";
 
 const introDirective = {
 
@@ -77,4 +77,4 @@ const introDirective = {
     }
 };
 
-module.exports = introDirective;
+export default introDirective;

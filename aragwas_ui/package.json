@@ -15,8 +15,8 @@
   "dependencies": {
     "css-loader": "^0.28.4",
     "d3": "^4.9.1",
-    "debounce": "^1.0.2",
     "intro.js": "^2.5.0",
+    "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",

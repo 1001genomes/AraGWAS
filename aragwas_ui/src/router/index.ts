@@ -18,12 +18,17 @@ function idToNumber(route: any): any {
   };
 }
 
+function homeSearchParams(route: any): any {
+  let page = route.query.page ? Number(route.query.page) : undefined;
+  return {view: route.query.view, queryTerm: route.query.queryTerm, page};
+}
+
 export default new Router({
   routes: [
     {
       path: "/",
       name: "home",
-      component: Home, props: true,
+      component: Home, props: homeSearchParams,
     },
     {
       path: "/studies",
@@ -49,11 +54,6 @@ export default new Router({
       path: "/top-associations",
       name: "topAssociations",
       component: TopAssociations,
-    },
-    {
-      path: "/results/:currentView?&:queryTerm?&:currentPage?",
-      name: "results",
-      component: Home, props: true,
     },
     {
       path: "/study/:id",
