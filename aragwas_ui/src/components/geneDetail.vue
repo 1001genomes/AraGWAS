@@ -31,7 +31,7 @@
             <div class="container">
                     <h5 class="mb-1 gene-associations">Associations List</h5>
                     <v-divider></v-divider>
-                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields"></top-associations>
+                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView"></top-associations>
             </div>
         </v-flex>
     </v-layout>
@@ -95,6 +95,7 @@
 //        TODO: add position in filter for associations listing.
         showControls = ["maf","annotation","type"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
+        geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom};
 
         get options() {
             return {

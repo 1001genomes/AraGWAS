@@ -17,6 +17,23 @@ function checkStatus(response) {
 function convertToModel<T>(response): T {
     return response.json();
 }
+
+function getTopAssociationsParametersQuery(filter): String {
+    let queryParam: string = "";
+    for (const key of Object.keys(filter)) {
+        let filterParam = "";
+        for (let i = 0; i < filter[key].length; i++) {
+            const val = filter[key][i];
+            if (i > 0) {
+                filterParam += "&";
+            }
+            filterParam += `${key}=${val}`;
+        }
+        queryParam += "&" + filterParam;
+    }
+    return queryParam
+}
+
 // Study list
 export async function loadStudies(page: number = 1, ordering = "") {
     return fetch(`/api/studies/?page=${page}&ordering=${ordering}`)
@@ -30,8 +47,14 @@ export async  function loadStudy(studyId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfStudy(studyId: number, page= 1) {
-    return fetch(`/api/studies/${studyId}/associations/?page=${page}`)
+export async  function loadAssociationsOfStudy(studyId: number, filter, page= 1) {
+    let queryParam = getTopAssociationsParametersQuery(filter);
+    let offset = 25*(page-1);
+    let url = `/api/studies/${studyId}/associations/?limit=25&offset=${offset}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
         .then(checkStatus)
         .then(convertToModel);
 }
@@ -55,8 +78,14 @@ export async  function loadPhenotype(phenotypeId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfPhenotype(phenotypeId: number, page: number= 1) {
-    return fetch(`/api/phenotypes/${phenotypeId}/associations/?page=${page}`)
+export async  function loadAssociationsOfPhenotype(phenotypeId: number, filter,  page: number= 1) {
+    let queryParam = getTopAssociationsParametersQuery(filter);
+    let offset = 25*(page-1);
+    let url = `/api/phenotypes/${phenotypeId}/associations/?limit=25&offset=${offset}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
         .then(checkStatus)
         .then(convertToModel);
 }
@@ -80,25 +109,20 @@ export async function loadGene(geneId = ""): Promise<Gene> {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfGene(geneId= "1", page: number = 1, ordering= "-pvalue") {
-    return fetch(`/api/genes/${geneId}/associations/?page=${page}&ordering=${ordering}`)
+export async  function loadAssociationsOfGene(geneId= "1", zoom: number, filter, page: number = 1) {
+    let queryParam = getTopAssociationsParametersQuery(filter);
+    let offset = 25*(page-1);
+    let url = `/api//genes/${geneId}/associations/?limit=25&offset=${offset}zoom=${zoom}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
         .then(checkStatus)
         .then(convertToModel);
 }
 
 export async function loadTopAssociations(filter, page) {
-    let queryParam: string = "";
-    for (const key of Object.keys(filter)) {
-        let filterParam = "";
-        for (let i = 0; i < filter[key].length; i++) {
-            const val = filter[key][i];
-            if (i > 0) {
-                filterParam += "&";
-            }
-            filterParam += `${key}=${val}`;
-        }
-        queryParam += "&" + filterParam;
-    }
+    let queryParam = getTopAssociationsParametersQuery(filter);
     let offset = 25*(page-1);
     let url = `/api/associations/?limit=25&offset=${offset}`;
     if (queryParam) {

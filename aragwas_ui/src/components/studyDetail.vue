@@ -57,39 +57,7 @@
                     </v-flex>
                     <v-flex xs12 sm6 md8>
                         <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                        <v-card class="mt-2">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th v-for="key in columns"
-                                        @click="sortBy(key)"
-                                        :class="{ active: sortKey == key }">
-                                        {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                                            </span>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="entry in filteredData">
-                                    <td class="regular" v-for="key in columns">
-                                        <div v-if="(parseFloat(entry['score']) > bonferoniThr05)">
-                                            <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                            <div v-else class="significant">{{entry[key]}}</div>
-                                        </div>
-                                        <div v-else>
-                                            <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                            <div v-else>{{entry[key]}}</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                        </v-card>
-                        <div class="page-container mt-5 mb-3">
-                            <v-pagination :length.number="pageCount" v-model="currentPage" />
-                        </div>
+                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView"></top-associations>
                     </v-flex>
                 </v-layout>
             </v-tabs-content>
@@ -116,6 +84,8 @@
     import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy} from "../api";
     import ManhattanPlot from "../components/manhattanplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
+    import TopAssociationsComponent from "./topasso.vue"
+
 
     @Component({
       filters: {
@@ -127,6 +97,7 @@
       components: {
           "manhattan-plot": ManhattanPlot,
           "breadcrumbs": Breadcrumbs,
+          "top-associations": TopAssociationsComponent,
       },
     })
     export default class StudyDetail extends Vue {
@@ -143,7 +114,6 @@
       araPhenoLink: string = "";
       currentView: string = "Study details";
       currentViewIn: string = "On genes";
-      columns = ["SNP", "maf", "score", "beta", "odds_ratio", "gene"]; // deleted confidence_interval for now
       n = {phenotypes: 0, accessions: 0};
       bonferoniThr05 = 0;
       bonferoniThr01 = 0;
@@ -179,41 +149,23 @@
           "On genes": [["te", "t"]],
           "On snp type": [["string", "number"]]};
 
-      sortOrders = {snp: 1, maf: 1, score: 1, beta: 1, odds_ratio: 1, confidence_interval: 1, gene: 1};
-      sortKey: string = "";
-      ordered: string = "";
-      filterKey: string = "";
-      associations = [];
-      significantAssociations = [];
       currentPage = 1;
       pageCount = 5;
       totalCount = 0;
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
-      get filteredData () {
-        let filterKey = this.filterKey;
-        if (filterKey) {
-          filterKey = filterKey.toLowerCase();
-        }
-        let data = this.associations;
-        if (filterKey) {
-          data = data.filter((row) => {
-            return Object.keys(row).some((key) => {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-            });
-          });
-        }
-        return data;
-      }
+      maf = ["1", "1-5", "5-10", "10"];
+      annotation = ["ns", "s", "in", "i"];
+      type = ["genic", "non-genic"];
+      chr = ["1", "2","3","4","5"];
+      hideFields = ["phenotype", "study"];
+      showControls = ["chr","maf","annotation","type"];
+      filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
+      phenotypeView = {name: "study", studyId: this.id, controlPosition: "right"};
 
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
-      }
-
-      @Watch("currentPage")
-      onCurrentPageChanged(val: number, oldVal: number) {
-        loadAssociationsOfStudy(this.id, val).then(this._displayData);
       }
       created(): void {
         this.loadData();
@@ -228,46 +180,37 @@
         }
       }
       _displayData(data): void {
-        this.associations = data.results;
-        this.currentPage = data.currentPage;
         this.totalCount = data.count;
         this.pageCount = data.pageCount;
         this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
         this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
         this.associationCount = data.thresholds.totalAssociations;
-        for (const i in this.associations) {
-          if (this.associations[i]["score"] < this.bonferoniThr05) {
-            this.significantAssociations[i] = this.associations[i];
-            this.bonferoniHits = parseInt(i, 10);
-            break;
-          }
-        }
         // Load pie data, get unique genes and SNP types
-        for (const asso of this.significantAssociations) {
-          let found = false;
-          for (const gene of this.sigAsDistributionRows["On genes"]){
-            if (asso["gene"]["name"].localeCompare(gene[0])) {
-              gene[1] += 1;
-              found = true;
-              break;
-            }
-          }
-          if (! found) {
-            this.sigAsDistributionRows["On genes"].push([asso["gene"]["name"], 1]);
-          }
-          found = false;
-          for (const type of this.sigAsDistributionRows["On snp type"]) {
-            if (asso["type"].localeCompare(type[0])) {
-              type[1] += 1;
-              found = true;
-              break;
-            }
-          }
-          if (! found) {
-            this.sigAsDistributionRows["On snp type"].push([asso["type"], 1]);
-          }
-
-        }
+//        for (const asso of this.significantAssociations) {
+//          let found = false;
+//          for (const gene of this.sigAsDistributionRows["On genes"]){
+//            if (asso["gene"]["name"].localeCompare(gene[0])) {
+//              gene[1] += 1;
+//              found = true;
+//              break;
+//            }
+//          }
+//          if (! found) {
+//            this.sigAsDistributionRows["On genes"].push([asso["gene"]["name"], 1]);
+//          }
+//          found = false;
+//          for (const type of this.sigAsDistributionRows["On snp type"]) {
+//            if (asso["type"].localeCompare(type[0])) {
+//              type[1] += 1;
+//              found = true;
+//              break;
+//            }
+//          }
+//          if (! found) {
+//            this.sigAsDistributionRows["On snp type"].push([asso["type"], 1]);
+//          }
+//
+//        }
 
       }
       _displayStudyData(data): void {
@@ -298,16 +241,6 @@
         }
       }
 
-      sortBy(key): void {
-        this.sortKey = key;
-        this.sortOrders[key] = this.sortOrders[key] * -1;
-        if (this.sortOrders[key] < 0) {
-          this.ordered = "-" + key;
-        } else {
-          this.ordered = key;
-        }
-        loadAssociationsOfStudy(this.id, this.currentPage).then(this._displayData);
-      }
       // TODO: add association injection for manhattan plots
     }
 </script>

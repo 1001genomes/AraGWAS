@@ -196,7 +196,7 @@ def load_filtered_top_associations(filters, start=0, size=50):
         for maf in filters['maf']:
             maf = maf.split('-')
             if len(maf) > 1:
-                maf_filters.append(Q('range', maf={'lte': float(maf[1]),'gte':float(maf[0])/100}))
+                maf_filters.append(Q('range', maf={'lte': float(maf[1])/100,'gte':float(maf[0])/100}))
             else:
                 if maf[0] == '1':
                     maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))

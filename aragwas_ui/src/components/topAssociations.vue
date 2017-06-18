@@ -12,7 +12,7 @@
                 <v-layout row>
                     <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
                 </v-layout>
-                <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields"></top-associations>
+                <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="{name: 'top-associations'}"></top-associations>
             </div>
         </div>
     </div>

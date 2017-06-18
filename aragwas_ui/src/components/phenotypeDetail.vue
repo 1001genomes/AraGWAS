@@ -59,34 +59,7 @@
             </v-flex>
             <v-flex xs12 sm6 md8>
                 <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                <v-card class="mt-2">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th v-for="key in columns"
-                                @click="sortBy(key)"
-                                :class="{ active: sortKey == key }">
-                                {{ key | capitalize }}
-                                <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                                    </span>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="entry in filteredData">
-                            <td v-for="key in columns">
-                                <router-link v-if="(key==='gene')" :to="{name: 'geneDetail', params: { geneId: entry['gene']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                <router-link v-else-if="(key==='study')" :to="{name: 'studyDetail', params: { id: entry['study']['pk'] }}" >{{entry[key]['name']}}</router-link>
-                                <div v-else>{{entry[key]}}</div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                </v-card>
-                <div class="page-container mt-5 mb-3">
-                    <v-pagination :length.number="pageCount" v-model="currentPage" />
-                </div>
+                <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView"></top-associations>
             </v-flex>
         </v-layout>
     </div>
@@ -98,6 +71,8 @@
 
     import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudy} from "../api";
     import Breadcrumbs from "./breadcrumbs.vue"
+    import TopAssociationsComponent from "./topasso.vue"
+
 
     @Component({
         filters: {
@@ -107,6 +82,7 @@
         },
         components: {
             "breadcrumbs": Breadcrumbs,
+            "top-associations": TopAssociationsComponent,
         },
     })
     export default class PhenotypeDetail extends Vue {
@@ -121,36 +97,22 @@
       phenotypeDescription: string = "";
       currentView: string = "Similar Phenotypes";
       araPhenoLink: string = "";
-      columns = ["SNP", "score", "gene", "study"];
       columnsTab = {"Similar Phenotypes": ["name", "n studies", "description", "associated genes"], "List of Studies": ["study", "genotype", "method", "N hits"]};
       n = {phenotypes: 0, accessions: 0};
-      sortOrders = {snp: 1, score: 1, gene: 1, study: 1};
-      sortKey: string = "";
-      ordered: string = "";
       filterKey: string = "";
-      associations = [];
-      currentPage = 1;
-      pageCount = 5;
-      totalCount = 0;
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
+
+      maf = ["1", "1-5", "5-10", "10"];
+      annotation = ["ns", "s", "in", "i"];
+      type = ["genic", "non-genic"];
+      chr = ["1", "2","3","4","5"];
+      hideFields = ["phenotype"];
+      showControls = ["chr","maf","annotation","type"];
+      filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
+      phenotypeView = {name: "phenotype", phenotypeId: this.id, controlPosition: "right"};
 
 //      TODO: add similar phenotypes fetching with Ontology
 
-      get filteredData() {
-        let filterKey = this.filterKey;
-        if (filterKey) {
-          filterKey = filterKey.toLowerCase();
-        }
-        let data = this.associations;
-        if (filterKey) {
-          data = data.filter((row) => {
-            return Object.keys(row).some((key) => {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-            });
-          });
-        }
-        return data;
-      }
       get filteredStudiesAndPhenotypes() {
         let filterKey = this.filterKey;
         if (filterKey) {
@@ -170,11 +132,6 @@
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
-      }
-
-      @Watch("currentPage")
-      onCurrentPageChanged(val: number, oldVal: number) {
-        loadAssociationsOfPhenotype(this.id, val).then(this._displayData);
       }
       created(): void {
         this.loadData();
@@ -196,29 +153,25 @@
         this.tabData.similarPhenotypes = data;
       }
 
-//    ASSOCIATION LOADING
-
       loadData(): void {
         try {
             loadPhenotype(this.id).then(this._displayPhenotypeData).then(this.loadStudyList);
             loadSimilarPhenotypes(this.id).then(this._displaySimilarPhenotypes);
-            loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData);
         } catch (err) {
             console.log(err);
 
         }
-      }
-      _displayData(data): void {
-        this.associations = data.results;
-        this.currentPage = data.current_page;
-        this.totalCount = data.count;
-        this.pageCount = data.page_count;
       }
 //    STUDIES FETCHING
       loadStudyList(data): void {
         for (const key of this.studyIDs) {
           loadStudy(key).then(this._addStudyData);
         }
+        this.avgHitNumber = 0;
+        for (let i = 0; i<this.tabData.listOfStudies.length; i++) {
+            this.avgHitNumber += this.tabData.listOfStudies[i]["N hits"];
+        }
+        this.avgHitNumber = this.avgHitNumber / this.tabData.listOfStudies.length;
       }
       _addStudyData(data): void {
         if (Object.keys(this.studyIDs[0]).length === 0) {
@@ -240,18 +193,6 @@
             "pk": data.pk,
           }]);
         }
-      }
-
-//    UTILITIES
-      sortBy(key): void {
-        this.sortKey = key;
-        this.sortOrders[key] = this.sortOrders[key] * -1;
-        if (this.sortOrders[key] < 0) {
-          this.ordered = "-" + key;
-        } else {
-          this.ordered = key;
-        }
-        loadAssociationsOfPhenotype(this.id, this.currentPage).then(this._displayData);
       }
     }
 </script>

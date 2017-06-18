@@ -304,7 +304,7 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         zoom = int(request.query_params.get('zoom', 0))
         filters = _get_filter_from_params(request.query_params)
         filters['chr'] = [gene['chr']]
-        filters['start'] = gene['positions']['gte'] + zoom
+        filters['start'] = gene['positions']['gte'] - zoom
         filters['end'] = gene['positions']['lte'] + zoom
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
