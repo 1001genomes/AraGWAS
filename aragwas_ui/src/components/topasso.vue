@@ -1,36 +1,33 @@
 <template>
     <v-container fluid>
-        <v-layout row>
-            <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
-        </v-layout>
         <v-layout row wrap justify-space-around>
             <v-flex xs3 wrap v-if="showControls.length>0" class="associations-control-container">
                 <div v-if="showControls.indexOf('maf')>-1">
                     <h6 class="mt-4">MAF</h6>
-                    <v-switch v-model="maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-switch>
-                    <v-checkbox v-model="maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
                 </div>
                 <div v-if="showControls.indexOf('chr')>-1">
                     <h6 class="mt-4">Chromosomes</h6>
-                    <v-checkbox v-model="chr" warning label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="chr" info label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="chr" error label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="chr" label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
                 </div>
                 <div v-if="showControls.indexOf('annotation')>-1">
                     <h6 class="mt-4">Annotation</h6>
-                    <v-checkbox v-model="annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
                 </div>
                 <div v-if="showControls.indexOf('type')>-1">
                     <h6 class="mt-4">Type</h6>
-                    <v-checkbox v-model="type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                 </div>
             </v-flex>
             <v-flex xs9 wrap fill-height class="association-table-container">
@@ -105,6 +102,7 @@
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "score", descending: true};
+//        TODO: Add position range filtering for the genedetail list
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -126,14 +124,21 @@
         onTypeChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        created(): void {
+        @Watch("filters")
+        onFiltersChanged(val, oldVal) {
+            this.fetchFilters();
+        }
+        mounted(): void {
+            this.fetchFilters();
+            this.hideHeaders(this.hideFields);
+            this.loadData(this.currentPage);
+        }
+        fetchFilters(): void {
             const {maf, chr, annotation, type} = this.filters;
             this.maf = maf;
             this.chr = chr;
             this.annotation = annotation;
             this.type = type;
-            this.hideHeaders(this.hideFields);
-            this.loadData(this.currentPage);
         }
         loadData(pageToLoad): void {
             this.loading = true;

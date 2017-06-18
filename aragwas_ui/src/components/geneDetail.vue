@@ -3,10 +3,10 @@
         <v-flex xs12>
             <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </v-flex>
-        <v-flex xs12 sm4>
+        <v-flex xs12 sm4 class="pl-4 pr-4">
             <gene-search v-model="selectedGene"></gene-search>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 class="pl-4 pr-4">
             <v-layout row justify-space-around>
                 <div>
                     <h5 class="mb-1">Genomic Region : {{ selectedGene.name }}</h5>
@@ -18,33 +18,18 @@
                 </div>
             </v-layout>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 class="pl-4 pr-4">
             <gene-plot class="flex" :options="options"></gene-plot>
         </v-flex>
-        <v-flex xs12>
-            <h5 class="mb-1">Associations List</h5>
-            <v-divider></v-divider>
-            <v-card class="mt-3">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th v-for="key in columns">
-                            {{ key | capitalize }}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="entry in filteredData">
-                        <td v-for="key in columns">
-                            <div>{{entry[key]}}</div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </v-card>
-            <div class="page-container mt-5 mb-3">
-                <v-pagination :length.number="pageCount" v-model="currentPage" />
+        <v-flex xs12 class="pl-4 pr-4">
+            <div class="container">
+                <div class="section">
+                    <h5 class="mb-1">Associations List</h5>
+                    <v-divider></v-divider>
+                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields"></top-associations>
+                </div>
             </div>
+
         </v-flex>
     </v-layout>
 </template>
@@ -57,6 +42,7 @@
     import GeneSearch from "../components/geneSearch.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import Router from "../router";
+    import TopAssociationsComponent from "./topasso.vue"
 
     import {loadAssociationsOfGene, loadGene} from "../api";
     import Gene from "../models/gene";
@@ -71,6 +57,7 @@
             "gene-plot": GenePlot,
             "gene-search": GeneSearch,
             "breadcrumbs": Breadcrumbs,
+            "top-associations": TopAssociationsComponent,
         },
     })
     export default class GeneDetail extends Vue {
@@ -93,6 +80,16 @@
         filterKey: string = "";
         associations = [];
 
+
+        maf = ["1", "1-5", "5-10", "10"];
+        annotation = ["ns", "s", "in", "i"];
+        type = ["genic", "non-genic"];
+        chr = ["1", "2","3","4","5"];
+        hideFields = [];
+//        TODO: add position in filter for associations listing.
+        showControls = ["maf","annotation","type"];
+        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
+
         get options() {
             return {
                 width: 1000,
@@ -102,22 +99,6 @@
                 w_rect: 0,
                 zoom: this.zoom,
             };
-        }
-
-        get filteredData() {
-            let filterKey = this.filterKey;
-            if (filterKey) {
-                filterKey = filterKey.toLowerCase();
-            }
-            let data = this.associations;
-            if (filterKey) {
-                data = data.filter((row) => {
-                    return Object.keys(row).some((key) => {
-                        return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-                    });
-                });
-            }
-            return data;
         }
 
         get breadcrumbs() {
@@ -143,22 +124,16 @@
         // Gene DATA LOADING
         _displayGeneData(data: Gene): void {
             this.selectedGene = data;
+            this.filters.chr = [this.selectedGene.chr[3]]
         }
         // ASSOCIATION LOADING
         loadData(): void {
             // Load associations of all cited SNPs
             try {
                 loadGene(this.geneId).then(this._displayGeneData);
-                loadAssociationsOfGene(this.geneId, this.currentPage, this.ordered).then(this._displayData);
             } catch (err) {
                 console.log(err);
             }
-        }
-        _displayData(data): void {
-            this.associations = data.results;
-            this.currentPage = data.current_page;
-            this.totalCount = data.count;
-            this.pageCount = data.page_count;
         }
         goToGene(): void {
             this.router.push({name: "geneDetail", params: { geneId: this.searchTerm }});

@@ -9,6 +9,9 @@
         </v-parallax>
         <div class="container">
             <div class="section">
+                <v-layout row>
+                    <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
+                </v-layout>
                 <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields"></top-associations>
             </div>
         </div>
@@ -36,13 +39,12 @@
         mixins: [tourMixin],
     })
     export default class TopAssociations extends Vue {
-        loading: boolean = false;
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
         maf = ["1", "1-5", "5-10", "10"];
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
-        hideFields = ["name"];
+        hideFields = [];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
         showControls = ["maf","chr","annotation","type"];
 
