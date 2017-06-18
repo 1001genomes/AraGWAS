@@ -174,7 +174,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='gwas')
     def assocations_from_hdf5(self, request, pk):
         """ Retrieves assocations from the HDF5 file"""
-        filter_type = request.query_params.get('type', 'threshold')
+        filter_type = request.query_params.get('filter_type', 'threshold')
         if filter_type not in ('threshold', 'top'):
             raise ValueError('filter_type must be either "threshold" or "top"')
         threshold_or_top = float(request.query_params.get('filter', 1))
@@ -187,7 +187,10 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         for chrom in range(1, 6):
             chr_idx = top_associations['chr'].searchsorted(str(chrom+1))
             output['chr%s' % chrom] = {'scores': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
-        output['bonferoni_threshold'] = float(thresholds['bonferoni_threshold05'])
+        for key, value in thresholds.items():
+            value = int(value) if key == 'total_associations' else float(value)
+            thresholds[key] = value
+        output['thresholds'] = thresholds
         return Response(output, status=status.HTTP_200_OK)
 
 
