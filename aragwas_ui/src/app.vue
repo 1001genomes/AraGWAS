@@ -1,7 +1,7 @@
 <template>
  <v-app>
     <v-toolbar class="white toolbar">
-      <v-toolbar-logo class="logo"><router-link :to="{name: 'home'}">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
+      <v-toolbar-logo class="logo aragwas-logo"><router-link :to="{name: 'home'}">Ara<b>GWAS</b>Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
           <v-toolbar-item class="links"><span class="black--text" @click="starttour">Take a tour?</span></v-toolbar-item>
           <v-toolbar-item class="links" id="faq-link"><router-link :to="{path: '/faq'}"><span class="black--text">FAQs</span></router-link></v-toolbar-item>

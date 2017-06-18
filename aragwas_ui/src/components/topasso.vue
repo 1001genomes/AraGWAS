@@ -90,8 +90,8 @@
         localfilters : {};
         loading: boolean = false;
         headers = [{text: "SNP", value: "snp.chr", name: "name"},{text: "score", value: "score", name: "score"},
-            {text: "phenotype",value: "study.phenotype.name", name: "phenotype"},{text: "gene",value: "snp.geneName", name: "gene"},
-            {text: "maf",value: "maf", name: "maf"},{text: "study", value: "study.name", name: "study"}];
+            {text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false},{text: "gene",value: "snp.geneName", name: "gene", sortable: false},
+            {text: "maf",value: "maf", name: "maf", sortable: false},{text: "study", value: "study.name", name: "study", sortable: false}];
         associations = [];
         currentPage = 1;
         pageCount = 5;
@@ -108,42 +108,29 @@
         onCurrentPageChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        @Watch("maf")
+        @Watch("filters.maf")
         onMafChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        @Watch("chr")
+        @Watch("filters.chr")
         onChrChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        @Watch("annotation")
+        @Watch("filters.annotation")
         onAnnotationChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        @Watch("type")
+        @Watch("filters.type")
         onTypeChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
-        @Watch("filters")
-        onFiltersChanged(val, oldVal) {
-            this.fetchFilters();
-        }
         mounted(): void {
-            this.fetchFilters();
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);
         }
-        fetchFilters(): void {
-            const {maf, chr, annotation, type} = this.filters;
-            this.maf = maf;
-            this.chr = chr;
-            this.annotation = annotation;
-            this.type = type;
-        }
         loadData(pageToLoad): void {
             this.loading = true;
-            this.localfilters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-            loadTopAssociations(this.localfilters, pageToLoad).then(this._displayData); // change this with ES search
+            loadTopAssociations(this.filters, pageToLoad).then(this._displayData); // change this with ES search
         }
         _displayData(data): void {
             this.associations = data.results;

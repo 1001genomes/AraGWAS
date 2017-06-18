@@ -1,6 +1,6 @@
 <template>
     <div class="mt-0">
-        <v-parallax class="parallax-container" src="/static/img/ara5.jpg" height="80">
+        <v-parallax class="parallax-container" src="/static/img/ara2.jpg" height="80">
             <div class="section">
                 <div class="container mt-2">
                     <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
@@ -51,8 +51,8 @@
         tourOptions = {
             steps: [
                 {
-                    element: '.association-table-container',
-                    intro: 'This table shows all top associations (sorted by score) that are stored in the database',
+                    element: ".association-table-container",
+                    intro: "This table shows all top associations (sorted by score) that are stored in the database",
                     position: "left"
                 },
                 {

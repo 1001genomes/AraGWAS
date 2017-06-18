@@ -209,36 +209,36 @@
       nStudies = 0;
       nPhenotypes = 0;
       nAssociations = 0;
-      plotRows = [['Gene 1',11],['Gene 2',2],['Gene 3',2],['Gene 4',2],['Sleep',7]];
-      plotColumns = [{'type': 'string', 'label': 'Condition'},{'type': 'number','label':'#Count'}];
+      plotRows = [["Gene 1",11],["Gene 2",2],["Gene 3",2],["Gene 4",2],["Sleep",7]];
+      plotColumns = [{"type": "string", "label": "Condition"},{"type": "number","label":"#Count"}];
 
       tourOptions = {
         steps : [
         {
-          element: '.parallax',
-          intro: 'AraGWAS is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features',
+          element: ".parallax",
+          intro: "AraGWASCatalog is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features",
           position: "bottom-middle-aligned"
         },
         {
-          element: '.search-container',
-          intro: 'The global search form allows the user to search across all phenotypes and studies'
+          element: ".search-container",
+          intro: "The global search form allows the user to search across all phenotypes, studies and genomic regions"
         },
         {
-          element: '#faq-link',
-          intro: 'The FAQ section provides tutorials of the various features of AraPheno'
+          element: "#faq-link",
+          intro: "The FAQ section provides tutorials of the various features of AraGWASCatalog"
         },
         {
-          element: '#studies-button',
-          intro: 'You can access the list of available GWAS studies by clicking here'
+          element: "#studies-button",
+          intro: "You can access the list of available GWAS studies by clicking here"
         },
         {
-          element: '#top-assocations-button',
-          intro: 'To see the the top associations that are stored in the catalogue, press here. To find out how to browse the top associations list, click on "Next Page"'
+          element: "#top-assocations-button",
+          intro: "To see the the top associations that are stored in the catalogue, press here. To find out how to browse the top associations list, click on 'Next Page'"
         }
         ],
-        nextPage: {name: 'topAssociations'},
+        nextPage: {name: "topAssociations"},
 
-      }
+      };
 
 
 

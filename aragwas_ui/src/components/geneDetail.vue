@@ -4,32 +4,35 @@
             <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
         </v-flex>
         <v-flex xs12 sm4 class="pl-4 pr-4">
-            <gene-search v-model="selectedGene"></gene-search>
+            <div class="container">
+                <gene-search v-model="selectedGene" class="gene-search"></gene-search>
+            </div>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
-            <v-layout row justify-space-around>
+            <div class="container">
+            <v-layout row justify-space-between>
                 <div>
                     <h5 class="mb-1">Genomic Region : {{ selectedGene.name }}</h5>
                     <v-divider></v-divider>
                 </div>
                 <div class="flex"></div>
-                <div style="width:300px;">
+                <div style="width:300px;" class="gene-zoom">
                     <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min" ></v-slider>
                 </div>
             </v-layout>
-        </v-flex>
-        <v-flex xs12 class="pl-4 pr-4">
-            <gene-plot class="flex" :options="options"></gene-plot>
+            </div>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
             <div class="container">
-                <div class="section">
-                    <h5 class="mb-1">Associations List</h5>
+                <gene-plot class="flex gene-plot" :options="options"></gene-plot>
+            </div>
+        </v-flex>
+        <v-flex xs12 class="pl-4 pr-4">
+            <div class="container">
+                    <h5 class="mb-1 gene-associations">Associations List</h5>
                     <v-divider></v-divider>
                     <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields"></top-associations>
-                </div>
             </div>
-
         </v-flex>
     </v-layout>
 </template>
@@ -47,6 +50,8 @@
     import {loadAssociationsOfGene, loadGene} from "../api";
     import Gene from "../models/gene";
 
+    import tourMixin from "../mixins/tour.js";
+
     @Component({
         filters: {
             capitalize(str) {
@@ -59,6 +64,7 @@
             "breadcrumbs": Breadcrumbs,
             "top-associations": TopAssociationsComponent,
         },
+        mixins: [tourMixin],
     })
     export default class GeneDetail extends Vue {
         // Gene information
@@ -102,7 +108,7 @@
         }
 
         get breadcrumbs() {
-            return [{text: "Home", href: "home"}, {text: "Genes", href: "genes"}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
+            return [{text: "Home", href: "/"}, {text: "Genes", href: "genes", disabled: true}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
         }
 
         @Watch("selectedGene")
@@ -138,14 +144,41 @@
         goToGene(): void {
             this.router.push({name: "geneDetail", params: { geneId: this.searchTerm }});
         }
+
+        tourOptions = {
+            steps: [
+                {
+                    element: ".gene-search",
+                    intro: "The search bar allows you to jump to any other gene stored in the Database.",
+                    position: "right"
+                },
+                {
+                    element: ".gene-plot",
+                    intro: "This genomic region view shows significant associations linked with the gene of interest.",
+                    position: "top"
+                },
+                {
+                    element: ".gene-zoom",
+                    intro: "You can use the zoom to show further associations linked to this gene",
+                    position: "left"
+                },
+                {
+                    element: ".gene-associations",
+                    intro: "This is a list of the associations shown above.",
+                    position: "top"
+                },
+                {
+                    element: ".aragwas-logo",
+                    intro: "This is the end of the tour. Enjoy AraGWASCatalog!",
+                    position: "bottom"
+                }
+            ],
+        };
     }
 </script>
 <style scoped>
     .page-container {
         display:flex;
         justify-content:center;
-    }
-    ul.breadcrumbs {
-        padding-left:0;
     }
 </style>
