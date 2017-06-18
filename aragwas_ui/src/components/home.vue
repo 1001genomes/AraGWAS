@@ -212,6 +212,8 @@
       plotRows = [["Gene 1",11],["Gene 2",2],["Gene 3",2],["Gene 4",2],["Sleep",7]];
       plotColumns = [{"type": "string", "label": "Condition"},{"type": "number","label":"#Count"}];
 
+      debouncedUpdateUrl = _.debounce(this.updateUrl, 300);
+
       tourOptions = {
         steps : [
         {
@@ -240,26 +242,21 @@
 
       };
 
-
-
-
       updateUrl() {
-          _.debounce(() => {
-            if (this.searchQuery && this.searchQuery != "") {
-                let page = this.currentPage ? this.currentPage.toString() : "1";
-                let query = {queryTerm: this.searchQuery, view: this.currentView, page};
-                this.$router.push({name: "home", query: query });
-            }
-            else  {
-                this.$router.push({name: "home"});
-            }
-          }, 300)();
+        if (this.searchQuery && this.searchQuery != "") {
+            let page = this.currentPage ? this.currentPage.toString() : "1";
+            let query = {queryTerm: this.searchQuery, view: this.currentView, page};
+            this.$router.push({name: "home", query: query });
+        }
+        else  {
+            this.$router.push({name: "home"});
+        }
       }
 
       @Watch("searchQuery")
       onSearchQueryChanged(val: string, oldVal: string) {
           if (val !== oldVal) {
-            this.updateUrl();
+            this.debouncedUpdateUrl();
           }
       }
 
@@ -275,7 +272,7 @@
 
       @Watch("currentView")
       onCurrentViewChanged() {
-          this.updateUrl();
+          this.debouncedUpdateUrl();
       }
 
       @Watch("queryTerm")
@@ -316,7 +313,7 @@
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
           if (val != oldVal) {
-            this.updateUrl();
+            this.debouncedUpdateUrl();
           }
       }
       created(): void {
