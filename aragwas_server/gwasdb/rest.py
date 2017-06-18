@@ -237,6 +237,13 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = PhenotypeListSerializer(pagephe, many=True)
         return Response(serializer.data)
 
+    @detail_route(methods=['GET'], url_path='studies')
+    def studies(self, requests, pk):
+        """ Gets studies of phenotype """
+        studies = Study.objects.filter(phenotype__id = pk)
+        serializer = StudySerializer(studies, many=True)
+        return Response(serializer.data)
+
     @detail_route(methods=['GET'], url_path='associations')
     def top_assocations(self, request, pk):
         """ Retrieves the top assocations for a phenotype """

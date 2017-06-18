@@ -21,38 +21,51 @@
                     </v-layout>
                 </v-flex>
                 <v-flex xs12 class="mt-4">
-                    <v-tabs id="similar-tabs" grow scroll-bars v:model="currentView">
+                    <v-tabs id="similar-tabs" grow scroll-bars >
                         <v-tabs-bar slot="activators">
                             <v-tabs-slider></v-tabs-slider>
-                            <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
-                                    v-for="i in ['List of Studies', 'Similar Phenotypes']" :key="i">
-                                    <div>{{ i }}</div>
-                                </v-tabs-item>
+                            <v-tabs-item href="#similar-tabs-studies" ripple class="grey lighten-4 black--text">
+                                <div>List of Studies</div>
+                            </v-tabs-item>
+                            <v-tabs-item href="#similar-tabs-phenotypes" ripple class="grey lighten-4 black--text">
+                                <div>Similar Phenotypes</div>
+                            </v-tabs-item>
                         </v-tabs-bar>
-                        <v-tabs-content :id="i" v-for="i in ['List of Studies','Similar Phenotypes']" :key="i">
-                            <v-card>
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th v-for="key in columnsTab[i]"
-                                            @click="sortBy(key)"
-                                            :class="{ active: sortKey == key }">
-                                            {{ key | capitalize }}
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="entry in filteredStudiesAndPhenotypes">
-                                            <td v-for="key in columnsTab[i]">
-                                                <router-link v-if="(key==='study' && currentView === 'List of Studies')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='name' && currentView === 'Similar Phenotypes')" :to="{name: 'phenotypeDetail', params: { phenotypeId: entry['pk'] }}" >{{ entry['name'] }}</router-link>
-                                                <p v-else-if="(key==='N studies' && currentView === 'Similar Phenotypes')">{{entry['studySet'].length}}</p>
-                                                <p v-else>{{entry[key]}}</p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </v-card>
+                        <v-tabs-content id = "similar-tabs-studies">
+                             <v-data-table
+                                    v-bind:headers="studyColumns"
+                                    v-bind:items="studies"
+                                    hide-actions
+                            >
+                            <template slot="headers" scope="props">
+                                    {{ props.item.text }}
+                            </template>
+                            <template slot="items" scope="props">
+                                <td>
+                                    <router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}
+                                    </router-link>
+                                </td>
+                                <td  class="text-xs-right">{{ props.item.method }}</td>
+                                <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                            </template>
+                            </v-data-table>
+                        </v-tabs-content>
+                        <v-tabs-content id="similar-tabs-phenotypes" >
+                            <v-data-table
+                                    v-bind:headers="phenotypeColumns"
+                                    v-bind:items="similarPhenotypes"
+                                    hide-actions
+                            >
+                            <template slot="headers" scope="props">
+                                    {{ props.item.text }}
+                            </template>
+                            <template slot="items" scope="props">
+                                <td>
+                                    <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.name }}
+                                    </router-link>
+                                </td>
+                            </template>
+                            </v-data-table>
                         </v-tabs-content>
                     </v-tabs>
                 </v-flex>
@@ -69,7 +82,7 @@
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudy} from "../api";
+    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype} from "../api";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
@@ -91,15 +104,14 @@
       phenotypeName: string = "";
       studyNumber = 0;
       studyIDs = [];
-      tabNames = {"List of Studies": "listOfStudies", "Similar Phenotypes": "similarPhenotypes"};
-      tabData = {listOfStudies: [{}], similarPhenotypes: []};
+      studies = [];
+      similarPhenotypes =  []
       avgHitNumber = 0;
       phenotypeDescription: string = "";
-      currentView: string = "Similar Phenotypes";
       araPhenoLink: string = "";
-      columnsTab = {"Similar Phenotypes": ["name", "n studies", "description", "associated genes"], "List of Studies": ["study", "genotype", "method", "N hits"]};
-      n = {phenotypes: 0, accessions: 0};
-      filterKey: string = "";
+      studyColumns = [{text: "Name", left: true, value: "name"}, {text: "Genotype", value: "genotype"}, {text: "Method", value: "method"} ];
+      phenotypeColumns = [{text: "Name", left: true, value: "name"}]
+
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
       maf = ["1", "1-5", "5-10", "10"];
@@ -111,23 +123,7 @@
       filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
       phenotypeView = {name: "phenotype", phenotypeId: this.id, controlPosition: "right"};
 
-//      TODO: add similar phenotypes fetching with Ontology
 
-      get filteredStudiesAndPhenotypes() {
-        let filterKey = this.filterKey;
-        if (filterKey) {
-          filterKey = filterKey.toLowerCase();
-        }
-        let data = this.tabData[this.tabNames[this.currentView]];
-        if (filterKey) {
-          data = data.filter((row) => {
-            return Object.keys(row).some((key) => {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-            });
-          });
-        }
-        return data;
-      }
 
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
@@ -137,7 +133,7 @@
         this.loadData();
       }
       mounted(): void {
-        this.currentView = "List of Studies";
+
       }
 
 //    PHENOTYPE DATA LOADING
@@ -150,7 +146,7 @@
         this.studyIDs = data.studySet;
       }
       _displaySimilarPhenotypes(data): void {
-        this.tabData.similarPhenotypes = data;
+        this.similarPhenotypes = data;
       }
 
       loadData(): void {
@@ -162,37 +158,9 @@
 
         }
       }
-//    STUDIES FETCHING
-      loadStudyList(data): void {
-        for (const key of this.studyIDs) {
-          loadStudy(key).then(this._addStudyData);
-        }
-        this.avgHitNumber = 0;
-        for (let i = 0; i<this.tabData.listOfStudies.length; i++) {
-            this.avgHitNumber += this.tabData.listOfStudies[i]["N hits"];
-        }
-        this.avgHitNumber = this.avgHitNumber / this.tabData.listOfStudies.length;
-      }
-      _addStudyData(data): void {
-        if (Object.keys(this.studyIDs[0]).length === 0) {
-          this.tabData.listOfStudies = [{
-            "study": data.name,
-            "genotype": data.genotype,
-            "method": data.method,
-            "transformation": data.transformation,
-            "N hits": data.association_count, // TODO: Add proper number of hits in database
-            "pk": data.pk,
-          }];
-        } else {
-          this.tabData.listOfStudies = this.tabData.listOfStudies.concat([{
-            "study": data.name,
-            "genotype": data.genotype,
-            "method": data.method,
-            "transformation": data.transformation,
-            "N hits": data.association_count,
-            "pk": data.pk,
-          }]);
-        }
+      // TODO instead of fetching one by one create endpoint to fetch all studies of a phenotype
+      async loadStudyList(data) {
+        this.studies = await loadStudiesOfPhenotype(this.id);
       }
     }
 </script>
