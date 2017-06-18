@@ -3,17 +3,15 @@
         <v-parallax src="/static/img/ara2.jpg" :height="height">
             <v-container>
                 <v-layout column align-center justify-center v-if="!search">
-                    <v-card style="background: rgba(0, 0, 0, .2)" class="elevation-0">
-                        <div class="banner-title">
-                            <br>
-                            <h1 class="white--text text-xs-center" >Ara<b>GWAS</b>Catalog</h1>
-                        </div>
-                        <div class="banner-subtext">
-                            <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
-                            <br>
-                            <h6 class="white--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
-                        </div>
-                    </v-card>
+                    <div class="banner-title">
+                        <br>
+                        <h1 class="white--text text-xs-center" >Ara<b>GWAS</b>Catalog</h1>
+                    </div>
+                    <div class="banner-subtext">
+                        <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
+                        <br>
+                        <h6 class="white--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
+                    </div>
                 </v-layout>
             </v-container>
         </v-parallax>
@@ -400,7 +398,20 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+<style>
+    .parallax__image-container:after {
+        content: "\a ";
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        z-index: 1;
+    }
+</style>
 <style scoped>
+
     .parallax {
         margin-bottom:-24px;
     }
