@@ -219,8 +219,9 @@ def load_filtered_top_associations(filters, start=0, size=50):
         s = s.filter('range', snp__position={'gte': int(filters['start'])})
     if 'end' in filters:
         s = s.filter('range', snp__position={'lte': int(filters['end'])})
+    s = s[start:start+size]
     print(json.dumps(s.to_dict()))
-    result = s[start:start+size].execute()
+    result = s.execute()
     associations = result['hits']['hits']
     return [association['_source'].to_dict() for association in associations], result['hits']['total']
 
