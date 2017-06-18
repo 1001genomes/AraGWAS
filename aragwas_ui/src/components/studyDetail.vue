@@ -5,7 +5,7 @@
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
         </v-layout>
-        <v-tabs id="study-detail-tabs" grow scroll-bars v:model="currentView" class="mt-3">
+        <v-tabs id="study-detail-tabs" grow scroll-bars v-model="currentView" class="mt-3">
             <v-tabs-bar slot="activators">
                 <v-tabs-slider></v-tabs-slider>
                 <v-tabs-item href="#study-detail-tabs-details" ripple class="grey lighten-4 black--text">
@@ -112,7 +112,7 @@
       publication: string = "";
       associationCount: number = 0 ;
       araPhenoLink: string = "";
-      currentView: string = "Study details";
+      currentView: string = "study-detail-tabs-manhattan";
       currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
       bonferoniThr05 = 0;
@@ -168,6 +168,7 @@
           this.loadData();
       }
       created(): void {
+        this.currentView = "study-detail-tabs-details";
         this.loadData();
       }
       loadData(): void {
