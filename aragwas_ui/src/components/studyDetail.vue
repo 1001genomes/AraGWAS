@@ -175,44 +175,9 @@
         try {
             loadStudy(this.id).then(this._displayStudyData);
             loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
-            loadAssociationsOfStudy(this.id, this.currentPage).then(this._displayData);
         } catch (err) {
             console.log(err);
         }
-      }
-      _displayData(data): void {
-        this.totalCount = data.count;
-        this.pageCount = data.pageCount;
-        this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
-        this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
-        this.associationCount = data.thresholds.totalAssociations;
-        // Load pie data, get unique genes and SNP types
-//        for (const asso of this.significantAssociations) {
-//          let found = false;
-//          for (const gene of this.sigAsDistributionRows["On genes"]){
-//            if (asso["gene"]["name"].localeCompare(gene[0])) {
-//              gene[1] += 1;
-//              found = true;
-//              break;
-//            }
-//          }
-//          if (! found) {
-//            this.sigAsDistributionRows["On genes"].push([asso["gene"]["name"], 1]);
-//          }
-//          found = false;
-//          for (const type of this.sigAsDistributionRows["On snp type"]) {
-//            if (asso["type"].localeCompare(type[0])) {
-//              type[1] += 1;
-//              found = true;
-//              break;
-//            }
-//          }
-//          if (! found) {
-//            this.sigAsDistributionRows["On snp type"].push([asso["type"], 1]);
-//          }
-//
-//        }
-
       }
       _displayStudyData(data): void {
         this.studyName = data.name;
@@ -229,6 +194,9 @@
         this.araPhenoLink = data.araPhenoLink;
       }
       _displayManhattanPlots(data): void {
+        this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
+        this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
+        this.associationCount = data.thresholds.totalAssociations;
         for (let i=1; i <=5; i++) {
             let chrom = "chr" + i.toString();
             const positions = data[chrom].positions;
