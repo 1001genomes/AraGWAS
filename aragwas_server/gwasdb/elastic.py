@@ -1,5 +1,5 @@
 from elasticsearch import Elasticsearch, helpers
-from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl import Search, Q, A
 
 from aragwas.settings import ES_HOST
 from gwasdb import serializers
@@ -137,8 +137,6 @@ def load_gene_snps(id):
 
 def get_top_genes():
     """Retrive associations by neighboring gene id"""
-    # get list of genes, scan result so ES doesn;t rank & sort ===> TOO SLOW
-    # Instead, look at top 500 associations and their genes (priorly filtering for small pvalue/high scores)
     # TODO can be replaced by a facetted search by summing over all scores
     s = Search(using=es, doc_type='associations')
     results = s.filter('range', score={'gte': 4}).sort('-score').source('snp')[0:500].execute().to_dict()['hits']['hits']
@@ -154,6 +152,9 @@ def get_top_genes():
             else:
                 gene_scores[id] = 1
     gene_scores = sorted(gene_scores.items(), key=operator.itemgetter(1))[::-1]
+    agg = A({'nested': {'path':'snps.annotations'},'aggs':{"terms" : { "value_count" : { "field" : "gene_name" }}}})
+    s.aggs.bucket('gene_count',A)
+    agg_results = s.execute().aggregations
     return gene_scores[:min(8, len(gene_scores))]
 
 
