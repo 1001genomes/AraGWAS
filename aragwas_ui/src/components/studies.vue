@@ -15,10 +15,11 @@
              v-bind:pagination.sync="pagination"
              hide-actions
              :loading="loading"
+             :total-items="totalItems"
              class="elevation-1"
      >
        <template slot="headers" scope="props">
-            {{ props.item.text | capitalize }}
+            {{ props.item.text }}
        </template>
        <template slot="items" scope="props">
          <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
@@ -59,9 +60,10 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "name", value: "name",},{text:  "phenotype", value: "phenotype",},{text:  "transformation", value: "transformation",},{text:  "method", value: "method",},{text:  "genotype", value: "genotype",}];
+    columns = [{text: "Name", left: true, value: "name",},{text:  "Phenotype", left: true,  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",}];
     studies = [];
-    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name};
+    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "name", descending: false};
+    totalItems: number = 0;
     search: string = '';
     currentPage = 1;
     pageCount = 5;
@@ -69,8 +71,11 @@
 
     @Watch("pagination")
     onPaginationChanged(val: {}, oldVal: {}) {
-      this.loading = true;
-      this.loadData(val, this.currentPage);
+      // only load when sorting is changed
+      if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {
+        this.loading = true;
+        this.loadData(val, this.currentPage);
+      }
     }
     @Watch("currentPage")
     onPaginationPageChanged(val: number, oldVal: number) {
@@ -99,7 +104,7 @@
     _displayData(data): void {
       this.studies = data.results;
       this.currentPage = data.currentPage;
-      this.pagination.totalItems = data.count;
+      this.totalItems = data.count;
       this.pageCount = data.pageCount;
       this.loading = false;
     }

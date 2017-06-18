@@ -18,7 +18,7 @@ function convertToModel<T>(response): T {
     return response.json();
 }
 
-function getTopAssociationsParametersQuery(filter): String {
+function getTopAssociationsParametersQuery(filter): string {
     let queryParam: string = "";
     for (const key of Object.keys(filter)) {
         let filterParam = "";
@@ -31,7 +31,7 @@ function getTopAssociationsParametersQuery(filter): String {
         }
         queryParam += "&" + filterParam;
     }
-    return queryParam
+    return queryParam;
 }
 
 // Study list
@@ -48,8 +48,8 @@ export async  function loadStudy(studyId: number) {
         .then(convertToModel);
 }
 export async  function loadAssociationsOfStudy(studyId: number, filter, page= 1) {
-    let queryParam = getTopAssociationsParametersQuery(filter);
-    let offset = 25*(page-1);
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = 25 * (page - 1);
     let url = `/api/studies/${studyId}/associations/?limit=25&offset=${offset}`;
     if (queryParam) {
         url += queryParam;
@@ -79,8 +79,8 @@ export async  function loadPhenotype(phenotypeId: number) {
         .then(convertToModel);
 }
 export async  function loadAssociationsOfPhenotype(phenotypeId: number, filter,  page: number= 1) {
-    let queryParam = getTopAssociationsParametersQuery(filter);
-    let offset = 25*(page-1);
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = 25 * ( page - 1);
     let url = `/api/phenotypes/${phenotypeId}/associations/?limit=25&offset=${offset}`;
     if (queryParam) {
         url += queryParam;
@@ -110,8 +110,8 @@ export async function loadGene(geneId = ""): Promise<Gene> {
         .then(convertToModel);
 }
 export async  function loadAssociationsOfGene(geneId= "1", zoom: number, filter, page: number = 1) {
-    let queryParam = getTopAssociationsParametersQuery(filter);
-    let offset = 25*(page-1);
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = 25 * (page - 1);
     let url = `/api//genes/${geneId}/associations/?limit=25&offset=${offset}zoom=${zoom}`;
     if (queryParam) {
         url += queryParam;
@@ -122,8 +122,8 @@ export async  function loadAssociationsOfGene(geneId= "1", zoom: number, filter,
 }
 
 export async function loadTopAssociations(filter, page) {
-    let queryParam = getTopAssociationsParametersQuery(filter);
-    let offset = 25*(page-1);
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = 25 * ( page - 1);
     let url = `/api/associations/?limit=25&offset=${offset}`;
     if (queryParam) {
         url += queryParam;

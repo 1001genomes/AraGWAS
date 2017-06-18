@@ -15,12 +15,11 @@
                         v-bind:pagination.sync="pagination"
                         hide-actions
                         :loading="loading"
+                        :total-items="totalItems"
                         class="elevation-1"
                 >
                     <template slot="headers" scope="props" class="text-xs-left">
-                        <span class="text-xs-left">
-                          {{ props.item.text | capitalize }}
-                        </span>
+                        {{ props.item.text }}
                     </template>
                     <template slot="items" scope="props">
                         <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
@@ -63,20 +62,23 @@
         sortOrders = {name: 1, description: 1, n_studies: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = [{text: "name", value: "name"},{text: "description", value: "description"},{text: "n_studies", value: "n_studies"}];
-        pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name};
+        columns = [{text: "Name", left:true, value: "name"},{text: "Description", left: true, value: "description"},{text: "# Studies", value: "n_studies"}];
+        pagination = {rowsPerPage: 25, totalItems: 0, page: 1, descending: false, sortBy: "name"};
         search: string = '';
         filterKey: string = "";
         phenotypes = [];
         currentPage = 1;
         pageCount = 5;
-        totalCount = 0;
+        totalItems: number = 0;
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "phenotypes", disabled: true}];
 
         @Watch("pagination")
         onPaginationChanged(val: {}, oldVal: {}) {
-            this.loading = true;
-            this.loadData(val, this.currentPage);
+            // only load when sorting is changed
+            if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {
+                this.loading = true;
+                this.loadData(val, this.currentPage);
+            }
         }
         @Watch("currentPage")
         onPaginationPageChanged(val: number, oldVal: number) {
@@ -105,7 +107,7 @@
         _displayData(data): void {
             this.phenotypes = data.results;
             this.currentPage = data.currentPage;
-            this.pagination.totalItems = data.count;
+            this.totalItems = data.count;
             this.pageCount = data.pageCount;
             this.loading = false;
         }
