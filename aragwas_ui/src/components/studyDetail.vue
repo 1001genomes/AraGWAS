@@ -147,8 +147,8 @@
           "On genes": [{type: "string", label: "Condition"}, {type: "number", label: "#Count"}],
           "On snp type": [{type: "string", label: "Condition"}, {type: "number", label: "#Count"}]};
       sigAsDistributionRows = {
-          "On genes": [["te", "t"]],
-          "On snp type": [["string", "number"]]};
+          "On genes": [["te", 0]],
+          "On snp type": [["string", 0]]};
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
@@ -166,8 +166,8 @@
           this.loadData();
       }
       created(): void {
-        this.currentView = "study-detail-tabs-details";
         this.loadData();
+        this.currentView = "study-detail-tabs-details";
       }
       loadData(): void {
         try {
@@ -195,6 +195,7 @@
       _displayPieCharts(data): void {
         this.sigAsDistributionRows['On genes'] = data.onGenes;
         this.sigAsDistributionRows['On snp type'] = data.onSnp;
+        console.log('loadded')
       }
       _displayManhattanPlots(data): void {
         this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
@@ -212,8 +213,6 @@
             this.options[i.toString()]["bonferoniThreshold"] = data.bonferoniThreshold;
         }
       }
-
-      // TODO: add association injection for manhattan plots
     }
 </script>
 
