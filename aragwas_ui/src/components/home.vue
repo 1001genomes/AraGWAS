@@ -371,7 +371,6 @@
       _displayTopGenes(data): void {
         this.plotRows = data;
       }
-
       _countStudies(data): void {
         this.nStudies = data.count;
       }

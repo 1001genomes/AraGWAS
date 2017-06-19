@@ -143,6 +143,17 @@ def get_top_genes():
     agg_results = s.execute().aggregations.gene_count.buckets
     return agg_results
 
+def get_top_genes_and_snp_type_for_study(study_id):
+    """Retrive associations by neighboring gene id"""
+    # TODO: CHECK IF WE NEED ONLY __SIGNIFICANT__ ASSOCIATIONS...
+    s = Search(using=es, doc_type='associations')
+    s = s.filter(Q('bool', should=[Q('term', study__id=study_id)]))
+    agg_genes = A("terms", field="snp.gene_name")
+    agg_snp_type = A("terms", field="snp.coding")
+    s.aggs.bucket('gene_count', agg_genes)
+    s.aggs.bucket('snp_type_count', agg_snp_type)
+    agg_results = s.execute().aggregations
+    return agg_results.gene_count.buckets, agg_results.snp_type_count.buckets
 
 
 def index_associations(study, associations, thresholds):

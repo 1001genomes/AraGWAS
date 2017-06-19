@@ -193,6 +193,23 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         output['thresholds'] = thresholds
         return Response(output, status=status.HTTP_200_OK)
 
+    @detail_route(methods=['GET'], url_path='top')
+    def top_genes_and_snp_type(self, request, pk):
+        """ Gets genes and snp type that got the most significant associations """
+        # TODO: CHECK IF WE NEED ONLY __SIGNIFICANT__ ASSOCIATIONS...
+        agg_gene, agg_snp_type = elastic.get_top_genes_and_snp_type_for_study(pk)
+        list_top_genes = []
+        for i in agg_gene:
+            list_top_genes.append([i['key'], i['doc_count']])
+        list_top_snp_type = []
+        for i in agg_snp_type:
+            if i['key'] == 1:
+                label = 'Genic'
+            else:
+                label = 'Non genic'
+            list_top_snp_type.append([label, i['doc_count']])
+        return Response({'on_genes':list_top_genes, 'on_snp': list_top_snp_type})
+
 
 class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     """

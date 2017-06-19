@@ -29,7 +29,6 @@
                                     <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
                                     <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href=" publication">Link to original publication</a></v-flex>
-
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferoni):</v-flex><v-flex xs7 mm9>{{ bonferoniHits }}</v-flex>
                                     <v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
@@ -37,22 +36,24 @@
                             </v-layout>
                         </v-flex>
                         <v-flex xs12 class="mt-4">
-                            <h5 class="mb-1">Distribution of significant associations</h5>
-                            <v-tabs id="similar-tabs" grow scroll-bars v:model="currentViewIn">
-                                <v-tabs-bar slot="activators">
-                                    <v-tabs-slider></v-tabs-slider>
-                                    <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
-                                            v-for="i in ['On genes', 'On snp type']" :key="i">
+                            <v-layout column>
+                                <h5 class="mb-1">Distribution of significant associations</h5>
+                                <v-tabs id="similar-tabs" grow scroll-bars v:model="currentViewIn">
+                                    <v-tabs-bar slot="activators">
+                                        <v-tabs-slider></v-tabs-slider>
+                                        <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
+                                                     v-for="i in ['On genes', 'On snp type']" :key="i">
                                             <div>{{ i }}</div>
                                         </v-tabs-item>
-                                </v-tabs-bar>
-                                <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
-                                    <div id="statistics" class="mt-2" v-if=" (bonferoniHits>0) ">
-                                        <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
-                                    </div>
-                                    <h6 v-else style="text-align: center" >No significant hits.</h6>
-                                </v-tabs-content>
-                            </v-tabs>
+                                    </v-tabs-bar>
+                                    <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
+                                        <div id="statistics" class="mt-2" v-if="sigAsDistributionRows[i].length > 1">
+                                            <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
+                                        </div>
+                                        <h6 v-else style="text-align: center" >No significant hits.</h6>
+                                    </v-tabs-content>
+                                </v-tabs>
+                            </v-layout>
                         </v-flex>
                     </v-flex>
                     <v-flex xs12 sm6 md8>
@@ -81,7 +82,7 @@
 
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy} from "../api";
+    import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
     import ManhattanPlot from "../components/manhattanplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
@@ -149,9 +150,6 @@
           "On genes": [["te", "t"]],
           "On snp type": [["string", "number"]]};
 
-      currentPage = 1;
-      pageCount = 5;
-      totalCount = 0;
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
       maf = ["1", "1-5", "5-10", "10"];
@@ -174,7 +172,8 @@
       loadData(): void {
         try {
             loadStudy(this.id).then(this._displayStudyData);
-            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
+            loadStudyTopHits(this.id).then(this._displayPieCharts);
+            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots); // TODO: CHECK IF WE NEED ONLY __SIGNIFICANT__ ASSOCIATIONS...
         } catch (err) {
             console.log(err);
         }
@@ -192,6 +191,10 @@
       }
       _loadAraPhenoLink(data): void {
         this.araPhenoLink = data.araPhenoLink;
+      }
+      _displayPieCharts(data): void {
+        this.sigAsDistributionRows['On genes'] = data.onGenes;
+        this.sigAsDistributionRows['On snp type'] = data.onSnp;
       }
       _displayManhattanPlots(data): void {
         this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;

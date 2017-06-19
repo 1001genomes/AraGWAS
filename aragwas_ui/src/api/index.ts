@@ -47,6 +47,12 @@ export async  function loadStudy(studyId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
+// Load top genes and snp type identified for this study
+export async  function loadStudyTopHits(studyId: number) {
+    return fetch(`/api/studies/${studyId}/top/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 export async  function loadAssociationsOfStudy(studyId: number, filter, page= 1) {
     const queryParam = getTopAssociationsParametersQuery(filter);
     const offset = 25 * (page - 1);
