@@ -326,8 +326,11 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     @list_route(methods=['GET'], url_path='top')
     def top(self, requests):
         """ Retrieves the top genes based on the assocations """
-        top_genes = elastic.get_top_genes()
-        return Response(map(list,top_genes))
+        agg = elastic.get_top_genes()
+        list_top_genes = []
+        for i in agg:
+            list_top_genes.append([i['key'], i['doc_count']])
+        return Response(list_top_genes)
 
 class SNPViewSet(viewsets.ViewSet):
     """ API for SNPs """

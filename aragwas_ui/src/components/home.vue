@@ -90,7 +90,7 @@
                                 </v-flex>
                                 <v-flex xs6>
                                     <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.4, title: 'Top 8 genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.4, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
                                 </v-flex>
                             </v-layout>
                         </v-flex>

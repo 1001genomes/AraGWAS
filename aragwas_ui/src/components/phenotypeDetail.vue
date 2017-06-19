@@ -158,7 +158,6 @@
 
         }
       }
-      // TODO instead of fetching one by one create endpoint to fetch all studies of a phenotype
       async loadStudyList(data) {
         this.studies = await loadStudiesOfPhenotype(this.id);
       }

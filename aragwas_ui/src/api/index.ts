@@ -95,16 +95,16 @@ export async function loadSimilarPhenotypes(phenotypeId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
-
-// Gene list
-export async function loadGenes(page: number = 1, ordering= "") {
-    return fetch(`/api/genes/?page=${page}&ordering=${ordering}`)
+export async function loadStudiesOfPhenotype(phenotypeId: number) {
+    return fetch(`/api/phenotypes/${phenotypeId}/studies/`)
         .then(checkStatus)
         .then(convertToModel);
 }
 
-export async function loadStudiesOfPhenotype(phenotypeId: number) {
-    return fetch(`/api/phenotypes/${phenotypeId}/studies`)
+
+// Gene list
+export async function loadGenes(page: number = 1, ordering= "") {
+    return fetch(`/api/genes/?page=${page}&ordering=${ordering}`)
         .then(checkStatus)
         .then(convertToModel);
 }

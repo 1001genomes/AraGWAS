@@ -137,25 +137,11 @@ def load_gene_snps(id):
 
 def get_top_genes():
     """Retrive associations by neighboring gene id"""
-    # TODO can be replaced by a facetted search by summing over all scores
     s = Search(using=es, doc_type='associations')
-    results = s.filter('range', score={'gte': 4}).sort('-score').source('snp')[0:500].execute().to_dict()['hits']['hits']
-    gene_scores = {}
-    for asso in results:
-        asso = asso['_source']
-        if not 'snp' in asso.keys():
-            continue
-        if 'gene_name' in asso['snp'].keys():
-            id = asso['snp']['gene_name']
-            if id in gene_scores.keys():
-                gene_scores[id] += 1
-            else:
-                gene_scores[id] = 1
-    gene_scores = sorted(gene_scores.items(), key=operator.itemgetter(1))[::-1]
-    agg = A({'nested': {'path':'snps.annotations'},'aggs':{"terms" : { "value_count" : { "field" : "gene_name" }}}})
-    s.aggs.bucket('gene_count',A)
-    agg_results = s.execute().aggregations
-    return gene_scores[:min(8, len(gene_scores))]
+    agg = A("terms", field="snp.gene_name")
+    s.aggs.bucket('gene_count', agg)
+    agg_results = s.execute().aggregations.gene_count.buckets
+    return agg_results
 
 
 

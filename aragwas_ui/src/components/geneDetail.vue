@@ -71,7 +71,7 @@
         router = Router;
         @Prop()
         geneId: string;
-        selectedGene: Gene = {id: '', name: '', strand: '',chr: '', type: '', positions: {gte: 0, lte: 0 }}
+        selectedGene: Gene = {id: '', name: '', strand: '',chr: '', type: '', positions: {gte: 0, lte: 0 }};
         searchTerm: string = "";
         associationCount = 0;
         min = 10;
