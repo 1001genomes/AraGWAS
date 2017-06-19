@@ -23,7 +23,7 @@
        </template>
        <template slot="items" scope="props">
          <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
-         <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+         <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotypePk }}">{{ props.item.phenotype }}</router-link></td>
          <td  class="text-xs-right">{{ props.item.transformation }}</td>
          <td  class="text-xs-right">{{ props.item.method }}</td>
          <td  class="text-xs-right">{{ props.item.genotype }}</td>

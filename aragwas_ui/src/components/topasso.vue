@@ -56,7 +56,7 @@
                 <v-pagination :length.number="pageCount" v-model="currentPage" />
             </div>
         </v-flex>
-        <v-flex xs1 wrap v-show="!showSwitch" class="text-xs-right">
+        <v-flex xs1 wrap v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
             <v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch>
         </v-flex>
         <v-flex xs3 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
@@ -122,7 +122,7 @@
         filters: {chr: string[], annotation: string[], maf: string[], type: string[]};
         localfilters : {};
         loading: boolean = false;
-        headers = [{text: "SNP", value: "snp.chr", name: "name"},{text: "score", value: "score", name: "score"},
+        headers = [{text: "SNP", value: "snp.chr", name: "name", left: true},{text: "score", value: "score", name: "score"},
             {text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false},{text: "gene",value: "snp.geneName", name: "gene", sortable: false},
             {text: "maf",value: "maf", name: "maf", sortable: false},{text: "study", value: "study.name", name: "study", sortable: false}];
         associations = [];

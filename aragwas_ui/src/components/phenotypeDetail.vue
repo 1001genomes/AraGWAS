@@ -105,12 +105,12 @@
       studyNumber = 0;
       studyIDs = [];
       studies = [];
-      similarPhenotypes =  []
+      similarPhenotypes =  [];
       avgHitNumber = 0;
       phenotypeDescription: string = "";
       araPhenoLink: string = "";
       studyColumns = [{text: "Name", left: true, value: "name"}, {text: "Genotype", value: "genotype"}, {text: "Method", value: "method"} ];
-      phenotypeColumns = [{text: "Name", left: true, value: "name"}]
+      phenotypeColumns = [{text: "Name", left: true, value: "name"}];
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
