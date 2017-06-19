@@ -60,39 +60,42 @@
                 <v-pagination :length.number="pageCount" v-model="currentPage" />
             </div>
         </v-flex>
-        <v-flex xs1 wrap v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
-            <v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch>
+        <v-flex xs3>
+            <v-flex xs12 v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
+            </v-flex>
+            <v-flex xs12 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 " ></v-switch></p>
+                <div v-if="showControls.indexOf('maf')>-1">
+                    <h6 class="mt-4">MAF</h6>
+                    <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
+                </div>
+                <div v-if="showControls.indexOf('chr')>-1">
+                    <h6 class="mt-4">Chromosomes</h6>
+                    <v-checkbox v-model="filters.chr" primary label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.chr" primary label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
+                </div>
+                <div v-if="showControls.indexOf('annotation')>-1">
+                    <h6 class="mt-4">Annotation</h6>
+                    <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
+                </div>
+                <div v-if="showControls.indexOf('type')>-1">
+                    <h6 class="mt-4">Type</h6>
+                    <v-checkbox v-model="filters.type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
+                    <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                </div>
+            </v-flex>
         </v-flex>
-        <v-flex xs3 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
-            <v-switch v-model="showSwitch" primary label="Controls" class="text-xs-right mb-0 " ></v-switch>
-            <div v-if="showControls.indexOf('maf')>-1">
-                <h6 class="mt-4">MAF</h6>
-                <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('chr')>-1">
-                <h6 class="mt-4">Chromosomes</h6>
-                <v-checkbox v-model="filters.chr" primary label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('annotation')>-1">
-                <h6 class="mt-4">Annotation</h6>
-                <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('type')>-1">
-                <h6 class="mt-4">Type</h6>
-                <v-checkbox v-model="filters.type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
-            </div>
-        </v-flex>
+
     </v-layout>
 </template>
 
@@ -203,8 +206,5 @@
     }
     .asso-table th {
         text-align: left !important;
-    }
-    .switch {
-        text-align: right;
     }
 </style>
