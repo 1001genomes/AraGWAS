@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div ref="size">
         <svg id="chart" height="200" :width="width" ref="svg">
         </svg>
     </div>

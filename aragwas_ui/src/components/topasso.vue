@@ -44,12 +44,16 @@
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                    <td v-if="hideFields.indexOf('name') == -1"><div v-if="'snp' in props.item">{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
-                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right"><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right"><router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
-                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right"><router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}">{{ props.item.study.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
+                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('gene') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
+                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('maf') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('study') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.study.name }}</router-link></td>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">

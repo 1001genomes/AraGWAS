@@ -196,7 +196,6 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='top')
     def top_genes_and_snp_type(self, request, pk):
         """ Gets genes and snp type that got the most significant associations """
-        # TODO: CHECK IF WE NEED ONLY __SIGNIFICANT__ ASSOCIATIONS...
         agg_gene, agg_snp_type = elastic.get_top_genes_and_snp_type_for_study(pk)
         list_top_genes = []
         for i in agg_gene:

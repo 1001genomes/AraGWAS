@@ -52,7 +52,7 @@
             steps: [
                 {
                     element: ".association-table-container",
-                    intro: "This table shows all top associations (sorted by score) that are stored in the database",
+                    intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
                     position: "left"
                 },
                 {

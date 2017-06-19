@@ -38,7 +38,7 @@
                         <v-flex xs12 class="mt-4">
                             <v-layout column>
                                 <h5 class="mb-1">Distribution of significant associations</h5>
-                                <v-tabs id="similar-tabs" grow scroll-bars v:model="currentViewIn">
+                                <v-tabs id="similar-tabs" grow scroll-bars v-model="currentViewIn">
                                     <v-tabs-bar slot="activators">
                                         <v-tabs-slider></v-tabs-slider>
                                         <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
@@ -47,7 +47,7 @@
                                         </v-tabs-item>
                                     </v-tabs-bar>
                                     <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
-                                        <div id="statistics" class="mt-2" v-if="sigAsDistributionRows[i].length > 1">
+                                        <div id="statistics" class="mt-2" v-if="sigAsDistributionRows[i].length > 0">
                                             <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
                                         </div>
                                         <h6 v-else style="text-align: center" >No significant hits.</h6>
@@ -173,7 +173,7 @@
         try {
             loadStudy(this.id).then(this._displayStudyData);
             loadStudyTopHits(this.id).then(this._displayPieCharts);
-            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots); // TODO: CHECK IF WE NEED ONLY __SIGNIFICANT__ ASSOCIATIONS...
+            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
         } catch (err) {
             console.log(err);
         }
