@@ -31,6 +31,8 @@ from elasticsearch_dsl.query import Q as QES
 from elasticsearch import Elasticsearch
 from aragwas.settings import ES_HOST
 
+from gwasdb.parsers import parse_lastel
+
 
 import numpy, math
 
@@ -71,6 +73,25 @@ class EsQuerySet(object):
     def __getitem__(self, key):
         return self._data
 
+class EsQuerySetLastEl(object):
+
+    def __init__(self, data, count, lastel):
+        self._count = count
+        self._data = data
+        self._lastel = lastel
+
+    def count(self):
+        return self._count
+
+    def lastel(self):
+        return self._lastel
+
+    @property
+    def data(self):
+        return self._data
+
+    def __getitem__(self, key):
+        return self._data
 
 class EsViewSetMixin(object):
 
@@ -282,10 +303,14 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         filters = _get_filter_from_params(request.query_params)
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
-        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
-        queryset = EsQuerySet(associations, count)
+        last_el = request.query_params.get('lastel', '')
+        associations, count, lastel = elastic.load_filtered_top_associations_search_after(filters,last_el)
+        print(lastel)
+        queryset = EsQuerySetLastEl(associations, count, lastel)
+        # associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        # queryset = EsQuerySet(associations, count)
         paginated_asso = self.paginate_queryset(queryset)
-        return self.get_paginated_response(paginated_asso)
+        return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
 
 
     @list_route(url_path='count')
@@ -328,13 +353,14 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         """ Returns snps for that gene """
         gene = elastic.load_gene_by_id(pk)
         zoom = int(request.query_params.get('zoom', 0))
+        # last_el = [request.query_params.get('lastel', '')]
         filters = _get_filter_from_params(request.query_params)
         filters['chr'] = [gene['chr']]
         filters['start'] = gene['positions']['gte'] - zoom
         filters['end'] = gene['positions']['lte'] + zoom
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
-        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+        associations, count = elastic.load_filtered_top_associations(filters,limit, offset)
         queryset = EsQuerySet(associations, count)
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)

@@ -134,7 +134,15 @@ def parse_snpeff(snp, is_custom_snp_eff):
     document['annotations'] = annotations
     return document
 
-
+def parse_lastel(last_el):
+    # Need to transform _ to # and check if string contains square brackets
+    if last_el[0] == '[':
+        last_el = last_el[1:-1]
+    last = last_el.split(',')
+    print(last)
+    score = float(last[0])
+    uid = '#'.join(last[1][1:-1].split('-'))
+    return [score, uid]
 
 def _get_go_map(filename):
     go_dict = {}

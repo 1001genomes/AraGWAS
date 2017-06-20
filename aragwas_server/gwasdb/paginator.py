@@ -3,7 +3,16 @@ from rest_framework.response import Response
 
 class EsPagination(pagination.LimitOffsetPagination):
     default_limit = 25
-    pass
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': data['count'],
+            'lastel': data['lastel'],
+            'results': data['results']
+        })
 
 class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
