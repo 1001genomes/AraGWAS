@@ -164,6 +164,10 @@
         onTypeChanged(val: number, oldVal: number) {
             this.loadData(this.currentPage);
         }
+        @Watch("view.zoom")
+        onZoomChanged(val: number, oldVal: number) {
+            this.loadData(this.currentPage);
+        }
         mounted(): void {
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);

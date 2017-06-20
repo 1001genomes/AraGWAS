@@ -17,7 +17,7 @@
                 </div>
                 <div class="flex"></div>
                 <div style="width:300px;" class="gene-zoom">
-                    <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" :min="min" ></v-slider>
+                    <v-slider v-model="zoom" prepend-icon="zoom_in" permanent-hint hint="Zoom" max="20" min="0" ></v-slider>
                 </div>
             </v-layout>
             </div>
@@ -49,6 +49,7 @@
 
     import {loadAssociationsOfGene, loadGene} from "../api";
     import Gene from "../models/gene";
+    import _ from 'lodash';
 
     import tourMixin from "../mixins/tour.js";
 
@@ -78,7 +79,8 @@
 
         // Associations parameters
         ordered: string;
-        zoom = 75;
+        zoom = 10;
+        debouncedZoom = 10;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
@@ -95,7 +97,21 @@
 //        TODO: add position in filter for associations listing.
         showControls = ["maf","annotation","type"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-        geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom};
+        geneView = {name: "gene", geneId: this.geneId, zoom: this.debouncedZoom};
+
+        updateZoom = _.debounce(this.assignZoom, 300);
+
+        assignZoom() {
+            this.debouncedZoom = this.zoom * 1000 / 2;
+        }
+        @Watch("zoom")
+        onZoomChanged(val: number, oldVal: number) {
+            this.updateZoom();
+        }
+        @Watch("debouncedZoom")
+        onDebZoomChanged(val: number, oldVal: number) {
+            this.geneView = {name: "gene", geneId: this.geneId, zoom: this.debouncedZoom};
+        }
 
         get options() {
             return {
