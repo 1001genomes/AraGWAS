@@ -59,8 +59,8 @@
             <div class="page-container mt-5 mb-3">
                 <v-pagination :length.number="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'"/>
                 <div v-else>
-                    <v-btn floating secondary @click.native="previous"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
-                    <v-btn floating secondary @click.native="next"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                    <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                    <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
                 </div>
             </div>
         </v-flex>
