@@ -57,7 +57,11 @@
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
-                <v-pagination :length.number="pageCount" v-model="currentPage" />
+                <v-pagination :length.number="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'"/>
+                <div v-else>
+                    <v-btn floating secondary @click.native="previous"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                    <v-btn floating secondary @click.native="next"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                </div>
             </div>
         </v-flex>
         <v-flex xs3>
@@ -134,6 +138,7 @@
             {text: "maf",value: "maf", name: "maf", sortable: false},{text: "study", value: "study.name", name: "study", sortable: false}];
         associations = [];
         currentPage = 1;
+        pager = 1;
         pageCount = 5;
         totalCount = 0;
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
@@ -143,6 +148,8 @@
         type = ["genic", "non-genic"];
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "score", descending: true};
         showSwitch = false;
+        lastElement: [number, string];
+        lastElementHistory = {'1': [0,''], };
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -170,12 +177,25 @@
         }
         mounted(): void {
             this.hideHeaders(this.hideFields);
+            console.log(this.lastElementHistory)
             this.loadData(this.currentPage);
+        }
+        previous(): void {
+            if (this.pager > 1) {
+                this.pager -= 1;
+                this.loadData(this.pager);
+            }
+        }
+        next(): void {
+            this.pager += 1;
+            this.lastElementHistory[this.pager.toString()] = this.lastElement;
+            this.loadData(this.pager);
         }
         loadData(pageToLoad): void {
             this.loading = true;
             if (this.view.name == "top-associations") {
-                loadTopAssociations(this.filters, pageToLoad).then(this._displayData);
+                // Need to check for already visited pages
+                loadTopAssociations(this.filters, pageToLoad, this.lastElementHistory[pageToLoad.toString()]).then(this._displayData);
             } else if (this.view.name == "phenotype") {
                 loadAssociationsOfPhenotype(this.view.phenotypeId, this.filters, pageToLoad).then(this._displayData)
             } else if (this.view.name == "study") {
@@ -189,6 +209,7 @@
             this.pagination.totalItems = data.count;
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
+            this.lastElement = data.lastel;
         }
         hideHeaders(fields): void {
             for(let i = this.headers.length-1; i>= 0; i--) {

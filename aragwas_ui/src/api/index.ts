@@ -133,10 +133,15 @@ export async  function loadAssociationsOfGene(geneId= "1", zoom: number, filter,
         .then(convertToModel);
 }
 
-export async function loadTopAssociations(filter, page) {
+export async function loadTopAssociations(filter, page, lastElement = [0,'']) {
     const queryParam = getTopAssociationsParametersQuery(filter);
     const offset = 25 * ( page - 1);
-    let url = `/api/associations/?limit=25&offset=${offset}`;
+    let url = `/api/associations/`;
+    if (lastElement[0] !== 0) {
+        url += '?lastel=' + lastElement[0].toString() + ',' + lastElement[1]
+    } else {
+        url += `?limit=25&offset=${offset}`
+    }
     if (queryParam) {
         url += queryParam;
     }
