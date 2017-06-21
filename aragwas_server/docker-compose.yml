@@ -19,7 +19,7 @@ services:
       - "amqp1"
       - "elasticsearch1"
     volumes:
-      - backend:/opt/aragwas_data
+      - /mnt/aragwas_data:/opt/aragwas_data
 
   amqp1:
     image: "rabbitmq:3-management"
@@ -56,8 +56,6 @@ services:
 
 volumes:
   esdata1:
-    driver: local
-  backend:
     driver: local
 
 networks:
