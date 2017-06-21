@@ -80,7 +80,7 @@
         // Associations parameters
         ordered: string;
         zoom = 10;
-        debouncedZoom = 10;
+        debouncedZoom = 5000;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;

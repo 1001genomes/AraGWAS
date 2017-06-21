@@ -177,7 +177,6 @@
         }
         mounted(): void {
             this.hideHeaders(this.hideFields);
-            console.log(this.lastElementHistory)
             this.loadData(this.currentPage);
         }
         previous(): void {
@@ -196,6 +195,7 @@
             if (this.view.name == "top-associations") {
                 // Need to check for already visited pages
                 loadTopAssociations(this.filters, pageToLoad, this.lastElementHistory[pageToLoad.toString()]).then(this._displayData);
+                this.pager = pageToLoad;
             } else if (this.view.name == "phenotype") {
                 loadAssociationsOfPhenotype(this.view.phenotypeId, this.filters, pageToLoad).then(this._displayData)
             } else if (this.view.name == "study") {

@@ -360,7 +360,7 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         filters['end'] = gene['positions']['lte'] + zoom
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
-        associations, count = elastic.load_filtered_top_associations(filters,limit, offset)
+        associations, count = elastic.load_filtered_top_associations(filters, offset, limit)
         queryset = EsQuerySet(associations, count)
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)
