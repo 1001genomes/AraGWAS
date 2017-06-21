@@ -19,10 +19,10 @@
           <ul>
             <li>{{versionInfo.version}}</li>
             <li>
-              <a :href="versionInfo.build_url" target="_blank">{{versionInfo.build}}</a>
+              <a :href="versionInfo.buildUrl" target="_blank">{{versionInfo.build}}</a>
             </li>
             <li>
-              <a :href="versionInfo.github_url" target="_blank">{{versionInfo.githash}}</a>
+              <a :href="versionInfo.githubUrl" target="_blank">{{versionInfo.githash}}</a>
             </li>
             <li><timeago :since="versionInfo.date" :auto-update="60"></timeago></li>
           </ul>

@@ -3,8 +3,8 @@ interface ApiVersion {
     build: string;
     version: string;
     date: Date;
-    github_url: string;
-    build_url: string;
+    githubUrl: string;
+    buildUrl: string;
 
 }
 
