@@ -44,9 +44,9 @@
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                    <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
+                    <td v-if="hideFields.indexOf('name') == -1" >
                         <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
+                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" >{{ props.item.score | round }}</td>
                     <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
                         <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                     <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
@@ -69,7 +69,8 @@
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
-                <v-pagination :length.number="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'"/>
+                <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
+                </v-pagination>
                 <div v-else>
                     <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
                     <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
@@ -91,9 +92,9 @@
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                        <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
+                        <td v-if="hideFields.indexOf('name') == -1" >
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]">{{ props.item.score | round }}</td>
                         <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
                             <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
@@ -116,7 +117,8 @@
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
-                <v-pagination :length.number="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'"/>
+                <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
+                </v-pagination>
                 <div v-else>
                     <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
                     <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
