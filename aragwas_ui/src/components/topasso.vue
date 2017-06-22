@@ -29,7 +29,7 @@
                 <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
             </div>
         </v-flex>
-        <v-flex xs9 wrap fill-height class="association-table-container">
+        <v-flex xs9 wrap fill-height class="association-table-container" v-show="view.controlPosition !== 'right' || showSwitch">
             <v-data-table
                     v-bind:headers="headers"
                     v-bind:items="associations"
@@ -46,14 +46,49 @@
                 <template slot="items" scope="props">
                         <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('gene') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
-                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('maf') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" v-bind:class="['text-xs-right', {'blue--text' : props.item.overFDR}]">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" v-bind:class="{'blue--text': props.item.overFDR}">{{ props.item.study.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
+                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                </template>
+            </v-data-table>
+            <div class="page-container mt-5 mb-3">
+                <v-pagination :length.number="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'"/>
+                <div v-else>
+                    <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                    <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                </div>
+            </div>
+        </v-flex >
+        <v-flex xs11 wrap fill-height class="association-table-container" v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch">
+            <v-data-table
+                    v-bind:headers="headers"
+                    v-bind:items="associations"
+                    v-bind:pagination.sync="pagination"
+                    hide-actions
+                    :loading="loading"
+                    class="elevation-1 mt-2 asso-table"
+            >
+                <template slot="headers" scope="props">
+                    <span>
+                      {{ props.item.text | capitalize }}
+                    </span>
+                </template>
+                <template slot="items" scope="props">
+                        <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
+                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
+                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
@@ -64,12 +99,9 @@
                 </div>
             </div>
         </v-flex>
-        <v-flex xs3>
-            <v-flex xs12 v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
-            </v-flex>
-            <v-flex xs12 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 " ></v-switch></p>
+        <v-flex xs3 row v-show="showSwitch">
+            <v-layout row>
+                <v-flex xs10 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
                 <div v-if="showControls.indexOf('maf')>-1">
                     <h6 class="mt-4">MAF</h6>
                     <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
@@ -98,6 +130,23 @@
                     <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                 </div>
             </v-flex>
+            <v-flex xs2 class="text-xs-right">
+                <br>
+                <br>
+                <br>
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
+            </v-flex>
+            </v-layout>
+        </v-flex>
+        <v-flex xs1 v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
+            <v-layout>
+                <v-flex xs6 offset-xs6>
+                    <br>
+                    <br>
+                    <br>
+                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
+                </v-flex>
+            </v-layout>
         </v-flex>
 
     </v-layout>
@@ -231,5 +280,8 @@
     }
     .asso-table th {
         text-align: left !important;
+    }
+    .switch {
+        transform: rotate(270deg);
     }
 </style>
