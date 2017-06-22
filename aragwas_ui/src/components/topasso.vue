@@ -39,21 +39,33 @@
                     class="elevation-1 mt-2 asso-table"
             >
                 <template slot="headers" scope="props">
-                    <span>
+                    <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
                       {{ props.item.text | capitalize }}
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                        <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
-                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
-                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
+                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
+                    <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
+                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
+                        <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
+                        <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
+                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
+                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right">
+                        <div v-if="'snp' in props.item">
+                            <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
+                        </div>
+                        <div v-else>Missing SNP info</div>
+                    </td>
+                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right">
+                        <div v-if="'snp' in props.item">
+                            <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
+                        </div>
+                        <div v-else>Missing SNP info</div>
+                    </td>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
@@ -74,7 +86,7 @@
                     class="elevation-1 mt-2 asso-table"
             >
                 <template slot="headers" scope="props">
-                    <span>
+                    <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
                       {{ props.item.text | capitalize }}
                     </span>
                 </template>
@@ -82,13 +94,25 @@
                         <td v-if="hideFields.indexOf('name') == -1" v-bind:class="{'blue--text' : props.item.overFDR}">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('score') == -1" class="text-xs-right">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
                             <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right">
+                        <div v-if="'snp' in props.item">
+                            <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
+                        </div>
+                        <div v-else>Missing SNP info</div>
+                    </td>
+                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right">
+                        <div v-if="'snp' in props.item">
+                            <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
+                        </div>
+                        <div v-else>Missing SNP info</div>
+                    </td>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
@@ -119,6 +143,9 @@
                 </div>
                 <div v-if="showControls.indexOf('annotation')>-1">
                     <h6 class="mt-4">Annotation</h6>
+                    <v-layout>
+
+                    </v-layout>
                     <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
                     <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
                     <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
@@ -164,6 +191,9 @@
             capitalize(str) {
                 return str.charAt(0).toUpperCase() + str.slice(1);
             },
+            toLowerCap(str) {
+                return (str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()).split("_").join(" ");
+            },
             round(number) {
                 return Math.round( number * 1000) / 1000;
             }
@@ -182,9 +212,10 @@
         filters: {chr: string[], annotation: string[], maf: string[], type: string[]};
         localfilters : {};
         loading: boolean = false;
-        headers = [{text: "SNP", value: "snp.chr", name: "name", left: true},{text: "score", value: "score", name: "score"},
-            {text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false},{text: "gene",value: "snp.geneName", name: "gene", sortable: false},
-            {text: "maf",value: "maf", name: "maf", sortable: false},{text: "study", value: "study.name", name: "study", sortable: false}];
+        headers = [{text: "SNP", value: "snp.chr", name: "name", left: true, tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
+            {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
+            {text: "maf",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
+            {text: "annotation",value: "annotation", name: "annotation", sortable: false, tooltip: "Annotation related to associated SNP"},{text: "type",value: "snp.type", name: "type", sortable: false, tooltip: "Type of SNP"}];
         associations = [];
         currentPage = 1;
         pager = 1;
