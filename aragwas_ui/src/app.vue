@@ -5,6 +5,7 @@
       <v-toolbar-items class="black--text">
           <v-toolbar-item class="links"><span class="black--text" @click="starttour">Take a tour?</span></v-toolbar-item>
           <v-toolbar-item class="links" id="faq-link"><router-link :to="{path: '/faq'}"><span class="black--text">FAQs</span></router-link></v-toolbar-item>
+          <v-toolbar-item class="links" id="faq-link"><span class="black--text" @click="toDocs">REST API documentation</span></v-toolbar-item>
       </v-toolbar-items>
     </v-toolbar>
     <main>
@@ -46,6 +47,10 @@
 
     starttour(): void {
       this.$router.push({name:'home', query:{tour:'true'}})
+    }
+
+    toDocs(): void {
+      location.href = "http://aragwas.1001genomes.org/docs"
     }
 
     async created() {
