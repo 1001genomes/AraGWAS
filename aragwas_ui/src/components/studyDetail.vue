@@ -69,7 +69,7 @@
                         <v-divider></v-divider>
                     </v-flex>
                     <v-flex xs12>
-                        <manhattan-plot :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
+                        <manhattan-plot class="flex" :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
                     </v-flex>
                 </v-layout>
             </v-tabs-content>
