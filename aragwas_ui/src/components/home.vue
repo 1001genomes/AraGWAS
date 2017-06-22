@@ -44,7 +44,7 @@
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
-                                <p class="light justify">Check out the top hits for across the <em>Arabidopsis thaliana</em> genome.</p>
+                                <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
                                 <v-btn class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
                             </div>
                         </v-flex>

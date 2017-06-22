@@ -9,8 +9,9 @@
         </v-parallax>
         <div class="container">
             <div class="section">
-                <v-layout row>
-                    <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider></v-divider></v-flex>
+                <v-layout row class="mb-4">
+                    <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider class="mb-3"></v-divider>
+                        <span style="font-size: 1.2rem">Check out the top hits across the <em>Arabidopsis thaliana</em> genome. This table shows all top associations (sorted by score, i.e. - log<sub>10</sub>(p-value)) that are stored in the database. Significant associations are marked in blue.</span></v-flex>
                 </v-layout>
                 <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="{name: 'top-associations'}"></top-associations>
             </div>
