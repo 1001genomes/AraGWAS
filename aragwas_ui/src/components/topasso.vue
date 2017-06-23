@@ -1,32 +1,32 @@
 <template>
-    <v-layout row wrap justify-space-around>
+    <v-layout row-xs child-flex-xs wrap justify-space-around>
         <v-flex xs3 wrap v-if="showControls.length>0 && view.controlPosition !== 'right'" class="associations-control-container">
             <div v-if="showControls.indexOf('maf')>-1">
                 <h6 class="mt-4">MAF</h6>
-                <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05-0.1']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
             </div>
-            <div v-if="showControls.indexOf('chr')>-1">
-                <h6 class="mt-4">Chromosomes {{100*percentage.chromosomes.chr1 | round}}</h6>
-                <v-checkbox v-model="filters.chr" primary :label="'1 (' + ((100*percentage.chromosomes.chr1)|round) + '% of SNPs)'" value="1" class="mb-0"> what</v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'2 (' + ((100*percentage.chromosomes.chr2)|round) + '% of SNPs)'" value="2" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'3 (' + ((100*percentage.chromosomes.chr3)|round) + '% of SNPs)'" value="3" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'4 (' + ((100*percentage.chromosomes.chr4)|round) + '% of SNPs)'" value="4" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'5 (' + (percentage.chromosomes.chr5 | round)+ '% of SNPs)'" value="5" class="mt-0"></v-checkbox>
+            <div xs column v-if="showControls.indexOf('chr')>-1">
+                <h6 class="mt-4">Chromosomes</h6>
+                <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of associations)'" value="1" class="mb-0"> what</v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of associations)'" value="2" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of associations)'" value="3" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of associations)'" value="4" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
             </div>
             <div v-if="showControls.indexOf('annotation')>-1">
                 <h6 class="mt-4">Annotation</h6>
-                <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( ${}} % of SNPs)" value="ns" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.annotation" primary :label="'Non-synonymous coding (' + roundPerc(percentage.annotations.ns) + '% of associations)'" value="ns" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.annotation" primary :label="'Synonymous coding (' + roundPerc(percentage.annotations.s) + '% of associations)'" value="s" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.annotation" primary :label="'Intron (' + roundPerc(percentage.annotations.in) + '% of associations)'" value="in" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.annotation" primary :label="'Intergenic (' + roundPerc(percentage.annotations.i) + '% of associations)'" value="i" class="mt-0 mb-0"></v-checkbox>
             </div>
             <div v-if="showControls.indexOf('type')>-1">
                 <h6 class="mt-4">Type</h6>
-                <v-checkbox v-model="filters.type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
             </div>
         </v-flex>
         <v-flex xs9 wrap fill-height class="association-table-container" v-show="view.controlPosition !== 'right' || showSwitch">
@@ -128,36 +128,33 @@
         <v-flex xs3 row v-show="showSwitch">
             <v-layout row>
                 <v-flex xs10 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
-                <div v-if="showControls.indexOf('maf')>-1">
-                    <h6 class="mt-4">MAF</h6>
-                    <v-checkbox v-model="filters.maf" primary label="<1% ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.maf" primary label="1-5% ( % of SNPs)" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.maf" primary label="5-10% ( % of SNPs)" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
-                </div>
-                <div v-if="showControls.indexOf('chr')>-1">
-                    <h6 class="mt-4">Chromosomes</h6>
-                    <v-checkbox v-model="filters.chr" primary label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.chr" primary label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.chr" primary label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.chr" primary label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
-                </div>
-                <div v-if="showControls.indexOf('annotation')>-1">
-                    <h6 class="mt-4">Annotation</h6>
-                    <v-layout>
-
-                    </v-layout>
-                    <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
-                </div>
-                <div v-if="showControls.indexOf('type')>-1">
-                    <h6 class="mt-4">Type</h6>
-                    <v-checkbox v-model="filters.type" primary label="Genic ( % of SNPs)" value="genic" class="mb-0"></v-checkbox>
-                    <v-checkbox v-model="filters.type" primary label="Non-genic ( % of SNPs)" value="non-genic" class="mt-0 mb-0"></v-checkbox>
-                </div>
+                    <div v-if="showControls.indexOf('maf')>-1">
+                        <h6 class="mt-4">MAF</h6>
+                        <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05-0.1']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
+                    </div>
+                    <div xs column v-if="showControls.indexOf('chr')>-1">
+                        <h6 class="mt-4">Chromosomes</h6>
+                        <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of associations)'" value="1" class="mb-0"> what</v-checkbox>
+                        <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of associations)'" value="2" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of associations)'" value="3" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of associations)'" value="4" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
+                    </div>
+                    <div v-if="showControls.indexOf('annotation')>-1">
+                        <h6 class="mt-4">Annotation</h6>
+                        <v-checkbox v-model="filters.annotation" primary :label="'Non-synonymous coding (' + roundPerc(percentage.annotations.ns) + '% of associations)'" value="ns" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.annotation" primary :label="'Synonymous coding (' + roundPerc(percentage.annotations.s) + '% of associations)'" value="s" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.annotation" primary :label="'Intron (' + roundPerc(percentage.annotations.in) + '% of associations)'" value="in" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.annotation" primary :label="'Intergenic (' + roundPerc(percentage.annotations.i) + '% of associations)'" value="i" class="mt-0 mb-0"></v-checkbox>
+                    </div>
+                    <div v-if="showControls.indexOf('type')>-1">
+                        <h6 class="mt-4">Type</h6>
+                        <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                    </div>
             </v-flex>
             <v-flex xs2 class="text-xs-right">
                 <br>
@@ -177,7 +174,6 @@
                 </v-flex>
             </v-layout>
         </v-flex>
-
     </v-layout>
 </template>
 
@@ -198,6 +194,9 @@
             },
             round(number) {
                 return Math.round(number * 1000) / 1000;
+            },
+            roundPerc(number) {
+                return Math.round(number * 1000) / 10;
             },
         },
         name: "topAssociations",
@@ -232,7 +231,8 @@
         showSwitch = false;
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
-        percentage = {chromosomes: {}, annotations: {}, types: {}}
+        percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
+        testS: string;
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -292,7 +292,7 @@
             }
         }
         _displayAggregatedData(data): void {
-            this.percentage = data
+            this.percentage = data;
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -307,6 +307,17 @@
                     this.headers.splice(i,1)
                 }
             }
+        }
+        percentageString(el: number): string {
+            const outstr = " (" + Math.round(1000*el)/10 + "% of associations)";
+            return outstr
+        }
+
+        roundPerc(number): number {
+            if (isNaN(number)) {
+                return 0.0
+            }
+            return Math.round(number * 1000) / 10;
         }
 
 
