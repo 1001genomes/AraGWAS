@@ -56,6 +56,15 @@ def _get_filter_from_params(params):
     filters = {'chr':filter_chr, 'maf': filter_maf, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype}
     return filters
 
+def _get_percentages_from_buckets(buckets):
+    out_dict = {}
+    annos_dict = {'NON_SYNONYMOUS_CODING': 'ns', 'SYNONYMOUS_CODING': 's', 'INTERGENIC': 'i', 'INTRON': 'in'}
+    tot_sum = sum(i['doc_count'] for i in buckets)
+    for i in buckets:
+        out_dict[annos_dict[i['key']] if i['key'] in annos_dict else str(i['key'])] = float(
+            i['doc_count']) / tot_sum
+    return out_dict
+
 
 class EsQuerySet(object):
 
@@ -192,6 +201,18 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)
 
+    @detail_route(methods=['GET'], url_path='aggregated_statistics')
+    def aggregated_statistics(self, request, pk):
+        """ Retrieves the top assocations for a phenotype """
+        filters = _get_filter_from_params(request.query_params)
+        filters['study_id'] = [pk]
+        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr_dict = _get_percentages_from_buckets(chr)
+        maf_dict = _get_percentages_from_buckets(maf)
+        type_dict = _get_percentages_from_buckets(type)
+        annotations_dict = _get_percentages_from_buckets(annotations)
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+
     @detail_route(methods=['GET'], url_path='gwas')
     def assocations_from_hdf5(self, request, pk):
         """ Retrieves assocations from the HDF5 file"""
@@ -294,6 +315,18 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)
 
+    @detail_route(methods=['GET'], url_path='aggregated_statistics')
+    def aggregated_statistics(self, request, pk):
+        """ Retrieves the top assocations for a phenotype """
+        filters = _get_filter_from_params(request.query_params)
+        filters['phenotype_id'] = [pk]
+        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr_dict = _get_percentages_from_buckets(chr)
+        maf_dict = _get_percentages_from_buckets(maf)
+        type_dict = _get_percentages_from_buckets(type)
+        annotations_dict = _get_percentages_from_buckets(annotations)
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for associations """
@@ -312,7 +345,6 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
 
-
     @list_route(url_path='count')
     def count(self, request):
         """  Retrieves the number of available associations """
@@ -320,7 +352,16 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         count = Search().using(client).doc_type('associations').query('match_all').count()
         return Response(count)
 
-
+    @list_route(methods=['GET'], url_path='aggregated_statistics')
+    def aggregated_statistics(self, request):
+        """ Retrieves the percentage for association meeting filters """
+        filters = _get_filter_from_params(request.query_params)
+        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr_dict = _get_percentages_from_buckets(chr)
+        maf_dict = _get_percentages_from_buckets(maf)
+        type_dict = _get_percentages_from_buckets(type)
+        annotations_dict = _get_percentages_from_buckets(annotations)
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
@@ -364,6 +405,24 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         queryset = EsQuerySet(associations, count)
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_asso)
+
+    @detail_route(methods=['GET'], url_path='aggregated_statistics')
+    def aggregated_statistics(self, request, pk):
+        """ Returns snps for that gene """
+        gene = elastic.load_gene_by_id(pk)
+        zoom = int(request.query_params.get('zoom', 0))
+        # last_el = [request.query_params.get('lastel', '')]
+        filters = _get_filter_from_params(request.query_params)
+        filters['chr'] = [gene['chr']]
+        filters['start'] = gene['positions']['gte'] - zoom
+        filters['end'] = gene['positions']['lte'] + zoom
+        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr_dict = _get_percentages_from_buckets(chr)
+        maf_dict = _get_percentages_from_buckets(maf)
+        type_dict = _get_percentages_from_buckets(type)
+        annotations_dict = _get_percentages_from_buckets(annotations)
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+
 
     @list_route(methods=['GET'], url_path='top')
     def top(self, requests):
@@ -414,6 +473,15 @@ class SNPViewSet(viewsets.ViewSet):
                          'ld_values': ordered_ld,
                          'top_snps_positions': ordered_positions})
 
+    @list_route(methods=['GET'], url_path='aggregated')
+    def aggregated_statistics(self, requests):
+        """ Retrieves the top genes based on the assocations """
+        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics({1:1})
+        chr_dict = _get_percentages_from_buckets(chr)
+        maf_dict = _get_percentages_from_buckets(maf)
+        type_dict = _get_percentages_from_buckets(type)
+        annotations_dict = _get_percentages_from_buckets(annotations)
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):

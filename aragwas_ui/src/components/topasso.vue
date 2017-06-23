@@ -9,16 +9,16 @@
                 <v-checkbox v-model="filters.maf" primary label=">10% ( % of SNPs)" value="10" class="mt-0"></v-checkbox>
             </div>
             <div v-if="showControls.indexOf('chr')>-1">
-                <h6 class="mt-4">Chromosomes</h6>
-                <v-checkbox v-model="filters.chr" primary label="1 ( % of SNPs)" value="1" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="2 ( % of SNPs)" value="2" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="3 ( % of SNPs)" value="3" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="4 ( % of SNPs)" value="4" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary label="5 ( % of SNPs)" value="5" class="mt-0"></v-checkbox>
+                <h6 class="mt-4">Chromosomes {{100*percentage.chromosomes.chr1 | round}}</h6>
+                <v-checkbox v-model="filters.chr" primary :label="'1 (' + ((100*percentage.chromosomes.chr1)|round) + '% of SNPs)'" value="1" class="mb-0"> what</v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'2 (' + ((100*percentage.chromosomes.chr2)|round) + '% of SNPs)'" value="2" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'3 (' + ((100*percentage.chromosomes.chr3)|round) + '% of SNPs)'" value="3" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'4 (' + ((100*percentage.chromosomes.chr4)|round) + '% of SNPs)'" value="4" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.chr" primary :label="'5 (' + (percentage.chromosomes.chr5 | round)+ '% of SNPs)'" value="5" class="mt-0"></v-checkbox>
             </div>
             <div v-if="showControls.indexOf('annotation')>-1">
                 <h6 class="mt-4">Annotation</h6>
-                <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( % of SNPs)" value="ns" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.annotation" primary label="Non-synonymous coding ( ${}} % of SNPs)" value="ns" class="mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.annotation" primary label="Synonymous coding ( % of SNPs)" value="s" class="mt-0 mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.annotation" primary label="Intron ( % of SNPs)" value="in" class="mt-0 mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.annotation" primary label="Intergenic ( % of SNPs)" value="i" class="mt-0 mb-0"></v-checkbox>
@@ -186,7 +186,7 @@
     import Vue from "vue";
     import {Component, Watch, Prop} from "vue-property-decorator";
 
-    import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene} from "../api";
+    import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene, loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype, loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics} from "../api";
 
     @Component({
         filters: {
@@ -197,8 +197,8 @@
                 return (str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()).split("_").join(" ");
             },
             round(number) {
-                return Math.round( number * 1000) / 1000;
-            }
+                return Math.round(number * 1000) / 1000;
+            },
         },
         name: "topAssociations",
         props: ["showControls", "hideFields", "filters", "view"],
@@ -232,6 +232,7 @@
         showSwitch = false;
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
+        percentage = {chromosomes: {}, annotations: {}, types: {}}
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -277,14 +278,21 @@
             if (this.view.name == "top-associations") {
                 // Need to check for already visited pages
                 loadTopAssociations(this.filters, pageToLoad, this.lastElementHistory[pageToLoad.toString()]).then(this._displayData);
+                loadTopAggregatedStatistics(this.filters).then(this._displayAggregatedData);
                 this.pager = pageToLoad;
             } else if (this.view.name == "phenotype") {
-                loadAssociationsOfPhenotype(this.view.phenotypeId, this.filters, pageToLoad).then(this._displayData)
+                loadAssociationsOfPhenotype(this.view.phenotypeId, this.filters, pageToLoad).then(this._displayData);
+                loadAggregatedStatisticsOfPhenotype(this.view.phenotypeId, this.filters).then(this._displayAggregatedData);
             } else if (this.view.name == "study") {
-                loadAssociationsOfStudy(this.view.studyId, this.filters, pageToLoad).then(this._displayData)
+                loadAssociationsOfStudy(this.view.studyId, this.filters, pageToLoad).then(this._displayData);
+                loadAggregatedStatisticsOfStudy(this.view.studyId, this.filters).then(this._displayAggregatedData);
             } else if (this.view.name == "gene") {
-                loadAssociationsOfGene(this.view.geneId, this.view.zoom, this.filters, pageToLoad).then(this._displayData)
+                loadAssociationsOfGene(this.view.geneId, this.view.zoom, this.filters, pageToLoad).then(this._displayData);
+                loadAggregatedStatisticsOfGene(this.view.geneId, this.view.zoom, this.filters).then(this._displayAggregatedData);
             }
+        }
+        _displayAggregatedData(data): void {
+            this.percentage = data
         }
         _displayData(data): void {
             this.associations = data.results;

@@ -155,6 +155,55 @@ def get_top_genes_and_snp_type_for_study(study_id):
     agg_results = s.execute().aggregations
     return agg_results.gene_count.buckets, agg_results.snp_type_count.buckets
 
+def filter_association_search(s, filters):
+    if 'score' in filters:
+        s = s.filter('range', score={'gte': filter})
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in filters['chr']]))
+    if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
+        maf_filters = []
+        for maf in filters['maf']:
+            maf = maf.split('-')
+            if len(maf) > 1:
+                maf_filters.append(Q('range', maf={'lte': float(maf[1])/100,'gte':float(maf[0])/100}))
+            else:
+                if maf[0] == '1':
+                    maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))
+                else:
+                    maf_filters.append(Q('range', maf={'gte':float(maf[0])/100}))
+        s = s.filter(Q('bool',should = maf_filters))
+    if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
+        annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
+        s = s.filter(Q('nested', path='snp.annotations', query=Q('bool', should=annot_filter)))
+    if 'type' in filters and len(filters['type'])==1:
+        s = s.filter('term', snp__coding='T' if filters['type'][0] == 'genic' else 'F')
+    if 'study_id' in filters and len(filters['study_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__id = study_id) for study_id in filters['study_id']]))
+    if 'phenotype_id' in filters and len(filters['phenotype_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
+    if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
+        s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
+    if 'start' in filters:
+        s = s.filter('range', snp__position={'gte': int(filters['start'])})
+    if 'end' in filters:
+        s = s.filter('range', snp__position={'lte': int(filters['end'])})
+    return s
+
+def get_aggregated_filtered_statistics(filters):
+    s = Search(using=es, doc_type='associations')
+    s = filter_association_search(s, filters)
+    agg_chr = A("terms", field="snp.chr")
+    agg_type = A("terms", field="snp.coding")
+    agg_annotation = A(
+        {"nested": {"path": "snp.annotations"}, "aggs": {"annotations": {"terms": {"field": "snp.annotations.effect"}}}})
+    agg_maf = A("range", field="maf",
+                ranges=[{"to": 0.01}, {"from": 0.01, "to": 0.05}, {"from": 0.05, "to": 0.1}, {"from": 0.1}])
+    s.aggs.bucket('maf_count', agg_maf)
+    s.aggs.bucket('chr_count', agg_chr)
+    s.aggs.bucket('type_count', agg_type)
+    s.aggs.bucket('annotation_count', agg_annotation)
+    agg_results = s.execute().aggregations
+    return agg_results.chr_count.buckets, agg_results.maf_count.buckets, agg_results.type_count.buckets, agg_results.annotation_count.annotations.buckets
 
 def index_associations(study, associations, thresholds):
     """indexes associations"""
@@ -185,37 +234,7 @@ def load_filtered_top_associations(filters, start=0, size=50):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
     s = s.sort('-score')
-    if 'score' in filters:
-        s = s.filter('range', score={'gte': filter})
-    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
-        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in filters['chr']]))
-    if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
-        maf_filters = []
-        for maf in filters['maf']:
-            maf = maf.split('-')
-            if len(maf) > 1:
-                maf_filters.append(Q('range', maf={'lte': float(maf[1])/100,'gte':float(maf[0])/100}))
-            else:
-                if maf[0] == '1':
-                    maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))
-                else:
-                    maf_filters.append(Q('range', maf={'gte':float(maf[0])/100}))
-        s = s.filter(Q('bool',should = maf_filters))
-    if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
-        annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
-        s = s.filter(Q('nested', path='snp.annotations', query=Q('bool', should=annot_filter)))
-    if 'type' in filters and len(filters['type'])==1:
-        s = s.filter('term', snp__coding='T' if filters['type'][0] == 'genic' else 'F')
-    if 'study_id' in filters and len(filters['study_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__id = study_id) for study_id in filters['study_id']]))
-    if 'phenotype_id' in filters and len(filters['phenotype_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
-    if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
-    if 'start' in filters:
-        s = s.filter('range', snp__position={'gte': int(filters['start'])})
-    if 'end' in filters:
-        s = s.filter('range', snp__position={'lte': int(filters['end'])})
+    s = filter_association_search(s, filters)
     s = s[start:start+size]
     print(json.dumps(s.to_dict()))
     result = s.execute()
@@ -226,41 +245,7 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
     s = s.sort('-score', '_uid')
-    if 'score' in filters:
-        s = s.filter('range', score={'gte': filter})
-    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
-        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in filters['chr']]))
-    if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
-        maf_filters = []
-        for maf in filters['maf']:
-            maf = maf.split('-')
-            if len(maf) > 1:
-                maf_filters.append(Q('range', maf={'lte': float(maf[1])/100,'gte':float(maf[0])/100}))
-            else:
-                if maf[0] == '1':
-                    maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))
-                else:
-                    maf_filters.append(Q('range', maf={'gte':float(maf[0])/100}))
-        s = s.filter(Q('bool',should = maf_filters))
-    if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
-        annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
-        s = s.filter(Q('nested', path='snp.annotations', query=Q('bool', should=annot_filter)))
-    if 'type' in filters and len(filters['type'])==1:
-        s = s.filter('term', snp__coding='T' if filters['type'][0] == 'genic' else 'F')
-    if 'study_id' in filters and len(filters['study_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__id = study_id) for study_id in filters['study_id']]))
-    if 'phenotype_id' in filters and len(filters['phenotype_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
-    if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
-        s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
-    if 'start' in filters:
-        s = s.filter('range', snp__position={'gte': int(filters['start'])})
-    if 'end' in filters:
-        s = s.filter('range', snp__position={'lte': int(filters['end'])})
-    if search_after != '':
-        search_after = parse_lastel(search_after)
-        print(search_after)
-        s = s.extra(search_after=search_after)
+    s = filter_association_search(s, filters)
     s = s[0:25]
     print(json.dumps(s.to_dict()))
     result = s.execute()

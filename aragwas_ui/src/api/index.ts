@@ -64,6 +64,16 @@ export async  function loadAssociationsOfStudy(studyId: number, filter, page= 1)
         .then(checkStatus)
         .then(convertToModel);
 }
+export async  function loadAggregatedStatisticsOfStudy(studyId: number, filter) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    let url = `/api/studies/${studyId}/aggregated_statistics/?`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 // Load associations for manhattan plots
 export async  function loadAssociationsForManhattan(studyId: number) {
     return fetch(`/api/studies/${studyId}/gwas/?filter=2500&filter_type=top`)
@@ -90,6 +100,16 @@ export async  function loadAssociationsOfPhenotype(phenotypeId: number, filter, 
     let url = `/api/phenotypes/${phenotypeId}/associations/?limit=25&offset=${offset}`;
     if (queryParam) {
         url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async  function loadAggregatedStatisticsOfPhenotype(phenotypeId: number, filter) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    let url = `/api/phenotypes/${phenotypeId}/aggregated_statistics/?`;
+    if (queryParam) {
+        url += "?" + queryParam;
     }
     return fetch(url)
         .then(checkStatus)
@@ -132,7 +152,16 @@ export async  function loadAssociationsOfGene(geneId= "1", zoom: number, filter,
         .then(checkStatus)
         .then(convertToModel);
 }
-
+export async  function loadAggregatedStatisticsOfGene(geneId = "1", zoom: number, filter) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    let url = `/api/genes/${geneId}/aggregated_statistics/?zoom=${zoom}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 export async function loadTopAssociations(filter, page, lastElement = [0,'']) {
     const queryParam = getTopAssociationsParametersQuery(filter);
     const offset = 25 * ( page - 1);
@@ -149,8 +178,23 @@ export async function loadTopAssociations(filter, page, lastElement = [0,'']) {
         .then(checkStatus)
         .then(convertToModel);
 }
+export async  function loadTopAggregatedStatistics(filter) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    let url = `/api/associations/aggregated_statistics/?`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 export async  function loadTopGenes() {
     return fetch(`/api/genes/top/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async  function loadSnpStatistics() {
+    return fetch(`/api/snps/aggregated/`)
         .then(checkStatus)
         .then(convertToModel);
 }
