@@ -49,7 +49,6 @@
 
     import {loadAssociationsOfGene, loadGene} from "../api";
     import Gene from "../models/gene";
-    import _ from 'lodash';
 
     import tourMixin from "../mixins/tour.js";
 
@@ -80,7 +79,6 @@
         // Associations parameters
         ordered: string;
         zoom = 10;
-        debouncedZoom = 5000;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
@@ -94,23 +92,13 @@
         type = ["genic", "non-genic"];
         chr = ["1", "2","3","4","5"];
         hideFields = [];
-//        TODO: add position in filter for associations listing.
         showControls = ["maf","annotation","type"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-        geneView = {name: "gene", geneId: this.geneId, zoom: this.debouncedZoom};
+        geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
 
-        updateZoom = _.debounce(this.assignZoom, 300);
-
-        assignZoom() {
-            this.debouncedZoom = this.zoom * 1000 / 2;
-        }
         @Watch("zoom")
         onZoomChanged(val: number, oldVal: number) {
-            this.updateZoom();
-        }
-        @Watch("debouncedZoom")
-        onDebZoomChanged(val: number, oldVal: number) {
-            this.geneView = {name: "gene", geneId: this.geneId, zoom: this.debouncedZoom};
+            this.geneView = {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
         }
 
         get options() {

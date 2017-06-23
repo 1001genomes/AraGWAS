@@ -184,6 +184,8 @@
 
     import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene, loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype, loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics} from "../api";
 
+    import _ from 'lodash';
+
     @Component({
         filters: {
             capitalize(str) {
@@ -232,31 +234,31 @@
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
-        testS: string;
+        debouncedloadData = _.debounce(this.loadData, 300);
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.maf")
         onMafChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.chr")
         onChrChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.annotation")
         onAnnotationChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.type")
         onTypeChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         @Watch("view.zoom")
         onZoomChanged(val: number, oldVal: number) {
-            this.loadData(this.currentPage);
+            this.debouncedloadData(this.currentPage);
         }
         mounted(): void {
             this.hideHeaders(this.hideFields);
