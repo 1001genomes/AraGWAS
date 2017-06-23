@@ -184,7 +184,7 @@
 
     import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene, loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype, loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics} from "../api";
 
-    import _ from 'lodash';
+    import _ from "lodash";
 
     @Component({
         filters: {

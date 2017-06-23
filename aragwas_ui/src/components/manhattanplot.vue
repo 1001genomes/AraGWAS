@@ -1,6 +1,6 @@
 <template>
-    <div ref="size">
-        <svg id="chart" height="200" :width="width" ref="svg">
+    <div>
+        <svg id="chart" height="250" width="100%" ref="svg">
         </svg>
     </div>
 </template>
@@ -8,46 +8,73 @@
     import * as d3 from "d3";
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
-
-    interface VerticalLines {
-        x: number;
-    }
+    import _ from "lodash";
 
     @Component({
         name: "manhattan-plot",
-        props: ["dataPoints", "options"],
+        props: ["dataPoints", "options", "shown"],
     })
     export default class ManhattanPlot extends Vue {
         @Prop()
         dataPoints;
         @Prop()
         options;
+        @Prop()
+        shown;
+
         width: number = 1000;
+        firstResize = false;
         scales = {x: d3.scaleLinear(), y: d3.scaleLinear()};
-        axis = {x: d3.axisBottom(this.scales.x), y: d3.axisBottom(this.scales.y)};
         readonly margin = {
             left: 40,
             right: 10,
             bottom: 40,
             top: 40,
         };
-        scatterPlotHeight: number = 300;
+        readonly padding = 40;
+        readonly h = 235;
+        debouncedResize = _.debounce(this.onResize, 200);
 
-        // TODO: add other options in props (currently only chr)
+
+        get blue() {
+            return 204 - (this.options.color) * 40;
+        }
+        get red() {
+            return 51 + (this.options.color) * 40;
+        }
+        get paddedScatter() {
+            const width = this.width - this.margin.left - this.margin.right;
+            const height = this.h - this.padding;
+            return { width, height };
+        }
+
+        @Watch('dataPoints')
+        onDataPointsChanged(val, oldval) {
+            this.drawPoints();
+            this.drawBonferoni();
+        }
+        @Watch('shown')
+        onShownChanged(val, oldval) {
+            if(val && !this.firstResize){
+                this.onResize();
+                this.firstResize = true;
+            }
+        }
+
         // TODO: add hover functionality
-
         mounted() {
-            window.addEventListener('resize', this.onResize);
+            window.addEventListener('resize', this.debouncedResize);
+            // Width and height
+            let w = this.options.width;
+            if (typeof w === "undefined") {
+                w = 1200;
+            }
             const defaultOptions = {
-                matrix: undefined,
-                species_id: undefined,
                 chr: 0,
                 alpha: 0.05,
                 max_y: 10,
                 max_x: 100000,
                 bonferoniThreshold: 10,
-                div: undefined,
-                divLegend: undefined,
                 xlabel: "x",
                 ylabel: "y",
                 legend1: "",
@@ -61,138 +88,44 @@
                     this.options[key] = defaultOptions[key];
                 }
             }
-            this.width = this.$el.clientWidth;
-            this.scales.x.range([this.margin.left, this.paddedScatter.width]);
-            this.scales.y.range([this.paddedScatter.height, this.margin.top]);
-            this.drawManhattan();
+            const options = this.options;
+            // define scaling options
+            this.scales.x.domain([0, options.max_x]);
+            this.scales.x.range([this.padding, (w - this.padding)]);
+            this.scales.y.domain([0, options.max_y + 1]);
+            this.scales.y.range([this.h - this.padding, this.padding]);
+            // draw svg
+            this.draw();
+            this.drawPoints()
+
         }
         beforeDestroy() {
-            window.removeEventListener('resize', this.onResize);
+            window.removeEventListener('resize', this.debouncedResize);
         }
         onResize() {
-            this.width = this.$el.clientWidth;
+            this.width = this.$el.offsetWidth;
             this.scales.x.range([this.margin.left, this.paddedScatter.width]);
             this.scales.y.range([this.paddedScatter.height, this.margin.top]);
-            this.redraw();
+            const svg = d3.select(this.$refs.svg as Element);
+            svg.selectAll("g").remove();
+            svg.selectAll("line").remove();
+            svg.selectAll("circle").remove();
+            this.draw();
+            this.drawPoints();
+            this.drawBonferoni();
         }
-        get paddedScatter() {
-            const width = this.width - this.margin.left - this.margin.right;
-            const height = this.scatterPlotHeight - this.margin.top - this.margin.bottom;
-            return { width, height };
-        }
-        redraw() {
-            // define scaling options
-            const options = this.options;
-            const padding = 40;
-            let w = this.width;
-            const h = 185;
-
-            this.scales.x.domain([0, options.max_x]);
-            this.scales.x.range([padding, (w - padding)]);
-            this.scales.y.domain([0, options.max_y + 1]);
-            this.scales.y.range([h - padding, padding]);
-
-            // define color
-            const blue = 204 - (options.color) * 40;
-            const red = 51 + (options.color) * 40;
-            // get data
-            const data = options.matrix;
-            const d2 = [[0, options.bonferoniThreshold], [options.max_x, options.bonferoniThreshold]];
+        draw() {
             // draw svg
+            const options = this.options;
+            const h = this.h;
+            let w = this.$el.offsetWidth;
             const svg = d3.select(this.$refs.svg as Element);
             const len = Math.pow(10, ((String(Math.round(options.max_x / 5)).length - 1)));
             const valX = Math.round(options.max_x / 5 / len) * len;
             // draw graph help-lines in background
-            // First update the values
-            let vertLineVal: number[];
-            vertLineVal = [0];
             for (let i = 0; (valX * i) < options.max_x ; i++) {
-                vertLineVal.concat(valX * i);
-            }
-            // Select the old lines:
-            let vertLines = svg.selectAll('line.vertical').data(vertLineVal);
-            vertLines.exit().remove();
-            vertLines.enter().append('line')
-                .merge(vertLines)
-                .attr("class", "vertical")
-                .attr("x1", (d) => this.scales.x(d))
-                .attr("y1", this.scales.y(0))
-                .attr("x2", (d) => this.scales.x(d))
-                .attr("y2", this.scales.y(options.max_y + 1))
-                .style("stroke", "#CCC")
-                .style("stroke-width", 1);
-            var lineLabels = svg.selectAll("svg:g#labels").data(vertLineVal);
-            lineLabels.exit().remove();
-            lineLabels.enter()
-                .attr("transform", (d) => "translate(" + this.scales.x(d) + "," + (h - padding / 1.5) + ")")
-                .append("text").text((d) => d)
-                .attr("text-anchor", "middle");
-            const valY = Math.round(options.max_y / 3);
-            for (let i = 1; (i * valY) < (options.max_y + 1); i++) {
-                svg.append("svg:line")
-                    .attr("x1", this.scales.x(0))
-                    .attr("y1", this.scales.y(valY * i))
-                    .attr("x2", this.scales.x(options.max_x))
-                    .attr("y2", this.scales.y(valY * i))
-                    .style("stroke", "#CCC")
-                    .style("stroke-width", 1)
-                    .classed('setlines');
-            }
-            // write text-information to axis and draw graph-elements
-            svg.append("svg:g")
-                .attr("transform", "translate(" + ((w - padding) / 2) + "," + (h - padding / 5) + ")")
-                .append("text").text("chromosomal position [bp]");
-//            // draw datapoints
-//            svg.selectAll("circle")
-//                .data(this.dataPoints)
-//                .enter()
-//                .append("circle")
-//                .attr("cx", (d) => {
-//                    return this.scales.x(d[0]);
-//                })
-//                .attr("cy", (d) => {
-//                    return this.scales.y(d[1]);
-//                })
-//                .attr("r", 2.1)
-//                .style("fill", "rgb(" + red + ",102," + blue + ")");
-        }
-        drawManhattan() {
-            // define scaling options
-            const options = this.options;
-            const padding = 40;
-            let w = this.width;
-            const h = 185;
-
-            this.scales.x.domain([0, options.max_x]);
-            this.scales.x.range([padding, (w - padding)]);
-            this.scales.y.domain([0, options.max_y + 1]);
-            this.scales.y.range([h - padding, padding]);
-
-            // define colors
-            const blue = 204 - (options.color) * 40;
-            const red = 51 + (options.color) * 40;
-            // get data
-            const data = options.matrix;
-            const d2 = [[0, options.bonferoniThreshold], [options.max_x, options.bonferoniThreshold]];
-            // draw svg
-            const svg = d3.select(this.$refs.svg as Element)
-                .append("svg")
-                .attr("width", w)
-                .attr("height", h);
-            const len = Math.pow(10, ((String(Math.round(options.max_x / 5)).length - 1)));
-            const valX = Math.round(options.max_x / 5 / len) * len;
-            // draw graph help-lines in background
-            for (let i = 0; (valX * i) < options.max_x ; i++) {
-                svg.append("svg:line")
-                    .attr("class", "vertical")
-                    .attr("x1", this.scales.x(valX * i))
-                    .attr("y1", this.scales.y(0))
-                    .attr("x2", this.scales.x(valX * i))
-                    .attr("y2", this.scales.y(options.max_y + 1))
-                    .style("stroke", "#CCC")
-                    .style("stroke-width", 1);
                 svg.append("svg:g")
-                    .attr("transform", "translate(" + this.scales.x(valX * i) + "," + (h - padding / 1.5) + ")")
+                    .attr("transform", "translate(" + this.scales.x(valX * i) + "," + (h - this.padding / 1.5) + ")")
                     .append("text").text(valX * i)
                     .attr("text-anchor", "middle");
             }
@@ -206,7 +139,7 @@
                     .style("stroke", "#CCC")
                     .style("stroke-width", 1);
                 svg.append("svg:g")
-                    .attr("transform", "translate(" + (padding / 1.5) + "," + this.scales.y(valY * i) + ")")
+                    .attr("transform", "translate(" + (this.padding / 1.5) + "," + this.scales.y(valY * i) + ")")
                     .append("text").text(valY * i)
                     .attr("text-anchor", "middle");
             }
@@ -217,48 +150,8 @@
                 .style("font-weight", "bold");
             svg.append("svg:g")
                 .attr("transform", "matrix(0, -1, 1, 0, 0, 0)").append("svg:g")
-                .attr("transform", "translate(" + ((padding - h)) + "," + (padding / 3) + ")")
+                .attr("transform", "translate(" + ((this.padding - 0.85*h)) + "," + (this.padding / 3) + ")")
                 .append("text").text("-log10(p-value)");
-            svg.append("svg:g")
-                .attr("transform", "translate(" + ((w - padding) / 2) + "," + (h - padding / 5) + ")")
-                .append("text").text("chromosomal position [bp]")
-                .attr("text-anchor", "middle");
-            svg.append("rect")
-                .attr("x", padding)
-                .attr("y", padding / 2)
-                .attr("width", padding / 2.5)
-                .attr("height", padding / 3.5)
-                .style("fill", "rgb(" + red + ",102," + blue + ")");
-            svg.append("svg:g")
-                .attr("transform", "translate(" + (padding + 25) + "," + (padding / 1.3) + ")")
-                .append("text").text("-log10(p-value)");
-            svg.append("rect")
-                .attr("x", padding * 4)
-                .attr("y", padding / 2)
-                .attr("width", padding / 2.5)
-                .attr("height", padding / 3.5)
-                .style("fill", "rgb(0,100,0)");
-            svg.append("svg:line")
-                .attr("x1", this.scales.x(0))
-                .attr("y1", this.scales.y(options.max_y + 1))
-                .attr("x2", this.scales.x(options.max_x))
-                .attr("y2", this.scales.y(options.max_y + 1))
-                .style("stroke", "#CCC")
-                .style("stroke-width", 1.5 );
-            svg.append("svg:line")
-                .attr("x1", this.scales.x(options.max_x))
-                .attr("y1", this.scales.y(0))
-                .attr("x2", this.scales.x(options.max_x))
-                .attr("y2", this.scales.y(options.max_y + 1))
-                .style("stroke", "#CCC")
-                .style("stroke-width", 1.5 );
-            svg.append("svg:line")
-                .attr("x1", this.scales.x(0))
-                .attr("y1", this.scales.y(0))
-                .attr("x2", this.scales.x(0))
-                .attr("y2", this.scales.y(options.max_y + 1))
-                .style("stroke", "#000000")
-                .style("stroke-width", 1);
             svg.append("svg:line")
                 .attr("x1", this.scales.x(0))
                 .attr("y1", this.scales.y(0))
@@ -267,16 +160,34 @@
                 .style("stroke", "#000000")
                 .style("stroke-width", 1);
             svg.append("svg:g")
-                .attr("transform", "translate(" + (padding * 4 + 25) + "," + (padding / 1.3) + ")")
+                .attr("transform", "translate(" + ((w - this.padding) / 2) + "," + (h - this.padding / 5) + ")")
+                .append("text").text("chromosomal position [bp]")
+                .attr("text-anchor", "middle");
+            svg.append("rect")
+                .attr("x", this.padding)
+                .attr("y", this.padding / 1.6)
+                .attr("width", this.padding / 2.5)
+                .attr("height", this.padding / 3.5)
+                .style("fill", "rgb(" + this.red + ",102," + this.blue + ")");
+            svg.append("svg:g")
+                .attr("transform", "translate(" + (this.padding + 25) + "," + (this.padding / 1.1) + ")")
+                .append("text").text("-log10(p-value)");
+            svg.append("rect")
+                .attr("x", this.padding * 4 + 25)
+                .attr("y", this.padding / 1.6)
+                .attr("width", this.padding / 2.5)
+                .attr("height", this.padding / 3.5)
+                .style("fill", "rgb(0,100,0)");
+            svg.append("svg:g")
+                .attr("transform", "translate(" + (this.padding * 4 + 50) + "," + (this.padding / 1.1) + ")")
                 .append("text").text("Bonferroni threshold [" + options.alpha + "]");
-            svg.append("svg:line")
-                .attr("x1", this.scales.x(d2[0][0]))
-                .attr("y1", this.scales.y(d2[0][1]))
-                .attr("x2", this.scales.x(d2[1][0]))
-                .attr("y2", this.scales.y(d2[1][1]))
-                .style("stroke", "rgb(0,100,0)")
-                .style("stroke-width", 1.5 );
-            // draw datapoints
+        }
+        drawPoints() {
+            const div = d3.select(this.$refs.svg as Element)
+                .append("div")  // declare the tooltip div
+                .attr("class", "tooltip")              // apply the 'tooltip' class
+                .style("opacity", 0);                  // set the opacity to nil
+            const svg = d3.select(this.$refs.svg as Element);
             svg.selectAll("circle")
                 .data(this.dataPoints)
                 .enter()
@@ -287,8 +198,35 @@
                 .attr("cy", (d) => {
                     return this.scales.y(d[1]);
                 })
-                .attr("r", 2.1)
-                .style("fill", "rgb(" + red + ",102," + blue + ")");
+                .attr("r", 2.5)
+                .on("mouseover", function(d) {
+//                    console.log(div);
+                    d3.select(this).attr("r",6);
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html('<v-card href= "http://google.com"> ASS</v-card>')
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 45) + "px");
+                })
+                .on("mouseout", function(d,i) {
+                    d3.select(this).attr("r",2.5)
+                })
+                .style("fill", "rgb(" + this.red + ",102," + this.blue + ")");
+        }
+        drawBonferoni() {
+            const d2 = [[0, this.options.bonferoniThreshold], [this.options.max_x, this.options.bonferoniThreshold]];
+            const svg = d3.select(this.$refs.svg as Element);
+            svg.append("svg:line")
+                .attr("x1", this.scales.x(d2[0][0]))
+                .attr("y1", this.scales.y(d2[0][1]))
+                .attr("x2", this.scales.x(d2[1][0]))
+                .attr("y2", this.scales.y(d2[1][1]))
+                .style("stroke", "rgb(0,100,0)")
+                .style("stroke-width", 1.5 );
         }
     }
 </script>
@@ -299,5 +237,16 @@
     #chart path {
         fill: transparent;
         stroke: green;
+    }
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 60px;
+        height: 40px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: forestgreen;
+        border: 0;
+        border-radius: 8px;
     }
 </style>

@@ -228,9 +228,11 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
         top_associations, thresholds = get_top_associations(association_file, threshold_or_top, filter_type)
         output = {}
+        prev_idx = 0
         for chrom in range(1, 6):
             chr_idx = top_associations['chr'].searchsorted(str(chrom+1))
-            output['chr%s' % chrom] = {'scores': top_associations['score'][:chr_idx], 'positions': top_associations['position'][:chr_idx], 'mafs': top_associations['maf'][:chr_idx]}
+            output['chr%s' % chrom] = {'scores': top_associations['score'][prev_idx:chr_idx], 'positions': top_associations['position'][prev_idx:chr_idx], 'mafs': top_associations['maf'][prev_idx:chr_idx]}
+            prev_idx = chr_idx
         for key, value in thresholds.items():
             value = int(value) if key == 'total_associations' else float(value)
             thresholds[key] = value

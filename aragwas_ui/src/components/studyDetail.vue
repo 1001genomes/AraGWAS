@@ -69,7 +69,7 @@
                         <v-divider></v-divider>
                     </v-flex>
                     <v-flex xs12>
-                        <manhattan-plot class="flex" :dataPoints="dataChr[i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
+                        <manhattan-plot class="flex" :shown="(currentView==='study-detail-tabs-manhattan')" :dataPoints="dataChr['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
                     </v-flex>
                 </v-layout>
             </v-tabs-content>
@@ -211,12 +211,13 @@
             let chrom = "chr" + i.toString();
             const positions = data[chrom].positions;
             const chrData: any[] = [];
-            for (let j = 1; j < positions.length; j++) {
+            for (let j = 0; j < positions.length; j++) {
                 const assoc = [positions[j],data[chrom].scores[j]];
                 chrData.push(assoc);
             }
             this.dataChr[chrom] =  chrData;
-            this.options[i.toString()]["bonferoniThreshold"] = data.bonferoniThreshold;
+            this.options[i.toString()]["bonferoniThreshold"] = data.thresholds.bonferoniThreshold05;
+            this.options[i.toString()]["max_y"] = Math.max(data[chrom].scores[0]+1, 10);
         }
       }
     }
