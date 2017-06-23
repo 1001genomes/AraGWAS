@@ -50,7 +50,7 @@ class EsStudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('id', 'suggest', 'name', 'transformation', 'method', 'genotype', 'phenotype')
+        fields = ('id', 'suggest', 'name', 'transformation', 'method', 'genotype', 'phenotype','n_hits_bonf','n_hits_perm','n_hits_thr')
 
 
 """
@@ -64,7 +64,7 @@ class StudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','phenotype_pk','method','transformation', 'publication','association_count','pk')
+        fields = ('name','genotype','phenotype','phenotype_pk','method','transformation', 'publication','association_count','pk','n_hits_bonf','n_hits_perm','n_hits_thr')
 
     def get_association_count(self, obj):
         try:

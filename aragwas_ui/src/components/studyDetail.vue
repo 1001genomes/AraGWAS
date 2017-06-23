@@ -187,6 +187,12 @@
         this.publication = data.publication;
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.name;
+        if (data.nHitsBonf) {
+          this.bonferoniHits = data.nHitsBonf;
+        }
+        if (data.nHitsPerm) {
+          this.permHits = data.nHitsPerm;
+        }
         loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);
       }
       _loadAraPhenoLink(data): void {

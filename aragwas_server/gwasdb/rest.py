@@ -183,6 +183,8 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 inverted = True
             if ordering == 'genotype' or ordering == 'phenotype':
                 ordering += '__name'
+            if ordering == 'nHitsBonferoni':
+                ordering = 'n_hits_bonf'
             queryset = queryset.order_by(Lower(ordering))
             if inverted:
                 queryset = queryset.reverse()

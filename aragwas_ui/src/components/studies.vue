@@ -27,6 +27,7 @@
          <td  class="text-xs-right">{{ props.item.transformation }}</td>
          <td  class="text-xs-right">{{ props.item.method }}</td>
          <td  class="text-xs-right">{{ props.item.genotype }}</td>
+         <td  class="text-xs-right">{{ props.item.nHitsBonferoni }}</td>
        </template>
      </v-data-table>
    </div>
@@ -60,7 +61,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", left: true, value: "name",},{text:  "Phenotype", left: true,  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",}];
+    columns = [{text: "Name", left: true, value: "name",},{text:  "Phenotype", left: true,  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Bonferoni", value: "nHitsBonferoni",}];
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "name", descending: false};
     totalItems: number = 0;
