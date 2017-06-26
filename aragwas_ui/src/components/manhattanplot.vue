@@ -105,6 +105,7 @@
         onResize() {
             this.width = this.$el.offsetWidth;
             this.scales.x.range([this.margin.left, this.paddedScatter.width]);
+            this.scales.y.domain([0, this.options.max_y + 1]);
             this.scales.y.range([this.paddedScatter.height, this.margin.top]);
             const svg = d3.select(this.$refs.svg as Element);
             svg.selectAll("g").remove();

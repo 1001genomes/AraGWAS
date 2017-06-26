@@ -76,7 +76,7 @@ export async  function loadAggregatedStatisticsOfStudy(studyId: number, filter) 
 }
 // Load associations for manhattan plots
 export async  function loadAssociationsForManhattan(studyId: number) {
-    return fetch(`/api/studies/${studyId}/gwas/?filter=2500&filter_type=top`)
+    return fetch(`/api/studies/${studyId}/gwas/?filter=5000&filter_type=top`)
         .then(checkStatus)
         .then(convertToModel);
 }
