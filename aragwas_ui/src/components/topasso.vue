@@ -260,6 +260,18 @@
         onZoomChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
+        @Watch("view.phenotypeId")
+        onPhenotypeIdChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
+        @Watch("view.studyId")
+        onStudyIdChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
+        @Watch("view.geneId")
+        onGeneIdChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
         mounted(): void {
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);

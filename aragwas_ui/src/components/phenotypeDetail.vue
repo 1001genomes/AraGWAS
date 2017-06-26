@@ -59,11 +59,14 @@
                             <template slot="headers" scope="props">
                                     {{ props.item.text }}
                             </template>
-                            <template slot="items" scope="props">
-                                <td>
-                                    <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.name }}
-                                    </router-link>
-                                </td>
+                            <template slot="items" scope="props" >
+                                    <td v-if="phenotypeIds.some(x=>x==props.item.phenotype_id)">
+                                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotype_id }}">{{ props.item.name }}
+                                        </router-link>
+                                    </td>
+                                    <td v-if="phenotypeIds.some(x=>x==props.item.phenotype_id)">
+                                        {{ props.item.to_name }}
+                                    </td>
                             </template>
                             </v-data-table>
                         </v-tabs-content>
@@ -82,7 +85,7 @@
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype} from "../api";
+    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype, loadPhenotypeIds} from "../api";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
@@ -110,7 +113,7 @@
       phenotypeDescription: string = "";
       araPhenoLink: string = "";
       studyColumns = [{text: "Name", left: true, value: "name"}, {text: "Genotype", value: "genotype"}, {text: "Method", value: "method"} ];
-      phenotypeColumns = [{text: "Name", left: true, value: "name"}];
+      phenotypeColumns = [{text: "Name", left: true, value: "name"},{text: "Trait Ontology", left: true, value: "to"}];
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
@@ -122,15 +125,18 @@
       showControls = ["chr","maf","annotation","type"];
       filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
       phenotypeView = {name: "phenotype", phenotypeId: this.id, controlPosition: "right"};
+      phenotypeIds: number[];
 
 
 
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
+          this.phenotypeView = {name: "phenotype", phenotypeId: this.id, controlPosition: "right"};
       }
       created(): void {
         this.loadData();
+        this.loadIds();
       }
       mounted(): void {
 
@@ -146,9 +152,12 @@
         this.studyIDs = data.studySet;
       }
       _displaySimilarPhenotypes(data): void {
-        this.similarPhenotypes = data;
+          this.similarPhenotypes = data;
+          // Need to check for available phenotypes on AraGWAS
       }
-
+      _storeIds(data): void {
+        this.phenotypeIds = data;
+      }
       loadData(): void {
         try {
             loadPhenotype(this.id).then(this._displayPhenotypeData).then(this.loadStudyList);
@@ -156,6 +165,13 @@
         } catch (err) {
             console.log(err);
 
+        }
+      }
+      loadIds(): void {
+        try {
+            loadPhenotypeIds().then(this._storeIds)
+        } catch (err) {
+            console.log(err);
         }
       }
       async loadStudyList(data) {

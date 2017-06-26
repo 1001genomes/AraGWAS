@@ -113,6 +113,12 @@ export async  function loadPhenotypes(page: number = 1, ordering= "") {
         .then(checkStatus)
         .then(convertToModel);
 }
+// Phenotype list of ids
+export async  function loadPhenotypeIds() {
+    return fetch(`/api/phenotypes/ids`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 
 // Import single phenotype information
 export async  function loadPhenotype(phenotypeId: number) {
@@ -143,14 +149,10 @@ export async  function loadAggregatedStatisticsOfPhenotype(phenotypeId: number, 
 }
 // Load similar phenotypes based on ontology
 export async function loadSimilarPhenotypes(phenotypeId: number) {
-    const arapheno = fetch(`https://arapheno.1001genomes.org:443/rest/phenotype/`+phenotypeId+`.json`)
+    // return fetch(`http://localhost:8002/rest/phenotype/`+phenotypeId+`/similar.json`) // DEV CODE
+    return fetch(`https://arapheno.1001genomes.org/rest/phenotype/`+phenotypeId+`/similar.json`)
         .then(checkStatus)
         .then(convertToModel);
-    const to_term = arapheno["to_term"];
-    const search_res = fetch(`https://arapheno.1001genomes.org:443/rest/search/`+to_term+`.json`)
-        .then(checkStatus)
-        .then(convertToModel);
-    return search_res["phenotype_search_results"];
 }
 export async function loadStudiesOfPhenotype(phenotypeId: number) {
     return fetch(`/api/phenotypes/${phenotypeId}/studies/`)

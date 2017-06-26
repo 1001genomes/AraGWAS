@@ -288,16 +288,16 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
-    @detail_route(methods=['GET'], url_path='similar')
-    def similar(self, requests, pk):
-        """ Lists similar phenotypes """
-        ori_pheno = Phenotype.objects.get(pk=pk)
-        trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
-        queryset = Phenotype.objects.filter(name__exact=trait_ontology)
-        queryset = queryset.filter(~Q(pk=pk))
-        pagephe = self.paginate_queryset(queryset)
-        serializer = PhenotypeListSerializer(pagephe, many=True)
-        return Response(serializer.data)
+    # @detail_route(methods=['GET'], url_path='similar')
+    # def similar(self, requests, pk):
+    #     """ Lists similar phenotypes """
+    #     ori_pheno = Phenotype.objects.get(pk=pk)
+    #     trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
+    #     queryset = Phenotype.objects.filter(name__exact=trait_ontology)
+    #     queryset = queryset.filter(~Q(pk=pk))
+    #     pagephe = self.paginate_queryset(queryset)
+    #     serializer = PhenotypeListSerializer(pagephe, many=True)
+    #     return Response(serializer.data)
 
     @detail_route(methods=['GET'], url_path='studies')
     def studies(self, requests, pk):
@@ -330,6 +330,15 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+
+    @list_route(methods=['GET'], url_path='ids')
+    def ids(self, request):
+        """ Gets ids of all stored phenotypes for conditional display of similar phenotypes """
+        phenotypes = Phenotype.objects.all()
+        ids = []
+        for p in phenotypes:
+            ids.append(p.pk)
+        return Response(ids)
 
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
