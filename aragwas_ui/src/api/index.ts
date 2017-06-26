@@ -34,6 +34,32 @@ function getTopAssociationsParametersQuery(filter): string {
     return queryParam;
 }
 
+// Cross-website request to access data on arapheno
+// function createCORSRequest(method, url) {
+//     let xhr = new XMLHttpRequest();
+//     let XDomainRequest;
+//     if ("withCredentials" in xhr) {
+//
+//         // Check if the XMLHttpRequest object has a "withCredentials" property.
+//         // "withCredentials" only exists on XMLHTTPRequest2 objects.
+//         xhr.open(method, url, true);
+//
+//     } else if (typeof XDomainRequest != "undefined") {
+//
+//         // Otherwise, check if XDomainRequest.
+//         // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+//         xhr = new XDomainRequest();
+//         xhr.open(method, url);
+//
+//     } else {
+//
+//         // Otherwise, CORS is not supported by the browser.
+//         xhr = null;
+//
+//     }
+//     return xhr;
+// }
+
 // Study list
 export async function loadStudies(page: number = 1, ordering = "") {
     return fetch(`/api/studies/?page=${page}&ordering=${ordering}`)
@@ -117,9 +143,14 @@ export async  function loadAggregatedStatisticsOfPhenotype(phenotypeId: number, 
 }
 // Load similar phenotypes based on ontology
 export async function loadSimilarPhenotypes(phenotypeId: number) {
-    return fetch(`/api/phenotypes/${phenotypeId}/similar/`)
+    const arapheno = fetch(`https://arapheno.1001genomes.org:443/rest/phenotype/`+phenotypeId+`.json`)
         .then(checkStatus)
         .then(convertToModel);
+    const to_term = arapheno["to_term"];
+    const search_res = fetch(`https://arapheno.1001genomes.org:443/rest/search/`+to_term+`.json`)
+        .then(checkStatus)
+        .then(convertToModel);
+    return search_res["phenotype_search_results"];
 }
 export async function loadStudiesOfPhenotype(phenotypeId: number) {
     return fetch(`/api/phenotypes/${phenotypeId}/studies/`)
