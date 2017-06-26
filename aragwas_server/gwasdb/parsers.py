@@ -42,6 +42,8 @@ def _parse_isoforms(gff, gene):
             continue
         cds = []
         exons = []
+        five_prime_UTR = []
+        three_prime_UTR = []
         for feature in gff.descendants(mRNA):
             feature_dict = {'positions':{'gte':feature['start'],'lte':feature['end']}}
             if feature['type'] == 'CDS':
@@ -49,16 +51,19 @@ def _parse_isoforms(gff, gene):
                 cds.append(feature_dict)
             elif feature['type'] == 'exon':
                 exons.append(feature_dict)
+            elif feature['type'] == 'three_prime_UTR':
+                three_prime_UTR.append(feature_dict)
+            elif feature['type'] == 'five_prime_UTR':
+                five_prime_UTR.append(feature_dict)
             else:
                 continue
         mRNA_id = mRNA['attributes']['ID']
         short_description = mRNA['attributes'].get('Note',[None])[0]
         curator_summary = mRNA['attributes'].get('curator_summary',None)
         description = mRNA['attributes'].get('computational_description',None)
-
         mRNA_dict = {'positions': {'gte':mRNA['start'],'lte':mRNA['end']},
                     'strand':mRNA['strand'],'name':mRNA_id,'type':mRNA['type'],
-                    'cds':cds,'exons':exons}
+                    'cds':cds,'exons':exons, 'five_prime_UTR': five_prime_UTR, 'three_prime_UTR': three_prime_UTR}
         if short_description:
             mRNA_dict['short_description'] = short_description
         if curator_summary:
