@@ -63,7 +63,7 @@
         },
     })
     export default class FAQ extends Vue {
-        breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQs", href: "/faq", disabled: true}];
+        breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQ", href: "/faq", disabled: true}];
         faqs_general = [
             {question: "What is the AraGWASCatalog?", html:"The AraGWASCatalog is a central, standardised, quality controlled and manually curated repository for genome-wide association studies (GWAS) for the model organism <i>Arabidopsis thaliana</i>.\
                 The repository provides several views to obtain an overview about top associated markers across all available phenotypes from the central and public <i>Arabidopsis thaliana</i> phenotype repository <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.<br/>\
@@ -93,7 +93,7 @@
             {question: "How to get a list of genes that contain associated hits?", answer: "You can get a list of the top associated genes (i.e. genes with the highest number of significantly associated SNPs) on every study view as they are listed in the piechart."},
             {question: "How can I filter association tables?", answer: "Different filters are provided to filter the association tables. You can either filter the table by minor allele frequency (MAF), chromosome or different types of annotations (e.g. non-synonymous SNPs).\
                 For some tables the filtering options have to be activated by clicking on the 'Controls' switch."},
-            {question: "How to obtain detailed information about the Phenotype", answer: "When clicking on the phenotype name you can get more detailed information about the phenotype and all hits that are associated with the phenotype.\
+            {question: "How to obtain detailed information about the Phenotype?", answer: "When clicking on the phenotype name you can get more detailed information about the phenotype and all hits that are associated with the phenotype.\
                 A list of GWA studies is provided such that you get an overview in which GWAS experiments the phenotype was used. Another list present phenotypes with similar trait ontologies. Further, you can find a link to AraPheno, where you can download the phenotypic information."},
             {question: "How to obtain detailed information about the GWAS study?", answer: "When clicking on the study name you can get more detailed information about the GWAS study. The detailed study view contains detailed information about the number of significantly associated hits using a conservative Bonferroni correction as well as a permutation based significance threshold.\
                     Further, you can get an overview about the distribution of genes or different SNP types for all associated hits. The Manhattan Plot tab shows Manhattan plots for the selected study."}, // add interactive manhattan plots once hover functionality is done

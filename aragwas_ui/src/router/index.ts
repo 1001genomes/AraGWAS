@@ -4,6 +4,7 @@ import Home from "@/components/home.vue";
 import PhenotypeDetail from "@/components/phenotypeDetail.vue";
 import Phenotypes from "@/components/phenotypes.vue";
 import FAQ from "@/components/faq.vue";
+import About from "@/components/about.vue";
 import Studies from "@/components/studies.vue";
 import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
@@ -49,6 +50,11 @@ export default new Router({
       path: "/faq",
       name: "FAQ",
       component: FAQ,
+    },
+    {
+      path: "/about",
+      name: "about",
+      component: About,
     },
     {
       path: "/top-associations",
