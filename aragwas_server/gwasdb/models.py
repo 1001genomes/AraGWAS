@@ -23,7 +23,6 @@ class Study(models.Model):
     phenotype = models.ForeignKey("Phenotype", null=True) # foregin key to the phenotype of interest
     method = models.CharField(max_length=255) # method used to individuate associations (LM, KW, LMM, etc)
     publication = models.URLField(blank=True, null=True) # link to a DOI for a published study
-    easygwas_link = models.URLField(blank=True, null=True) # link to easygwas study page (if applicable)
     n_hits_thr = models.IntegerField(blank=True, null=True)  # number of hits with 1e-5 threshold
     n_hits_bonf = models.IntegerField(blank=True, null=True) # number of hits with Bonferoni threshold
     n_hits_perm = models.IntegerField(blank=True, null=True) # number of hits with permutation threshold
