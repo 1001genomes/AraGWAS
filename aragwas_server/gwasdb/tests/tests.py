@@ -129,7 +129,7 @@ class HDF5LoadingTests(TestCase):
                     ('4', 429928, 6.555416448260276, 0.4233576642335766, 58),
                     ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21)]
 
-        top_associations, thresholds = hdf5.get_top_associations2(self.hdf5_file, 10, top_or_threshold='top')
+        top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, 10, top_or_threshold='top')
         assert thresholds['bonferoni_threshold01'] == 7.3140147710960965
         assert thresholds['bonferoni_threshold05'] == 6.615044766760077
         assert thresholds['bh_threshold'] == 6.6150447667600778
@@ -147,20 +147,20 @@ class HDF5LoadingTests(TestCase):
 
     def test_load_top_associations_by_top_threshold(self):
         """Test if top associations by thresholds """
-        top_associations, thresholds = hdf5.get_top_associations2(self.hdf5_file, 5, top_or_threshold='threshold')
+        top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, 5, top_or_threshold='threshold')
         assert isinstance(top_associations, np.core.records.recarray)
         assert len(top_associations) == 14
         for assoc in top_associations:
             assert assoc['score'] >= 5.0
 
-        top_associations_by_e, thresholds = hdf5.get_top_associations2(self.hdf5_file, 1e-5, top_or_threshold='threshold')
+        top_associations_by_e, thresholds = hdf5.get_top_associations(self.hdf5_file, 1e-5, top_or_threshold='threshold')
         assert isinstance(top_associations, np.core.records.recarray)
         assert len(top_associations) == len(top_associations_by_e)
         for i, assoc in enumerate(top_associations_by_e):
             assert assoc.tolist() == top_associations[i].tolist()
 
     def test_regroup_top_assocations(self):
-        top_associations, thresholds = hdf5.get_top_associations2(self.hdf5_file, 5, top_or_threshold='threshold')
+        top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, 5, top_or_threshold='threshold')
         top_associations = hdf5.regroup_associations(top_associations)
         top_associations[0].tolist() == ('4',   429928,  6.55541645,  0.42335766, 58)
         top_associations[-1].tolist() == ('5', 18606578,  5.07844918,  0.47445255, 65)
