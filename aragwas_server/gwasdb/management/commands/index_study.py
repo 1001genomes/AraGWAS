@@ -21,13 +21,16 @@ class Command(BaseCommand):
             else:
                 studies = Study.objects.all()
             for study in studies:
-                indexed_assoc, failed_assoc = index_study(study.pk)
-                if failed_assoc > 0:
-                    self.stdout.write(self.style.ERROR('%s/%s SNPs failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
-                elif indexed_assoc == 0:
-                    self.stdout.write(self.style.WARNING('No associations found that match the threshold. Skipping "%s" in elasticsearch' % (str(study))))
-                else:
-                    self.stdout.write(self.style.SUCCESS('Successfully indexed all %s assocations for "%s" in elasticsearch' % (indexed_assoc, study)))
+                try:
+                    indexed_assoc, failed_assoc = index_study(study.pk)
+                    if failed_assoc > 0:
+                        self.stdout.write(self.style.ERROR('%s/%s SNPs failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
+                    elif indexed_assoc == 0:
+                        self.stdout.write(self.style.WARNING('No associations found that match the threshold. Skipping "%s" in elasticsearch' % (str(study))))
+                    else:
+                        self.stdout.write(self.style.SUCCESS('Successfully indexed all %s assocations for "%s" in elasticsearch' % (indexed_assoc, study)))
+                except FileNotFoundError as err:
+                        self.stdout.write(self.style.ERROR('HDF5 file for study %s not found' % study))
         except Exception as err:
             raise CommandError(
                 'Error indexing GWAS studies. Reason: %s' % str(err))
