@@ -6,8 +6,17 @@ import numpy as np
 import h5py
 
 
+def _filter_by_maf( top_assocations, maf_filter):
+    if (maf_filter == 0):
+        return top_assocations
+    top_mafs = top_assocations[2]
+    maf_filter_cond = top_mafs > maf_filter
+    return (np.compress(maf_filter_cond, top_assocations[0]), np.compress(maf_filter_cond, top_assocations[1]),np.compress(maf_filter_cond, top_mafs), np.compress(maf_filter_cond, top_assocations[3]))
 
-def get_top_associations(hdf5_file, val=100, top_or_threshold='top'):
+
+
+
+def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     """Retrieves the top associations from an hdf5 file"""
     if top_or_threshold not in ('top', 'threshold'):
         raise Exception('Please provide a valid option: top or threshold')
@@ -28,14 +37,38 @@ def get_top_associations(hdf5_file, val=100, top_or_threshold='top'):
     for chrom in range(1, 6):
         group = h5f['pvalues']['chr%s' % chrom]
         end_idx = val
-        num_associations += len(group['positions'])
+        group_length = len(group['positions'])
+        num_associations += group_length
         if is_threshold:
             end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], val, side='left')
-        positions = np.concatenate((positions, group['positions'][:end_idx]))
-        scores = np.concatenate((scores, group['scores'][:end_idx]))
-        mafs = np.concatenate((mafs, group['mafs'][:end_idx]))
-        macs = np.concatenate((macs, group['macs'][:end_idx]))
-        chrs = np.concatenate((chrs, [str(chrom)] * end_idx))
+        top_positions, top_scores, top_mafs, top_macs = _filter_by_maf((group['positions'][:end_idx],group['scores'][:end_idx],group['mafs'][:end_idx],group['macs'][:end_idx]), maf)
+
+        # for the case of top list we have to loop until we get all requested top assocations
+        if top_or_threshold == 'top' and len(top_positions) < end_idx:
+            while (True):
+                start_idx = end_idx
+                end_idx = min(start_idx + val, group_length)
+                add_positions, add_scores, add_mafs, add_macs = _filter_by_maf((group['positions'][start_idx:end_idx], group['scores'][start_idx:end_idx], group['mafs'][start_idx:end_idx], group['macs'][start_idx:end_idx]), maf)
+                top_positions = np.concatenate((top_positions, add_positions))
+                top_scores = np.concatenate((top_scores, add_scores))
+                top_mafs = np.concatenate((top_mafs, add_mafs))
+                top_macs = np.concatenate((top_macs, add_macs))
+                if len(top_positions) >= val:
+                    top_positions = top_positions[:val]
+                    top_scores = top_scores[:val]
+                    top_mafs = top_mafs[:val]
+                    top_macs = top_macs[:val]
+                    break
+                if end_idx == group_length:
+                    break;
+
+        positions = np.concatenate((positions, top_positions))
+        scores = np.concatenate((scores, top_scores))
+        mafs = np.concatenate((mafs, top_mafs))
+        macs = np.concatenate((macs, top_macs))
+
+        # chr special
+        chrs = np.concatenate((chrs, [str(chrom)] * len(top_positions)))
 
     bt05 = -math.log(0.05 / float(num_associations), 10)
     bt01 = -math.log(0.01 / float(num_associations), 10)
