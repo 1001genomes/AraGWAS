@@ -226,7 +226,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
             threshold_or_top = int(threshold_or_top)
 
         association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
-        top_associations, thresholds = get_top_associations(association_file, threshold_or_top, filter_type)
+        top_associations, thresholds = get_top_associations(association_file, val=threshold_or_top, top_or_threshold=filter_type)
         output = {}
         prev_idx = 0
         for chrom in range(1, 6):
