@@ -6,7 +6,7 @@ import os
 
 
 class Command(BaseCommand):
-    help = 'Fetch number of SNPs passing filtering, adapt bonferoni thresholds and add number of hits'
+    help = 'Fetch number of SNPs passing filtering, adapt bonferroni thresholds and add number of hits'
 
     def add_arguments(self, parser):
         parser.add_argument('--maf',
@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 if study.n_hits_bonf == None or update_all: # Condition for first run through, might be changed to update all
                     hdf5_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % study.pk)
                     hits, thresholds = get_hit_count(hdf5_file, maf=maf)
-                    study.n_hits_bonf = hits['bonferoni_hits05']
+                    study.n_hits_bonf = hits['bonferroni_hits05']
                     study.n_hits_top = hits['thr_e-4']
                     study.n_hits_fdr = hits['thr_e-4']
                     study.save()

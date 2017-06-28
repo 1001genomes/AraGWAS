@@ -51,7 +51,7 @@
         @Watch('dataPoints')
         onDataPointsChanged(val, oldval) {
             this.drawPoints();
-            this.drawBonferoni();
+            this.drawBonferroni();
         }
         @Watch('shown')
         onShownChanged(val, oldval) {
@@ -74,7 +74,7 @@
                 alpha: 0.05,
                 max_y: 10,
                 max_x: 100000,
-                bonferoniThreshold: 10,
+                bonferroniThreshold: 10,
                 xlabel: "x",
                 ylabel: "y",
                 legend1: "",
@@ -113,7 +113,7 @@
             svg.selectAll("circle").remove();
             this.draw();
             this.drawPoints();
-            this.drawBonferoni();
+            this.drawBonferroni();
         }
         draw() {
             // draw svg
@@ -218,8 +218,8 @@
                 })
                 .style("fill", "rgb(" + this.red + ",102," + this.blue + ")");
         }
-        drawBonferoni() {
-            const d2 = [[0, this.options.bonferoniThreshold], [this.options.max_x, this.options.bonferoniThreshold]];
+        drawBonferroni() {
+            const d2 = [[0, this.options.bonferroniThreshold], [this.options.max_x, this.options.bonferroniThreshold]];
             const svg = d3.select(this.$refs.svg as Element);
             svg.append("svg:line")
                 .attr("x1", this.scales.x(d2[0][0]))

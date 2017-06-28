@@ -78,7 +78,7 @@ def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     bt05 = -math.log(0.05 / float(num_associations), 10)
     bt01 = -math.log(0.01 / float(num_associations), 10)
     bh_threshold = h5f['pvalues'].attrs.get('bh_thres', None)
-    thresholds = {'bonferoni_threshold05': bt05, 'bonferoni_threshold01': bt01, 'bh_threshold': bh_threshold, 'total_associations': num_associations}
+    thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01, 'bh_threshold': bh_threshold, 'total_associations': num_associations}
     top_associations = np.rec.fromarrays((chrs, positions, scores, mafs, macs), names='chr, position, score, maf, mac')
     return top_associations, thresholds
 
@@ -102,7 +102,7 @@ def get_hit_count(hdf5_file, maf=0.05):
     bt05 = -math.log(0.05 / float(num_associations), 10)
     bt01 = -math.log(0.01 / float(num_associations), 10)
     bh_threshold = h5f['pvalues'].attrs.get('bh_thres', None)
-    thresholds = {'bonferoni_threshold05': bt05, 'bonferoni_threshold01': bt01, 'bh_threshold': bh_threshold, 'total_associations': num_associations}
+    thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01, 'bh_threshold': bh_threshold, 'total_associations': num_associations}
     bt05_hits = 0
     bt01_hits = 0
     bh_hits = 0
@@ -113,7 +113,7 @@ def get_hit_count(hdf5_file, maf=0.05):
                 bt01_hits += 1
         if score > bh_threshold:
             bh_hits += 1
-    hits = {'bonferoni_hits05': bt05_hits, 'bonferoni_hits01': bt01_hits, 'bh_hits': bh_hits, 'thr_e-4': len(scores)}
+    hits = {'bonferroni_hits05': bt05_hits, 'bonferroni_hits01': bt01_hits, 'bh_hits': bh_hits, 'thr_e-4': len(scores)}
     return hits, thresholds
 
 def regroup_associations(top_associations):

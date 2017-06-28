@@ -31,7 +31,7 @@
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">Link to original publication</a></v-flex>
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
-                                    <v-flex xs5 md3>N hits (Bonferoni):</v-flex><v-flex xs7 mm9>{{ bonferoniHits }}</v-flex>
+                                    <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
                                     <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                                 </v-layout>
                             </v-layout>
@@ -117,10 +117,10 @@
       currentView: string = "study-detail-tabs-manhattan";
       currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
-      bonferoniThr05 = 0;
-      bonferoniThr01 = 0;
+      bonferroniThr05 = 0;
+      bonferroniThr01 = 0;
       permThr = 0;
-      bonferoniHits = 0;
+      bonferroniHits = 0;
       permHits = 0;
       samples: number;
       countries: number;
@@ -191,7 +191,7 @@
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.name;
         if (data.nHitsBonf) {
-          this.bonferoniHits = data.nHitsBonf;
+          this.bonferroniHits = data.nHitsBonf;
         }
         if (data.nHitsPerm) {
           this.permHits = data.nHitsPerm;
@@ -209,8 +209,8 @@
         console.log('loadded')
       }
       _displayManhattanPlots(data): void {
-        this.bonferoniThr01 = data.thresholds.bonferoniThreshold01;
-        this.bonferoniThr05 = data.thresholds.bonferoniThreshold05;
+        this.bonferroniThr01 = data.thresholds.bonferroniThreshold01;
+        this.bonferroniThr05 = data.thresholds.bonferroniThreshold05;
         this.associationCount = data.thresholds.totalAssociations;
         for (let i=1; i <=5; i++) {
             let chrom = "chr" + i.toString();
@@ -221,7 +221,7 @@
                 chrData.push(assoc);
             }
             this.dataChr[chrom] =  chrData;
-            this.options[i.toString()]["bonferoniThreshold"] = data.thresholds.bonferoniThreshold05;
+            this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["max_y"] = Math.max(data[chrom].scores[0]+1, 10);
         }
       }
