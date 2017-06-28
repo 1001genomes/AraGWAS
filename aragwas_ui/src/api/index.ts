@@ -113,12 +113,6 @@ export async  function loadPhenotypes(page: number = 1, ordering= "") {
         .then(checkStatus)
         .then(convertToModel);
 }
-// Phenotype list of ids
-export async  function loadPhenotypeIds() {
-    return fetch(`/api/phenotypes/ids`)
-        .then(checkStatus)
-        .then(convertToModel);
-}
 
 // Import single phenotype information
 export async  function loadPhenotype(phenotypeId: number) {

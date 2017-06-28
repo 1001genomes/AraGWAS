@@ -60,11 +60,11 @@
                                     {{ props.item.text }}
                             </template>
                             <template slot="items" scope="props" >
-                                    <td v-if="phenotypeIds.some(x=>x==props.item.phenotype_id)">
+                                    <td v-if="props.item.phenotype_id!=id">
                                         <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotype_id }}">{{ props.item.name }}
                                         </router-link>
                                     </td>
-                                    <td v-if="phenotypeIds.some(x=>x==props.item.phenotype_id)">
+                                    <td v-if="props.item.phenotype_id!=id">
                                         {{ props.item.to_name }}
                                     </td>
                             </template>
@@ -85,7 +85,7 @@
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype, loadPhenotypeIds} from "../api";
+    import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype} from "../api";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
@@ -125,7 +125,6 @@
       showControls = ["chr","maf","annotation","type"];
       filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
       phenotypeView = {name: "phenotype", phenotypeId: this.id, controlPosition: "right"};
-      phenotypeIds: number[];
 
 
 
@@ -136,7 +135,6 @@
       }
       created(): void {
         this.loadData();
-        this.loadIds();
       }
       mounted(): void {
 
@@ -155,9 +153,6 @@
           this.similarPhenotypes = data;
           // Need to check for available phenotypes on AraGWAS
       }
-      _storeIds(data): void {
-        this.phenotypeIds = data;
-      }
       loadData(): void {
         try {
             loadPhenotype(this.id).then(this._displayPhenotypeData).then(this.loadStudyList);
@@ -165,13 +160,6 @@
         } catch (err) {
             console.log(err);
 
-        }
-      }
-      loadIds(): void {
-        try {
-            loadPhenotypeIds().then(this._storeIds)
-        } catch (err) {
-            console.log(err);
         }
       }
       async loadStudyList(data) {

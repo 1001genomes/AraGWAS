@@ -331,16 +331,6 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
 
-    @list_route(methods=['GET'], url_path='ids')
-    def ids(self, request):
-        """ Gets ids of all stored phenotypes for conditional display of similar phenotypes """
-        phenotypes = Phenotype.objects.all()
-        ids = []
-        for p in phenotypes:
-            ids.append(p.pk)
-        return Response(ids)
-
-
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for associations """
 
