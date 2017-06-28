@@ -74,7 +74,7 @@
             {question: "Which data is included?", html: "So far the AraGWASCatalog contains recomputed GWAS results using a standardised GWAS pipeline on all publicly available phenotypes from <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.\
                 The catalog will be updated regularly when new phenotypes are published in <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>. "}, // TODO: Arthur: add more info about the standard pipeline
             {question: "Why do we use a standardised GWAS pipeline and how does it look like?", answer: ""}, // TODO: complete
-            {question: "Why do we provide two significance thresholds (Bonferroni and permutation based)?", answer: ""}, // TODO: complete
+            //{question: "Why do we provide two significance thresholds (Bonferroni and permutation based)?", answer: ""}, // TODO: complete
             {question: "How is the association score defined?", html: "The score of an associated hit is defined as: -log<sub>10</sub>(p-value)."},
             {question: "What does top associated mean?", answer: "The top associations of a study are all the associations that have a p-value below the fixed threshold of 1e-5 (i.e. score above 5). These values are stored in the fast elasticsearch database and displayed in the top associations lists."}, // TODO: add  "All associations are present in the HDF5 files." once download can be performed
         ];

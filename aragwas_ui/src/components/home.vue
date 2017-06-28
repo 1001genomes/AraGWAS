@@ -20,7 +20,7 @@
                 <div class="pl-4 pt-1 pr-4">
                     <v-text-field
                             name="input-1"
-                            label="Search the catalog"
+                            label="Search the catalog (e.g. FLC, AT2G27035, chr2:1153551)"
                             v-model="searchQuery"
                             v-bind:focused="focused"
                             prepend-icon="search"
@@ -32,12 +32,20 @@
             <div class="section">
                 <v-container>
                     <v-layout class="text-xs-center">
-                        <v-flex xs4 offset-xs2>
+                        <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWAS Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
                                 <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>view_list</v-icon> GWAS Studies</v-btn>
+                            </div>
+                        </v-flex>
+                        <v-flex xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
+                                <h5 class="text-xs-center">Take a tour</h5>
+                                <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
+                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -69,10 +77,10 @@
                             <br>
                             <v-card>
                                 <v-card-text>
-                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS is online</div>
+                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog is online</div>
                                     <div>
                                         <p class="light">
-                                            We are proud to announce that the first public GWAS catalogue for the model organism <em>Arabidopsis thaliana</em> has launched.
+                                            We are proud to announce that the first public GWAS catalog for the model organism <em>Arabidopsis thaliana</em> has launched.
                                         </p>
                                     </div>
                                 </v-card-text>
@@ -218,7 +226,7 @@
         steps : [
         {
           element: ".parallax",
-          intro: "AraGWASCatalog is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features",
+          intro: "AraGWAS Catalog is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features",
           position: "bottom-middle-aligned"
         },
         {
@@ -227,7 +235,7 @@
         },
         {
           element: "#faq-link",
-          intro: "The FAQ section provides tutorials of the various features of AraGWASCatalog"
+          intro: "The FAQ section provides tutorials of the various features of AraGWAS Catalog"
         },
         {
           element: "#studies-button",
@@ -235,7 +243,7 @@
         },
         {
           element: "#top-assocations-button",
-          intro: "To see the the top associations that are stored in the catalogue, press here. To find out how to browse the top associations list, click on 'Next Page'"
+          intro: "To see the the top associations that are stored in the catalog, press here. To find out how to browse the top associations list, click on 'Next Page'"
         }
         ],
         nextPage: {name: "topAssociations"},

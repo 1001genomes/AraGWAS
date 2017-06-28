@@ -31,7 +31,7 @@
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href=" publication">Link to original publication</a></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferoni):</v-flex><v-flex xs7 mm9>{{ bonferoniHits }}</v-flex>
-                                    <v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
+                                    <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                                 </v-layout>
                             </v-layout>
                         </v-flex>
