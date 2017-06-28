@@ -13,7 +13,7 @@
                     <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">trending_up</v-icon> Top Associations</h5><v-divider class="mb-3"></v-divider>
                         <span style="font-size: 1.2rem">Check out the top hits across the <em>Arabidopsis thaliana</em> genome. This table shows all top associations (sorted by score, i.e. - log<sub>10</sub>(p-value)) that are stored in the database. Significant associations are marked in blue.</span></v-flex>
                 </v-layout>
-                <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="{name: 'top-associations'}"></top-associations>
+                <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="{name: 'top-associations'}" :highlightedAssociation="test"></top-associations>
             </div>
         </div>
     </div>
@@ -48,6 +48,7 @@
         hideFields = [];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
         showControls = ["maf","chr","annotation","type"];
+        test = 'chr2:122242';
 
         tourOptions = {
             steps: [

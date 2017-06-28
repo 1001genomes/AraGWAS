@@ -7,6 +7,11 @@ interface Association {
     maf: number;
     annotation: string;
     type: boolean;
+    snp: SNP;
+    selected: boolean;
 }
-
+interface SNP {
+    chr: string;
+    position: string;
+}
 export default Association;

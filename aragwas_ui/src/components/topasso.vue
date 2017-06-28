@@ -203,7 +203,7 @@
             },
         },
         name: "topAssociations",
-        props: ["showControls", "hideFields", "filters", "view"],
+        props: ["showControls", "hideFields", "filters", "view", "highlightedAssociation"],
     })
     export default class TopAssociationsComponent extends Vue {
         @Prop()
@@ -214,13 +214,15 @@
         view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
         @Prop()
         filters: {chr: string[], annotation: string[], maf: string[], type: string[]};
+        @Prop()
+        highlightedAssociation: string = 'xa';
         localfilters : {};
         loading: boolean = false;
         headers = [{text: "SNP", value: "snp.chr", name: "name", left: true, tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
             {text: "maf",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
             {text: "annotation",value: "annotation", name: "annotation", sortable: false, tooltip: "Annotation related to associated SNP"},{text: "type",value: "snp.type", name: "type", sortable: false, tooltip: "Type of SNP"}];
-        associations = [];
+        associations: any[] =[];
         currentPage = 1;
         pager = 1;
         pageCount = 5;
@@ -236,6 +238,8 @@
         lastElementHistory = {'1': [0,''], };
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
+        test = [];
+        selected = [];
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -272,6 +276,10 @@
         @Watch("view.geneId")
         onGeneIdChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
+        }
+        @Watch("highlightedAssociation")
+        onHighAssoChanged(val, oldVal) {
+            this.searchForAsso(val);
         }
         mounted(): void {
             this.hideHeaders(this.hideFields);
@@ -337,7 +345,17 @@
             }
             return Math.round(number * 1000) / 10;
         }
-
+        searchForAsso(name: string) {
+            for (let asso of this.associations) {
+                if('snp' in asso){
+                    const aname = asso.snp.chr.toString() + ":" + asso.snp.position.toString();
+                    if(aname === name){
+                        console.log('yeppa')
+//                        asso.selected = true;
+                    }
+                }
+            }
+        }
 
     }
 </script>
