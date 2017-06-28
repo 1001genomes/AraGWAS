@@ -12,7 +12,7 @@
             </div>
         </v-flex>
         <v-flex xs12>
-            <gene-plot class="flex" :genes="genes" :region="region" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations"></gene-plot>
+            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations"></gene-plot>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
             <div >

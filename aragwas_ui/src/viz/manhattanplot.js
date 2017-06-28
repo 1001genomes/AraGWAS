@@ -10,6 +10,7 @@ export default function() {
     var scales = { x: d3.scaleLinear(), y: d3.scaleLinear() };
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
+    var t = d3.transition().duration(750);
     var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps;
 
     var colorScales = {
@@ -125,6 +126,7 @@ export default function() {
             svg = d3.select(this);
 
             draw = function() {
+                debugger;
                 prepareData();
                 drawAxes();
                 drawPoints();
@@ -153,10 +155,19 @@ export default function() {
             };
 
             drawPoints = function() {
+                console.log("draw");
                 var snps = svg.select("g.manhattanplot")
-                    .selectAll("path.snp").data(associations);
+                    .selectAll("path.snp").data(associations, function(d) { return d.study.id + "_" + d.snp.chr + "_" + d.snp.position; });
 
-                snps.exit().remove();
+                snps.exit()
+                    .attr("transform", positionSnp)
+                    .transition(d3.transition().duration(750))
+                    .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ",-100)"; })
+                    .style("fill-opacity", 0)
+                    .remove();
+                snps
+                    .transition(d3.transition().duration(750))
+                    .attr("transform", positionSnp);
 
                 snps.enter()
                     .append("path")
@@ -169,8 +180,14 @@ export default function() {
                     .style("fill", "white")
                     .on("mouseover", onMouseOverSnp)
                     .on("mouseout", onMouseOutSnp)
-                .merge(snps)
-                    .attr("transform", positionSnp);
+                    .style("fill-opacity", 0)
+                    .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
+                    .transition(d3.transition().duration(750))
+                    .attr("transform", positionSnp)
+                    .style("fill-opacity", 1);
+//
+  //
+
 
             };
 
@@ -284,9 +301,6 @@ export default function() {
             return region;
         }
         region = value;
-        if (typeof draw === "function") {
-            draw();
-        }
         return chart;
     };
     chart.highlightSnps = function(value) {

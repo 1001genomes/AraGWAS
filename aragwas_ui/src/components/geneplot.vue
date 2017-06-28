@@ -54,8 +54,6 @@
         @Prop()
         options: GenePlotOptions;
 
-        @Prop()
-        region: number[];
 
         width: number = 0;
         scatterPlotHeight: number = 300;
@@ -146,8 +144,9 @@
 
         @Watch("options")
         onOptionsChanged(newOptions: GenePlotOptions, oldOptions: GenePlotOptions) {
-            this.debouncedDrawGenePlot();
-            this.debouncedDrawManhattanPlot();
+            this.genePlt.region([newOptions.startPos,newOptions.endPos]);
+            this.manhattanPlt.region([newOptions.startPos,newOptions.endPos]);
+            this.manhattanPlt.threshold(newOptions.bonferoniThreshold);
         }
 
         @Watch("isoforms")
@@ -155,15 +154,10 @@
             this.debouncedDrawGenePlot();
         }
 
-        @Watch("region")
-        onRegionChanged(newRegion:number[]) {
-            this.genePlt.region(newRegion);
-            this.manhattanPlt.region(newRegion);
-        }
 
         @Watch("associations")
         onAssociationsChanged(newAssociations) {
-            this.manhattanPlt.data(newAssociations);
+            this.debouncedDrawManhattanPlot();
         }
         @Watch("highlightedAssociations")
         onHighlightedAssociationsChanged(newHighlightedAssociations) {
@@ -181,8 +175,8 @@
         }
 
         mounted() {
-            this.genePlt.region(this.region);
-            this.manhattanPlt.region(this.region).threshold(this.threshold);
+            this.genePlt.region([this.options.startPos,this.options.endPos]);
+            this.manhattanPlt.region([this.options.startPos,this.options.endPos]).threshold(this.threshold);
             d3.select("#geneplot").data([this.isoforms]).call(this.genePlt);
             d3.select("#manhattanplot").data([this.associations]).call(this.manhattanPlt);
             window.addEventListener('resize', this.debouncedOnResize);
