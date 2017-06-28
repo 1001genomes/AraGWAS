@@ -246,6 +246,10 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     s = Search(using=es, doc_type='associations')
     s = s.sort('-score', '_uid')
     s = filter_association_search(s, filters)
+    if search_after != '':
+        search_after = parse_lastel(search_after)
+        print(search_after)
+        s = s.extra(search_after=search_after)
     s = s[0:25]
     print(json.dumps(s.to_dict()))
     result = s.execute()

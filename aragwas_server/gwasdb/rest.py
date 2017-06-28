@@ -205,7 +205,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['GET'], url_path='aggregated_statistics')
     def aggregated_statistics(self, request, pk):
-        """ Retrieves the top assocations for a phenotype """
+        """ Retrieves the top assocations for a study """
         filters = _get_filter_from_params(request.query_params)
         filters['study_id'] = [pk]
         chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
@@ -288,17 +288,6 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.reverse()
         return queryset
 
-    # @detail_route(methods=['GET'], url_path='similar')
-    # def similar(self, requests, pk):
-    #     """ Lists similar phenotypes """
-    #     ori_pheno = Phenotype.objects.get(pk=pk)
-    #     trait_ontology = ori_pheno.name # TODO: change this once trait ontology has been added
-    #     queryset = Phenotype.objects.filter(name__exact=trait_ontology)
-    #     queryset = queryset.filter(~Q(pk=pk))
-    #     pagephe = self.paginate_queryset(queryset)
-    #     serializer = PhenotypeListSerializer(pagephe, many=True)
-    #     return Response(serializer.data)
-
     @detail_route(methods=['GET'], url_path='studies')
     def studies(self, requests, pk):
         """ Gets studies of phenotype """
@@ -337,8 +326,6 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     def list(self, request):
         """ Lists all associations sorted by score """
         filters = _get_filter_from_params(request.query_params)
-        limit = self.paginator.get_limit(request)
-        offset = self.paginator.get_offset(request)
         last_el = request.query_params.get('lastel', '')
         associations, count, lastel = elastic.load_filtered_top_associations_search_after(filters,last_el)
         print(lastel)
