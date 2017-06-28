@@ -378,6 +378,17 @@
                 }
             }
         }
+        this.chooseBestView()
+      }
+      chooseBestView(): void {
+          if (this.n[this.currentView] == 0) {
+              for (let view of ["studies","phenotypes","genes"]) {
+                  if (this.n[view] > 0) {
+                      this.currentView = view;
+                      break
+                  }
+              }
+          }
       }
       _displayTopGenes(data): void {
         this.plotRows = data;
