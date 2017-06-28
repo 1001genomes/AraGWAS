@@ -29,7 +29,7 @@
                 <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
             </div>
         </v-flex>
-        <v-flex xs9 wrap fill-height class="association-table-container" v-show="view.controlPosition !== 'right' || showSwitch">
+        <v-flex xs9 wrap fill-height class="association-table-container" @mouseleave="showAssociation(null)" v-show="view.controlPosition !== 'right' || showSwitch">
             <v-data-table
                     v-bind:headers="headers"
                     v-bind:items="associations"
@@ -37,6 +37,7 @@
                     hide-actions
                     :loading="loading"
                     class="elevation-1 mt-2 asso-table"
+
             >
                 <template slot="headers" scope="props">
                     <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
@@ -278,7 +279,6 @@
         }
         @Watch("highlightedAssociations")
         onHighlightedAssociationsChanged(newHighlightedAssociations) {
-            console.log(newHighlightedAssociations);
             this.searchForAsso(newHighlightedAssociations);
         }
 
@@ -334,6 +334,7 @@
             }
         }
         showAssociation(item): void {
+            console.log(item);
             this.$emit('association', item)
         }
         percentageString(el: number): string {

@@ -143,8 +143,12 @@
             this.associations = associations
         }
 
-        onHighlightAssocInTable(association: Association) {
+        onHighlightAssocInTable(association: Association | null) {
             // TODO use array operators
+            if (association == null) {
+                this.highlightedAssociations = [];
+                return;
+            }
             this.highlightedAssociations = [association];
         }
 
