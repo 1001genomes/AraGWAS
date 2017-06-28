@@ -44,23 +44,23 @@
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                    <td v-if="hideFields.indexOf('name') == -1" >
-                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" >{{ props.item.score | round }}</td>
-                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
+                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
+                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
-                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <div v-if="'snp' in props.item">
                             <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
                         </div>
                         <div v-else>Missing SNP info</div>
                     </td>
-                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <div v-if="'snp' in props.item">
                             <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
                         </div>
@@ -91,24 +91,24 @@
                       {{ props.item.text | capitalize }}
                     </span>
                 </template>
-                <template slot="items" scope="props">
-                        <td v-if="hideFields.indexOf('name') == -1" >
-                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else>Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right">
-                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right">
+                <template slot="items" scope="props" @mouseover.native="showAssociation">
+                    <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
+                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
+                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                        <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                        <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <div v-if="'snp' in props.item">
                             <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
                         </div>
                         <div v-else>Missing SNP info</div>
                     </td>
-                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right">
+                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                         <div v-if="'snp' in props.item">
                             <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
                         </div>
@@ -181,6 +181,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Component, Watch, Prop} from "vue-property-decorator";
+    import Association from "../models/association"
 
     import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene, loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype, loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics} from "../api";
 
@@ -321,6 +322,9 @@
                     this.headers.splice(i,1)
                 }
             }
+        }
+        showAssociation(item): void {
+            this.$emit('association', item)
         }
         percentageString(el: number): string {
             const outstr = " (" + Math.round(1000*el)/10 + "% of associations)";

@@ -60,7 +60,7 @@
                     </v-flex>
                     <v-flex xs12 sm6 md8>
                         <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView"></top-associations>
+                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView" @showAssociation="check"></top-associations>
                     </v-flex>
                 </v-layout>
             </v-tabs-content>
@@ -227,6 +227,9 @@
             this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["max_y"] = Math.max(data[chrom].scores[0]+1, 10);
         }
+      }
+      check(data): void {
+          console.log(data)
       }
     }
 </script>
