@@ -27,6 +27,7 @@ class Study(models.Model):
     number_countries = models.IntegerField(blank=True, null=True) # number of countries of origin for the various accessions
     n_hits_thr = models.IntegerField(blank=True, null=True)  # number of hits with 1e-4 threshold
     n_hits_bonf = models.IntegerField(blank=True, null=True) # number of hits with Bonferoni threshold
+    n_hits_fdr = models.IntegerField(blank=True, null=True) # number of hits above FDR (benjamini-hochberg) threshold
     n_hits_perm = models.IntegerField(blank=True, null=True) # number of hits with permutation threshold
 
     def __str__(self):

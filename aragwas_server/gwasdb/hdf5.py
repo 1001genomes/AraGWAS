@@ -13,7 +13,9 @@ def _filter_by_maf( top_assocations, maf_filter):
     maf_filter_cond = top_mafs > maf_filter
     return (np.compress(maf_filter_cond, top_assocations[0]), np.compress(maf_filter_cond, top_assocations[1]),np.compress(maf_filter_cond, top_mafs), np.compress(maf_filter_cond, top_assocations[3]))
 
-
+def get_number_associations_after_filtering(associations_maf, maf):
+    maf_filter_cond = associations_maf[:] > maf
+    return np.count_nonzero(associations_maf[maf_filter_cond])
 
 
 def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
@@ -37,7 +39,10 @@ def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     for chrom in range(1, 6):
         group = h5f['pvalues']['chr%s' % chrom]
         end_idx = val
-        group_length = len(group['positions'])
+        if maf != 0:
+            group_length = get_number_associations_after_filtering(group['mafs'], maf)
+        else:
+            group_length = len(group['positions'])
         num_associations += group_length
         if is_threshold:
             end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], val, side='left')
@@ -77,6 +82,39 @@ def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     top_associations = np.rec.fromarrays((chrs, positions, scores, mafs, macs), names='chr, position, score, maf, mac')
     return top_associations, thresholds
 
+def get_hit_count(hdf5_file, maf=0.05):
+    try:
+        h5f = h5py.File(hdf5_file, 'r')
+    except:
+        raise FileNotFoundError("Study file not found ({})".format(hdf5_file))
+    scores = np.empty(shape=(0,), dtype='f4')
+    num_associations = 0
+    for chrom in range(1, 6):
+        group = h5f['pvalues']['chr%s' % chrom]
+        if maf != 0:
+            group_length = get_number_associations_after_filtering(group['mafs'], maf)
+        else:
+            group_length = len(group['positions'])
+        num_associations += group_length
+        end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], 1e-4, side='left')
+        top_positions, top_scores, top_mafs, top_macs = _filter_by_maf((group['positions'][:end_idx],group['scores'][:end_idx],group['mafs'][:end_idx],group['macs'][:end_idx]), maf)
+        scores = np.concatenate((scores, top_scores))
+    bt05 = -math.log(0.05 / float(num_associations), 10)
+    bt01 = -math.log(0.01 / float(num_associations), 10)
+    bh_threshold = h5f['pvalues'].attrs.get('bh_thres', None)
+    thresholds = {'bonferoni_threshold05': bt05, 'bonferoni_threshold01': bt01, 'bh_threshold': bh_threshold, 'total_associations': num_associations}
+    bt05_hits = 0
+    bt01_hits = 0
+    bh_hits = 0
+    for score in scores:
+        if score > bt05:
+            bt05_hits += 1
+            if score > bt01:
+                bt01_hits += 1
+        if score > bh_threshold:
+            bh_hits += 1
+    hits = {'bonferoni_hits05': bt05_hits, 'bonferoni_hits01': bt01_hits, 'bh_hits': bh_hits, 'thr_e-4': len(scores)}
+    return hits, thresholds
 
 def regroup_associations(top_associations):
     """regroups associations from a hdf5 file to generate an ordered top list, not chromosome-specific"""
