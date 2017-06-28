@@ -89,24 +89,32 @@
         }
 
         onHighlightGene(event): void {
-            this.highlightedGene = event.detail.gene;
+            let gene = event.detail.gene;
+            this.highlightedGene = gene;
             let e = event.detail.event;
             this.popupStyle.top = e.pageY + 10 + "px";
             this.popupStyle.left = e.pageX + "px";
+            this.manhattanPlt.highlightSnps(this.associations.filter(function(assoc) {
+                return assoc.snp.position >= gene.positions.gte && assoc.snp.position <= gene.positions.lte;
+            }));
+            this.$emit("highlightgene", event.detail.gene);
 
        }
 
         onUnhighlightGene(event): void {
             this.highlightedGene = null;
+            this.manhattanPlt.highlightSnps([]);
+            this.$emit("unhighlightgene", []);
         }
 
         onHighlightSnp(event): void {
             this.genePlt.highlightPos(event.detail.snp.snp.position);
-
+            this.$emit("highlightsnp", event.detail.snp);
         }
 
         onUnhighlightSnp(event): void {
-            this.genePlt.highlightPos(undefined);
+            this.genePlt.highlightPos([]);
+            this.$emit("unhighlightsnp", []);
         }
 
         get height() {

@@ -203,7 +203,7 @@
             },
         },
         name: "topAssociations",
-        props: ["showControls", "hideFields", "filters", "view", "highlightedAssociation"],
+        props: ["showControls", "hideFields", "filters", "view", "highlightedAssociations"],
     })
     export default class TopAssociationsComponent extends Vue {
         @Prop()
@@ -214,8 +214,8 @@
         view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
         @Prop()
         filters: {chr: string[], annotation: string[], maf: string[], type: string[]};
-        @Prop()
-        highlightedAssociation: string = 'xa';
+        @Prop({type: null})
+        highlightedAssociations: Association[];
         localfilters : {};
         loading: boolean = false;
         headers = [{text: "SNP", value: "snp.chr", name: "name", left: true, tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
@@ -238,7 +238,6 @@
         lastElementHistory = {'1': [0,''], };
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
-        test = [];
         selected = [];
 
         @Watch("currentPage")
@@ -277,9 +276,10 @@
         onGeneIdChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
-        @Watch("highlightedAssociation")
-        onHighAssoChanged(val, oldVal) {
-            this.searchForAsso(val);
+        @Watch("highlightedAssociations")
+        onHighlightedAssociationsChanged(newHighlightedAssociations) {
+            console.log(newHighlightedAssociations);
+            this.searchForAsso(newHighlightedAssociations);
         }
 
         mounted(): void {
@@ -347,7 +347,7 @@
             }
             return Math.round(number * 1000) / 10;
         }
-        searchForAsso(name: string) {
+        searchForAsso(associations: Association[]) {
             for (let asso of this.associations) {
                 if('snp' in asso){
                     const aname = asso.snp.chr.toString() + ":" + asso.snp.position.toString();

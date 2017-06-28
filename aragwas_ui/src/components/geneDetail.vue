@@ -12,13 +12,13 @@
             </div>
         </v-flex>
         <v-flex xs12>
-            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations"></gene-plot>
+            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:highlightsnp="onHighlightSnp" v-on:unhighlightsnp="onUnhighlightSnp"></gene-plot>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
             <div >
                     <h5 class="mb-1 gene-associations">Associations List</h5>
                     <v-divider></v-divider>
-                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView" v-model="associations" v-on:load="onLoadAssociations" v-on:association="onHighlightAssocInTable" ></top-associations>
+                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView" :highlightedAssociations="highlightedAssociations" v-on:load="onLoadAssociations" v-on:association="onHighlightAssocInTable" ></top-associations>
             </div>
         </v-flex>
     </v-layout >
@@ -69,7 +69,7 @@
 
         // Associations parameters
         ordered: string;
-        zoom = 0;
+        zoom = 10;
         pageCount = 5;
         currentPage = 1;
         totalCount = 0;
@@ -119,6 +119,24 @@
 
         get geneView() {
             return {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
+        }
+
+        onHighlightSnp(snp) {
+            this.highlightedAssociations = [snp];
+        }
+        onUnhighlightSnp(snp) {
+            this.highlightedAssociations = [];
+        }
+
+        onHighlightGene(gene) {
+            let highlightedAssociations = this.associations.filter(function(assoc:Association) {
+                return gene.positions.gte <= assoc.snp.position && gene.positions.lte >= assoc.snp.position;
+            });
+            this.highlightedAssociations = highlightedAssociations;
+        }
+
+        onUnhighlightGene(gene) {
+            this.highlightedAssociations = [];
         }
 
         onLoadAssociations(associations) {

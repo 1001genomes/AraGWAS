@@ -10,7 +10,7 @@ export default function() {
     var scales = { x: d3.scaleLinear(), y: d3.scaleLinear() };
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
-    var t = d3.transition().duration(750);
+    var transitionDuration = 750;
     var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps;
 
     var colorScales = {
@@ -103,7 +103,7 @@ export default function() {
             .style("fill", "white");
         svg.dispatch("unhighlightsnp", { detail: {snp: d, event: d3.event} });
     }
-    function finAssociation(association, lookup) {
+    function findAssociation(association, lookup) {
         return lookup.filter(function(assoc) {
             return assoc.study.id === association.study.id && assoc.snp.chr === association.snp.chr && assoc.snp.position === association.snp.position;
         });
@@ -111,14 +111,16 @@ export default function() {
 
     function highlightSnps(snps) {
         associations.forEach(function(assoc) {
-            if (finAssociation(assoc, snps).length === 0) {
+            if (findAssociation(assoc, snps).length === 0) {
                 assoc.highlighted = false;
             }
             else {
                 assoc.highlighted = true;
             }
         });
+        transitionDuration = 100;
         drawPoints();
+        transitionDuration = 750;
     }
 
     function chart(selection) {
@@ -126,7 +128,6 @@ export default function() {
             svg = d3.select(this);
 
             draw = function() {
-                debugger;
                 prepareData();
                 drawAxes();
                 drawPoints();
@@ -155,19 +156,23 @@ export default function() {
             };
 
             drawPoints = function() {
-                console.log("draw");
                 var snps = svg.select("g.manhattanplot")
                     .selectAll("path.snp").data(associations, function(d) { return d.study.id + "_" + d.snp.chr + "_" + d.snp.position; });
 
                 snps.exit()
                     .attr("transform", positionSnp)
-                    .transition(d3.transition().duration(750))
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ",-100)"; })
                     .style("fill-opacity", 0)
                     .remove();
                 snps
-                    .transition(d3.transition().duration(750))
-                    .attr("transform", positionSnp);
+                    .transition(d3.transition().duration(transitionDuration))
+                    .attr("transform", positionSnp)
+                    .attr("d", d3.symbol()
+                        .type(getSnpSymbolType)
+                        .size(getSnpSize),
+                    )
+                    .style("fill", function(d) {  return  (d.highlighted  ? getSnpColor(d) : "white") ;});
 
                 snps.enter()
                     .append("path")
@@ -182,7 +187,7 @@ export default function() {
                     .on("mouseout", onMouseOutSnp)
                     .style("fill-opacity", 0)
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
-                    .transition(d3.transition().duration(750))
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionSnp)
                     .style("fill-opacity", 1);
 //
@@ -249,18 +254,6 @@ export default function() {
 
         });
     }
-
-    chart.highlightPos = function(value) {
-        if (!arguments.length) {
-            return highlightPos;
-        }
-        highlightPos = value;
-        if (typeof updateSelectionLine === "function") {
-            updateSelectionLine();
-        }
-        return chart;
-
-    };
 
     chart.size = function(value) {
         if (!arguments.length) {
