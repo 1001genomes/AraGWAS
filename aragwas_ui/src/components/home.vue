@@ -45,7 +45,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
                                 <h5 class="text-xs-center">Take a tour</h5>
                                 <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
+                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light @click.native="starttour"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -259,6 +259,9 @@
         else  {
             this.$router.push({name: "home"});
         }
+      }
+      starttour(): void {
+        this.$router.push({name:'home', query:{tour:'true'}})
       }
 
       @Watch("searchQuery")

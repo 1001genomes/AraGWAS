@@ -3,10 +3,10 @@
     <v-toolbar class="white toolbar">
       <v-toolbar-logo class="logo aragwas-logo"><router-link :to="{name: 'home'}">AraGWAS Catalog</router-link></v-toolbar-logo>
       <v-toolbar-items class="black--text">
-          <v-toolbar-item class="links"><span class="black--text" @click="starttour">Take a tour?</span></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link"><router-link :to="{path: '/faq'}"><span class="black--text">FAQ</span></router-link></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link"><router-link :to="{path: '/about'}"><span class="black--text">About</span></router-link></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link"><a class="black--text" href="/docs" target="_blank">REST API documentation</a></v-toolbar-item>
+          <v-toolbar-item class="links" @click.native="starttour"><span class="black--text">Take a tour?</span></v-toolbar-item>
+          <v-toolbar-item class="links" id="faq-link" router :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-toolbar-item>
+          <v-toolbar-item class="links" id="about-link" router :to="{path: '/about'}"><span class="black--text">About</span></v-toolbar-item>
+          <v-toolbar-item class="links" id="faq-link" router href="/docs" target="_blank">REST API documentation</v-toolbar-item>
       </v-toolbar-items>
     </v-toolbar>
     <main>
