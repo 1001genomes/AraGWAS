@@ -43,7 +43,7 @@ class Command(BaseCommand):
                     hits, thresholds = get_hit_count(hdf5_file, maf=maf)
                     study.n_hits_bonf = hits['bonferroni_hits05']
                     study.n_hits_top = hits['thr_e-4']
-                    study.n_hits_fdr = hits['thr_e-4']
+                    study.n_hits_fdr = hits['bh_hits']
                     study.save()
                     counter +=1
             print(str(counter) + ' studies updated in the database.')

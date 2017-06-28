@@ -117,7 +117,7 @@
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 
-      maf = ["1", "1-5", "5-10", "10"];
+      maf = ["5-10", "10"];
       annotation = ["ns", "s", "in", "i"];
       type = ["genic", "non-genic"];
       chr = ["1", "2","3","4","5"];

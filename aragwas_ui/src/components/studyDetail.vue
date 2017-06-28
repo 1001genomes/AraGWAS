@@ -32,6 +32,7 @@
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
+                                    <v-flex xs5 md3>N hits (FDR):</v-flex><v-flex xs7 mm9>{{ fdrHits }}</v-flex>
                                     <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                                 </v-layout>
                             </v-layout>
@@ -117,11 +118,12 @@
       currentView: string = "study-detail-tabs-manhattan";
       currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
-      bonferroniThr05 = 0;
-      bonferroniThr01 = 0;
-      permThr = 0;
-      bonferroniHits = 0;
-      permHits = 0;
+      bonferroniThr05: number;
+      bonferroniThr01: number;
+      permThr: number;
+      bonferroniHits: number;
+      permHits: number;
+      fdrHits: number;
       samples: number;
       countries: number;
 
@@ -155,7 +157,7 @@
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
-      maf = ["1", "1-5", "5-10", "10"];
+      maf = ["5-10", "10"];
       annotation = ["ns", "s", "in", "i"];
       type = ["genic", "non-genic"];
       chr = ["1", "2","3","4","5"];
@@ -196,6 +198,7 @@
         if (data.nHitsPerm) {
           this.permHits = data.nHitsPerm;
         }
+        this.fdrHits = data.nHitsFdr;
         this.samples = data.numberSamples;
         this.countries = data.numberCountries;
         loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);

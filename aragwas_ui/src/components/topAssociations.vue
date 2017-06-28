@@ -41,7 +41,7 @@
     })
     export default class TopAssociations extends Vue {
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
-        maf = ["1", "1-5", "5-10", "10"];
+        maf = ["5-10", "10"];
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
