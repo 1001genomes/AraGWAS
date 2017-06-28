@@ -5,10 +5,10 @@
                 <v-layout column align-center justify-center v-if="!search">
                     <div class="banner-title">
                         <br>
-                        <h1 class="white--text text-xs-center" >Ara<b>GWAS</b>Catalog</h1>
+                        <h1 class="white--text text-xs-center" >AraGWAS Catalog</h1>
                     </div>
                     <div class="banner-subtext">
-                        <h5 class="white--text text-xs-center">Ara<b>GWAS</b>Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
+                        <h5 class="white--text text-xs-center">AraGWAS Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
                         <br>
                         <h6 class="white--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
                     </div>
