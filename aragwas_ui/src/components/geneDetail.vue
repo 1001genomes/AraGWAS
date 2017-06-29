@@ -214,19 +214,29 @@
                     position: "right"
                 },
                 {
-                    element: ".gene-plot",
-                    intro: "This genomic region view shows significant associations linked with the gene of interest.",
-                    position: "top"
-                },
-                {
                     element: ".gene-zoom",
                     intro: "You can use the zoom to show further associations linked to this gene",
                     position: "left"
                 },
                 {
-                    element: ".gene-associations",
-                    intro: "This is a list of the associations shown above.",
+                    element: "#manhattanplot",
+                    intro: "This Manhattan plot shows all the associations that are currently displaed in the below table. Each marker in the plot is a SNP. By hovering the mouse over a marker, additional information are displayed",
+                    position: "bottom"
+                },
+                {
+                    element: "#geneplot",
+                    intro: "The Gene plot aligned underneath the Manhattan plot shows the genes in the chosen region. When the user moves the mouse over a certain gene, all corresponding associations are highlighted in the Manhattan plot. If the user moves the mouse over an association in the Manhattan plot, a vertical blue line shows the location of the association in regard to the gene.",
+                    position: "bottom"
+                },
+                 {
+                    element: ".association-table-container",
+                    intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
                     position: "top"
+                },
+                {
+                    element: ".associations-control-container",
+                    intro: "You can use these controls to filter the top associations list",
+                    position: "right"
                 },
                 {
                     element: ".aragwas-logo",
