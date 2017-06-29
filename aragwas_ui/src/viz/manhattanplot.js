@@ -335,6 +335,12 @@ export default function() {
                     .style("fill", "#000");
                     legendItem.attr("transform", "translate(" + (runningWidth ) + ",0)");
                     runningWidth += legendItem.node().getBoundingClientRect().width +  legendPadding;
+                })
+                .on("mouseover", function(d) {
+                    highlightSnps(findAssociationByType(d.type, associations));
+                })
+                .on("mouseout", function(d) {
+                    highlightSnps([]);
                 });
 
             drawThreshold();
