@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 export default function() {
     var svg;
-    var margins = { top: 10, left: 60, bottom: 50, right: 50 };
+    var margins = { top: 50, left: 60, bottom: 50, right: 50 };
     var axes = { x: null, y: null };
     var threshold = 0;
     var associations = [];
@@ -11,8 +11,10 @@ export default function() {
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
-    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps;
+    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps, highlightLegend;
     var showXAxis = true;
+    var legendPadding = 15;
+    var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
 
     var colorScales = {
         impact: d3.scaleOrdinal()
@@ -118,6 +120,17 @@ export default function() {
             return assoc.study.id === association.study.id && assoc.snp.chr === association.snp.chr && assoc.snp.position === association.snp.position;
         });
     }
+    function  findAssociationByType(type, lookup) {
+        return lookup.filter(function(assoc) {
+            var annotation = getAnnotationFromSnp(assoc);
+            if (annotation && annotation.function) {
+                return annotation.function === type ;
+            } else if (type === "INTRON") {
+                return true;
+            }
+            return false;
+        });
+    }
 
     function highlightSnps(snps) {
         associations.forEach(function(assoc) {
@@ -130,6 +143,7 @@ export default function() {
         });
         transitionDuration = 100;
         drawPoints();
+        highlightLegend(snps);
         transitionDuration = 750;
     }
 
@@ -171,6 +185,18 @@ export default function() {
                     .attr("x1", 0).attr("x2", getPlotWidth())
                     .attr("y1", scales.y(threshold))
                     .attr("y2", scales.y(threshold));
+            };
+
+            highlightLegend = function(highlightedSnps) {
+                svg.select("g.legend")
+                .selectAll("g.legend-item")
+                .each(function(d) {
+                    var isActive = findAssociationByType(d.type, highlightedSnps).length > 0;
+
+                    d3.select(this)
+                        .attr("opacity", (isActive ? 1 : 0.5))
+                        .attr("font-weight", (isActive ? "bold" : "normal"));
+                });
             };
 
             drawPoints = function() {
@@ -278,6 +304,38 @@ export default function() {
                 .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
                 .attr("clip-path", "url(#manhattan-clip)");
 
+            // draw legend
+            var legendGroup = plotGroup
+                .append("g")
+                    .attr("class", "legend")
+                    .attr("transform", "translate(" + (margins.left + 10) + ",10)");
+
+            var runningWidth = 0;
+            legendGroup.selectAll("g")
+                .data(legend)
+                .enter()
+                .append("g")
+                .attr("class", "legend-item")
+                .attr("opacity", 0.5)
+                .each(function(d, i) {
+                    var legendItem = d3.select(this);
+                    legendItem.append("path")
+                    .attr("class", "legend")
+                    .attr("d", d3.symbol().type(d.symbol).size(100))
+                    .style("fill", "#fff")
+                    .style("stroke", "black");
+
+                    legendItem.append("text")
+                    .attr("class", "legend")
+                    .attr("x", "5")
+                    .attr("y", 0)
+                    .attr("dy", "0.4em")
+                    .attr("dx", "0.7em")
+                    .text(d.type)
+                    .style("fill", "#000");
+                    legendItem.attr("transform", "translate(" + (runningWidth ) + ",0)");
+                    runningWidth += legendItem.node().getBoundingClientRect().width +  legendPadding;
+                });
 
             drawThreshold();
             drawPoints();
