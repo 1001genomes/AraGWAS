@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightsnp="onHighlightSnp" v-on:unhighlightsnp="onUnhighlightSnp" >
         </svg>
         <svg id="geneplot" width="100%" :height="genePlotHeight" :style="genePlotStyles" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" >
@@ -22,6 +22,12 @@
                 </v-card-text>
             </v-card>
         </div>
+        <div id="associationpopup" v-if="highlightedAssociation">
+            <dl>
+                <dt></dt><dd>{{highlightedAssociation.snp.position}}</dd>
+                <dt class="pvalue">pValue:</dt><dd>{{highlightedAssociation.score | round}}</dd>
+            </dl>
+        </div>
     </div>
 </template>
 
@@ -40,6 +46,11 @@
 
     @Component({
         name: "gene-plot",
+        filters: {
+            round: function(value) {
+                return Math.round(value * 100)/ 100;
+            }
+        }
     })
     export default class GenePlot extends Vue {
         @Prop({type:null})
@@ -144,6 +155,13 @@
             return isoforms;
         }
 
+        get highlightedAssociation() {
+            if (! (this.highlightedAssociations) || this.highlightedAssociations.length > 1) {
+                return null;
+            }
+            return this.highlightedAssociations[0];
+        }
+
         @Watch("width")
         onWidthChanged(newWidth: number, oldWidth: number) {
             this.genePlt.size([newWidth - this.margin.left - this.margin.right, this.genePlotHeight]);
@@ -228,6 +246,20 @@
         max-width:400px;
         position:absolute;
         z-index:9999;
+
+    #associationpopup
+        position: absolute;
+        z-index: 9999;
+        top:195px;
+        right: 20px;
+        dt.pvalue
+            color:green;
+        dd
+            float:left;
+            margin-right: 10px;
+        dt
+            float:left;
+            margin-right:2px;
 
 
 </style>
