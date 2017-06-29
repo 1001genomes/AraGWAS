@@ -63,7 +63,7 @@
     studyPage: Page<Study>;
     columns = [{text: "Name", left: true, value: "name",},{text:  "Phenotype", left: true,  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Bonferroni", value: "nHitsBonferroni",}];
     studies = [];
-    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "name", descending: false};
+    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsBonferroni", descending: true};
     totalItems: number = 0;
     search: string = '';
     currentPage = 1;

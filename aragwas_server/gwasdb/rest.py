@@ -185,7 +185,9 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 ordering += '__name'
             if ordering == 'nHitsBonferroni':
                 ordering = 'n_hits_bonf'
-            queryset = queryset.order_by(Lower(ordering))
+            else:
+                ordering = Lower(ordering)
+            queryset = queryset.order_by(ordering)
             if inverted:
                 queryset = queryset.reverse()
         return queryset
