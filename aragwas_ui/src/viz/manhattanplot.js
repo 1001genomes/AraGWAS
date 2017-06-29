@@ -143,8 +143,8 @@ export default function() {
             };
 
             drawAxes = function() {
-                svg.selectAll("g.x.axis").call(axes.x);
-                svg.selectAll("g.y.axis").call(axes.y);
+                svg.selectAll("g.x.axis").transition().duration(transitionDuration).call(axes.x);
+                svg.selectAll("g.y.axis").transition().duration(transitionDuration).call(axes.y);
             };
 
             drawThreshold = function() {

@@ -16,10 +16,10 @@ export default function() {
     var isoforms;
     var draw;
     var updateSelectionLine;
-    var updateRegion;
     var timelineBands;
     var size = [1000, 250];
     var margin =  { top: 20, bottom: 20} ;
+    var transitionDuration = 750;
 
     var timelineSize = function() {
         return [size[0], size[1] - margin.bottom - margin.top];
@@ -69,6 +69,10 @@ export default function() {
         return timeline.displayScale().invert(value);
     };
 
+    function overHalf(start) {
+        return start > (size[0] / 2 );
+    }
+
     var onMouseMove = function(d, i) {
         var pos = d3.mouse(this);
         highlightPos = invert(pos[0]);
@@ -79,9 +83,12 @@ export default function() {
         selection.each(function(data) {
             isoforms = data;
             draw = function() {
+                timeline.extent(region);
                 timelineBands = timeline(isoforms);
 
-                svg.select("g.axis.x").call(xAxis);
+                svg.select("g.axis.x")
+                 .transition().duration(transitionDuration)
+                 .call(xAxis);
                 svg.select("#clip-rect")
                     .attr("width", size[0])
                     .attr("height", size[1]);
@@ -89,19 +96,24 @@ export default function() {
                 var isoformGroup = trackElem.selectAll("g.isoform")
                     .data(timelineBands, function(d) { return d.name; });
 
-                isoformGroup.exit().remove();
+                isoformGroup.exit()
+                    .transition(d3.transition().duration(transitionDuration))
+                    .attr("transform", function(d) { return "translate(" + (overHalf(d.start) ? size[0] : 0 ) + "," + d.y + ")";})
+                    .remove();
 
                 // draw isoform groups
                 var newIsoForms = isoformGroup.enter()
                     .append("g")
                     .attr("class", "isoform")
                     .style("pointer-events", "all")
+                    .attr("transform", function(d) { return "translate(" + (overHalf(d.start) ?  size[0] : 0)  + "," + d.y + ")"; })
                     .on("mouseover", function(d, i) {
                         svg.dispatch("highlightgene", { detail: {gene: d, event: d3.event} });
                     })
                     .on("mouseout", function(d, i) {
                         svg.dispatch("unhighlightgene", { detail: {gene: d, event: d3.event} });
                     });
+
 
                 // draw text
                 newIsoForms
@@ -155,6 +167,7 @@ export default function() {
                 var allIsoForms = isoformGroup.merge(newIsoForms);
 
                 allIsoForms
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", function(d) { return "translate(" + d.start + "," + d.y + ")"; });
 
                 allIsoForms.select("text")
@@ -163,19 +176,23 @@ export default function() {
 
                 allIsoForms.select("rect.gene")
                     .attr("y", function(d) { return d.dy * ((1 / cdsScaler - 1 / geneScaler) / 2); })
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("height", function(d) { return d.dy / geneScaler; })
                     .attr("width", function(d) {return d.end - d.start; });
 
                 allIsoForms.select("path.strand-triangle")
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionTriangle);
 
                 allIsoForms.select("g.cds")
                     .selectAll("rect.cds")
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("x", positionFeature)
                     .attr("width", function(d) { return scale(d.positions.lte) - scale(d.positions.gte); })
                     .attr("height", function(d) { return d3.select(this.parentNode).datum().dy / cdsScaler; });
 
                 allIsoForms.select("g.fivePrime_UTR")
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionUtrFeatures)
                     .selectAll("rect.fivePrime_UTR")
                     .attr("x", positionFeature)
@@ -183,6 +200,7 @@ export default function() {
                     .attr("height", function(d) { return d3.select(this.parentNode).datum().dy / utrScaler; });
 
                 allIsoForms.select("g.threePrime_UTR")
+                    .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionUtrFeatures)
                     .selectAll("rect.threePrime_UTR")
                     .attr("x", positionFeature)
@@ -190,7 +208,9 @@ export default function() {
                     .attr("height", function(d) { return d3.select(this.parentNode).datum().dy / utrScaler; });
 
                 // update existing
-                isoformGroup.attr("transform", function(d) { return "translate(" + d.start + "," + d.y + ")"; });
+                isoformGroup
+                .transition(d3.transition().duration(transitionDuration))
+                .attr("transform", function(d) { return "translate(" + d.start + "," + d.y + ")"; });
 
             };
 
@@ -225,10 +245,6 @@ export default function() {
                 features.classed("highlight", true);
             };
 
-            updateRegion = function() {
-                timeline.extent(region);
-                draw();
-            };
 
             timeline.extent(region);
             svg = d3.select(this);
@@ -313,9 +329,6 @@ export default function() {
             return region;
         }
         region = value;
-        if (typeof updateRegion === "function") {
-            updateRegion();
-        }
         return chart;
     };
     return chart;
