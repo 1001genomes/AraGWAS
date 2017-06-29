@@ -25,7 +25,7 @@
         <div id="associationpopup" v-if="highlightedAssociation">
             <dl>
                 <dt></dt><dd>{{highlightedAssociation.snp.position}}</dd>
-                <dt class="pvalue">pValue:</dt><dd>{{highlightedAssociation.score | round}}</dd>
+                <dt class="pvalue">-log10(pvalue):</dt><dd>{{highlightedAssociation.score | round}}</dd>
             </dl>
         </div>
     </div>
