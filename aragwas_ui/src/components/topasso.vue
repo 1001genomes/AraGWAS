@@ -334,7 +334,6 @@
             }
         }
         showAssociation(item): void {
-            console.log(item);
             this.$emit('association', item)
         }
         percentageString(el: number): string {

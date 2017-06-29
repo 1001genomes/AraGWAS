@@ -126,6 +126,14 @@ export default function() {
     function chart(selection) {
         selection.each(function(data) {
             svg = d3.select(this);
+            svg.append("defs").append("svg:clipPath")
+                .attr("id", "manhattan-clip")
+                    .append("svg:rect")
+                        .attr("id", "clip-rect")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("width", getPlotWidth())
+                        .attr("height", getPlotHeight());
 
             draw = function() {
                 prepareData();
@@ -156,6 +164,9 @@ export default function() {
             };
 
             drawPoints = function() {
+                svg.select("#clip-rect")
+                    .attr("width", getPlotWidth())
+                    .attr("height", getPlotHeight());
                 var snps = svg.select("g.manhattanplot")
                     .selectAll("path.snp").data(associations, function(d) { return d.study.id + "_" + d.snp.chr + "_" + d.snp.position; });
 
@@ -247,7 +258,9 @@ export default function() {
 
             plotGroup.append("g")
                 .attr("class", "manhattanplot")
-                .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+                .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
+                .attr("clip-path", "url(#manhattan-clip)");
+
 
             drawThreshold();
             drawPoints();

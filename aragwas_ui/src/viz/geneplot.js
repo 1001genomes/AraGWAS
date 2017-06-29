@@ -82,6 +82,9 @@ export default function() {
                 timelineBands = timeline(isoforms);
 
                 svg.select("g.axis.x").call(xAxis);
+                svg.select("#clip-rect")
+                    .attr("width", size[0])
+                    .attr("height", size[1]);
 
                 var isoformGroup = trackElem.selectAll("g.isoform")
                     .data(timelineBands, function(d) { return d.name; });
@@ -230,10 +233,21 @@ export default function() {
             timeline.extent(region);
             svg = d3.select(this);
             svg.selectAll("*").remove();
-            svg.on("mousemove", onMouseMove);
+            svg.on("mousemove", onMouseMove)
+            .append("defs").append("svg:clipPath")
+                .attr("id", "geneplot-clip")
+                    .append("svg:rect")
+                        .attr("id", "clip-rect")
+                        .attr("x", "0")
+                        .attr("y", "0")
+                        .attr("width", size[0])
+                        .attr("height", size[1]);
+
+
             xAxis = d3.axisBottom(timeline.displayScale());
             trackElem = svg.append("g")
-                .attr("transform", "translate(0," + margin.top + ")");
+                .attr("transform", "translate(0," + margin.top + ")")
+                .attr("clip-path", "url(#geneplot-clip)");
             draw();
 
             svg.append("g")
