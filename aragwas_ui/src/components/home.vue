@@ -69,7 +69,7 @@
                                     <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
                                     <div>
                                         <p class="light">
-                                            We finalized a complete recomputation of 107 phenotypes GWAS with the brandly new imputed 3004 genomes from the 1001genomes consortium.
+                                            We finalized a complete recomputation of Genome Wide Association Studies (GWAS) for 167 phenotypes with the brandly new imputed 2029 genomes from the 1001genomes consortium.
                                         </p>
                                     </div>
                                 </v-card-text>
