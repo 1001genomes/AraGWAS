@@ -117,8 +117,8 @@ class HDF5LoadingTests(TestCase):
                     ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21)]
 
         top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, top_hit_num, maf=0, top_or_threshold='top')
-        assert thresholds['bonferoni_threshold01'] == 7.3140147710960965
-        assert thresholds['bonferoni_threshold05'] == 6.615044766760077
+        assert thresholds['bonferroni_threshold01'] == 7.3140147710960965
+        assert thresholds['bonferroni_threshold05'] == 6.615044766760077
         assert thresholds['bh_threshold'] == 6.6150447667600778
         assert thresholds['total_associations'] == 206070
         assert len(top_associations) == top_hit_num*5
@@ -157,10 +157,10 @@ class HDF5LoadingTests(TestCase):
                     ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21)]
 
         top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, top_hit_num, top_or_threshold='top')
-        assert thresholds['bonferoni_threshold01'] == 7.3140147710960965
-        assert thresholds['bonferoni_threshold05'] == 6.615044766760077
+        assert thresholds['bonferroni_threshold01'] == 7.294197188903931
+        assert thresholds['bonferroni_threshold05'] == 6.5952271845679125
         assert thresholds['bh_threshold'] == 6.6150447667600778
-        assert thresholds['total_associations'] == 206070
+        assert thresholds['total_associations'] == 196878
         assert len(top_associations) == top_hit_num*5
         assert np.count_nonzero(top_associations['maf'] < 0.05) == 0
         self._check_return_array(top_associations)
