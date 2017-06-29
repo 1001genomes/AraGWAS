@@ -2,16 +2,17 @@ import * as d3 from "d3";
 
 export default function() {
     var svg;
-    var margins = { top: 50, left: 60, bottom: 50, right: 50 };
+    var margins = { top: 10, left: 60, bottom: 50, right: 50 };
     var axes = { x: null, y: null };
     var threshold = 0;
     var associations = [];
-    var size = [800,300];
+    var size = [800, 300];
     var scales = { x: d3.scaleLinear(), y: d3.scaleLinear() };
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
     var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps;
+    var showXAxis = true;
 
     var colorScales = {
         impact: d3.scaleOrdinal()
@@ -78,7 +79,16 @@ export default function() {
     };
 
     var getPlotWidth = function() { return size[0] - margins.left - margins.right; };
-    var getPlotHeight = function() { return size[1] - margins.top - margins.bottom; };
+    var getPlotHeight = function() {
+        var h = size[1] - margins.top;
+        if (showXAxis)  {
+            h -= margin.bottom;
+        }
+        else {
+            h -= 5;
+        }
+        return h;
+    };
 
     function onMouseOverSnp(d) {
         d3.select(this)
@@ -230,23 +240,30 @@ export default function() {
             var plotGroup = svg.append("g")
                 .attr("class", "plot");
             // draw axes
-            plotGroup.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(" + margins.left + "," + (size[1] - margins.bottom) + ")")
-                .call(axes.x);
+
 
             plotGroup.append("g")
                 .attr("class", "y axis")
                 .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
                 .call(axes.y);
 
+
+
             // draw label text
-            /*					plotGroup.append("text")
-                      .attr("class","x label")
-                      .attr("text-anchor","middle")
-                                .attr("x",(width)/2.0)
-                      .attr("y",height - 10)
-                      .text("Position (bp)");*/
+            if (showXAxis) {
+
+                plotGroup.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(" + margins.left + "," + (size[1] - margins.bottom) + ")")
+                    .call(axes.x);
+
+                plotGroup.append("text")
+                    .attr("class", "x label")
+                    .attr("text-anchor", "middle")
+                    .attr("x", (width)/2.0)
+                    .attr("y", height - 10)
+                    .text("Position (bp)");
+            }
 
             plotGroup.append("text")
                 .attr("class", "y label")
@@ -300,6 +317,13 @@ export default function() {
             updateThreshold();
         }
         return chart;
+    };
+
+    chart.showXAxis = function(value) {
+        if (!arguments.length) {
+            return showXAxis;
+        }
+        showXAxis = value;
     };
 
     chart.region = function(value) {

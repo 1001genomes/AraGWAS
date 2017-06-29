@@ -184,7 +184,7 @@
 
         mounted() {
             this.genePlt.region([this.options.startPos,this.options.endPos]);
-            this.manhattanPlt.region([this.options.startPos,this.options.endPos]).threshold(this.threshold);
+            this.manhattanPlt.region([this.options.startPos,this.options.endPos]).threshold(this.threshold).showXAxis(false);
             d3.select("#geneplot").data([this.isoforms]).call(this.genePlt);
             d3.select("#manhattanplot").data([this.associations]).call(this.manhattanPlt);
             window.addEventListener('resize', this.debouncedOnResize);
