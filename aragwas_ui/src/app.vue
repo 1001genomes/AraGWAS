@@ -6,7 +6,7 @@
           <v-toolbar-item class="links" @click.native="starttour"><span class="black--text">Take a tour?</span></v-toolbar-item>
           <v-toolbar-item class="links" id="faq-link" router :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-toolbar-item>
           <v-toolbar-item class="links" id="about-link" router :to="{path: '/about'}"><span class="black--text">About</span></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link" router href="/docs" target="_blank">REST API documentation</v-toolbar-item>
+          <v-toolbar-item class="links" id="faq-link" href="/docs" target="_blank">REST API documentation</v-toolbar-item>
       </v-toolbar-items>
     </v-toolbar>
     <main>

@@ -156,7 +156,7 @@ export async function loadStudiesOfPhenotype(phenotypeId: number) {
 }
 
 export async function loadGenesByRegion(chr: string, start: number, end: number, features: boolean): Promise<Gene[]> {
-    return fetch(`/api/genes/${chr}/${start}/${end}` + (features ? "?features" : ""))
+    return fetch(`/api/genes/?chr=${chr}&start=${start}&end=${end}` + (features ? "&features" : ""))
         .then(checkStatus)
         .then(convertToModel);
 }

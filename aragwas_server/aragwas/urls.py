@@ -63,7 +63,6 @@ srouter.register(r'search', rest.SearchViewSet)
 
 urlpatterns = [
     url(r'^$', views.index, name="index"),
-    url(r'genes/(?P<chrom>chr[1-5])/(?P<start>\d+)/(?P<end>\d+)$', rest.genes_by_region),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
     url(r'^api/', include(router.urls)),
