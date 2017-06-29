@@ -109,7 +109,7 @@
             const zoom = this.zoom * 1000 / 2;
             const chr = this.selectedGene.chr;
             const maxScore = 15;
-            const bonferoniThreshold = 5;
+            const bonferoniThreshold = 8;
             return new GenePlotOptions(chr, this.startRegion, this.endRegion, maxScore, bonferoniThreshold);
         }
 
