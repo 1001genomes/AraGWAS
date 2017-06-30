@@ -11,17 +11,18 @@ export default function() {
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
-    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend;
+    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend, drawColorBand;
     var showXAxis = true;
     var legendPadding = 15;
+    var sideSettingsWidth = 25;
     var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
     var highlightedAssociations = [];
 
     var colorScales = {
-        impact: d3.scaleOrdinal()
+        impact: { scale: d3.scaleOrdinal()
             .domain(["HIGH", "MODERATE", "LOW", "MODIFIER"])
-            .range(["red", "orange", "green", "blue"]),
-        maf: d3.scaleOrdinal(d3.schemeCategory20c),
+            .range(["red", "orange", "green", "blue"]), type: "ordinal"},
+        maf: {scale: d3.scaleOrdinal(d3.schemeCategory20c), type: "continous"},
     };
 
     var activeColorScale = "impact";
@@ -67,7 +68,7 @@ export default function() {
         } else if (activeColorScale === "maf") {
             value = d.maf;
         }
-        return colorScales[activeColorScale](value);
+        return colorScales[activeColorScale].scale(value);
     };
 
     var getSnpSymbolType = function(d) {
@@ -88,7 +89,7 @@ export default function() {
         return "translate(" + xPos + "," + yPos + ")";
     };
 
-    var getPlotWidth = function() { return size[0] - margins.left - margins.right; };
+    var getPlotWidth = function() { return size[0] - margins.left - margins.right - sideSettingsWidth; };
     var getPlotHeight = function() {
         var h = size[1] - margins.top;
         if (showXAxis)  {
@@ -177,6 +178,37 @@ export default function() {
                 drawAxes();
                 drawPoints();
                 drawThreshold();
+                drawColorBand();
+            };
+
+            drawColorBand = function() {
+                debugger;
+                var colorGroup = d3.select("g.settings")
+                    .attr("transform", "translate(" + (size[0] - sideSettingsWidth - margins.right ) + "," + margins.top + ")")
+                    .select("g.colorsetting");
+                // type of scale
+                var colorScale = d3.scaleBand().domain(colorScales.impact.scale.domain());
+                colorScale.range([0, getPlotHeight()]);
+                var type = "ordinal";
+                var band = colorGroup.selectAll("g.colorband")
+                    .data([type], function(d) { return d; });
+
+                band.exit()
+                .attr("opacity", 0).remove();
+                var enteredBand = band.enter()
+                    .append("g")
+                    .attr("class", "colorband");
+
+                enteredBand.selectAll("rect.bands")
+                    .data(colorScale.domain())
+                    .enter()
+                    .append("rect")
+                    .attr("class", "band")
+                    .attr("y", function(d) {return colorScale(d); })
+                    .attr("height", function(d){ return colorScale.bandwidth(); })
+                    .attr("width", sideSettingsWidth)
+                    .style("fill", function(d) { return colorScales[activeColorScale].scale(d); });
+
             };
 
             drawAxes = function() {
@@ -288,6 +320,11 @@ export default function() {
                 .call(axes.y);
 
 
+            plotGroup.append("g")
+                .attr("class", "settings")
+                .attr("transform", "translate(" + size[0] + "," + margins.top + ")")
+                .append("g")
+                    .attr("class", "colorsetting");
 
             // draw label text
             if (showXAxis) {
@@ -415,6 +452,10 @@ export default function() {
         if (typeof highlightAssociations === "function") {
             highlightAssociations(value);
         }
+    };
+
+    chart.sideSettingsWidth = function() {
+        return sideSettingsWidth;
     };
 
     return chart;

@@ -143,12 +143,6 @@
             };
         }
 
-        get paddedScatter() {
-            const width = this.width - this.margin.left - this.margin.right;
-            const height = this.scatterPlotHeight - this.margin.top - this.margin.bottom;
-            return { width, height };
-        }
-
         get isoforms() {
             const isoforms = [];
             this.genes.forEach(function(d) {
@@ -166,7 +160,7 @@
 
         @Watch("width")
         onWidthChanged(newWidth: number, oldWidth: number) {
-            this.genePlt.size([newWidth - this.margin.left - this.margin.right, this.genePlotHeight]);
+            this.genePlt.size([newWidth - this.margin.left - this.margin.right - this.manhattanPlt.sideSettingsWidth(), this.genePlotHeight]);
             this.manhattanPlt.size([newWidth, this.scatterPlotHeight]);
         }
 
