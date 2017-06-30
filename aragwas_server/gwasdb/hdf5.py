@@ -96,7 +96,7 @@ def get_hit_count(hdf5_file, maf=0.05):
         else:
             group_length = len(group['positions'])
         num_associations += group_length
-        end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], 1e-4, side='left')
+        end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], 1e-5, side='left')
         top_positions, top_scores, top_mafs, top_macs = _filter_by_maf((group['positions'][:end_idx],group['scores'][:end_idx],group['mafs'][:end_idx],group['macs'][:end_idx]), maf)
         scores = np.concatenate((scores, top_scores))
     bt05 = -math.log(0.05 / float(num_associations), 10)
@@ -113,7 +113,7 @@ def get_hit_count(hdf5_file, maf=0.05):
                 bt01_hits += 1
         if score > bh_threshold:
             bh_hits += 1
-    hits = {'bonferroni_hits05': bt05_hits, 'bonferroni_hits01': bt01_hits, 'bh_hits': bh_hits, 'thr_e-4': len(scores)}
+    hits = {'bonferroni_hits05': bt05_hits, 'bonferroni_hits01': bt01_hits, 'bh_hits': bh_hits, 'thr_e-5': len(scores)}
     return hits, thresholds
 
 def regroup_associations(top_associations):
