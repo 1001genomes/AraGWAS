@@ -1,7 +1,25 @@
 <template>
     <div>
-        <svg id="chart" height="250" width="100%" ref="svg">
+        <svg id="chart" height="250" width="100%" ref="svg" v-on:highlightsnp="onHighlightSnp">
         </svg>
+        <div  v-bind:style="popupStyle" id="associationpopup"  >
+            <v-card v-if="highlightedAssociation != null" >
+                <v-card-row class="green darken-1">
+                    <v-card-title>
+                        <span class="white--text">{{highlightedAssociation.name}}</span>
+                        <v-spacer></v-spacer>
+                    </v-card-title>
+                </v-card-row>
+                <v-card-text>
+                    <v-card-row>
+                        Position: {{highlightedAssociation.originalStart}}
+                    </v-card-row>
+                    <v-card-row>
+                        Score: {{highlightedAssociation.description}}
+                    </v-card-row>
+                </v-card-text>
+            </v-card>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -34,6 +52,11 @@
         readonly padding = 40;
         readonly h = 235;
         debouncedResize = _.debounce(this.onResize, 200);
+        highlightedAssociation: Object | null = null;
+        popupStyle = {
+            top: '0',
+            left: '0'
+        }
 
 
         get blue() {
@@ -101,6 +124,9 @@
         }
         beforeDestroy() {
             window.removeEventListener('resize', this.debouncedResize);
+        }
+        onHighlightSnp(d) {
+            this.highlightedAssociation = {name: "Chr"+this.options.chr.toString()+":"+d[0].toString(), position: d[0].toString(), score: d[1].toString()}
         }
         onResize() {
             this.width = this.$el.offsetWidth;
@@ -203,6 +229,7 @@
                 .on("mouseover", function(d) {
 //                    console.log(div);
                     d3.select(this).attr("r",6);
+//                    svg.dispatch("highlightsnp", { detail: {snp: d, event: d3.event}});
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
@@ -249,5 +276,10 @@
         background: forestgreen;
         border: 0;
         border-radius: 8px;
+    }
+    #associationpopup {
+        max-width: 400px;
+        position: absolute;
+        z-index: 9999;
     }
 </style>
