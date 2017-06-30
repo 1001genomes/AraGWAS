@@ -173,6 +173,8 @@
             this.genePlt.region([newOptions.startPos,newOptions.endPos]);
             this.manhattanPlt.region([newOptions.startPos,newOptions.endPos]);
             this.manhattanPlt.threshold(newOptions.bonferoniThreshold);
+            this.debouncedDrawGenePlot();
+            this.debouncedDrawManhattanPlot();
         }
 
         @Watch("isoforms")
