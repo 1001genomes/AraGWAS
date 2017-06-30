@@ -220,7 +220,7 @@
                 },
                 {
                     element: "#manhattanplot",
-                    intro: "This Manhattan plot shows all the associations that are currently displaed in the below table. Each marker in the plot is a SNP. By hovering the mouse over a marker, additional information are displayed",
+                    intro: "This Manhattan plot shows all the associations that are currently displayed in the below table. Each marker in the plot is a SNP. By hovering the mouse over a marker, additional information are displayed",
                     position: "bottom"
                 },
                 {
