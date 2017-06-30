@@ -251,7 +251,7 @@
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
         selected = [];
-        pageSizes = [25, 50, 75, 100, 200, 500, 1000];
+        pageSizes = [25, 50, 75, 100, 200,];
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
