@@ -65,13 +65,13 @@
     export default class FAQ extends Vue {
         breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQ", href: "/faq", disabled: true}];
         faqs_general = [
-            {question: "What is the AraGWASCatalog?", html:"The AraGWASCatalog is a central, standardised, quality controlled and manually curated repository for genome-wide association studies (GWAS) for the model organism <i>Arabidopsis thaliana</i>.\
+            {question: "What is the AraGWAS Catalog?", html:"The AraGWAS Catalog is a central, standardised, quality controlled and manually curated repository for genome-wide association studies (GWAS) for the model organism <i>Arabidopsis thaliana</i>.\
                 The repository provides several views to obtain an overview about top associated markers across all available phenotypes from the central and public <i>Arabidopsis thaliana</i> phenotype repository <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.<br/>\
                 A full-text elasticsearch assists users to query the database for their favorite genes, traits or studies. Detailed views with interactive visualisations for genes, phenotypes and studies, help users to get an in-depth overview about the database's top associations.\
                 Different filters can be used to further narrow down the search results, such as filtering SNPs for certain minor allele frequencies or genome annotations."},
-            {question: "Is the data in the AraGWASCatalog public?", answer: "Yes, all data in the AraGWASCatalog is public. Please cite AraGWASCatalog, the phenotype and original study of the GWAS results when using data from the AraGWASCatalog."},
-//            {question: "Is it possible to download the data from the AraGWASCatalog?", answer: "Yes, we provide (or will provide?!) different ways to download the data."}, // NOT available yet
-            {question: "Which data is included?", html: "So far the AraGWASCatalog contains recomputed GWAS results using a standardised GWAS pipeline on all publicly available phenotypes from <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.\
+            {question: "Is the data in the AraGWAS Catalog public?", answer: "Yes, all data in the AraGWAS Catalog is public. Please cite AraGWAS Catalog, the phenotype and original study of the GWAS results when using data from the AraGWAS Catalog."},
+//            {question: "Is it possible to download the data from the AraGWAS Catalog?", answer: "Yes, we provide (or will provide?!) different ways to download the data."}, // NOT available yet
+            {question: "Which data is included?", html: "So far the AraGWAS Catalog contains recomputed GWAS results using a standardised GWAS pipeline on all publicly available phenotypes from <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.\
                 The catalog will be updated regularly when new phenotypes are published in <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>. "}, // TODO: Arthur: add more info about the standard pipeline
             {question: "Where can I get more information about the samples used for the GWAS?", html: "The GWAS presented in the AraGWAS Catalog were performed on all publicly available phenotypes from <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>. More information about the origin and growing conditions of the samples can be found by navigating to the AraPheno links in the specific phenotype views."},
             {question: "Why do we use a standardised GWAS pipeline and what does it look like?", answer: ""}, // TODO: complete
@@ -89,7 +89,7 @@
                     <li> Search for a gene: <code>AT2G27035</code></li>\
                     <li> Search for a loci: <code>chr2:1153551</code></li>\
                 </ul>"},
-            {question: "How to find all top associated hits across all available studies?", html: "You can access a list of all top associated hits across all phenotypes and studies integrated into the AraGWASCatalog by clicking on the <a href=http://aragwas.1001genomes.org/#/top-associations>Top Associations</a> button in the <a href=http://aragwas.1001genomes.org/>landing page</a>.\
+            {question: "How to find all top associated hits across all available studies?", html: "You can access a list of all top associated hits across all phenotypes and studies integrated into the AraGWAS Catalog by clicking on the <a href=http://aragwas.1001genomes.org/#/top-associations>Top Associations</a> button in the <a href=http://aragwas.1001genomes.org/>landing page</a>.\
                 The table contains all top associated hits sorted in descending order (SNP with strongest association at the top)."},
             {question: "How to get a list of genes that contain associated hits?", answer: "You can get a list of the top associated genes (i.e. genes with the highest number of significantly associated SNPs) on every study view as they are listed in the piechart."},
             {question: "How can I filter association tables?", answer: "Different filters are provided to filter the association tables. You can either filter the table by minor allele frequency (MAF), chromosome or different types of annotations (e.g. non-synonymous SNPs).\
@@ -103,7 +103,7 @@
         faqs_rest = [
             {question: "What is a REST API?", html: "REST is an abbreviation for representational state transfer. It can be used to retrieve data from AraPheno using certain URLs. You also can write custom scripts (e.g. in Python, Pearl, Java etc.) to request and download the information you need.<br>\
                 More information can be found on Wikipedia: <a target=_blank href=https://en.wikipedia.org/wiki/Representational_state_transfer>What is REST?</a>"},
-            {question: "How to access a detailed documentation about the REST API?", html: "Detailed information about all functions supported by the REST API from the AraGWASCatalog can be accessed here: <a target=_blank href=http://aragwas.1001genomes.org/docs/>AraGWASCatalog REST API Documentation</a>"},
+            {question: "How to access a detailed documentation about the REST API?", html: "Detailed information about all functions supported by the REST API from the AraGWAS Catalog can be accessed here: <a target=_blank href=http://aragwas.1001genomes.org/docs/>AraGWAS Catalog REST API Documentation</a>"},
         ]
 
 
