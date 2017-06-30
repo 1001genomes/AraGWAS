@@ -77,7 +77,7 @@
             {question: "Why do we use a standardised GWAS pipeline and what does it look like?", answer: ""}, // TODO: complete
             //{question: "Why do we provide two significance thresholds (Bonferroni and permutation based)?", answer: ""}, // TODO: complete
             {question: "How is the association score defined?", html: "The score of an associated hit is defined as: -log<sub>10</sub>(p-value)."},
-            {question: "What does top associated mean?", answer: "The top associations of a study are all the associations that have a p-value below the fixed threshold of 1e-5 (i.e. score above 5). These values are stored in the fast elasticsearch database and displayed in the top associations lists."}, // TODO: add  "All associations are present in the HDF5 files." once download can be performed
+            {question: "What does top associated mean?", answer: "The top associations of a study are all the associations that have a p-value below the fixed threshold of 1e-4 (i.e. score above 4). These values are stored in the fast elasticsearch database and displayed in the top associations lists."}, // TODO: add  "All associations are present in the HDF5 files." once download can be performed
         ];
 
         faqs_tutorial = [
