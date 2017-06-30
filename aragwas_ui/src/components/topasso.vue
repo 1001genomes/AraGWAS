@@ -1,6 +1,17 @@
 <template>
     <v-layout row-xs child-flex-xs wrap justify-space-around>
         <v-flex xs3 wrap v-if="showControls.length>0 && view.controlPosition !== 'right'" class="associations-control-container">
+            <div v-if="showControls.indexOf('pageSize')>-1">
+                <h6 class="mt-4">Associations per page</h6>
+                <v-select
+                        v-bind:items="pageSizes"
+                        v-model="pagination.rowsPerPage"
+                        label="Associations per page"
+                        dark
+                        single-line
+                        auto
+                ></v-select>
+            </div>
             <div v-if="showControls.indexOf('maf')>-1">
                 <h6 class="mt-4">MAF</h6>
                 <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
@@ -240,6 +251,7 @@
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
         selected = [];
+        pageSizes = [25, 50, 75, 100, 200];
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -277,6 +289,10 @@
         onGeneIdChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
+        @Watch("pagination.rowsPerPage")
+        onRowsPerPageChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
         @Watch("highlightedAssociations")
         onHighlightedAssociationsChanged(newHighlightedAssociations) {
             this.searchForAsso(newHighlightedAssociations);
@@ -311,7 +327,7 @@
                 loadAssociationsOfStudy(this.view.studyId, this.filters, pageToLoad).then(this._displayData);
                 loadAggregatedStatisticsOfStudy(this.view.studyId, this.filters).then(this._displayAggregatedData);
             } else if (this.view.name == "gene") {
-                loadAssociationsOfGene(this.view.geneId, this.view.zoom, this.filters, pageToLoad).then(this._displayData);
+                loadAssociationsOfGene(this.view.geneId, this.view.zoom, this.filters, pageToLoad, this.pagination.rowsPerPage).then(this._displayData);
                 loadAggregatedStatisticsOfGene(this.view.geneId, this.view.zoom, this.filters).then(this._displayAggregatedData);
             }
         }

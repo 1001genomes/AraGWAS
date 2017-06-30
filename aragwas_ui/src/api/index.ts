@@ -174,10 +174,10 @@ export async function loadGene(geneId = ""): Promise<Gene> {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async  function loadAssociationsOfGene(geneId, zoom: number, filter, page: number = 1) {
+export async  function loadAssociationsOfGene(geneId, zoom: number, filter, page: number = 1, pageSize: number = 25) {
     const queryParam = getTopAssociationsParametersQuery(filter);
-    const offset = 25 * (page - 1);
-    let url = `/api/genes/${geneId}/associations/?limit=25&offset=${offset}&zoom=${zoom}`;
+    const offset = pageSize * (page - 1);
+    let url = `/api/genes/${geneId}/associations/?limit=${pageSize}&offset=${offset}&zoom=${zoom}`;
 
     if (queryParam) {
         url += queryParam;
