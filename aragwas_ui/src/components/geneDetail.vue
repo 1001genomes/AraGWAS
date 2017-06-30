@@ -235,7 +235,7 @@
                 },
                 {
                     element: ".associations-control-container",
-                    intro: "You can use these controls to filter the top associations list",
+                    intro: "You can use these controls to filter the top associations list and to choose the number of associations to display in the list and on the plot",
                     position: "right"
                 },
                 {
