@@ -11,10 +11,11 @@ export default function() {
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
-    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp, highlightSnps, highlightLegend;
+    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend;
     var showXAxis = true;
     var legendPadding = 15;
     var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
+    var highlightedAssociations = [];
 
     var colorScales = {
         impact: d3.scaleOrdinal()
@@ -47,6 +48,13 @@ export default function() {
             return 100;
         }
         return 50;
+    };
+
+    var getSnpOpacity = function(d) {
+        if (d.highlighted) {
+            return 1;
+        }
+        return 0;
     };
 
     var getSnpColor = function(d) {
@@ -92,28 +100,18 @@ export default function() {
         return h;
     };
 
+    function getKeyFromAssoc(d) {
+        return "assoc_" + d.study.id + "_" + d.snp.chr + "_" + d.snp.position;
+    }
+
     function onMouseOverSnp(d) {
-        d3.select(this)
-            .transition()
-            .duration(100)
-            .attr("d", d3.symbol()
-                .type(getSnpSymbolType)
-                .size(100),
-            )
-            .style("fill", getSnpColor);
-        svg.dispatch("highlightsnp", { detail: {snp: d, event: d3.event} });
+        d.highlighted = true;
+        svg.dispatch("highlightassociation", { detail: {snp: d, event: d3.event} });
     }
 
     function onMouseOutSnp(d) {
-        d3.select(this)
-            .transition()
-            .duration(100)
-            .attr("d", d3.symbol()
-                .type(getSnpSymbolType)
-                .size(getSnpSize),
-            )
-            .style("fill", "white");
-        svg.dispatch("unhighlightsnp", { detail: {snp: d, event: d3.event} });
+        d.highlighted = false;
+        svg.dispatch("unhighlightassociation", { detail: {snp: d, event: d3.event} });
     }
     function findAssociation(association, lookup) {
         return lookup.filter(function(assoc) {
@@ -132,19 +130,34 @@ export default function() {
         });
     }
 
-    function highlightSnps(snps) {
-        associations.forEach(function(assoc) {
-            if (findAssociation(assoc, snps).length === 0) {
-                assoc.highlighted = false;
-            }
-            else {
-                assoc.highlighted = true;
-            }
+    function highlightAssociation(node) {
+        node.transition()
+            .duration(100)
+            .attr("d", d3.symbol()
+                .type(getSnpSymbolType)
+                .size(getSnpSize),
+            )
+            .style("fill-opacity", getSnpOpacity);
+    }
+
+    function unhighlightAssociations() {
+        highlightedAssociations.forEach(function(assoc) {
+            assoc.datum().highlighted = false;
+            highlightAssociation(assoc);
         });
-        transitionDuration = 100;
-        drawPoints();
-        highlightLegend(snps);
-        transitionDuration = 750;
+        highlightedAssociations = [];
+    }
+
+    function highlightAssociations(associations) {
+        unhighlightAssociations();
+        // first unhighlight the highlighted ones and then highlioght the highlighted ones
+        associations.forEach(function(assoc) {
+            assoc.highlighted = true;
+            var assocNode = d3.select("#" + getKeyFromAssoc(assoc));
+            highlightedAssociations.push(assocNode);
+            highlightAssociation(assocNode);
+        });
+        highlightLegend(associations);
     }
 
     function chart(selection) {
@@ -204,7 +217,7 @@ export default function() {
                     .attr("width", getPlotWidth())
                     .attr("height", getPlotHeight());
                 var snps = svg.select("g.manhattanplot")
-                    .selectAll("path.snp").data(associations, function(d) { return d.study.id + "_" + d.snp.chr + "_" + d.snp.position; });
+                    .selectAll("path.snp").data(associations, getKeyFromAssoc);
 
                 snps.exit()
                     .attr("transform", positionSnp)
@@ -219,7 +232,7 @@ export default function() {
                         .type(getSnpSymbolType)
                         .size(getSnpSize),
                     )
-                    .style("fill", function(d) {  return  (d.highlighted  ? getSnpColor(d) : "white") ;});
+                    .style("fill", getSnpColor);
 
                 snps.enter()
                     .append("path")
@@ -228,15 +241,16 @@ export default function() {
                         .type(getSnpSymbolType)
                         .size(getSnpSize),
                     )
+                    .attr("id", getKeyFromAssoc)
                     .style("stroke", getSnpColor)
-                    .style("fill", "white")
+                    .style("fill", getSnpColor)
                     .on("mouseover", onMouseOverSnp)
                     .on("mouseout", onMouseOutSnp)
                     .style("fill-opacity", 0)
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
                     .transition(d3.transition().duration(transitionDuration))
-                    .attr("transform", positionSnp)
-                    .style("fill-opacity", 1);
+                    .attr("transform", positionSnp);
+
 //
   //
 
@@ -337,10 +351,10 @@ export default function() {
                     runningWidth += legendItem.node().getBoundingClientRect().width +  legendPadding;
                 })
                 .on("mouseover", function(d) {
-                    highlightSnps(findAssociationByType(d.type, associations));
+                    highlightAssociations(findAssociationByType(d.type, associations));
                 })
                 .on("mouseout", function(d) {
-                    highlightSnps([]);
+                    highlightAssociations([]);
                 });
 
             drawThreshold();
@@ -397,9 +411,9 @@ export default function() {
         region = value;
         return chart;
     };
-    chart.highlightSnps = function(value) {
-        if (typeof highlightSnps === "function") {
-            highlightSnps(value);
+    chart.highlightAssociations = function(value) {
+        if (typeof highlightAssociations === "function") {
+            highlightAssociations(value);
         }
     };
 

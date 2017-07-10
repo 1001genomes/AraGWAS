@@ -1,6 +1,6 @@
 <template>
     <div >
-        <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightsnp="onHighlightSnp" v-on:unhighlightsnp="onUnhighlightSnp" >
+        <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" >
         </svg>
         <svg id="geneplot" width="100%" :height="genePlotHeight" :style="genePlotStyles" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" >
         </svg>
@@ -105,27 +105,29 @@
             let e = event.detail.event;
             this.popupStyle.top = e.pageY + 10 + "px";
             this.popupStyle.left = e.pageX + "px";
-            this.manhattanPlt.highlightSnps(this.associations.filter(function(assoc) {
+            // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
+            /*this.manhattanPlt.highlightSnps(this.associations.filter(function(assoc) {
                 return assoc.snp.position >= gene.positions.gte && assoc.snp.position <= gene.positions.lte;
-            }));
+            }));*/
             this.$emit("highlightgene", event.detail.gene);
 
        }
 
         onUnhighlightGene(event): void {
             this.highlightedGene = null;
-            this.manhattanPlt.highlightSnps([]);
+            // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
+            // this.manhattanPlt.highlightSnps([]);
             this.$emit("unhighlightgene", []);
         }
 
-        onHighlightSnp(event): void {
+        onHighlightAssociation(event): void {
             this.genePlt.highlightPos(event.detail.snp.snp.position);
-            this.$emit("highlightsnp", event.detail.snp);
+            this.$emit("highlightassociation", event.detail.snp);
         }
 
-        onUnhighlightSnp(event): void {
+        onUnhighlightAssociation(event): void {
             this.genePlt.highlightPos([]);
-            this.$emit("unhighlightsnp", []);
+            this.$emit("unhighlightassociation", []);
         }
 
         get height() {
@@ -177,6 +179,7 @@
             this.debouncedDrawManhattanPlot();
         }
 
+
         @Watch("isoforms")
         onGenesChanged() {
             this.debouncedDrawGenePlot();
@@ -191,14 +194,13 @@
         onHighlightedAssociationsChanged(newHighlightedAssociations) {
             if (!newHighlightedAssociations || newHighlightedAssociations.length === 0) {
                 this.genePlt.highlightPos(undefined);
-                this.manhattanPlt.highlightSnps([]);
+                this.manhattanPlt.highlightAssociations([]);
             }
             else {
                 let highlightedAssociation = newHighlightedAssociations[0];
-                //console.log(highlightedAssociation);
                 let position = highlightedAssociation.snp.position;
                 this.genePlt.highlightPos(position);
-                this.manhattanPlt.highlightSnps(newHighlightedAssociations);
+                this.manhattanPlt.highlightAssociations(newHighlightedAssociations);
             }
         }
 
