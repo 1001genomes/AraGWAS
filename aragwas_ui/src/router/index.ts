@@ -8,6 +8,7 @@ import About from "@/components/about.vue";
 import Studies from "@/components/studies.vue";
 import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
+import TopGenes from "@/components/topGenes.vue";
 import Vue from "vue";
 import Router from "vue-router";
 
@@ -60,6 +61,11 @@ export default new Router({
       path: "/top-associations",
       name: "topAssociations",
       component: TopAssociations,
+    },
+    {
+      path: "/top-genes",
+      name: "topGenes",
+      component: TopGenes,
     },
     {
       path: "/study/:id",

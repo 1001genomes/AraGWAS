@@ -128,12 +128,43 @@ def load_gene_snps(id):
     return [{association['_id']: association['_source']} for association in associations]
 
 def get_top_genes():
-    """Retrive associations by neighboring gene id"""
+    """Retrieve top genes"""
     s = Search(using=es, doc_type='associations')
     agg = A("terms", field="snp.gene_name")
     s.aggs.bucket('gene_count', agg)
     agg_results = s.execute().aggregations.gene_count.buckets
     return agg_results
+
+def load_filtered_top_genes(filters, start=0, size=50):
+    """Retrieves top genes and filter them through the tickable options"""
+    # First aggregate over associations
+    s = Search(using=es, doc_type='associations')
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in
+                                       filters['chr']]))
+    agg = A("terms", field="snp.gene_name", size="33341") # Need to check ALL GENES for further lists
+    s.aggs.bucket('gene_count', agg)
+    top_genes = s.execute().aggregations.gene_count.buckets
+    genes = []
+    for top in top_genes[start:start+size]:
+        id = top['key']
+        matches = GENE_ID_PATTERN.match(id)
+        if not matches:
+            continue
+        gene = load_gene_by_id(top['key'])
+        gene['n_hits'] = top['doc_count']
+        genes.append(gene)
+    return genes, len(top_genes)
+
+def get_top_genes_aggregated_filtered_statistics(filters):
+    s = Search(using=es, doc_type='genes')
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        s = s.filter(Q('bool', should=[Q('term', chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in
+                                       filters['chr']]))
+    agg_chr = A("terms", field="chr")
+    s.aggs.bucket('chr_count', agg_chr)
+    agg_results = s.execute().aggregations
+    return agg_results.chr_count.buckets
 
 def get_top_genes_and_snp_type_for_study(study_id):
     """Retrive associations by neighboring gene id"""
@@ -146,8 +177,6 @@ def get_top_genes_and_snp_type_for_study(study_id):
     s.aggs.bucket('snp_type_count', agg_snp_type)
     agg_results = s.execute().aggregations
     return agg_results.gene_count.buckets, agg_results.snp_type_count.buckets
-
-
 
 def load_genes_by_region(chrom, start, end, features):
     """Retrieve genes by region"""

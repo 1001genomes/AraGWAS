@@ -222,6 +222,27 @@ export async  function loadTopAggregatedStatistics(filter) {
         .then(checkStatus)
         .then(convertToModel);
 }
+export async function loadTopGenesList(filter, page: number = 1, pageSize: number = 25) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = pageSize * (page - 1);
+    let url = `/api/genes/top_list/?limit=${pageSize}&offset=${offset}`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
+export async  function loadTopGenesAggregatedStatistics(filter) {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    let url = `/api/genes/top_list_aggregated_statistics/?`;
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 export async  function loadTopGenes() {
     return fetch(`/api/genes/top/`)
         .then(checkStatus)

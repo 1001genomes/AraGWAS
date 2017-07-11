@@ -429,6 +429,26 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
             list_top_genes.append([i['key'], i['doc_count']])
         return Response(list_top_genes)
 
+    @list_route(methods=['GET'], url_path='top_list')
+    def top_list(self, request):
+        """ Retrieves the top genes based on the associations and provide full gene information """
+        filters = _get_filter_from_params(request.query_params)
+        paginator = EsPagination()
+        limit = paginator.get_limit(request)
+        offset = paginator.get_offset(request)
+        genes, count = elastic.load_filtered_top_genes(filters, offset, limit)
+        queryset = EsQuerySet(genes, count)
+        paginated_genes = self.paginate_queryset(queryset)
+        return self.get_paginated_response(paginated_genes)
+
+    @list_route(methods=['GET'], url_path='top_list_aggregated_statistics')
+    def top_genes_aggregated_statistics(self, request):
+        """ Returns snps for that gene """
+        filters = _get_filter_from_params(request.query_params)
+        chr = elastic.get_top_genes_aggregated_filtered_statistics(filters)
+        chr_dict = _get_percentages_from_buckets(chr)
+        return Response({'chromosomes': chr_dict})
+
 class SNPViewSet(viewsets.ViewSet):
     """ API for SNPs """
 

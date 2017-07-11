@@ -42,18 +42,28 @@
                         </v-flex>
                         <v-flex xs4>
                             <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
-                                <h5 class="text-xs-center">Take a tour</h5>
-                                <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light @click.native="starttour"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
-                            </div>
-                        </v-flex>
-                        <v-flex xs4>
-                            <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
                                 <v-btn class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
+                            </div>
+                        </v-flex>
+                        <v-flex xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">whatshot</i></h3>
+                                <h5 class="text-xs-center">Top Genes</h5>
+                                <p class="light justify">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
+                                <v-btn class="btn--large green lighten-1 icon--left "   id="top-genes-button" light router to="/top-genes"><v-icon left light>whatshot</v-icon>Top Genes</v-btn>
+                            </div>
+                        </v-flex>
+                    </v-layout>
+                    <v-layout class="text-xs-center mt-4">
+                        <v-flex xs4 offset-xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
+                                <h5 class="text-xs-center">Take a tour</h5>
+                                <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
+                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light @click.native="starttour"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>
