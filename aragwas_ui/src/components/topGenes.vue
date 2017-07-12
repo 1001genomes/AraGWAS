@@ -2,12 +2,12 @@
     <div class="mt-0">
         <v-parallax class="parallax-container" src="/static/img/ara1.jpg" height="80">
             <div class="section">
-                <div class="container mt-2">
+                <div class="mt-2">
                     <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
                 </div>
             </div>
         </v-parallax>
-        <div class="container">
+        <div class="page-container">
             <div class="section">
                 <v-layout row class="mb-4">
                     <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">whatshot</v-icon> Top Genes</h5><v-divider class="mb-3"></v-divider>
@@ -178,6 +178,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .section {
+        width: 90%;
         padding-top: 1rem;
     }
     .page-container {
