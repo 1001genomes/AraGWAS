@@ -53,7 +53,8 @@ def _get_filter_from_params(params):
     filter_study = params.getlist('study_id')
     filter_phenotype = params.getlist('phenotype_id')
     filter_genotype = params.getlist('genotype_id')
-    filters = {'chr':filter_chr, 'maf': filter_maf, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype}
+    filter_significant = params.getlist('significant')
+    filters = {'chr':filter_chr, 'maf': filter_maf, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype, 'significant': filter_significant}
     return filters
 
 def _get_percentages_from_buckets(buckets):

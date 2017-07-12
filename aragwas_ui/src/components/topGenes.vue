@@ -16,6 +16,15 @@
                 <v-layout row-xs child-flex-xs wrap justify-space-around>
                     <v-flex xs3 wrap class="associations-control-container">
                         <div>
+                            <h6 class="mt-4">Significance</h6>
+                            <v-switch
+                                    label="Only count significant hits"
+                                    v-model="significant"
+                                    primary
+                            ></v-switch>
+                            <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
+                        </div>
+                        <div>
                             <h6 class="mt-4">Genes per page</h6>
                             <v-select
                                     v-bind:items="pageSizes"
@@ -116,32 +125,33 @@
         genes: any[] =[];
         currentPage = 1;
         chr = ["1", "2", "3", "4", "5"];
-        filters = {chr: this.chr};
+        significant = true;
+        filters = {chr: this.chr, significant: "1"};
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "nHits", descending: true};
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
         pageSizes = [25, 50, 75, 100, 200,];
         pageCount = 5;
 
-
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
-        @Watch("filters.maf")
-        onMafChanged(val: number, oldVal: number) {
+        @Watch("significant")
+        onSignificantChanged(val: boolean, oldVal: boolean) {
+            if(val) {
+                this.filters.significant = "1";
+            }
+            else {
+                this.filters.significant = "0";
+            }
+        }
+        @Watch("filters.significant")
+        onFilterChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.chr")
         onChrChanged(val: number, oldVal: number) {
-            this.debouncedloadData(this.currentPage);
-        }
-        @Watch("filters.annotation")
-        onAnnotationChanged(val: number, oldVal: number) {
-            this.debouncedloadData(this.currentPage);
-        }
-        @Watch("filters.type")
-        onTypeChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
         @Watch("pagination.rowsPerPage")

@@ -142,6 +142,9 @@ def load_filtered_top_genes(filters, start=0, size=50):
     if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
         s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in
                                        filters['chr']]))
+    if 'significant' in filters:
+        if filters['significant'][0] == "1":
+            s = s.filter('term', overFDR='T')
     agg = A("terms", field="snp.gene_name", size="33341") # Need to check ALL GENES for further lists
     s.aggs.bucket('gene_count', agg)
     top_genes = s.execute().aggregations.gene_count.buckets
