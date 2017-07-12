@@ -35,9 +35,9 @@
                         <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                                <h5 class="text-xs-center">Public GWAS Studies</h5>
-                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWAS studies.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>view_list</v-icon> GWAS Studies</v-btn>
+                                <h5 class="text-xs-center">Public GWA Studies</h5>
+                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
+                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>view_list</v-icon> GWA Studies</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -236,7 +236,7 @@
         steps : [
         {
           element: ".parallax",
-          intro: "AraGWAS Catalog is a public database collection of <em>Arabidopsis thaliana</em> GWAS studies. This tour will show the important features",
+          intro: "AraGWAS Catalog is a public database collection of <em>Arabidopsis thaliana</em> GWA studies. This tour will show the important features",
           position: "bottom-middle-aligned"
         },
         {
@@ -249,7 +249,7 @@
         },
         {
           element: "#studies-button",
-          intro: "You can access the list of available GWAS studies by clicking here"
+          intro: "You can access the list of available GWA studies by clicking here"
         },
         {
           element: "#top-assocations-button",
