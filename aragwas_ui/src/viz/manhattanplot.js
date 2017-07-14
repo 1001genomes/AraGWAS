@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import colorlegend from "./colorlegend.js";
 
 export default function() {
     var svg;
@@ -11,21 +12,13 @@ export default function() {
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
-    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend, drawColorBand;
+    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend, drawColorLegend;
     var showXAxis = true;
     var legendPadding = 15;
-    var sideSettingsWidth = 25;
+    var sideSettingsWidth = 80;
     var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
     var highlightedAssociations = [];
-
-    var colorScales = {
-        impact: { scale: d3.scaleOrdinal()
-            .domain(["HIGH", "MODERATE", "LOW", "MODIFIER"])
-            .range(["red", "orange", "green", "blue"]), type: "ordinal"},
-        maf: {scale: d3.scaleOrdinal(d3.schemeCategory20c), type: "continous"},
-    };
-
-    var activeColorScale = "impact";
+    var colorLegend = colorlegend();
 
     var position = function(d) { return d.snp.position; };
     var score = function(d) {  return d.score; };
@@ -59,16 +52,12 @@ export default function() {
     };
 
     var getSnpColor = function(d) {
-        var value;
-        if (activeColorScale === "impact") {
-            var annotation = getAnnotationFromSnp(d);
-            if (annotation) {
-                value = annotation.impact;
-            }
-        } else if (activeColorScale === "maf") {
-            value = d.maf;
+        var activeLegengType = colorLegend.activeLegendType();
+        var value = 0;
+        if (activeLegengType.name !== "") {
+            value = _.get(d, activeLegengType.name);
         }
-        return colorScales[activeColorScale].scale(value);
+        return colorLegend.colorScale()(value);
     };
 
     var getSnpSymbolType = function(d) {
@@ -94,8 +83,7 @@ export default function() {
         var h = size[1] - margins.top;
         if (showXAxis)  {
             h -= margin.bottom;
-        }
-        else {
+        } else {
             h -= 5;
         }
         return h;
@@ -107,12 +95,12 @@ export default function() {
 
     function onMouseOverSnp(d) {
         d.highlighted = true;
-        svg.dispatch("highlightassociation", { detail: {snp: d, event: d3.event} });
+        svg.dispatch("highlightassociations", { detail: {associations: [d], event: d3.event} });
     }
 
     function onMouseOutSnp(d) {
         d.highlighted = false;
-        svg.dispatch("unhighlightassociation", { detail: {snp: d, event: d3.event} });
+        svg.dispatch("unhighlightassociations", { detail: {associations: [d], event: d3.event} });
     }
     function findAssociation(association, lookup) {
         return lookup.filter(function(assoc) {
@@ -161,7 +149,26 @@ export default function() {
         highlightLegend(associations);
     }
 
+    function getAssociationsFromColorLegend(value) {
+        var filteredAssociations = associations.filter(function(assoc) {
+            return _.get(assoc, colorLegend.activeLegendType().name) === value;
+        });
+        return filteredAssociations;
+    }
+
+    function onHighlightLegend(legendItem) {
+        var filteredAssociations = getAssociationsFromColorLegend(legendItem);
+        svg.dispatch("highlightassociations",  { detail: {associations: filteredAssociations, event: d3.event} });
+    }
+
+    function onUnhighlightLegend(legendItem) {
+        var filteredAssociations = getAssociationsFromColorLegend(legendItem);
+        svg.dispatch("unhighlightassociations",  { detail: {associations: filteredAssociations, event: d3.event} });
+    }
+
+
     function chart(selection) {
+        colorLegend.on("highlightlegend", onHighlightLegend).on("unhighlightlegend",onUnhighlightLegend);
         selection.each(function(data) {
             svg = d3.select(this);
             svg.append("defs").append("svg:clipPath")
@@ -169,46 +176,27 @@ export default function() {
                     .append("svg:rect")
                         .attr("id", "clip-rect")
                         .attr("x", 0)
-                        .attr("y", 0)
+                        .attr("y", -7)
                         .attr("width", getPlotWidth())
-                        .attr("height", getPlotHeight());
+                        .attr("height", getPlotHeight() + 7);
 
             draw = function() {
                 prepareData();
+                drawColorLegend();
                 drawAxes();
                 drawPoints();
                 drawThreshold();
-                drawColorBand();
             };
 
-            drawColorBand = function() {
-                debugger;
+            drawColorLegend = function() {
+                var colorLegendHeight = getPlotHeight();
+                var selectBoxHeight = 10;
                 var colorGroup = d3.select("g.settings")
                     .attr("transform", "translate(" + (size[0] - sideSettingsWidth - margins.right ) + "," + margins.top + ")")
                     .select("g.colorsetting");
-                // type of scale
-                var colorScale = d3.scaleBand().domain(colorScales.impact.scale.domain());
-                colorScale.range([0, getPlotHeight()]);
-                var type = "ordinal";
-                var band = colorGroup.selectAll("g.colorband")
-                    .data([type], function(d) { return d; });
-
-                band.exit()
-                .attr("opacity", 0).remove();
-                var enteredBand = band.enter()
-                    .append("g")
-                    .attr("class", "colorband");
-
-                enteredBand.selectAll("rect.bands")
-                    .data(colorScale.domain())
-                    .enter()
-                    .append("rect")
-                    .attr("class", "band")
-                    .attr("y", function(d) {return colorScale(d); })
-                    .attr("height", function(d){ return colorScale.bandwidth(); })
-                    .attr("width", sideSettingsWidth)
-                    .style("fill", function(d) { return colorScales[activeColorScale].scale(d); });
-
+                colorGroup.attr("transform", "translate(0," + (selectBoxHeight) + ")");
+                colorLegend.size([sideSettingsWidth, colorLegendHeight - selectBoxHeight ]);
+                colorGroup.data([associations]).call(colorLegend);
             };
 
             drawAxes = function() {
@@ -242,6 +230,7 @@ export default function() {
                         .attr("opacity", (isActive ? 1 : 0.5))
                         .attr("font-weight", (isActive ? "bold" : "normal"));
                 });
+                colorLegend.highlightItems(highlightedSnps);
             };
 
             drawPoints = function() {
@@ -264,6 +253,7 @@ export default function() {
                         .type(getSnpSymbolType)
                         .size(getSnpSize),
                     )
+                    .style("stroke", getSnpColor)
                     .style("fill", getSnpColor);
 
                 snps.enter()
@@ -282,11 +272,6 @@ export default function() {
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
                     .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionSnp);
-
-//
-  //
-
-
             };
 
             prepareData = function() {
@@ -320,7 +305,7 @@ export default function() {
                 .call(axes.y);
 
 
-            plotGroup.append("g")
+            var colorSettings = plotGroup.append("g")
                 .attr("class", "settings")
                 .attr("transform", "translate(" + size[0] + "," + margins.top + ")")
                 .append("g")
@@ -337,7 +322,7 @@ export default function() {
                 plotGroup.append("text")
                     .attr("class", "x label")
                     .attr("text-anchor", "middle")
-                    .attr("x", (width)/2.0)
+                    .attr("x", (width) / 2.0)
                     .attr("y", height - 10)
                     .text("Position (bp)");
             }
@@ -410,6 +395,7 @@ export default function() {
         if (typeof draw === "function") {
             draw();
         }
+        return chart;
     };
 
     chart.data = function(value) {
@@ -439,6 +425,7 @@ export default function() {
             return showXAxis;
         }
         showXAxis = value;
+        return chart;
     };
 
     chart.region = function(value) {
@@ -458,5 +445,16 @@ export default function() {
         return sideSettingsWidth;
     };
 
+    chart.colorLegendTypes = function() {
+        return colorLegend.legendTypes();
+    };
+
+    chart.activeColorLegend = function(value) {
+        colorLegend.activeLegendType(value);
+        if (typeof drawPoints === "function") {
+            drawPoints();
+        }
+        return chart;
+    };
     return chart;
 }
