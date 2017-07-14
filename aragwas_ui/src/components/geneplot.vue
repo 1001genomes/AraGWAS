@@ -116,8 +116,8 @@
             let gene = event.detail.gene;
             this.highlightedGene = gene;
             let e = event.detail.event;
-            this.popupStyle.top = e.pageY + 10 + "px";
-            this.popupStyle.left = e.pageX + "px";
+            this.popupStyle.top = e.layerY + 10 + "px";
+            this.popupStyle.left = e.layerX + "px";
             // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
             /*this.manhattanPlt.highlightSnps(this.associations.filter(function(assoc) {
                 return assoc.snp.position >= gene.positions.gte && assoc.snp.position <= gene.positions.lte;
