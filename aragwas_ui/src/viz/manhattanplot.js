@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import colorlegend from "./colorlegend.js";
 
 export default function() {
     var svg;
@@ -11,20 +12,13 @@ export default function() {
     var region;
     var impactColorMap = { HIGH: "red", MODERATE: "orange", LOW: "green", MODIFIER: "blue" };
     var transitionDuration = 750;
-    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend;
+    var drawThreshold, drawAxes, drawPoints, draw, prepareData, onMouseOverSnp, onMouseOutSnp,  highlightLegend, drawColorLegend;
     var showXAxis = true;
     var legendPadding = 15;
+    var sideSettingsWidth = 80;
     var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
     var highlightedAssociations = [];
-
-    var colorScales = {
-        impact: d3.scaleOrdinal()
-            .domain(["HIGH", "MODERATE", "LOW", "MODIFIER"])
-            .range(["red", "orange", "green", "blue"]),
-        maf: d3.scaleOrdinal(d3.schemeCategory20c),
-    };
-
-    var activeColorScale = "impact";
+    var colorLegend = colorlegend();
 
     var position = function(d) { return d.snp.position; };
     var score = function(d) {  return d.score; };
@@ -58,16 +52,12 @@ export default function() {
     };
 
     var getSnpColor = function(d) {
-        var value;
-        if (activeColorScale === "impact") {
-            var annotation = getAnnotationFromSnp(d);
-            if (annotation) {
-                value = annotation.impact;
-            }
-        } else if (activeColorScale === "maf") {
-            value = d.maf;
+        var activeLegengType = colorLegend.activeLegendType();
+        var value = 0;
+        if (activeLegengType.name !== "") {
+            value = _.get(d, activeLegengType.name);
         }
-        return colorScales[activeColorScale](value);
+        return colorLegend.colorScale()(value);
     };
 
     var getSnpSymbolType = function(d) {
@@ -88,13 +78,12 @@ export default function() {
         return "translate(" + xPos + "," + yPos + ")";
     };
 
-    var getPlotWidth = function() { return size[0] - margins.left - margins.right; };
+    var getPlotWidth = function() { return size[0] - margins.left - margins.right - sideSettingsWidth; };
     var getPlotHeight = function() {
         var h = size[1] - margins.top;
         if (showXAxis)  {
             h -= margin.bottom;
-        }
-        else {
+        } else {
             h -= 5;
         }
         return h;
@@ -106,12 +95,12 @@ export default function() {
 
     function onMouseOverSnp(d) {
         d.highlighted = true;
-        svg.dispatch("highlightassociation", { detail: {snp: d, event: d3.event} });
+        svg.dispatch("highlightassociations", { detail: {associations: [d], event: d3.event} });
     }
 
     function onMouseOutSnp(d) {
         d.highlighted = false;
-        svg.dispatch("unhighlightassociation", { detail: {snp: d, event: d3.event} });
+        svg.dispatch("unhighlightassociations", { detail: {associations: [d], event: d3.event} });
     }
     function findAssociation(association, lookup) {
         return lookup.filter(function(assoc) {
@@ -160,7 +149,26 @@ export default function() {
         highlightLegend(associations);
     }
 
+    function getAssociationsFromColorLegend(value) {
+        var filteredAssociations = associations.filter(function(assoc) {
+            return _.get(assoc, colorLegend.activeLegendType().name) === value;
+        });
+        return filteredAssociations;
+    }
+
+    function onHighlightLegend(legendItem) {
+        var filteredAssociations = getAssociationsFromColorLegend(legendItem);
+        svg.dispatch("highlightassociations",  { detail: {associations: filteredAssociations, event: d3.event} });
+    }
+
+    function onUnhighlightLegend(legendItem) {
+        var filteredAssociations = getAssociationsFromColorLegend(legendItem);
+        svg.dispatch("unhighlightassociations",  { detail: {associations: filteredAssociations, event: d3.event} });
+    }
+
+
     function chart(selection) {
+        colorLegend.on("highlightlegend", onHighlightLegend).on("unhighlightlegend",onUnhighlightLegend);
         selection.each(function(data) {
             svg = d3.select(this);
             svg.append("defs").append("svg:clipPath")
@@ -168,15 +176,27 @@ export default function() {
                     .append("svg:rect")
                         .attr("id", "clip-rect")
                         .attr("x", 0)
-                        .attr("y", 0)
+                        .attr("y", -7)
                         .attr("width", getPlotWidth())
-                        .attr("height", getPlotHeight());
+                        .attr("height", getPlotHeight() + 7);
 
             draw = function() {
                 prepareData();
+                drawColorLegend();
                 drawAxes();
                 drawPoints();
                 drawThreshold();
+            };
+
+            drawColorLegend = function() {
+                var colorLegendHeight = getPlotHeight();
+                var selectBoxHeight = 10;
+                var colorGroup = d3.select("g.settings")
+                    .attr("transform", "translate(" + (size[0] - sideSettingsWidth - margins.right ) + "," + margins.top + ")")
+                    .select("g.colorsetting");
+                colorGroup.attr("transform", "translate(0," + (selectBoxHeight) + ")");
+                colorLegend.size([sideSettingsWidth, colorLegendHeight - selectBoxHeight ]);
+                colorGroup.data([associations]).call(colorLegend);
             };
 
             drawAxes = function() {
@@ -210,6 +230,7 @@ export default function() {
                         .attr("opacity", (isActive ? 1 : 0.5))
                         .attr("font-weight", (isActive ? "bold" : "normal"));
                 });
+                colorLegend.highlightItems(highlightedSnps);
             };
 
             drawPoints = function() {
@@ -232,6 +253,7 @@ export default function() {
                         .type(getSnpSymbolType)
                         .size(getSnpSize),
                     )
+                    .style("stroke", getSnpColor)
                     .style("fill", getSnpColor);
 
                 snps.enter()
@@ -250,11 +272,6 @@ export default function() {
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
                     .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionSnp);
-
-//
-  //
-
-
             };
 
             prepareData = function() {
@@ -288,6 +305,11 @@ export default function() {
                 .call(axes.y);
 
 
+            var colorSettings = plotGroup.append("g")
+                .attr("class", "settings")
+                .attr("transform", "translate(" + size[0] + "," + margins.top + ")")
+                .append("g")
+                    .attr("class", "colorsetting");
 
             // draw label text
             if (showXAxis) {
@@ -300,7 +322,7 @@ export default function() {
                 plotGroup.append("text")
                     .attr("class", "x label")
                     .attr("text-anchor", "middle")
-                    .attr("x", (width)/2.0)
+                    .attr("x", (width) / 2.0)
                     .attr("y", height - 10)
                     .text("Position (bp)");
             }
@@ -373,6 +395,7 @@ export default function() {
         if (typeof draw === "function") {
             draw();
         }
+        return chart;
     };
 
     chart.data = function(value) {
@@ -402,6 +425,7 @@ export default function() {
             return showXAxis;
         }
         showXAxis = value;
+        return chart;
     };
 
     chart.region = function(value) {
@@ -417,5 +441,20 @@ export default function() {
         }
     };
 
+    chart.sideSettingsWidth = function() {
+        return sideSettingsWidth;
+    };
+
+    chart.colorLegendTypes = function() {
+        return colorLegend.legendTypes();
+    };
+
+    chart.activeColorLegend = function(value) {
+        colorLegend.activeLegendType(value);
+        if (typeof drawPoints === "function") {
+            drawPoints();
+        }
+        return chart;
+    };
     return chart;
 }

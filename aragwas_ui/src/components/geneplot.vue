@@ -1,9 +1,20 @@
 <template>
-    <div >
-        <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" >
+    <div style="position:relative">
+        <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightassociations="onHighlightAssociations" v-on:unhighlightassociations="onUnhighlightAssociations" >
         </svg>
         <svg id="geneplot" width="100%" :height="genePlotHeight" :style="genePlotStyles" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" >
         </svg>
+        <div class="colorlegend-container">
+            <v-select
+                :items="colorLegendTypes"
+                v-model="activeColorLegend"
+                label="Color"
+                single-line
+                item-value="name"
+                left
+                return-object
+            ></v-select>
+        </div>
         <div  v-bind:style="popupStyle" id="genepopup"  >
             <v-card v-if="highlightedGene != null" >
                 <v-card-row class="green darken-1">
@@ -91,6 +102,8 @@
         fontSize = 30;
 
         highlightedGene: Gene | null = null;
+        readonly colorLegendTypes = [{text: "Same color", name: "", isNumber: true}, {text: "Impact", name: "snp.annotations.0.impact", isNumber: false}, {text: "MAF", name: "maf", isNumber:true}, {text: "MAC", name: "mac", isNumber:true}, {text: "Score", name: "score", isNumber:true}];
+        activeColorLegend = this.colorLegendTypes[1];
 
         readonly margin = {
             left: 60,
@@ -120,14 +133,15 @@
             this.$emit("unhighlightgene", []);
         }
 
-        onHighlightAssociation(event): void {
-            this.genePlt.highlightPos(event.detail.snp.snp.position);
-            this.$emit("highlightassociation", event.detail.snp);
+        onHighlightAssociations(event): void {
+            var associations = event.detail.associations;
+            this.genePlt.highlightPos(associations[0].snp.position);
+            this.$emit("highlightassociations", associations);
         }
 
-        onUnhighlightAssociation(event): void {
+        onUnhighlightAssociations(event): void {
             this.genePlt.highlightPos([]);
-            this.$emit("unhighlightassociation", []);
+            this.$emit("unhighlightassociations", []);
         }
 
         get height() {
@@ -141,12 +155,6 @@
                 "margin-top": this.margin.top + 'px',
                 "margin-bottom": this.margin.bottom + 'px',
             };
-        }
-
-        get paddedScatter() {
-            const width = this.width - this.margin.left - this.margin.right;
-            const height = this.scatterPlotHeight - this.margin.top - this.margin.bottom;
-            return { width, height };
         }
 
         get isoforms() {
@@ -166,7 +174,7 @@
 
         @Watch("width")
         onWidthChanged(newWidth: number, oldWidth: number) {
-            this.genePlt.size([newWidth - this.margin.left - this.margin.right, this.genePlotHeight]);
+            this.genePlt.size([newWidth - this.margin.left - this.margin.right - this.manhattanPlt.sideSettingsWidth(), this.genePlotHeight]);
             this.manhattanPlt.size([newWidth, this.scatterPlotHeight]);
         }
 
@@ -177,6 +185,11 @@
             this.manhattanPlt.threshold(newOptions.bonferoniThreshold);
             this.debouncedDrawGenePlot();
             this.debouncedDrawManhattanPlot();
+        }
+
+        @Watch("activeColorLegend")
+        onActiveColorLegendChanged(newActiveColorLegend) {
+            this.manhattanPlt.activeColorLegend(newActiveColorLegend);
         }
 
 
@@ -206,7 +219,7 @@
 
         mounted() {
             this.genePlt.region([this.options.startPos,this.options.endPos]);
-            this.manhattanPlt.region([this.options.startPos,this.options.endPos]).threshold(this.threshold).showXAxis(false);
+            this.manhattanPlt.region([this.options.startPos,this.options.endPos]).threshold(this.threshold).showXAxis(false).activeColorLegend(this.activeColorLegend);
             d3.select("#geneplot").data([this.isoforms]).call(this.genePlt);
             d3.select("#manhattanplot").data([this.associations]).call(this.manhattanPlt);
             window.addEventListener('resize', this.debouncedOnResize);
@@ -254,7 +267,7 @@
     #associationpopup
         position: absolute;
         z-index: 9999;
-        top:195px;
+        top:0px;
         right: 20px;
         dt.pvalue
             color:green;
@@ -264,6 +277,14 @@
         dt
             float:left;
             margin-right:2px;
+
+    .colorlegend-container
+        position:absolute;
+        top:0;
+        right:0;
+        z-index:2;
+        width:115px;
+        height:52px;
 
 
 </style>

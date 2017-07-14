@@ -12,7 +12,7 @@
             </div>
         </v-flex>
         <v-flex xs12>
-            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation"></gene-plot>
+            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:highlightassociations="onHighlightAssociations" v-on:unhighlightassociations="onUnhighlightAssociations"></gene-plot>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
             <div >
@@ -121,10 +121,10 @@
             return {name: "gene", geneId: this.geneId, zoom: this.zoom * 1000 / 2};
         }
 
-        onHighlightAssociation(snp) {
-            this.highlightedAssociations = [snp];
+        onHighlightAssociations(associations) {
+            this.highlightedAssociations = associations;
         }
-        onUnhighlightAssociation(snp) {
+        onUnhighlightAssociations(associations) {
             this.highlightedAssociations = [];
         }
 
