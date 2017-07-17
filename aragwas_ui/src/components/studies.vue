@@ -18,8 +18,8 @@
              :total-items="totalItems"
              class="elevation-1"
      >
-       <template slot="headers" scope="props">
-            {{ props.item.text }}
+       <template slot="headerCell" scope="props">
+            {{ props.header.text }}
        </template>
        <template slot="items" scope="props">
          <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
@@ -61,7 +61,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", left: true, value: "name",},{text:  "Phenotype", left: true,  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Bonferroni", value: "nHitsBonferroni",}];
+    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Bonferroni", value: "nHitsBonferroni",}];
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsBonferroni", descending: true};
     totalItems: number = 0;

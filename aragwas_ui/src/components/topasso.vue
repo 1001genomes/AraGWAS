@@ -7,7 +7,7 @@
                         v-bind:items="pageSizes"
                         v-model="pagination.rowsPerPage"
                         label="Associations per page"
-                        dark
+                        light
                         single-line
                         auto
                 ></v-select>
@@ -50,42 +50,44 @@
                     class="elevation-1 mt-2 asso-table"
 
             >
-                <template slot="headers" scope="props">
-                    <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
-                      {{ props.item.text | capitalize }}
+                <template slot="headerCell" scope="props">
+                    <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                      {{ props.header.text | capitalize }}
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                    <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
-                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
-                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item">
-                            <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
-                        </div>
-                        <div v-else>Missing SNP info</div>
-                    </td>
-                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item">
-                            <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
-                        </div>
-                        <div v-else>Missing SNP info</div>
-                    </td>
+                    <tr :id="props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id" :active="props.item.highlighted">
+                        <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item">
+                                <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
+                            </div>
+                            <div v-else>Missing SNP info</div>
+                        </td>
+                        <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item">
+                                <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
+                            </div>
+                            <div v-else>Missing SNP info</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
                 <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
                 </v-pagination>
                 <div v-else>
-                    <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
-                    <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                    <v-btn floating secondary @click="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                    <v-btn floating secondary @click="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
                 </div>
             </div>
         </v-flex >
@@ -98,42 +100,44 @@
                     :loading="loading"
                     class="elevation-1 mt-2 asso-table"
             >
-                <template slot="headers" scope="props">
-                    <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
-                      {{ props.item.text | capitalize }}
+                <template slot="headerCell" scope="props">
+                    <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                      {{ props.header.text | capitalize }}
                     </span>
                 </template>
                 <template slot="items" scope="props" @mouseover.native="showAssociation">
-                    <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
-                    <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                    <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
-                    <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                    <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item">
-                            <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
-                        </div>
-                        <div v-else>Missing SNP info</div>
-                    </td>
-                    <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                        <div v-if="'snp' in props.item">
-                            <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
-                        </div>
-                        <div v-else>Missing SNP info</div>
-                    </td>
+                    <tr :id="props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id" :active="props.item.highlighted">
+                        <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                        <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item">
+                                <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
+                            </div>
+                            <div v-else>Missing SNP info</div>
+                        </td>
+                        <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                            <div v-if="'snp' in props.item">
+                                <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
+                            </div>
+                            <div v-else>Missing SNP info</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
             <div class="page-container mt-5 mb-3">
                 <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
                 </v-pagination>
                 <div v-else>
-                    <v-btn floating secondary @click.native="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
-                    <v-btn floating secondary @click.native="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                    <v-btn floating secondary @click="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                    <v-btn floating secondary @click="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
                 </div>
             </div>
         </v-flex>
@@ -230,11 +234,11 @@
         highlightedAssociations: Association[];
         localfilters : {};
         loading: boolean = false;
-        headers = [{text: "SNP", value: "snp.chr", name: "name", left: true, tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
+        headers = [{text: "SNP", value: "snp.chr", name: "name", align: "left", tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
             {text: "maf",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
             {text: "annotation",value: "annotation", name: "annotation", sortable: false, tooltip: "Annotation related to associated SNP"},{text: "type",value: "snp.type", name: "type", sortable: false, tooltip: "Type of SNP"}];
-        associations: any[] =[];
+        associations: Association[] =[];
         currentPage = 1;
         pager = 1;
         pageCount = 5;
@@ -252,6 +256,7 @@
         debouncedloadData = _.debounce(this.loadData, 300);
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
+
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -364,15 +369,19 @@
             return Math.round(number * 1000) / 10;
         }
         searchForAsso(associations: Association[]) {
-            for (let asso of this.associations) {
-                if('snp' in asso){
-                    const aname = asso.snp.chr.toString() + ":" + asso.snp.position.toString();
-                    if(aname === name){
-                        console.log('yeppa')
-//                        asso.selected = true;
-                    }
-                }
+            [].forEach.call(this.$el.querySelectorAll(".asso-table tr[active]"), function(vl, i) {
+                vl.removeAttribute("active");
+            });
+            for (let i=0;i< associations.length;i++) {
+                let association = associations[i];
+                let associationId = this._getAssociationId(association);
+                [].forEach.call(this.$el.querySelectorAll(".asso-table tr#" + associationId), function(vl, i) {
+                    vl.setAttribute("active", "");
+                });
             }
+        }
+        _getAssociationId(association: Association): string {
+            return association.snp.chr + "_" + association.snp.position + "_" + association.study.id;
         }
 
     }
@@ -390,4 +399,9 @@
     .switch {
         transform: rotate(270deg);
     }
+
+    .asso-table tr[active] {
+        background-color:#FFEB3B;
+    }
+
 </style>

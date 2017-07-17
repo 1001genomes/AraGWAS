@@ -1,10 +1,10 @@
+import About from "@/components/about.vue";
+import FAQ from "@/components/faq.vue";
 import GeneDetail from "@/components/geneDetail.vue";
 import Genes from "@/components/genes.vue";
 import Home from "@/components/home.vue";
 import PhenotypeDetail from "@/components/phenotypeDetail.vue";
 import Phenotypes from "@/components/phenotypes.vue";
-import FAQ from "@/components/faq.vue";
-import About from "@/components/about.vue";
 import Studies from "@/components/studies.vue";
 import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
@@ -21,8 +21,8 @@ function idToNumber(route: any): any {
 }
 
 function homeSearchParams(route: any): any {
-  let page = route.query.page ? Number(route.query.page) : undefined;
-  return {view: route.query.view, queryTerm: route.query.queryTerm, page};
+  const page = route.query.page ? Number(route.query.page) : undefined;
+  return { view: route.query.view, queryTerm: route.query.queryTerm, page };
 }
 
 export default new Router({

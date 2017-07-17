@@ -1,12 +1,13 @@
 <template>
- <v-app>
+ <v-app fill-height footer toolbar id="app">
     <v-toolbar class="white toolbar">
-      <v-toolbar-logo class="logo aragwas-logo"><router-link :to="{name: 'home'}">AraGWAS Catalog</router-link></v-toolbar-logo>
+      <v-toolbar-title class="logo aragwas-logo"><router-link :to="{name: 'home'}">AraGWAS Catalog</router-link></v-toolbar-title>
+      <v-spacer></v-spacer>
       <v-toolbar-items class="black--text">
-          <v-toolbar-item class="links" @click.native="starttour"><span class="black--text">Take a tour?</span></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link" router :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-toolbar-item>
-          <v-toolbar-item class="links" id="about-link" router :to="{path: '/about'}"><span class="black--text">About</span></v-toolbar-item>
-          <v-toolbar-item class="links" id="faq-link" href="/docs" target="_blank">REST API documentation</v-toolbar-item>
+          <v-btn flat class="links" @click="starttour"><span class="black--text">Take a tour?</span></v-btn>
+          <v-btn flat class="links" id="faq-link" :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-btn>
+          <v-btn flat class="links" id="about-link" :to="{path: '/about'}"><span class="black--text">About</span></v-btn>
+          <v-btn flat class="links" id="faq-link" href="/docs" target="_blank">REST API documentation</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <main>
@@ -14,7 +15,7 @@
         <router-view></router-view>
       </v-container>
     </main>
-    <v-footer class="green" >
+    <v-footer class="green" id="footer" >
       <div style="width:100%;" >
           AraGWAS is a public database for <em>Arabidopsis thaliana</em> GWAS studies.
         <div class="version">
@@ -31,42 +32,42 @@
                   <v-dialog v-model="dialog" scrollable>
                   <div slot="activator"><u>IMPRESSUM</u></div>
                   <v-card>
-                      <v-card-row>
-                          <v-card-title class="black--text">Impressum - Gregor Mendel Institute</v-card-title>
-                      </v-card-row>
-                      <v-card-row height="400px">
-                          <v-card-text class="black--text">
-                              <h5>Contact information</h5>
-                              <div>GMI — Gregor-Mendel-Institut für Molekulare Pflanzenbiologie GmbH</div>
-                              <div>Dr. Bohr-Gasse 3</div>
-                              <div>1030 Vienna</div>
-                              <div>Austria</div>
-                              <div>T: +43 1 79044 9000</div>
-                              <div>F: +43 1 79044 9001</div>
-                              <div>E: office(at)gmi.oeaw.ac.at</div>
-                              <br>
+                      <v-card-title class="black--text">
+                          <h3 class="headline mb-0">Impressum - Gregor Mendel Institute</h3>
+                      </v-card-title>
+                      <v-divider></v-divider>
+                      <v-card-text class="black--text" style="height:400px">
+                          <h5>Contact information</h5>
+                          <div>GMI — Gregor-Mendel-Institut für Molekulare Pflanzenbiologie GmbH</div>
+                          <div>Dr. Bohr-Gasse 3</div>
+                          <div>1030 Vienna</div>
+                          <div>Austria</div>
+                          <div>T: +43 1 79044 9000</div>
+                          <div>F: +43 1 79044 9001</div>
+                          <div>E: office(at)gmi.oeaw.ac.at</div>
+                          <br>
 
-                              <h5>Legal information</h5>
-                              <div>Type of business: Research Institute</div>
-                              <div>Managing Director (Science): Dr Magnus Nordborg</div>
-                              <div>Managing Director (Business): Dr Markus Kiess</div>
-                              <div>Commercial register number: FN 203743y</div>
-                              <div>Commercial register court: Vienna, Austria</div>
-                              <div>Sales tax identification number: ATU51438706</div>
-                              <div>The GMI is 100% owned by the Austrian Academy of Sciences</div>
+                          <h5>Legal information</h5>
+                          <div>Type of business: Research Institute</div>
+                          <div>Managing Director (Science): Dr Magnus Nordborg</div>
+                          <div>Managing Director (Business): Dr Markus Kiess</div>
+                          <div>Commercial register number: FN 203743y</div>
+                          <div>Commercial register court: Vienna, Austria</div>
+                          <div>Sales tax identification number: ATU51438706</div>
+                          <div>The GMI is 100% owned by the Austrian Academy of Sciences</div>
 
-                              <br>
-                              <h5>Disclaimer</h5>
-                              <div>This website provides information about research at the GMI. GMI makes no guarantees of accuracy, completeness and timeliness of the information on this website. The GMI, therefore, accepts no responsibility or liability for damages or losses resulting from the use of this website. The GMI provides links to other internet sites for the convenience of users. The GMI, its owners, managers, partners, and employees are not responsible for the availability or content of these external sites, nor do they endorse, warrant, or guarantee any commercial product, service, site, law firm, attorney or information described or offered at these other internet sites.
-                              </div>
-                              <br>
-                              <h5>Privacy</h5>
-                              <div>This website uses Google Analytics, a web analytics service provided by Google, Inc. (“Google”). Google Analytics uses “cookies”, which are text files placed on your computer, to help the website analyze how users use the site. The information generated by the cookie about your use of the website (including your IP address) will be transmitted to and stored by Google on servers in the United States . Google will use this information for the purpose of evaluating your use of the website, compiling reports on website activity for website operators and providing other services relating to website activity and internet usage. Google may also transfer this information to third parties where required to do so by law, or where such third parties process the information on Google's behalf. Google will not associate your IP address with any other data held by Google. You may refuse the use of cookies by selecting the appropriate settings on your browser, however please note that if you do this you may not be able to use the full functionality of this website. By using this website, you consent to the processing of data about you by Google in the manner and for the purposes set out above.</div>
-                          </v-card-text>
-                      </v-card-row>
-                      <v-card-row actions>
-                          <v-btn class="green--text darken-1" flat="flat" @click.native="dialog = false">Agree</v-btn>
-                      </v-card-row>
+                          <br>
+                          <h5>Disclaimer</h5>
+                          <div>This website provides information about research at the GMI. GMI makes no guarantees of accuracy, completeness and timeliness of the information on this website. The GMI, therefore, accepts no responsibility or liability for damages or losses resulting from the use of this website. The GMI provides links to other internet sites for the convenience of users. The GMI, its owners, managers, partners, and employees are not responsible for the availability or content of these external sites, nor do they endorse, warrant, or guarantee any commercial product, service, site, law firm, attorney or information described or offered at these other internet sites.
+                          </div>
+                          <br>
+                          <h5>Privacy</h5>
+                          <div>This website uses Google Analytics, a web analytics service provided by Google, Inc. (“Google”). Google Analytics uses “cookies”, which are text files placed on your computer, to help the website analyze how users use the site. The information generated by the cookie about your use of the website (including your IP address) will be transmitted to and stored by Google on servers in the United States . Google will use this information for the purpose of evaluating your use of the website, compiling reports on website activity for website operators and providing other services relating to website activity and internet usage. Google may also transfer this information to third parties where required to do so by law, or where such third parties process the information on Google's behalf. Google will not associate your IP address with any other data held by Google. You may refuse the use of cookies by selecting the appropriate settings on your browser, however please note that if you do this you may not be able to use the full functionality of this website. By using this website, you consent to the processing of data about you by Google in the manner and for the purposes set out above.</div>
+                      </v-card-text>
+                      <v-divider></v-divider>
+                      <v-card-actions>
+                          <v-btn class="green--text darken-1" flat="flat" @click="dialog = false">Agree</v-btn>
+                      </v-card-actions>
                   </v-card>
               </v-dialog>
             </li>
@@ -114,8 +115,9 @@
   }
   .logo a {
     color:black;
-    text-decoration:none;
+    text-decoration:none;3em
     font-weight:300;
+    font-size: 2em;
   }
   .links a {
       color:black;
@@ -144,5 +146,11 @@
     display: inline-block;
     padding: 2px;
   }
+
+  #app
+    background-color: #fff;
+
+  #footer
+    color: #fff;
 
 </style>

@@ -37,7 +37,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
                                 <h5 class="text-xs-center">Public GWA Studies</h5>
                                 <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light router to="/studies"><v-icon left light>view_list</v-icon> GWA Studies</v-btn>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -45,7 +45,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light router to="/top-associations"><v-icon left light>trending_up</v-icon>Top Associations</v-btn>
+                                <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light  to="/top-associations"><v-icon left dark>trending_up</v-icon>Top Associations</v-btn>
                             </div>
                         </v-flex>
                         <v-flex xs4>
@@ -53,7 +53,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">whatshot</i></h3>
                                 <h5 class="text-xs-center">Top Genes</h5>
                                 <p class="light justify">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn class="btn--large green lighten-1 icon--left "   id="top-genes-button" light router to="/top-genes"><v-icon left light>whatshot</v-icon>Top Genes</v-btn>
+                                <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-genes-button" light  to="/top-genes"><v-icon left dark>whatshot</v-icon>Top Genes</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>
@@ -63,7 +63,7 @@
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
                                 <h5 class="text-xs-center">Take a tour</h5>
                                 <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
-                                <v-btn class="btn--large icon--left green lighten-1" id="studies-button" light @click.native="starttour"><v-icon left light>rowing</v-icon> Take a tour</v-btn>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light @click="starttour"><v-icon left dark>rowing</v-icon> Take a tour</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>
@@ -119,7 +119,7 @@
         </section>
 
         <section v-if="search" class="container">
-                <v-tabs id="search-result-tabs" grow scroll-bars light v-model="currentView">
+                <v-tabs id="search-result-tabs" grow icons dark v-model="currentView">
                     <v-tabs-bar slot="activators">
                         <v-tabs-slider></v-tabs-slider>
                         <v-tabs-item :href="i" ripple class="green lighten-1"

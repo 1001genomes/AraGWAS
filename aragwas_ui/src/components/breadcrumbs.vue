@@ -2,11 +2,11 @@
     <div>
         <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
             <v-breadcrumbs-item
-                    v-for="item in breadcrumbsItems" :key="item"
+                    v-for="item in breadcrumbsItems" :key="item.text"
                     :disabled="item.disabled"
                     class="breadcrumbsitem"
-                    :href="item.href"
-                    router
+                    :to="item.href"
+
             >
                 <div v-if="detailvue">
                     <span :class="['title', {'green--text': !item.disabled}]">{{ item.text }}</span>

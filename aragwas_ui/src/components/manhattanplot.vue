@@ -4,20 +4,19 @@
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
             <v-card v-if="highlightedAssociation != null" >
-                <v-card-row class="green darken-1">
-                    <v-card-title>
-                        <span class="white--text">{{highlightedAssociation.name}}</span>
-                        <v-spacer></v-spacer>
-                    </v-card-title>
-                </v-card-row>
+                <v-card-title class="green darken-1" >
+                    <h3 class="headline mb-0 white--text">{{highlightedAssociation.name}}</h3>
+                </v-card-title>
                 <v-card-text>
-                    <v-card-row>
-                        Position: {{highlightedAssociation.originalStart}}
-                    </v-card-row>
-                    <v-card-row>
-                        Score: {{highlightedAssociation.description}}
-                    </v-card-row>
+                    <dl>
+                        <dt>Position:</dt><dd>{{highlightedAssociation.originalStart}}</dd>
+                        <dt>SCore:</dt><dd>{{highlightedAssociation.description}}</dd>
+                    </dl>
                 </v-card-text>
+                <v-card-title class="green darken-1">
+                    <span class="white--text"></span>
+                    <v-spacer></v-spacer>
+                </v-card-title>
             </v-card>
         </div>
     </div>

@@ -18,8 +18,8 @@
                         :total-items="totalItems"
                         class="elevation-1"
                 >
-                    <template slot="headers" scope="props" class="text-xs-left">
-                        {{ props.item.text }}
+                    <template slot="headerCell" scope="props" >
+                        {{ props.header.text }}
                     </template>
                     <template slot="items" scope="props">
                         <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
@@ -62,7 +62,7 @@
         sortOrders = {name: 1, description: 1, n_studies: 1};
         sortKey: string = "";
         ordered: string = "";
-        columns = [{text: "Name", left:true, value: "name"},{text: "Description", left: true, value: "description"},{text: "# Studies", value: "n_studies"}];
+        columns = [{text: "Name", align:"left", value: "name"},{text: "Description", align: "left", value: "description"},{text: "# Studies", value: "n_studies"}];
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, descending: false, sortBy: "name"};
         search: string = '';
         filterKey: string = "";

@@ -30,7 +30,7 @@
                                     v-bind:items="pageSizes"
                                     v-model="pagination.rowsPerPage"
                                     label="Genes per page"
-                                    dark
+                                    light
                                     single-line
                                     auto
                             ></v-select>
@@ -54,9 +54,9 @@
                                 class="elevation-1 mt-2 asso-table"
 
                         >
-                            <template slot="headers" scope="props">
-                                <span v-tooltip:bottom="{ 'html': props.item.tooltip}">
-                                  {{ props.item.text | capitalize }}
+                            <template slot="headerCell" scope="props">
+                                <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                                  {{ props.header.text | capitalize }}
                                 </span>
                             </template>
                             <template slot="items" scope="props">
@@ -118,10 +118,10 @@
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Genes", href: "#/top-genes", disabled: true}];
 
         loading: boolean = false;
-        headers = [{text: "gene", value: "name", name: "name", left: true, tooltip: "Name of Gene"},{text: "n hits", value: "nHits", name: "nHits", tooltip: "Number of hits associated with the gene", left: true},
-            {text: "chr", name: "chromosome", sortable: false, tooltip: "Chromosome", left: true},{text: "position",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Genetic range", left: true},
-            {text: "strand", value: "strand", name: "strand", sortable: true, tooltip: "Strand", left: true},{text: "isoforms", name: "isoforms", sortable: false, tooltip: "Isoforms", left: true},
-            {text: "short description", name: "shortdesc", sortable: false, tooltip: "Short description", left: true}];
+        headers = [{text: "gene", value: "name", name: "name", align: "left", tooltip: "Name of Gene"},{text: "n hits", value: "nHits", name: "nHits", tooltip: "Number of hits associated with the gene", align: "left"},
+            {text: "chr", name: "chromosome", sortable: false, tooltip: "Chromosome", align: "left"},{text: "position",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Genetic range", align: "left"},
+            {text: "strand", value: "strand", name: "strand", sortable: true, tooltip: "Strand", align: "left"},{text: "isoforms", name: "isoforms", sortable: false, tooltip: "Isoforms", align: "left"},
+            {text: "short description", name: "shortdesc", sortable: false, tooltip: "Short description", align: "left"}];
         genes: any[] =[];
         currentPage = 1;
         chr = ["1", "2", "3", "4", "5"];

@@ -12,7 +12,7 @@
             <div class="section">
                 <h4>General Information</h4>
                 <v-expansion-panel expand class="mt-4 mb-4">
-                    <v-expansion-panel-content v-for="faq in faqs_general" :key="faq">
+                    <v-expansion-panel-content v-for="faq in faqs_general" :key="faq.question">
                         <h6 class="mt-3 black--text" slot="header">{{ faq.question }}</h6>
                         <v-card class="grey lighten-4" >
                             <div class="pl-4 pt-3 pr-4 black--text" v-html="faq.html" v-if="faq.html">
@@ -24,7 +24,7 @@
                 </v-expansion-panel>
                 <h4>Tutorials</h4>
                 <v-expansion-panel expand class="mt-4 mb-4">
-                    <v-expansion-panel-content v-for="faq in faqs_tutorial" :key="faq">
+                    <v-expansion-panel-content v-for="faq in faqs_tutorial" :key="faq.question">
                         <h6 class="mt-3 black--text" slot="header">{{ faq.question }}</h6>
                         <v-card class="grey lighten-4" >
                             <div class="pl-4 pt-3 pr-4 black--text" v-html="faq.html" v-if="faq.html">
@@ -36,7 +36,7 @@
                 </v-expansion-panel>
                 <h4>REST API</h4>
                 <v-expansion-panel expand class="mt-4 mb-4">
-                    <v-expansion-panel-content v-for="faq in faqs_rest" :key="faq">
+                    <v-expansion-panel-content v-for="faq in faqs_rest" :key="faq.question">
                         <h6 class="mt-3 black--text" slot="header">{{ faq.question }}</h6>
                         <v-card class="grey lighten-4" >
                             <div class="pl-4 pt-3 pr-4 black--text" v-html="faq.html" v-if="faq.html">
@@ -63,7 +63,7 @@
         },
     })
     export default class FAQ extends Vue {
-        breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQ", href: "/faq", disabled: true}];
+        breadcrumbs = [{text: "Home", href: "/"}, {text: "FAQ", href: "faq", disabled: true}];
         faqs_general = [
             {question: "What is the AraGWAS Catalog?", html:"The AraGWAS Catalog is a central, standardised, quality controlled and manually curated repository for genome-wide association studies (GWAS) for the model organism <i>Arabidopsis thaliana</i>.\
                 The repository provides several views to obtain an overview about top associated markers across all available phenotypes from the central and public <i>Arabidopsis thaliana</i> phenotype repository <a target=_blank href=https://arapheno.1001genomes.org>AraPheno</a>.<br/>\

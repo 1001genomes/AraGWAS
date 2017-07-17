@@ -37,8 +37,8 @@
                                     v-bind:items="studies"
                                     hide-actions
                             >
-                            <template slot="headers" scope="props">
-                                    {{ props.item.text }}
+                            <template slot="headerCell" scope="props">
+                                    {{ props.header.text }}
                             </template>
                             <template slot="items" scope="props">
                                 <td>
@@ -56,8 +56,8 @@
                                     v-bind:items="similarPhenotypes"
                                     hide-actions
                             >
-                            <template slot="headers" scope="props">
-                                    {{ props.item.text }}
+                            <template slot="headerCell" scope="props">
+                                    {{ props.header.text }}
                             </template>
                             <template slot="items" scope="props" >
                                     <td v-if="props.item.phenotype_id!=id">
@@ -86,6 +86,9 @@
     import {Component, Prop, Watch} from "vue-property-decorator";
 
     import {loadAssociationsOfPhenotype, loadPhenotype, loadSimilarPhenotypes, loadStudiesOfPhenotype} from "../api";
+
+    import Study from "../models/study";
+
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
@@ -107,13 +110,13 @@
       phenotypeName: string = "";
       studyNumber = 0;
       studyIDs = [];
-      studies = [];
+      studies: Study[] = [];
       similarPhenotypes =  [];
       avgHitNumber = 0;
       phenotypeDescription: string = "";
       araPhenoLink: string = "";
-      studyColumns = [{text: "Name", left: true, value: "name"}, {text: "Genotype", value: "genotype"}, {text: "Method", value: "method"} ];
-      phenotypeColumns = [{text: "Name", left: true, value: "name"},{text: "Trait Ontology", left: true, value: "to"}];
+      studyColumns = [{text: "Name", align: "left", value: "name"}, {text: "Genotype", value: "genotype"}, {text: "Method", value: "method"} ];
+      phenotypeColumns = [{text: "Name", align: "left", value: "name"},{text: "Trait Ontology", align: "left", value: "to"}];
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Phenotypes", href: "/phenotypes"}, {text: this.phenotypeName, href: "", disabled: true}];
 

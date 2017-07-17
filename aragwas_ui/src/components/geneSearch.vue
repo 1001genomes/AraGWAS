@@ -3,7 +3,7 @@
         :items="genes"
         v-model="selectedItem"
         label="Search for a gene..."
-        dark
+        light
         hint="Type gene ID (i.e. AT1G12) or synonym (i.e. FLC)"
         prepend-icon="search"
         max-height="auto"

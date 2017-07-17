@@ -17,19 +17,14 @@
         </div>
         <div  v-bind:style="popupStyle" id="genepopup"  >
             <v-card v-if="highlightedGene != null" >
-                <v-card-row class="green darken-1">
-                    <v-card-title>
-                        <span class="white--text">{{highlightedGene.name}}</span>
-                        <v-spacer></v-spacer>
-                    </v-card-title>
-                </v-card-row>
+                <v-card-title class="green darken-1" >
+                    <h3 class="headline mb-0 white--text">{{highlightedGene.name}}</h3>
+                </v-card-title>
                 <v-card-text>
-                    <v-card-row>
-                        Position: {{highlightedGene.originalStart}} - {{highlightedGene.originalEnd}}
-                    </v-card-row>
-                    <v-card-row>
-                        Description: {{highlightedGene.description}}
-                    </v-card-row>
+                    <dl>
+                        <dt>Position:</dt><dd>{{highlightedGene.originalStart}} - {{highlightedGene.originalEnd}}</dd>
+                        <dt>Description:</dt><dd>{{highlightedGene.description}}</dd>
+                    </dl>
                 </v-card-text>
             </v-card>
         </div>
@@ -65,7 +60,7 @@
     })
     export default class GenePlot extends Vue {
         @Prop({type:null})
-        associations;
+        associations: Association[];
 
         @Prop({type: null})
         highlightedAssociations: Association[];
@@ -245,7 +240,7 @@
     }
 </script>
 <style lang="stylus">
-    highlight-color = #007EFF;highlightedGene
+    highlight-color = #007EFF;
     svg#geneplot
         g.isoform
             rect.gene
@@ -285,6 +280,11 @@
         z-index:2;
         width:115px;
         height:52px;
+
+    #genepopup
+        dt
+            font-weight:bold
+            margin-top: 5px
 
 
 </style>

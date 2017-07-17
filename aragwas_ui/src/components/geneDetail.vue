@@ -114,7 +114,7 @@
         }
 
         get breadcrumbs() {
-            return [{text: "Home", href: "/"}, {text: "Genes", href: "genes", disabled: true}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
+            return [{text: "Home", href: "/"}, {text: "Genes", href: "/top-genes"}, {text: this.selectedGene ? this.selectedGene.id : "", href: "", disabled: true}];
         }
 
         get geneView() {

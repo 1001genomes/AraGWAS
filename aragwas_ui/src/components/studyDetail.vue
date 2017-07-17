@@ -118,14 +118,14 @@
       currentView: string = "study-detail-tabs-manhattan";
       currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
-      bonferroniThr05: number;
-      bonferroniThr01: number;
-      permThr: number;
-      bonferroniHits: number;
-      permHits: number;
-      fdrHits: number;
-      samples: number;
-      countries: number;
+      bonferroniThr05: number = 0;
+      bonferroniThr01: number = 0;
+      permThr: number = 0;
+      bonferroniHits: number = 0;
+      permHits: number = 0;
+      fdrHits: number = 0;
+      samples: number = 0;
+      countries: number = 0;
 
       // TODO: add permutation threshold retrieval from hdf5 files
       // TODO: add threshold choice

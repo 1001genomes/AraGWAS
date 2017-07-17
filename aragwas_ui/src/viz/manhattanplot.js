@@ -373,10 +373,10 @@ export default function() {
                     runningWidth += legendItem.node().getBoundingClientRect().width +  legendPadding;
                 })
                 .on("mouseover", function(d) {
-                    highlightAssociations(findAssociationByType(d.type, associations));
+                    svg.dispatch("highlightassociations",  { detail: {associations: findAssociationByType(d.type, associations), event: d3.event} });
                 })
                 .on("mouseout", function(d) {
-                    highlightAssociations([]);
+                     svg.dispatch("unhighlightassociations", { detail: {associations: [], event: d3.event} });
                 });
 
             drawThreshold();
