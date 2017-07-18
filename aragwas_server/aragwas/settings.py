@@ -143,3 +143,4 @@ CELERY_RESULT_BACKEND = 'rpc'
 ES_HOST = os.environ.get('ES_HOST', 'http://elastic:changeme@localhost:9200')
 GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
 HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
