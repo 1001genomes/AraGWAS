@@ -245,18 +245,24 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='top')
     def top_genes_and_snp_type(self, request, pk):
         """ Gets genes and snp type that got the most significant associations """
-        agg_gene, agg_snp_type = elastic.get_top_genes_and_snp_type_for_study(pk)
-        list_top_genes = []
-        for i in agg_gene:
-            list_top_genes.append([i['key'], i['doc_count']])
-        list_top_snp_type = []
-        for i in agg_snp_type:
-            if i['key'] == 1:
-                label = 'Genic'
+        agg_results= elastic.get_top_genes_and_snp_type_for_study(pk)
+        response = {}
+        for key in agg_results.keys():
+            if key == "snp_type_count":
+                list_top_snp_type = []
+                for i in agg_results[key]:
+                    if i['key'] == 1:
+                        label = 'Genic'
+                    else:
+                        label = 'Non genic'
+                    list_top_snp_type.append([label, i['doc_count']])
+                    response['on_snp_type'] = list_top_snp_type
             else:
-                label = 'Non genic'
-            list_top_snp_type.append([label, i['doc_count']])
-        return Response({'on_genes':list_top_genes, 'on_snp': list_top_snp_type})
+                list = []
+                for i in agg_results[key]:
+                    list.append([i['key'], i['doc_count']])
+                response[key]=list
+        return Response(response)
 
 
 class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):

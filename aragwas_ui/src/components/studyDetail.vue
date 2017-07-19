@@ -1,8 +1,13 @@
 <template>
     <div>
-        <v-layout column align-start>
-            <v-flex xs12>
+        <v-layout row align-start>
+            <v-flex xs6>
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
+            </v-flex>
+            <v-flex xs6 class="text-xs-right">
+                <v-btn floating primary class="mr-3 mt-2" tag="a" :href="'/aragwas_data/' + id.toString() + '.hdf5'" download>
+                    <v-icon dark>file_download</v-icon>
+                </v-btn>
             </v-flex>
         </v-layout>
         <v-tabs id="study-detail-tabs" grow scroll-bars v-model="currentView" class="mt-3">
@@ -49,10 +54,14 @@
                                         </v-tabs-item>
                                     </v-tabs-bar>
                                     <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
-                                        <div id="statistics" class="mt-2" v-if="sigAsDistributionRows[i].length > 0">
-                                            <vue-chart :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" chart-type="PieChart"></vue-chart>
+                                        <div id="statistics" class="mt-2" v-if="i === 'On genes'">
+                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
+                                            <h6 v-else style="text-align: center" >No significant hits.</h6>
                                         </div>
-                                        <h6 v-else style="text-align: center" >No significant hits.</h6>
+                                        <div v-else>
+                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
+                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
+                                        </div>
                                     </v-tabs-content>
                                 </v-tabs>
                             </v-layout>
@@ -88,7 +97,6 @@
     import ManhattanPlot from "../components/manhattanplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
-
 
     @Component({
       filters: {
@@ -129,7 +137,7 @@
 
       // TODO: add permutation threshold retrieval from hdf5 files
       // TODO: add threshold choice
-      // TODO: add hover description for Manhattan plots OR simple PNG loading from server
+      // TODO: add hover description for Manhattan plots
 
       dataChr = {
           1: [],
@@ -171,9 +179,10 @@
           this.loadData();
       }
       created(): void {
-        this.loadData();
-        this.currentView = "study-detail-tabs-details";
+          this.loadData();
+          this.currentView = "study-detail-tabs-details";
       }
+
       loadData(): void {
         try {
             loadStudy(this.id).then(this._displayStudyData);
@@ -207,9 +216,9 @@
         this.araPhenoLink = data.araPhenoLink;
       }
       _displayPieCharts(data): void {
-        this.sigAsDistributionRows['On genes'] = data.onGenes;
-        this.sigAsDistributionRows['On snp type'] = data.onSnp;
-        console.log('loadded')
+        this.sigAsDistributionRows['On genes'] = data.geneCount;
+        this.sigAsDistributionRows['On snp type'] = data.onSnpType;
+        this.$emit('redrawChart');
       }
       _displayManhattanPlots(data): void {
         this.bonferroniThr01 = data.thresholds.bonferroniThreshold01;

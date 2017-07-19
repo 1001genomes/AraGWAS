@@ -212,7 +212,7 @@
             const div = d3.select(this.$refs.svg as Element)
                 .append("div")  // declare the tooltip div
                 .attr("class", "tooltip")              // apply the 'tooltip' class
-                .style("opacity", 0);                  // set the opacity to nil
+                .style("opacity", 0.0);                // set the opacity to nil
             const svg = d3.select(this.$refs.svg as Element);
             svg.selectAll("circle")
                 .data(this.dataPoints)
@@ -226,19 +226,9 @@
                 })
                 .attr("r", 2.5)
                 .on("mouseover", function(d) {
-//                    console.log(div);
                     d3.select(this).attr("r",6);
 //                    svg.dispatch("highlightsnp", { detail: {snp: d, event: d3.event}});
-                    div.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html('<v-card href= "http://google.com"> ASS</v-card>')
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 45) + "px");
-                })
+                    div.html('<v-card href="http://google.com">aa</v-card>')
                 .on("mouseout", function(d,i) {
                     d3.select(this).attr("r",2.5)
                 })
