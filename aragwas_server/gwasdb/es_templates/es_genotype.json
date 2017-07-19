@@ -16,6 +16,7 @@
                     "type": "keyword"
                 },
                 "suggest" : {
+                    "analyzer": "standard",
                     "type" : "completion"
                 },
                 "name": {
