@@ -56,7 +56,7 @@
                     </span>
                 </template>
                 <template slot="items" scope="props">
-                    <tr :id="props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id" >
+                    <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
                         <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
@@ -106,7 +106,7 @@
                     </span>
                 </template>
                 <template slot="items" scope="props" @mouseover.native="showAssociation">
-                    <tr :id="props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id" >
+                    <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
                         <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>

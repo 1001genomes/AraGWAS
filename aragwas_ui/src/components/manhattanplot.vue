@@ -228,7 +228,7 @@
                 .on("mouseover", function(d) {
                     d3.select(this).attr("r",6);
 //                    svg.dispatch("highlightsnp", { detail: {snp: d, event: d3.event}});
-                    div.html('<v-card href="http://google.com">aa</v-card>')
+                    div.html('<v-card href="http://google.com">aa</v-card>')})
                 .on("mouseout", function(d,i) {
                     d3.select(this).attr("r",2.5)
                 })
