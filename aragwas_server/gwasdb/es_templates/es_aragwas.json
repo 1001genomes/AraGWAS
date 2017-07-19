@@ -107,6 +107,15 @@
                         "method": {
                             "type": "keyword"
                         },
+                        "n_hits_perm": {
+                            "type": "integer"
+                        },
+                        "n_hits_bonf": {
+                            "type": "integer"
+                        },
+                        "n_hits_thr": {
+                            "type": "integer"
+                        },
                         "thresholds": {
                             "type": "nested",
                             "properties": {

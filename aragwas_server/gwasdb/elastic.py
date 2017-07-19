@@ -242,7 +242,7 @@ def get_aggregated_filtered_statistics(filters):
 
 def index_associations(study, associations, thresholds):
     """indexes associations"""
-    lowest_threshold = min(filter(None, [thresholds['bonferoni_threshold05'], thresholds['bonferoni_threshold01'], thresholds['bh_threshold']]))
+    lowest_threshold = min(filter(None, [thresholds['bonferroni_threshold05'], thresholds['bonferroni_threshold01'], thresholds['bh_threshold']]))
     thresholds = [{'name': key, 'value': val} for key, val in thresholds.items() ]
     # first filter by chr to fetch annotations
     associations.sort(order = 'chr')
