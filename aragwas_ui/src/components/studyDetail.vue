@@ -45,25 +45,7 @@
                         <v-flex xs12 class="mt-4">
                             <v-layout column>
                                 <h5 class="mb-1">Distribution of significant associations</h5>
-                                <v-tabs id="similar-tabs" grow scroll-bars v-model="currentViewIn">
-                                    <v-tabs-bar slot="activators">
-                                        <v-tabs-slider></v-tabs-slider>
-                                        <v-tabs-item :href="'#' + i" ripple class="grey lighten-4 black--text"
-                                                     v-for="i in ['On genes', 'On snp type']" :key="i">
-                                            <div>{{ i }}</div>
-                                        </v-tabs-item>
-                                    </v-tabs-bar>
-                                    <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4">
-                                        <div id="statistics" class="mt-2" v-if="i === 'On genes'">
-                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
-                                            <h6 v-else style="text-align: center" >No significant hits.</h6>
-                                        </div>
-                                        <div v-else>
-                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
-                                            <vue-chart v-if="sigAsDistributionRows[i].length > 0" :columns="sigAsDisributionColumns[i]" :rows="sigAsDistributionRows[i]" :options="{ylabel: ''}" chart-type="BarChart"></vue-chart>
-                                        </div>
-                                    </v-tabs-content>
-                                </v-tabs>
+                                <study-plots :plotStatistics="plotStatistics"></study-plots>
                             </v-layout>
                         </v-flex>
                     </v-flex>
@@ -97,6 +79,7 @@
     import ManhattanPlot from "./manhattanplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
+    import StudyPlots from "./studyplots.vue"
 
     @Component({
       filters: {
@@ -109,6 +92,7 @@
           "manhattan-plot": ManhattanPlot,
           "breadcrumbs": Breadcrumbs,
           "top-associations": TopAssociationsComponent,
+          "study-plots": StudyPlots,
       },
     })
     export default class StudyDetail extends Vue {
@@ -134,6 +118,7 @@
       fdrHits: number = 0;
       samples: number = 0;
       countries: number = 0;
+      plotsWidth: number = 0;
 
       dataChr = {
           1: [],
@@ -152,12 +137,32 @@
           5: {chr: 5, max_x: 26975502},
       };
 
-      sigAsDisributionColumns = {
-          "On genes": [{type: "string", label: "Condition"}, {type: "number", label: "#Count"}],
-          "On snp type": [{type: "string", label: "Condition"}, {type: "number", label: "#Count"}]};
-      sigAsDistributionRows = {
-          "On genes": [["te", 0]],
-          "On snp type": [["string", 0]]};
+      plotStatistics = {
+          topGenes: {
+              columns: [{type: "string", label: "Gene"}, {type: "number", label: "Count"}],
+              rows: [["te", 0]],
+          },
+          genic: {
+              columns: [{type: "string", label: "Condition"}, {type: "number", label: "Count"}],
+              rows: [["te", 1]],
+          },
+          impact: {
+              columns: [{type: "string", label: "Impact"}, {type: "number", label: "Count"}],
+              rows: [["te", 1]],
+          },
+          annotation: {
+              columns: [{type: "string", label: "Condition"}, {type: "number", label: "Count"}],
+              rows: [["te", 1]],
+          },
+          pvalueDistribution: {
+              columns: [{type: "number", label: "pvalue range"}, {type: "number", label: "Count"}],
+              rows: [["te", 1]],
+          },
+          mafDistribution: {
+              columns: [{type: "number", label: "MAF range"}, {type: "number", label: "Count"}],
+              rows: [["te", 0]],
+          },
+      };
 
       breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
 
@@ -214,8 +219,12 @@
         this.araPhenoLink = data.araPhenoLink;
       }
       _displayPieCharts(data): void {
-        this.sigAsDistributionRows['On genes'] = data.geneCount;
-        this.sigAsDistributionRows['On snp type'] = data.onSnpType;
+        this.plotStatistics.topGenes.rows = data.geneCount;
+        this.plotStatistics.genic.rows = data.onSnpType;
+        this.plotStatistics.impact.rows = data.impactCount;
+        this.plotStatistics.annotation.rows = data.annotationCount;
+        this.plotStatistics.pvalueDistribution.rows = data.pvalueHist;
+        this.plotStatistics.mafDistribution.rows = data.mafHist;
         this.$emit('redrawChart');
       }
       _displayManhattanPlots(data): void {
@@ -241,19 +250,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .banner-container {
-        position: relative;
-        overflow: hidden;
-    }
-    .breadcrumbsitem {
-        font-size: 18pt;
-    }
-
-    .container {
-        margin:0 auto;
-        max-width: 1280px;
-        width: 90%
-    }
 
     .banner-title h1 {
         font-size: 4.2rem;
