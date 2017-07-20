@@ -94,7 +94,7 @@
     import {Component, Prop, Watch} from "vue-property-decorator";
 
     import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
-    import ManhattanPlot from "../components/manhattanplot.vue";
+    import ManhattanPlot from "./manhattanplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
 
@@ -134,10 +134,6 @@
       fdrHits: number = 0;
       samples: number = 0;
       countries: number = 0;
-
-      // TODO: add permutation threshold retrieval from hdf5 files
-      // TODO: add threshold choice
-      // TODO: add hover description for Manhattan plots
 
       dataChr = {
           1: [],
@@ -180,6 +176,8 @@
       }
       created(): void {
           this.loadData();
+      }
+      mounted(): void {
           this.currentView = "study-detail-tabs-details";
       }
 
@@ -229,7 +227,7 @@
             const positions = data[chrom].positions;
             const chrData: any[] = [];
             for (let j = 0; j < positions.length; j++) {
-                const assoc = [positions[j],data[chrom].scores[j]];
+                const assoc = [positions[j],data[chrom].scores[j], data[chrom].mafs[j]];
                 chrData.push(assoc);
             }
             this.dataChr[chrom] =  chrData;
