@@ -4,13 +4,13 @@
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
             <v-card v-if="highlightedAssociation != null" class="mt-1 mb-1">
-                <v-card-text>
+                <v-card-title>
                     <dl>
                         <dt><b>Position</b>: {{highlightedAssociation[0][0]}}</dt>
                         <dt><b>Score</b>: {{highlightedAssociation[0][1] | round}}</dt>
                         <dt><b>MAF</b>: {{highlightedAssociation[0][2] | round}}</dt>
                     </dl>
-                </v-card-text>
+                </v-card-title>
             </v-card>
         </div>
     </div>

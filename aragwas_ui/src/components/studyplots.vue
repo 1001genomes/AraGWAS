@@ -17,7 +17,7 @@
                     <vue-chart :columns="plotStatistics.genic.columns" :rows="plotStatistics.genic.rows" :options="{title: 'SNP type'}" chart-type="PieChart"></vue-chart>
                     <vue-chart :columns="plotStatistics.impact.columns" :rows="plotStatistics.impact.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
                     <vue-chart :columns="plotStatistics.annotation.columns" :rows="plotStatistics.annotation.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
-                    <vue-chart :columns="plotStatistics.pvalueDistribution.columns" :rows="plotStatistics.pvalueDistribution.rows" :options="{title: 'Distribution of pvalues'}" chart-type="ColumnChart"></vue-chart>
+                    <vue-chart :columns="plotStatistics.pvalueDistribution.columns" :rows="plotStatistics.pvalueDistribution.rows" :options="{title: 'Distribution of scores'}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :columns="plotStatistics.mafDistribution.columns" :rows="plotStatistics.mafDistribution.rows" :options="{title: 'Distribution of MAF'}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :show="false" :options="{width: width}" :columns="[]" :rows="[]"></vue-chart>
                 </div>
