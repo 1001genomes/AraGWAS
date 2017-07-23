@@ -3,7 +3,7 @@
         <svg :id="'manhattanplot'+options.chr.toString()" :height="plotHeight" width="100%" class="manhattan" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation">
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
-            <v-card v-if="highlightedAssociation != null" >
+            <v-card v-if="highlightedAssociation != null" class="mt-1 mb-1">
                 <v-card-text>
                     <dl>
                         <dt><b>Position</b>: {{highlightedAssociation[0][0]}}</dt>
@@ -158,7 +158,7 @@
     }
 
     #associationpopup{
-        max-width:400px;
+        max-width:200px;
         position:absolute;
         z-index:9999;
     }

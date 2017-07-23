@@ -156,11 +156,11 @@
           },
           pvalueDistribution: {
               columns: [{type: "number", label: "pvalue range"}, {type: "number", label: "Count"}],
-              rows: [["te", 1]],
+              rows: [[0, 1]],
           },
           mafDistribution: {
               columns: [{type: "number", label: "MAF range"}, {type: "number", label: "Count"}],
-              rows: [["te", 0]],
+              rows: [[0, 0]],
           },
       };
 
