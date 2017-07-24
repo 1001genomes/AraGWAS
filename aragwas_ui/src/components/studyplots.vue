@@ -14,9 +14,9 @@
             </div>
             <div v-else>
                 <div v-if="plotStatistics.genic.rows.length>0">
-                    <vue-chart :columns="plotStatistics.genic.columns" :rows="plotStatistics.genic.rows" :options="{title: 'SNP type'}" chart-type="PieChart"></vue-chart>
-                    <vue-chart :columns="plotStatistics.impact.columns" :rows="plotStatistics.impact.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
-                    <vue-chart :columns="plotStatistics.annotation.columns" :rows="plotStatistics.annotation.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
+                    <vue-chart v-if="_isSnpType" :columns="plotStatistics.genic.columns" :rows="plotStatistics.genic.rows" :options="{title: 'SNP type'}" chart-type="PieChart" ></vue-chart>
+                    <vue-chart v-if="_isSnpType" :columns="plotStatistics.impact.columns" :rows="plotStatistics.impact.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
+                    <vue-chart v-if="_isSnpType" :columns="plotStatistics.annotation.columns" :rows="plotStatistics.annotation.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
                     <vue-chart :columns="plotStatistics.pvalueDistribution.columns" :rows="plotStatistics.pvalueDistribution.rows" :options="{title: 'Distribution of scores'}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :columns="plotStatistics.mafDistribution.columns" :rows="plotStatistics.mafDistribution.rows" :options="{title: 'Distribution of MAF'}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :show="false" :options="{width: width}" :columns="[]" :rows="[]"></vue-chart>
@@ -46,6 +46,7 @@
         selected;
 
         width: number = 0;
+        pieChartsRendered: boolean = false;
 
         debouncedOnResize = _.debounce(this.onResize, 300);
 
@@ -60,9 +61,19 @@
 
         // Get width-information for optimal re-rendering
 
+        @Watch("currentViewIn")
+        onCurrentViewChanged(newCurrentView) {
+            if (newCurrentView === "On snp type") {
+                this.pieChartsRendered = true;
+            }
+        }
+
+        get _isSnpType() {
+            return this.pieChartsRendered || this.currentViewIn === "On snp type";
+        }
+
         onResize() {
             this.width = this.$el.offsetWidth;
-//            this.$refs.chart.drawChart();
         }
 
         mounted() {
