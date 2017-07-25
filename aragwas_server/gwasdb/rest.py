@@ -524,6 +524,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route()
     def search_results(self, request, query_term):
         """ Displays results based on search term """
+        is_gene_suggest = False
         if request.method == "GET":
             client = Elasticsearch([ES_HOST], timeout=60)
             search_gene = Search().using(client).doc_type('genes').source(exclude=['isoforms','GO'])#'isoforms.cds','GO'])
@@ -563,11 +564,11 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                             # Look for genes overlapping with region of interest
                             q = QES('range', positions={'gte':s_p, 'lte':e_p})|QES('range', positions={'gte':s_p, 'lte':s_p})|QES('range', positions={'gte':e_p, 'lte':e_p})
                         else:
-                            q = QES('range', positions={'gte':s_p, 'lte':s_p})
+                            q = QES('range', positions={'gte':s_p, 'lte':s_p}) | QES('range', positions={'gte': s_p})
                         search_gene = search_gene.query(q)
                 else: # other type of request
-                    q = QES('match', _all=query_term)
-                    search_gene = search_gene.query(q)
+                    is_gene_suggest = True
+                    search_gene = search_gene.suggest('gene_suggest', query_term, completion={'field': 'suggest', 'size': 200})
             # custom ordering
             ordering = request.query_params.get('ordering', None)
             ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'genes': ['name', 'chr', 'start_position', 'end_position', 'SNPs_count', 'association_count', 'description']}
@@ -594,9 +595,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                     search_gene.sort(ordering)
                     if inverted:
                         genes = genes.reverse()
-
             n_genes = search_gene.count()
-            print(n_genes)
             if studies:
                 pagest = self.paginate_queryset(studies)
                 study_serializer = StudySerializer(pagest, many=True)
@@ -604,8 +603,14 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 study_serializer = StudySerializer(studies, many=True)
 
             if n_genes:
-                results = search_gene[0:min(200, search_gene.count())].execute()
-                genes = results.to_dict()['hits']['hits']
+                size = min(200, search_gene.count())
+                if is_gene_suggest:
+                    size = 0
+                results = search_gene[0:size].execute()
+                if is_gene_suggest:
+                    genes = results.to_dict()['suggest']['gene_suggest'][0]['options']
+                else:
+                    genes = results.to_dict()['hits']['hits']
                 genes_out = []
                 for gene in genes:
                     genes_out.append(gene["_source"])
