@@ -8,6 +8,7 @@ from gwasdb.models import Study
 from gwasdb import elastic
 from gwasdb import hdf5
 from aragwas import settings
+from gwasdb import es2csv
 
 
 @shared_task
@@ -18,8 +19,13 @@ def index_study(study_id):
     top_associations, thresholds = hdf5.get_top_associations(hdf5_file, val=1e-4, top_or_threshold='threshold' )
     return elastic.index_associations(study, top_associations, thresholds)
 
-
-
+@shared_task
+def download_es2csv(opts, filters):
+    # prepare file
+    es2csv.prepare_csv(opts, filters)
+    # download
+    # TODO: link to nginx
+    # Once downloaded, delete with os.remove(opts.output_file)
 
 @shared_task
 def compute_ld(chromosome, position, genotype_name, N=20):

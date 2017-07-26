@@ -151,7 +151,7 @@
               rows: [["te", 1]],
           },
           annotation: {
-              columns: [{type: "string", label: "Condition"}, {type: "number", label: "Count"}],
+              columns: [{type: "string", label: "Annotation"}, {type: "number", label: "Count"}],
               rows: [["te", 1]],
           },
           pvalueDistribution: {
