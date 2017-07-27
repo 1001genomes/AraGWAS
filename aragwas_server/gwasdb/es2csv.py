@@ -23,7 +23,7 @@ import elasticsearch
 from functools import wraps
 from aragwas.settings import ES_HOST
 
-from elastic import filter_association_search
+from gwasdb.elastic import filter_association_search
 from elasticsearch_dsl import Search
 
 FLUSH_BUFFER = 1000  # Chunk of docs to flush in temp file
