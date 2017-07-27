@@ -257,6 +257,18 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                         label = 'Non genic'
                     list_top_snp_type.append([label, i['doc_count']])
                     response['on_snp_type'] = list_top_snp_type
+            elif key == "maf_hist":
+                # Need to check if all consequent maf ranges are present
+                list_maf = []
+                max = agg_results[key][-1]['key']
+                c = 0
+                for i in range(int(max*10)+1):
+                    if agg_results[key][c]['key']== float(i)/10:
+                        list_maf.append([agg_results[key][c]['key'], agg_results[key][c]['doc_count']])
+                        c += 1
+                    else:
+                        list_maf.append([float(i)/10, 0])
+                response[key]=list_maf
             else:
                 list = []
                 for i in agg_results[key]:

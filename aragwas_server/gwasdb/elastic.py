@@ -177,8 +177,11 @@ def get_top_genes_and_snp_type_for_study(study_id):
     agg_genes = A("terms", field="snp.gene_name")
     # agg_go_terms = A("terms", field="snp.") NOT DOABLE WITH CURRENT FIELDS IN ES
     agg_snp_type = A("terms", field="snp.coding")
-    agg_impact = A("terms", field="snp.annotations.impact")
-    agg_annotation = A("terms", field="snp.annotations.effect")
+    agg_impact = A(
+        {"nested": {"path": "snp.annotations"}, "aggs": {"annotations": {"terms": {"field": "snp.annotations.impact"}}}})
+    agg_annotation = A(
+        {"nested": {"path": "snp.annotations"},
+         "aggs": {"annotations": {"terms": {"field": "snp.annotations.effect"}}}})
     s.aggs.bucket('gene_count', agg_genes)
     s.aggs.bucket('snp_type_count', agg_snp_type)
     s.aggs.bucket('impact_count', agg_impact)
@@ -187,7 +190,7 @@ def get_top_genes_and_snp_type_for_study(study_id):
     s.aggs.bucket('maf_hist', 'histogram', field='maf', interval='0.1')
     agg_results = s.execute().aggregations
     results = {'gene_count': agg_results.gene_count.buckets, 'snp_type_count': agg_results.snp_type_count.buckets,
-               'impact_count': agg_results.impact_count.buckets, 'annotation_count': agg_results.annotation_count.buckets,
+               'impact_count': agg_results.impact_count.annotations.buckets, 'annotation_count': agg_results.annotation_count.annotations.buckets,
                'pvalue_hist': agg_results.pvalue_hist.buckets, 'maf_hist': agg_results.maf_hist.buckets}
     return results
 
