@@ -67,8 +67,8 @@ class Es2csv:
         self.scroll_ids = []
         self.scroll_time = '30m'
 
-        self.csv_headers = list(META_FIELDS) if self.opts.meta_fields else []
-        self.tmp_file = '%s.tmp' % opts.output_file
+        self.csv_headers = list(META_FIELDS) if self.opts['meta_fields'] else []
+        self.tmp_file = '%s.tmp' % opts['output_file']
 
     @retry(elasticsearch.exceptions.ConnectionError, tries=TIMES_TO_TRY)
     def create_connection(self):
@@ -102,18 +102,18 @@ class Es2csv:
         s = Search(using=self.es_conn, doc_type=self.opts.doc_type)
         s = s.sort('-score')
         s = filter_association_search(s, self.filters)
-        if self.opts.debug_mode:
+        if self.opts['debug_mode']:
             print('Query: {}'.format(json.dumps(s.to_dict())))
         res = s.execute()
 
         self.num_results = res['hits']['total']
 
-        if self.opts.debug_mode:
+        if self.opts['debug_mode']:
             print('Found %s results' % self.num_results)
             print(json.dumps(res))
 
         if self.num_results > 0:
-            open(self.opts.output_file, 'w').close()
+            open(self.opts['output_file'], 'w').close()
             open(self.tmp_file, 'w').close()
 
             hit_list = []
@@ -132,10 +132,10 @@ class Es2csv:
                     if len(hit_list) == FLUSH_BUFFER:
                         self.flush_to_file(hit_list)
                         hit_list = []
-                    if self.opts.max_results:
-                        if total_lines == self.opts.max_results:
+                    if self.opts['max_results']:
+                        if total_lines == self.opts['max_results']:
                             self.flush_to_file(hit_list)
-                            print('Hit max result limit: %s records' % self.opts.max_results)
+                            print('Hit max result limit: %s records' % self.opts['max_results'])
                             return
                 res = next_scroll(res['_scroll_id'])
             self.flush_to_file(hit_list)
@@ -153,7 +153,7 @@ class Es2csv:
                     to_keyvalue_pairs(source[key], ancestors + [key])
 
             elif is_list(source):
-                if self.opts.kibana_nested:
+                if self.opts['kibana_nested']:
                     [to_keyvalue_pairs(item, ancestors) for item in source]
                 else:
                     [to_keyvalue_pairs(item, ancestors + [str(index)]) for index, item in enumerate(source)]
@@ -162,13 +162,13 @@ class Es2csv:
                 if header not in self.csv_headers:
                     self.csv_headers.append(header)
                 try:
-                    out[header] = '%s%s%s' % (out[header], self.opts.delimiter, source)
+                    out[header] = '%s%s%s' % (out[header], self.opts['delimiter'], source)
                 except:
                     out[header] = source
 
         with open(self.tmp_file, 'a') as tmp_file:
             for hit in hit_list:
-                out = {field: hit[field] for field in META_FIELDS} if self.opts.meta_fields else {}
+                out = {field: hit[field] for field in META_FIELDS} if self.opts['meta_fields'] else {}
                 if '_source' in hit and len(hit['_source']) > 0:
                     to_keyvalue_pairs(hit['_source'])
                     tmp_file.write('%s\n' % json.dumps(out))
@@ -178,8 +178,8 @@ class Es2csv:
         if self.num_results > 0:
             self.num_results = sum(1 for line in open(self.tmp_file, 'r'))
             if self.num_results > 0:
-                output_file = open(self.opts.output_file, 'a')
-                csv_writer = csv.DictWriter(output_file, fieldnames=self.csv_headers, delimiter=self.opts.delimiter)
+                output_file = open(self.opts['output_file'], 'a')
+                csv_writer = csv.DictWriter(output_file, fieldnames=self.csv_headers, delimiter=self.opts['delimiter'])
                 csv_writer.writeheader()
 
                 for line in open(self.tmp_file, 'r'):
@@ -188,7 +188,7 @@ class Es2csv:
                     csv_writer.writerow(line_dict_utf8)
                 output_file.close()
             else:
-                print('There is no docs with selected field(s): %s.' % ','.join(self.opts.fields))
+                print('There is no docs with selected field(s): %s.' % ','.join(self.opts['fields']))
             os.remove(self.tmp_file)
 
     def clean_scroll_ids(self):
@@ -197,14 +197,31 @@ class Es2csv:
         except:
             pass
 
+def add_default_options(opts):
+    if 'index_prefixes' not in opts.keys():
+        opts['index_prefixes'] = ['logstash-*']
+    if 'fields' not in opts.keys():
+        opts['fields'] = ['_all']
+    if 'delimiter' not in opts.keys():
+        opts['delimiter'] = ','
+    if 'max_results' not in opts.keys():
+        opts['max_results'] = 0
+    if 'scroll_size' not in opts.keys():
+        opts['scroll_size'] = 100
+    if 'kibana_nested' not in opts.keys():
+        opts['kibana_nested'] = False
+    if 'meta_fields' not in opts.keys():
+        opts['meta_fields'] = False
+    if 'debug_mode' not in opts.keys():
+        opts['debug_mode'] = False
+
+    return opts
+
 
 def prepare_csv(opts, filters):
     """Usage:
-        p.add_argument('-q', '--query', dest='query', type=str, required=True, help='Query string in Lucene syntax.')
-        p.add_argument('-u', '--url', dest='url', default='http://localhost:9200', type=str, help='Elasticsearch host URL. Default is %(default)s.')
         p.add_argument('-i', '--index-prefixes', dest='index_prefixes', default=['logstash-*'], type=str, nargs='+', metavar='INDEX', help='Index name prefix(es). Default is %(default)s.')
-        p.add_argument('-D', '--doc_types', dest='doc_type', type=str, nargs='+', metavar='DOC_TYPE', help='Document type.')
-        p.add_argument('-t', '--tags', dest='tags', type=str, nargs='+', help='Query tags.')
+        p.add_argument('-D', '--doc_type', dest='doc_type', type=str, nargs='+', metavar='DOC_TYPE', help='Document type.')
         p.add_argument('-o', '--output_file', dest='output_file', type=str, required=True, metavar='FILE', help='CSV file location.')
         p.add_argument('-f', '--fields', dest='fields', default=['_all'], type=str, nargs='+', help='List of selected fields in output. Default is %(default)s.')
         p.add_argument('-d', '--delimiter', dest='delimiter', default=',', type=str, help='Delimiter to use in CSV file. Default is "%(default)s".')
@@ -218,10 +235,11 @@ def prepare_csv(opts, filters):
 
     # opts = p.parse_args()
     # Check for missing options
+    opts = add_default_options(opts)
+
     es = Es2csv(opts, filters)
     es.create_connection()
     es.search_query()
     es.write_to_csv()
     es.clean_scroll_ids()
     # return name of temporary file so as to delete the csv file once it is downloaded.
-    # TODO: idea -> select a subset of csv always available to download (e.g. entire top-asso list)

@@ -7,5 +7,5 @@
 .env
 .vscode
 .idea
-/*.hdf5
+*.hdf5
 aragwas_data/

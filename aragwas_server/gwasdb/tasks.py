@@ -24,7 +24,6 @@ def download_es2csv(opts, filters):
     # prepare file
     es2csv.prepare_csv(opts, filters)
     # download
-    # TODO: link to nginx
     # Once downloaded, delete with os.remove(opts.output_file)
 
 @shared_task
