@@ -374,6 +374,14 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
 
+    @list_route(methods=['GET'], url_path='map')
+    def data_for_heatmap(self, request):
+        # TODO proper implementation (currently uses mock data)
+        import requests
+        url = 'https://rawgit.com/timeu/e4d1bf0b726e43a80e12b5a279b51d14/raw/2e5051125b7cfa4999e6a8dbf769f3c8e93d65d4/gwasheatmap.json'
+        return Response(requests.get(url).json())
+
+
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
 
