@@ -342,7 +342,7 @@ def get_top_hits_for_all_studies(filters):
     # Keep track of the maximum value for each study
     s.aggs['per_chrom'].metric('max', 'max', field='score')
     # Then aggregate for chromosomes
-    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'})
+    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size='167') #TODO: automatically check number of studies
     # Then for regions (to avoid too many overlapping hits)
     s.aggs['per_chrom']['per_study'].bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))
     # Then state what info we want from top_hits (position and score)
