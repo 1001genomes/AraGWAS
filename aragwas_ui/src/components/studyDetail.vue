@@ -159,8 +159,8 @@
               rows: [[0, 1]],
           },
           mafDistribution: {
-              columns: [{type: "number", label: "MAF range"}, {type: "number", label: "Count"}],
-              rows: [[0, 0]],
+              columns: [{type: "string", label: "MAF range"}, {type: "number", label: "Count"}],
+              rows: [['1', 0]],
           },
       };
 
@@ -222,10 +222,27 @@
         this.plotStatistics.topGenes.rows = data.geneCount;
         this.plotStatistics.genic.rows = data.onSnpType;
         this.plotStatistics.impact.rows = data.impactCount;
+        this.capitalize(this.plotStatistics.impact.rows);
         this.plotStatistics.annotation.rows = data.annotationCount;
+        this.capitalize(this.plotStatistics.annotation.rows);
         this.plotStatistics.pvalueDistribution.rows = data.pvalueHist;
-        this.plotStatistics.mafDistribution.rows = data.mafHist;
+        this.plotStatistics.mafDistribution.rows = this.adjustHistogramsRows(data.mafHist);
         this.$emit('redrawChart');
+      }
+      capitalize(rows): void {
+          // Helper function to transform ugly es strings into readable legends
+          rows.forEach(function(part, index, theArray) {
+              let str = theArray[index][0];
+              str = str.split("_").join(" ");
+              theArray[index][0] = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+          });
+      }
+      adjustHistogramsRows(rows): Array<Array<string|number>> {
+          rows.forEach(function(part, index, theArray){
+              let str = theArray[index][0].toString()+'-'+(theArray[index][0]+0.1).toString();
+              theArray[index][0] = str;
+          });
+          return rows
       }
       _displayManhattanPlots(data): void {
         this.bonferroniThr01 = data.thresholds.bonferroniThreshold01;

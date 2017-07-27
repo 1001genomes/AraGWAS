@@ -307,6 +307,53 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     last_el[1] = "-".join(last_el[1].split('#'))
     return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
 
+def get_gwas_overview_data(filters):
+    """Collect the data used to plot the gwas heatmap"""
+    # Params: chromosome (list or individual), region (optional, only considered if taking 1 chr), filters?
+    region_bins = dict()
+    for chr in filters['chr']:
+        # Note: if we set threshold='', no filter on significant hits will be applied, resulting in (many) more values per bin
+        region_bins[chr] = get_bins_for_chr_regions(chr,filters['bin_size'])
+    # Aggregate over chromosomes
+
+def get_top_hits_for_all_studies(chrom, region_width=1000, threshold=''):
+    s = Search(using=es, doc_type='associations')
+    s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom)]))
+    if threshold == 'FDR':
+        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
+    elif threshold == 'Bonferroni':
+        s = s.filter('term', overBonferroni='T')
+    elif threshold == 'permutation':
+        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
+    # First aggregate for studies
+    # Then aggregate for regions (to avoid too many overlapping hits)
+    # Then state what info we want from top_hits (position and score)
+    # Keep track of the maximum value for each study
+
+    # Find max value for chromosome
+
+
+def get_bins_for_chr_regions(chrom, region_width=10000, threshold='FDR', region=('','')):
+    """Usage:
+        chrom = indicate the chromosome of interest,
+        region_width = indicate the size of the bins for which to count hits,
+        threshold = indicate the type of threshold to look at (FDR, Bonferroni, permutation or none)
+        region = indicate a specific window in which to aggregate for, default = ('','') looks at entire chromosome
+    """
+    s = Search(using=es, doc_type='associations')
+    s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom)]))
+    if threshold == 'FDR':
+        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
+    elif threshold == 'Bonferroni':
+        s = s.filter('term', overBonferroni='T')
+    elif threshold == 'permutation':
+        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
+    if region[0] != '':
+        s = s.filter('range', snp__position={'gte': int(region[0])})
+        s = s.filter('range', snp__position={'lte': int(region[1])})
+    s.aggs.bucket('hit_hist', 'histogram', field='snp.position', interval=str(region_width))
+    agg_results = s.execute().aggregations
+    return agg_results.hit_hist.buckets
 
 def index_genes(genes):
     """Indexes the genes"""
