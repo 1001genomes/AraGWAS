@@ -66,12 +66,6 @@
         async loadData() {
             this.data = await loadAssociationsHeatmap();
             // WORKAROUND create 4 additional copies
-            let chrData = JSON.stringify(this.data["data"][0]);
-            for (let i=2;i<6;i++) {
-                let newChrData = JSON.parse(chrData);
-                newChrData['chr'] = 'Chr'+ i;
-                this.data['data'].push(newChrData);
-            }
             d3.select("#heatmap").data([this.data]).call(this.heatmap);
         }
 

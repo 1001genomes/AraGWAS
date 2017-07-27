@@ -376,10 +376,24 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
 
     @list_route(methods=['GET'], url_path='map')
     def data_for_heatmap(self, request):
-        # TODO proper implementation (currently uses mock data)
-        import requests
-        url = 'https://rawgit.com/timeu/e4d1bf0b726e43a80e12b5a279b51d14/raw/2e5051125b7cfa4999e6a8dbf769f3c8e93d65d4/gwasheatmap.json'
-        return Response(requests.get(url).json())
+        """ Get heatmap data. Parameters need to be included in the filters dict
+            Usage: chrom = indicate the chromosome(s) of interest ('all' or any chromosome),
+                region_width = indicate the size of the bins for which to count hits,
+                threshold = indicate the type of threshold to look at (FDR, Bonferroni, permutation or none, default='FDR')
+                region = indicate a specific window in which to aggregate for, default = ('','') looks at entire chromosome
+                maf = indicate a minimum maf (default=0)
+                mac = indicate a minimum mac (default=0)
+        """
+        # Load studies from regular db
+        studies = Study.objects.all()
+        studies_data = []
+        for study in studies:
+            studies_data.append({'id': study.id, 'name':study.phenotype.name}) # For now only add phenotype name for shorted strings
+        # get the rest of the data
+        filters = dict() # TODO: add parameters fetching from url, for now default values should be fine
+        results = elastic.get_gwas_overview_data(filters)
+        results['studies'] = studies_data
+        return Response(results)
 
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):

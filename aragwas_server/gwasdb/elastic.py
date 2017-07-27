@@ -309,51 +309,127 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
 
 def get_gwas_overview_data(filters):
     """Collect the data used to plot the gwas heatmap"""
+    # Check missing filters
+    filters = check_missing_filters(filters)
     # Params: chromosome (list or individual), region (optional, only considered if taking 1 chr), filters?
-    region_bins = dict()
-    for chr in filters['chr']:
-        # Note: if we set threshold='', no filter on significant hits will be applied, resulting in (many) more values per bin
-        region_bins[chr] = get_bins_for_chr_regions(chr,filters['bin_size'])
+    region_bins = get_bins_for_chr_regions(filters)
+    max_score, data = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
     # Aggregate over chromosomes
+    combined_data = combine_data(region_bins, max_score, data)
+    # Get study list
+    return {"type":"top", "scoreRange": [0, max(max_score.values())], "data":combined_data}
 
-def get_top_hits_for_all_studies(chrom, region_width=1000, threshold=''):
+def check_missing_filters(filters):
+    if 'chrom' not in filters.keys():
+        filters['chrom'] = 'all'
+    if 'region_width' not in filters.keys():
+        filters['region_width'] = 100000
+    if 'threshold' not in filters.keys():
+        filters['threshold'] = ''
+    if 'region' not in filters.keys():
+        filters['region'] = ('','')
+    if 'maf' not in filters.keys():
+        filters['maf'] = 0
+    if 'mac' not in filters.keys():
+        filters['mac'] = 0
+    return filters
+
+def get_top_hits_for_all_studies(filters):
     s = Search(using=es, doc_type='associations')
-    s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom)]))
-    if threshold == 'FDR':
-        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
-    elif threshold == 'Bonferroni':
-        s = s.filter('term', overBonferroni='T')
-    elif threshold == 'permutation':
-        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
+    s = filter_heatmap_search(s, filters)
     # First aggregate for studies
-    # Then aggregate for regions (to avoid too many overlapping hits)
-    # Then state what info we want from top_hits (position and score)
+    s.aggs.bucket('per_chrom', 'terms', field='snp.chr')
     # Keep track of the maximum value for each study
+    s.aggs['per_chrom'].metric('max', 'max', field='score')
+    # Then aggregate for chromosomes
+    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'})
+    # Then for regions (to avoid too many overlapping hits)
+    s.aggs['per_chrom']['per_study'].bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))
+    # Then state what info we want from top_hits (position and score)
+    s.aggs['per_chrom']['per_study']['per_region'].metric('top', 'top_hits', size='1', _source=['score','snp.position'])
+    # Aggregate results
+    agg_results = s.execute().aggregations
+    # Find max score for
+    max_score = dict()
+    data = dict()
+    for bucket in agg_results.per_chrom.buckets:
+        max_score[bucket.key] = bucket.max.value
+        data[bucket.key] = []
+        for element in bucket.per_study.buckets:
+            # Combine results and get top 25 per chrom per study:
+            data[bucket.key].append(get_top_N_per_study(element, 25))
+    return max_score, data
 
-    # Find max value for chromosome
+def get_top_N_per_study(bucket, N=25):
+    hits = []
+    for element in bucket.per_region.buckets:
+        if element.top.hits.hits:
+            hits.append({'pos': element.top.hits.hits[0]['_source']['snp']['position'],'score':element.top.hits.hits[0]['_source']['score']})
+    hits.sort(key=lambda tup: -tup['score'])
+    print(hits)
+    return hits[:N]
 
 
-def get_bins_for_chr_regions(chrom, region_width=10000, threshold='FDR', region=('','')):
+def filter_heatmap_search(s, filters):
+    if filters['chrom'] != 'all':
+        s = s.filter(Q('bool', should=[Q('term', snp__chr=filters['chrom'] if len(filters['chrom']) > 3 else 'chr%s' % filters['chrom'])]))
+    if filters['threshold'] == 'FDR':
+        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
+    elif filters['threshold'] == 'Bonferroni':
+        s = s.filter('term', overBonferroni='T')
+    elif filters['threshold'] == 'permutation':
+        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
+    if filters['maf'] > 0:
+        s = s.filter(Q('range', maf={'gte':filters['maf']}))
+    if filters['mac'] > 0:
+        s = s.filter(Q('range', mac={'gte': filters['mac']}))
+    if filters['region'][0] != '':
+        s = s.filter('range', snp__position={'gte': int(filters['region'][0])})
+        s = s.filter('range', snp__position={'lte': int(filters['region'][1])})
+    return s
+
+def get_bins_for_chr_regions(filters):
     """Usage:
-        chrom = indicate the chromosome of interest,
+        chrom = indicate the chromosome(s) of interest ('all' or any chromosome),
         region_width = indicate the size of the bins for which to count hits,
         threshold = indicate the type of threshold to look at (FDR, Bonferroni, permutation or none)
         region = indicate a specific window in which to aggregate for, default = ('','') looks at entire chromosome
+        maf = indicate a minimum maf
+        mac = indicate a minimum mac
     """
     s = Search(using=es, doc_type='associations')
-    s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom)]))
-    if threshold == 'FDR':
-        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
-    elif threshold == 'Bonferroni':
-        s = s.filter('term', overBonferroni='T')
-    elif threshold == 'permutation':
-        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
-    if region[0] != '':
-        s = s.filter('range', snp__position={'gte': int(region[0])})
-        s = s.filter('range', snp__position={'lte': int(region[1])})
-    s.aggs.bucket('hit_hist', 'histogram', field='snp.position', interval=str(region_width))
+    s = filter_heatmap_search(s, filters)
+    s.aggs.bucket('per_chrom', 'terms', field='snp.chr').bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))
     agg_results = s.execute().aggregations
-    return agg_results.hit_hist.buckets
+    bin_dict = dict()
+    for buckets in agg_results.per_chrom.buckets:
+        bin_dict[buckets['key']] = convert_to_bin_format(buckets['per_region'].buckets)
+    return bin_dict
+
+def convert_to_bin_format(buckets):
+    bins = []
+    for bin in buckets:
+        bins.append(bin['doc_count'])
+    return bins
+
+def combine_data(bins, max_scores, data, region=('',''), region_width=10000):
+    if len(bins) != len(max_scores) or len(bins) != len(data) or len(data) != len(max_scores):
+        raise ValueError('Problem with the size of the dictionaries')
+    final_data = []
+    keys = list(bins)
+    chromosome_sizes = {'chr1': 30427671, 'chr2': 19698289, 'chr3': 23459830,'chr4': 18585056, 'chr5': 26975502}
+    keys.sort()
+    for key in keys:
+        scoreRange = [0,max_scores[key]]
+        if region[0] == '':
+            region_final = [0, chromosome_sizes[key]]
+        else:
+            region_final = [region[0],region[1]]
+        bin_sze = region_width
+        final_data.append({'scoreRange': scoreRange, 'chr': key, 'region':region_final, 'bin_sze': bin_sze, 'bins': bins[key],
+                           'data':data[key]})
+    return final_data
+
 
 def index_genes(genes):
     """Indexes the genes"""
