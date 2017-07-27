@@ -20,7 +20,7 @@ export default function gwasHeatmap() {
     var histogramHeight = 100;
     var cellSize = 12;
     var legendElementWidth = cellSize * 2.5;
-    var legendHeight = 30;
+    var legendHeight = 50;
 
     var draw, ticks;
 
@@ -169,6 +169,11 @@ export default function gwasHeatmap() {
                     d3.axisBottom(xScale.get(this)).ticks(ticks()).tickFormat(d3.formatPrefix(".1", 1e6))(d3.select(this));
                 });
 
+            svg.selectAll(".xaxislabel")
+                .attr("x", getChromosomeWidth() / 2 - 71)
+                .attr("y", (getPlotHeight() + getScatterPlotTop() + margin.top + margin.bottom  ));
+
+
             svg.select("g.y.axis")
                 .transition().duration(transitionDuration)
                 .call(d3.axisLeft(yScale));
@@ -205,6 +210,12 @@ export default function gwasHeatmap() {
                 .append("g")
                 .attr("class", "x axis")
                 .call(function(d) { d3.axisBottom(xScale.get(d.node()))(d); });
+
+            chromGroupsEntered
+                .append("text")
+                .attr("class", "xaxislabel")
+                .text(function(d) { return d.chr + " (Mbp)";});
+
 
             chromGroupsEntered
                 .append("g")
