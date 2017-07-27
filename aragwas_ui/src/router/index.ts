@@ -2,6 +2,7 @@ import About from "@/components/about.vue";
 import FAQ from "@/components/faq.vue";
 import GeneDetail from "@/components/geneDetail.vue";
 import Genes from "@/components/genes.vue";
+import GwasHeatmap from "@/components/gwasHeatmap.vue";
 import Home from "@/components/home.vue";
 import PhenotypeDetail from "@/components/phenotypeDetail.vue";
 import Phenotypes from "@/components/phenotypes.vue";
@@ -81,6 +82,11 @@ export default new Router({
       path: "/gene/:geneId?",
       name: "geneDetail",
       component: GeneDetail, props: true,
+    },
+    {
+      path: "/map",
+      name: "map",
+      component: GwasHeatmap, props: true,
     },
   ],
 });

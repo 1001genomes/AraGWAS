@@ -283,3 +283,9 @@ export async  function loadApiVersion(): Promise<ApiVersion> {
         .then(checkStatus)
         .then<ApiVersion>(convertToModel);
 }
+
+export async function loadAssociationsHeatmap(): Promise<Array<{}>> {
+    return fetch(`/api/associations/map/`)
+        .then(checkStatus)
+        .then<Array<{}>>(convertToModel);
+}
