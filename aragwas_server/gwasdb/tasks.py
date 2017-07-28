@@ -22,9 +22,12 @@ def index_study(study_id):
 @shared_task
 def download_es2csv(opts, filters):
     # prepare file
+    file_name = opts['output_file']
     es2csv.prepare_csv(opts, filters)
     # download
     # Once downloaded, delete with os.remove(opts.output_file)
+    return file_name
+# TODO: add a periodic task to clean temp folder
 
 @shared_task
 def compute_ld(chromosome, position, genotype_name, N=20):

@@ -77,34 +77,43 @@ class Es2csv:
 
     @retry(elasticsearch.exceptions.ConnectionError, tries=TIMES_TO_TRY)
     def search_query(self):
+        print(self.opts)
         @retry(elasticsearch.exceptions.ConnectionError, tries=TIMES_TO_TRY)
         def next_scroll(scroll_id):
             return self.es_conn.scroll(scroll=self.scroll_time, scroll_id=scroll_id)
-        # search_args = dict(
-        #     index=','.join(self.opts.index_prefixes),
-        #     scroll=self.scroll_time,
-        #     size=self.opts.scroll_size,
-        #     terminate_after=self.opts.max_results
-        # )
-        #
-        # if '_all' not in self.opts.fields:
-        #     search_args['_source_include'] = ','.join(self.opts.fields)
-        #     self.csv_headers.extend([field for field in self.opts.fields if '*' not in field])
-        #
-        # if self.opts.debug_mode:
-        #     print('Using these indices: %s' % ', '.join(self.opts.index_prefixes))
-        #     print('Query[%s]: %s' % (('Query DSL', json.dumps(query)) if self.opts.raw_query else ('Lucene', query)))
-        #     print('Output field(s): %s' % ', '.join(self.opts.fields))
-        #
-        # res = self.es_conn.search(**search_args)
+        search_args = dict(
+            doc_type=self.opts['doc_type'],
+            scroll=self.scroll_time,
+            size=self.opts['scroll_size'],
+            terminate_after=self.opts['max_results']
+        )
 
-        ### Alternative search with elastic.py functions TODO: need to check other options (especially scroll)
-        s = Search(using=self.es_conn, doc_type=self.opts.doc_type)
-        s = s.sort('-score')
-        s = filter_association_search(s, self.filters)
+        ### Alternative search with elastic.py functions
+        s = Search(using=self.es_conn, doc_type=self.opts['doc_type'])
+        if self.opts['doc_type']=='associations':
+            s = s.sort('-score')
+            s = filter_association_search(s, self.filters)
+        else:
+            s = s.sort('name')
+        # Transform the query into a json object
+        query = str(s.to_dict()).replace("'",'"')
+        try:
+            query = json.loads(query)
+        except ValueError as e:
+            print('Invalid JSON syntax in query. %s' % e)
+            exit(1)
+        search_args['body'] = query
+        print(query)
+
+        if '_all' not in self.opts['fields']:
+            search_args['_source_include'] = ','.join(self.opts['fields'])
+            self.csv_headers.extend([field for field in self.opts['fields'] if '*' not in field])
+
         if self.opts['debug_mode']:
-            print('Query: {}'.format(json.dumps(s.to_dict())))
-        res = s.execute()
+            print('Query[%s]: %s' % (('Query DSL', json.dumps(query))))
+            print('Output field(s): %s' % ', '.join(self.opts['fields']))
+
+        res = self.es_conn.search(**search_args)
 
         self.num_results = res['hits']['total']
 
@@ -184,7 +193,7 @@ class Es2csv:
 
                 for line in open(self.tmp_file, 'r'):
                     line_as_dict = json.loads(line)
-                    line_dict_utf8 = {k: v.encode('utf8') if isinstance(v, unicode) else v for k, v in line_as_dict.items()}
+                    line_dict_utf8 = {k: v for k, v in line_as_dict.items()}
                     csv_writer.writerow(line_dict_utf8)
                 output_file.close()
             else:
@@ -198,16 +207,18 @@ class Es2csv:
             pass
 
 def add_default_options(opts):
-    if 'index_prefixes' not in opts.keys():
-        opts['index_prefixes'] = ['logstash-*']
     if 'fields' not in opts.keys():
-        opts['fields'] = ['_all']
+        # Default included fields
+        if opts['doc_type'] == 'associations':
+            opts['fields'] = ['snp.chr','snp.position', 'score', 'maf']
+        else:
+            opts['fields'] = ['_all']
     if 'delimiter' not in opts.keys():
         opts['delimiter'] = ','
     if 'max_results' not in opts.keys():
         opts['max_results'] = 0
     if 'scroll_size' not in opts.keys():
-        opts['scroll_size'] = 100
+        opts['scroll_size'] = 1000
     if 'kibana_nested' not in opts.keys():
         opts['kibana_nested'] = False
     if 'meta_fields' not in opts.keys():
@@ -242,4 +253,3 @@ def prepare_csv(opts, filters):
     es.search_query()
     es.write_to_csv()
     es.clean_scroll_ids()
-    # return name of temporary file so as to delete the csv file once it is downloaded.

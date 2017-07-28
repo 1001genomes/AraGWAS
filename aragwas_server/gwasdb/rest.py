@@ -16,13 +16,14 @@ import mimetypes
 from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, get_list_or_404
+from django.utils.encoding import smart_str
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.settings import api_settings
 from gwasdb.hdf5 import get_top_associations, regroup_associations
 
-from gwasdb.tasks import compute_ld
+from gwasdb.tasks import compute_ld, download_es2csv
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
 from aragwas import settings
 from gwasdb import elastic
@@ -425,6 +426,27 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         results = elastic.get_gwas_overview_heatmap_data(filters)
         results['studies'] = studies_data
         return Response(results)
+
+    @list_route(methods=['GET'], url_path='download')
+    def download_csv(self, request):
+        """ Prepare a csv file from the elasticsearch database and return it as a downloadable file through a celery task
+            Usage: takes same filters as any other associations query
+        """
+        # Load studies from regular db
+        import datetime
+        filters = _get_filter_from_params(request.query_params)
+        file_name = 'temp/'+str(datetime.datetime.time())+'.csv' # give it a unique name
+        opts = dict(doc_type='associations', output_name=file_name)
+        opts['output_file'] = opts['doc_type'] + "_all.csv"
+        fn = download_es2csv(opts, filters)
+        # wait for file to be done
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
+                        content_type="text/csv")
+        response['Content-Length'] = os.path.getsize(file_name)
+        response['Content-Disposition'] = "attachment; filename=download.csv"
+
+        return response
 
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):

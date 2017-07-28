@@ -15,7 +15,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             # Generate the necessary opts and filters
-            elastic.check_indices()
             opts = dict()
             opts['doc_type'] = options['doc_type']
             self.stdout.write('Generating file for {}...'.format(opts['doc_type']))
@@ -24,14 +23,13 @@ class Command(BaseCommand):
             # Generate file through es2csv
             es2csv.prepare_csv(opts=opts,filters=dict())
 
-
         except Exception as err:
             traceback.print_exc()
             raise CommandError(
                 'Error generating csv file. Reason: %s' % str(err))
 
         self.stdout.write(self.style.SUCCESS(
-            'Successfully initialiazed elasticseach database'))
+            'Successfully generated csv file'))
 
     def prepare_csv(opts, filters):
         """Usage:
@@ -43,8 +41,5 @@ class Command(BaseCommand):
             p.add_argument('-d', '--delimiter', dest='delimiter', default=',', type=str, help='Delimiter to use in CSV file. Default is "%(default)s".')
             p.add_argument('-m', '--max', dest='max_results', default=0, type=int, metavar='INTEGER', help='Maximum number of results to return. Default is %(default)s.')
             p.add_argument('-s', '--scroll_size', dest='scroll_size', default=100, type=int, metavar='INTEGER', help='Scroll size for each batch of results. Default is %(default)s.')
-            p.add_argument('-k', '--kibana_nested', dest='kibana_nested', action='store_true', help='Format nested fields in Kibana style.')
-            p.add_argument('-r', '--raw_query', dest='raw_query', action='store_true', help='Switch query format in the Query DSL.')
-            p.add_argument('-e', '--meta_fields', dest='meta_fields', action='store_true', help='Add meta-fields in output.')
             p.add_argument('--debug', dest='debug_mode', action='store_true', help='Debug mode on.')
         """

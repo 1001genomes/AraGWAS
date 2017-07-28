@@ -9,8 +9,7 @@
         </v-tabs-bar>
         <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4" ref="plots">
             <div id="statistics" class="mt-2" v-if="i === 'On genes'" >
-                <vue-chart v-if="plotStatistics.topGenes.rows.length > 0" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes'}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
-
+                <vue-chart v-if="plotStatistics.topGenes.rows.length > 0" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes'}" chart-type="BarChart" :chart-events="chartEvents" v-ref:barchart></vue-chart>
             </div>
             <div v-else>
                 <div v-if="plotStatistics.genic.rows.length>0">
@@ -43,7 +42,7 @@
         plotStatistics;
 
         currentViewIn: string = "On genes";
-        selected;
+        selected: Selection;
 
         width: number = 0;
         pieChartsRendered: boolean = false;
@@ -51,13 +50,14 @@
         debouncedOnResize = _.debounce(this.onResize, 300);
 
         chartEvents = {
-            select: function() {
-                var e = self.getSelection();
-                alert('YEEEEAAAAAH! Nice selection! Gene:');
+            select: () => {
+//                let ev = this.$refs.barchart.chart.getSelection;
+                let e = getSelection();
+                this.selected = e;
+//                console.log(e.toString());
+//                alert('YEEEEAAAAAH! Nice selection! Gene:'+e);
             },
         };
-
-        // Re-name histograms distributions
 
         // Get width-information for optimal re-rendering
 
