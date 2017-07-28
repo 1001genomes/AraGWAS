@@ -435,10 +435,11 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # Load studies from regular db
         import datetime
         filters = _get_filter_from_params(request.query_params)
-        file_name = 'temp/'+str(datetime.datetime.time())+'.csv' # give it a unique name
-        opts = dict(doc_type='associations', output_name=file_name)
-        opts['output_file'] = opts['doc_type'] + "_all.csv"
+        # TODO: add an if statement for whole dataset. If no filters, it should return the pre-computed csv file.
+        file_name = 'temp/'+str(datetime.datetime.now())+'.csv' # give it a unique name
+        opts = dict(doc_type='associations', output_file=file_name)
         fn = download_es2csv(opts, filters)
+        print(fn)
         # wait for file to be done
         chunk_size = 8192
         response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
