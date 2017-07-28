@@ -11,6 +11,9 @@ from gwasdb.paginator import CustomSearchPagination, CustomAssociationsPaginatio
 
 from rest_framework import status
 from django.db.models import Q
+from wsgiref.util import FileWrapper
+import mimetypes
+from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes, detail_route, list_route
@@ -192,6 +195,16 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
             if inverted:
                 queryset = queryset.reverse()
         return queryset
+
+    @detail_route(methods=['GET'], url_path='download')
+    def download(self, request, pk):
+        study_file = "%s/%s.hdf5" % (settings.HDF5_FILE_PATH, pk)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(study_file,"rb"), chunk_size),content_type="application/x-hdf5")
+        response['Content-Length'] = os.path.getsize(study_file)
+        response['Content-Disposition'] = "attachment; filename=%s.hdf5" % pk
+        return response
+
 
     @detail_route(methods=['GET'], url_path='associations')
     def top_assocations(self, request, pk):
