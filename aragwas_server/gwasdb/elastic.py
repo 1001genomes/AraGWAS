@@ -313,9 +313,9 @@ def get_gwas_overview_data(filters):
     filters = check_missing_filters(filters)
     # Params: chromosome (list or individual), region (optional, only considered if taking 1 chr), filters?
     region_bins = get_bins_for_chr_regions(filters)
-    max_score, data = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
+    max_score, data, data_bis = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
     # Aggregate over chromosomes
-    combined_data = combine_data(region_bins, max_score, data)
+    combined_data = combine_data(region_bins, max_score, data) # For testing: change to data_bis to get faster but more localized points
     # Get study list
     return {"type":"top", "scoreRange": [0, max(max_score.values())], "data":combined_data}
 
@@ -342,7 +342,8 @@ def get_top_hits_for_all_studies(filters):
     # Keep track of the maximum value for each study
     s.aggs['per_chrom'].metric('max', 'max', field='score')
     # Then aggregate for chromosomes
-    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size='167') #TODO: automatically check number of studies
+    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size='200') #TODO: automatically check number of studies
+    s.aggs['per_chrom']['per_study'].metric('top_N', 'top_hits', size='25', _source=['score','snp.position'])
     # Then for regions (to avoid too many overlapping hits)
     s.aggs['per_chrom']['per_study'].bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))
     # Then state what info we want from top_hits (position and score)
@@ -352,13 +353,20 @@ def get_top_hits_for_all_studies(filters):
     # Find max score for
     max_score = dict()
     data = dict()
+    data_bis = dict()
     for bucket in agg_results.per_chrom.buckets:
         max_score[bucket.key] = bucket.max.value
         data[bucket.key] = []
+        data_bis[bucket.key] = []
         for element in bucket.per_study.buckets:
             # Combine results and get top 25 per chrom per study:
             data[bucket.key].append(get_top_N_per_study(element, 25))
-    return max_score, data
+            study_data = []
+            for top in element.top_N.hits.hits:
+                study_data.append({'pos': top['_source']['snp']['position'],
+                                             'score': top['_source']['score']})
+            data_bis[bucket.key].append(study_data)
+    return max_score, data, data_bis
 
 def get_top_N_per_study(bucket, N=25):
     hits = []
