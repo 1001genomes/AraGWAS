@@ -1,5 +1,6 @@
 <template>
     <div>
+         <v-progress-linear v-bind:indeterminate="true" v-if="!loaded" ></v-progress-linear>
         <svg id="heatmap" width="100%" :height="size[1]" >
         </svg>
     </div>
@@ -31,6 +32,7 @@
         heatmap = gwasheatmap();
         debouncedOnResize = _.debounce(this.onResize, 300);
         data: Array<{}> = [];
+        loaded: boolean = true;
 
         mounted() {
             this.loadData();
@@ -68,6 +70,7 @@
             }
         }
         loadData() {
+            this.loaded=false;
             Promise.all([loadAssociationsHeatmap(), loadAssociationsHistogram(this.regionWidth)])
                 .then((results) => {
                     let data = results[0];
@@ -76,6 +79,7 @@
                         data['data'][i]['bins'] = histogramData['data'][i]['bins'];
                     }
                     this.data = data;
+                    this.loaded=true;
                     d3.select("#heatmap").data([this.data]).call(this.heatmap);
                 });
         }
