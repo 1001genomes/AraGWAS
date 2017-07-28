@@ -285,7 +285,13 @@ export async  function loadApiVersion(): Promise<ApiVersion> {
 }
 
 export async function loadAssociationsHeatmap(): Promise<Array<{}>> {
-    return fetch(`/api/associations/map/`)
+    return fetch(`/api/associations/map_heat/`)
+        .then(checkStatus)
+        .then<Array<{}>>(convertToModel);
+}
+
+export async function loadAssociationsHistogram(regionWidth: number): Promise<Array<{}>> {
+    return fetch(`/api/associations/map_histogram/?region_width=${regionWidth}`)
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }

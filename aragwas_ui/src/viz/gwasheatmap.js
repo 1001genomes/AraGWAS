@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import {schemeYlOrRd, interpolateYlOrRd} from "d3-scale-chromatic";
+import _ from "lodash";
 
 export default function gwasHeatmap() {
     var svg;
@@ -13,7 +14,7 @@ export default function gwasHeatmap() {
 
     var yScale;
     var padding = 50;
-    var margin = { "top": 10, "bottom": 50, "left": 50, "right": 50 };
+    var margin = { "top": 10, "bottom": 50, "left": 100, "right": 50 };
     var transitionDuration = 150;
     var colorScale = d3.scaleQuantile();
     var fillScale = d3.scaleLinear().clamp(true);
@@ -50,8 +51,9 @@ export default function gwasHeatmap() {
 
     function initData() {
         scoreRange = data.scoreRange;
-        var midPoint = scoreRange[1] - scoreRange[0] / 2;
-        colorScale.domain([scoreRange[0],scoreRange[1]]).range(schemeYlOrRd[9]);
+        //var midPoint = scoreRange[1] - scoreRange[0] / 2;
+        let values = _.flatten(_.flatten(data.data.map(d => d.data) )).map(d => d.score);
+        colorScale.domain(values).range(schemeYlOrRd[9]);
         fillScale.domain(scoreRange);
         if (data.type === "top") {
             yScale = d3.scalePoint().domain(data.studies.map(function(d) { return d.name; }));
@@ -81,7 +83,7 @@ export default function gwasHeatmap() {
                 .attr("cx", function(d) { return xScale.get(this)(d.pos); })
                 .attr("cy", function(d, i) { return yScale(i); })
                 .attr("r", getDataPointSize)
-                .style("fill-opacity", function(d) { return fillScale(d.score); })
+                //.style("fill-opacity", function(d) { return fillScale(d.score); })
                 .style("fill", function(d) { return colorScale(d.score); })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
@@ -95,7 +97,7 @@ export default function gwasHeatmap() {
                 .each(function(d) {
                     var range = [0, getChromosomeWidth() - padding];
                     var histogram = histogramScale.get(this);
-                    histogram.x.domain(d.bins).rangeRound(range);
+                    histogram.x.domain(d.bins.map(function(b, ix) { return ix; })).range(range);
                     histogram.y.domain(d3.extent(d.bins)).range([histogramHeight, 0]);
                     xScale.get(this).domain(d.region).range(range);
             });
@@ -138,7 +140,7 @@ export default function gwasHeatmap() {
             bars.enter()
                 .append("rect")
                 .style("fill", "steelblue")
-                .attr("x", function(d) { return histogramScale.get(this).x(d); })
+                .attr("x", function(d, i) { return histogramScale.get(this).x(i); })
                 .attr("width", function(d) { return histogramScale.get(this).x.bandwidth(); })
                 .attr("y", function(d) { return histogramScale.get(this).y(d); })
                 .attr("height", function(d) { return histogramHeight - histogramScale.get(this).y(d); });
@@ -154,7 +156,7 @@ export default function gwasHeatmap() {
                 .attr("class", "row")
                 .attr("data-index", function(d, ix) { return ix; })
                 .attr("transform", function(d, i) { return "translate(0," + yScale(data.studies[i].name) + ")"; })
-                .each(drawCell);
+                .each(drawCell);getPlotWidth
         }
 
         function drawAxes() {

@@ -12,7 +12,7 @@
 
     import gwasheatmap from "../viz/gwasheatmap.js";
 
-    import {loadAssociationsHeatmap} from "../api";
+    import {loadAssociationsHeatmap, loadAssociationsHistogram} from "../api";
 
     import _ from "lodash";
 
@@ -52,6 +52,10 @@
             return [this.width, maximumheight];
         }
 
+        get regionWidth() {
+            return Math.round(30427671 / ((this.width  - 150) / 5));
+        }
+
         @Watch("size")
         onWidthChanged(newSize: number[], oldSize: number[]) {
             this.heatmap.size(newSize);
@@ -63,10 +67,17 @@
                 this.height = this.$el.parentElement.offsetHeight;
             }
         }
-        async loadData() {
-            this.data = await loadAssociationsHeatmap();
-            // WORKAROUND create 4 additional copies
-            d3.select("#heatmap").data([this.data]).call(this.heatmap);
+        loadData() {
+            Promise.all([loadAssociationsHeatmap(), loadAssociationsHistogram(this.regionWidth)])
+                .then((results) => {
+                    let data = results[0];
+                    let histogramData = results[1];
+                    for (let i=0;i<histogramData['data'].length;i++) {
+                        data['data'][i]['bins'] = histogramData['data'][i]['bins'];
+                    }
+                    this.data = data;
+                    d3.select("#heatmap").data([this.data]).call(this.heatmap);
+                });
         }
 
     }
