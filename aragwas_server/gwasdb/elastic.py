@@ -307,15 +307,41 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     last_el[1] = "-".join(last_el[1].split('#'))
     return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
 
-def get_gwas_overview_data(filters):
-    """Collect the data used to plot the gwas heatmap"""
+def get_gwas_overview_bins_data(filters):
+    """Collect the data used to plot the gwas heatmap histograms"""
     # Check missing filters
     filters = check_missing_filters(filters)
     # Params: chromosome (list or individual), region (optional, only considered if taking 1 chr), filters?
     region_bins = get_bins_for_chr_regions(filters)
-    max_score, data, data_bis = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
+    combined_data= []
+    keys = list(region_bins)
+    chromosome_sizes = {'chr1': 30427671, 'chr2': 19698289, 'chr3': 23459830,'chr4': 18585056, 'chr5': 26975502}
+    keys.sort()
+    for key in keys:
+        if filters['region'][0] == '':
+            region_final = [0, chromosome_sizes[key]]
+        else:
+            region_final = [filters['region'][0],filters['region'][1]]
+        bin_sze = filters['region_width']
+        combined_data.append({'chr': key, 'region':region_final, 'bin_sze': bin_sze, 'bins': region_bins[key]})
+    # Get study list
+    return {"type":"top", "data":combined_data}
+
+def get_gwas_overview_heatmap_data(filters):
+    """Collect the data used to plot the gwas heatmap"""
+    # Check missing filters
+    filters = check_missing_filters(filters)
+    # Params: chromosome (list or individual), region (optional, only considered if taking 1 chr), filters?
+    max_score = dict()
+    data = dict()
+    for i in range(1,6):
+        chr = 'chr' + str(i)
+        filters['chrom'] = chr
+        max_score_temp, data_temp = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
+        max_score[chr]=max_score_temp[chr]
+        data[chr] = data_temp[chr]
     # Aggregate over chromosomes
-    combined_data = combine_data(region_bins, max_score, data) # For testing: change to data_bis to get faster but more localized points
+    combined_data = combine_data(max_score, data) # For testing: change to data_bis to get faster but more localized points
     # Get study list
     return {"type":"top", "scoreRange": [0, max(max_score.values())], "data":combined_data}
 
@@ -323,7 +349,7 @@ def check_missing_filters(filters):
     if 'chrom' not in filters.keys():
         filters['chrom'] = 'all'
     if 'region_width' not in filters.keys():
-        filters['region_width'] = 100000
+        filters['region_width'] = 50000
     if 'threshold' not in filters.keys():
         filters['threshold'] = ''
     if 'region' not in filters.keys():
@@ -357,16 +383,16 @@ def get_top_hits_for_all_studies(filters):
     for bucket in agg_results.per_chrom.buckets:
         max_score[bucket.key] = bucket.max.value
         data[bucket.key] = []
-        data_bis[bucket.key] = []
+        # data_bis[bucket.key] = []
         for element in bucket.per_study.buckets:
             # Combine results and get top 25 per chrom per study:
             data[bucket.key].append(get_top_N_per_study(element, 25))
-            study_data = []
-            for top in element.top_N.hits.hits:
-                study_data.append({'pos': top['_source']['snp']['position'],
-                                             'score': top['_source']['score']})
-            data_bis[bucket.key].append(study_data)
-    return max_score, data, data_bis
+            # study_data = []
+            # for top in element.top_N.hits.hits:
+            #     study_data.append({'pos': top['_source']['snp']['position'],
+            #                                  'score': top['_source']['score']})
+            # data_bis[bucket.key].append(study_data)
+    return max_score, data #, data_bis
 
 def get_top_N_per_study(bucket, N=25):
     hits = []
@@ -374,7 +400,6 @@ def get_top_N_per_study(bucket, N=25):
         if element.top.hits.hits:
             hits.append({'pos': element.top.hits.hits[0]['_source']['snp']['position'],'score':element.top.hits.hits[0]['_source']['score']})
     hits.sort(key=lambda tup: -tup['score'])
-    print(hits)
     return hits[:N]
 
 
@@ -420,11 +445,11 @@ def convert_to_bin_format(buckets):
         bins.append(bin['doc_count'])
     return bins
 
-def combine_data(bins, max_scores, data, region=('',''), region_width=10000):
-    if len(bins) != len(max_scores) or len(bins) != len(data) or len(data) != len(max_scores):
+def combine_data(max_scores, data, region=('',''), region_width=10000):
+    if len(data) != len(max_scores):
         raise ValueError('Problem with the size of the dictionaries')
     final_data = []
-    keys = list(bins)
+    keys = list(data)
     chromosome_sizes = {'chr1': 30427671, 'chr2': 19698289, 'chr3': 23459830,'chr4': 18585056, 'chr5': 26975502}
     keys.sort()
     for key in keys:
@@ -434,7 +459,7 @@ def combine_data(bins, max_scores, data, region=('',''), region_width=10000):
         else:
             region_final = [region[0],region[1]]
         bin_sze = region_width
-        final_data.append({'scoreRange': scoreRange, 'chr': key, 'region':region_final, 'bin_sze': bin_sze, 'bins': bins[key],
+        final_data.append({'scoreRange': scoreRange, 'chr': key, 'region':region_final, 'bin_sze': bin_sze,
                            'data':data[key]})
     return final_data
 

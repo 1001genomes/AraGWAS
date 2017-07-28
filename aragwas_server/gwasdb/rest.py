@@ -374,7 +374,24 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
 
-    @list_route(methods=['GET'], url_path='map')
+    @list_route(methods=['GET'], url_path='map_histogram')
+    def data_for_histogram(self, request):
+        """ Get heatmap histogram data. Parameters need to be included in the filters dict
+            Usage: chrom = indicate the chromosome(s) of interest ('all' or any chromosome),
+                region_width = indicate the size of the bins for which to count hits should be passed under the form,
+                threshold = indicate the type of threshold to look at (FDR, Bonferroni, permutation or none, default='FDR')
+                region = indicate a specific window in which to aggregate for, default = ('','') looks at entire chromosome
+                maf = indicate a minimum maf (default=0)
+                mac = indicate a minimum mac (default=0)
+        """
+        # Get bin size
+        filters = dict()
+        filters['region_width'] = int(request.query_params.getlist('region_width')[0])
+        # get the rest of the data
+        results = elastic.get_gwas_overview_bins_data(filters)
+        return Response(results)
+
+    @list_route(methods=['GET'], url_path='map_heat')
     def data_for_heatmap(self, request):
         """ Get heatmap data. Parameters need to be included in the filters dict
             Usage: chrom = indicate the chromosome(s) of interest ('all' or any chromosome),
@@ -388,10 +405,11 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         studies = Study.objects.all()
         studies_data = []
         for study in studies:
-            studies_data.append({'id': study.id, 'name':study.phenotype.name}) # For now only add phenotype name for shorted strings
+            studies_data.append(
+                {'id': study.id, 'name': study.phenotype.name})  # For now only add phenotype name for shorted strings
         # get the rest of the data
-        filters = dict() # TODO: add parameters fetching from url, for now default values should be fine
-        results = elastic.get_gwas_overview_data(filters)
+        filters = dict()  # TODO: add parameters fetching from url, for now default values should be fine
+        results = elastic.get_gwas_overview_heatmap_data(filters)
         results['studies'] = studies_data
         return Response(results)
 
