@@ -255,3 +255,7 @@ def prepare_csv(opts, filters):
     es.search_query()
     es.write_to_csv()
     es.clean_scroll_ids()
+
+def generate_all_associations_file():
+    opts=dict(output_file='temp/all_associations.csv', doc_type='associations')
+    prepare_csv(opts, dict())

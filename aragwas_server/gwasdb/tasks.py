@@ -23,6 +23,10 @@ def clean_temp_files():
         except Exception as e:
             print(e)
 
+@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+def generate_associations_csv():
+    es2csv.generate_all_associations_file()
+
 @shared_task
 def index_study(study_id):
     study = Study.objects.get(pk=study_id)
