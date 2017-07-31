@@ -462,6 +462,9 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         print(filters)
         print(_is_filter_whole_dataset(filters))
         gene_id = request.query_params.getlist('gene_id') # We need to do this because we cannot solely rely on the annotations of the SNPs for gene-name
+        import os
+        if not os.path.isdir('temp'):
+            os.mkdir('temp')
         if gene_id != []:
             zoom = int(request.query_params.getlist('zoom')[0])
             print(zoom)
