@@ -42,7 +42,7 @@ export default function gwasHeatmap() {
     }
 
     function getDataPointSize(d) {
-        return 2;
+        return 2.5;
     }
 
     function ticks() {

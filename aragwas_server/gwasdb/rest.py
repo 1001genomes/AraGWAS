@@ -416,6 +416,11 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
                 mac = indicate a minimum mac (default=0)
         """
         # Load studies from regular db
+        recompute = request.query_params.getlist('recompute')
+        if recompute == []:
+            import requests
+            url = 'https://gist.githubusercontent.com/mtog/95d29b45e0f58e5c11dc61818f4c57fb/raw/4e026e509103e45b3b0bed1ff163ad8ee52105bd/pre_loaded_heatmap_data.json'
+            return Response(requests.get(url).json())
         studies = Study.objects.all()
         studies_data = []
         for study in studies:

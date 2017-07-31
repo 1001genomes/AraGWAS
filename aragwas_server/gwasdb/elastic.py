@@ -341,7 +341,7 @@ def get_gwas_overview_heatmap_data(filters):
         max_score[chr]=max_score_temp[chr]
         data[chr] = data_temp[chr]
     # Aggregate over chromosomes
-    combined_data = combine_data(max_score, data) # For testing: change to data_bis to get faster but more localized points
+    combined_data = combine_data(max_score, data) # For testing: change to data_bis to get faster but more localized points (looks bad)
     # Get study list
     return {"type":"top", "scoreRange": [0, max(max_score.values())], "data":combined_data}
 
@@ -349,7 +349,7 @@ def check_missing_filters(filters):
     if 'chrom' not in filters.keys():
         filters['chrom'] = 'all'
     if 'region_width' not in filters.keys():
-        filters['region_width'] = 50000
+        filters['region_width'] = 200000
     if 'threshold' not in filters.keys():
         filters['threshold'] = ''
     if 'region' not in filters.keys():
@@ -386,7 +386,7 @@ def get_top_hits_for_all_studies(filters):
         # data_bis[bucket.key] = []
         for element in bucket.per_study.buckets:
             # Combine results and get top 25 per chrom per study:
-            data[bucket.key].append(get_top_N_per_study(element, 25))
+            data[bucket.key].append(get_top_N_per_study(element, 40))
             # study_data = []
             # for top in element.top_N.hits.hits:
             #     study_data.append({'pos': top['_source']['snp']['position'],
