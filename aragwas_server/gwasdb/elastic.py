@@ -130,6 +130,7 @@ def load_gene_snps(id):
 def get_top_genes():
     """Retrieve top genes"""
     s = Search(using=es, doc_type='associations')
+    s = s.filter('term', overFDR='T')
     agg = A("terms", field="snp.gene_name")
     s.aggs.bucket('gene_count', agg)
     agg_results = s.execute().aggregations.gene_count.buckets
