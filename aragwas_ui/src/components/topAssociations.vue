@@ -54,12 +54,12 @@
             steps: [
                 {
                     element: ".association-table-container",
-                    intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
+                    intro: "This table shows all top associations (sorted by score, i.e. -log10(p-value)) that are stored in the database. Significant associations are marked in blue.",
                     position: "left"
                 },
                 {
                     element: ".associations-control-container",
-                    intro: "You can use these controls to filter the top associations list",
+                    intro: "You can use these filters to filter the top associations list",
                     position: "right"
                 }
             ],

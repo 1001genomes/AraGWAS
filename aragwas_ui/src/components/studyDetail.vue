@@ -239,7 +239,7 @@
       }
       adjustHistogramsRows(rows): Array<Array<string|number>> {
           rows.forEach(function(part, index, theArray){
-              let str = theArray[index][0].toString()+'-'+(theArray[index][0]+0.1).toString();
+              let str = theArray[index][0].toString()+'-'+(Math.round((theArray[index][0]+0.1)*10)/10).toString();
               theArray[index][0] = str;
           });
           return rows

@@ -98,7 +98,7 @@
 
         highlightedGene: Gene | null = null;
         readonly colorLegendTypes = [{text: "Same color", name: "", isNumber: true}, {text: "Impact", name: "snp.annotations.0.impact", isNumber: false}, {text: "MAF", name: "maf", isNumber:true}, {text: "MAC", name: "mac", isNumber:true}, {text: "Score", name: "score", isNumber:true}];
-        activeColorLegend = this.colorLegendTypes[1];
+        activeColorLegend = this.colorLegendTypes[4];
 
         readonly margin = {
             left: 60,

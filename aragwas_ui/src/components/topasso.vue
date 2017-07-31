@@ -176,7 +176,7 @@
                 <br>
                 <br>
                 <br>
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switch"></v-switch></p>
             </v-flex>
             </v-layout>
         </v-flex>
@@ -186,7 +186,7 @@
                     <br>
                     <br>
                     <br>
-                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Controls" class="mb-0 switch"></v-switch></p>
+                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switch"></v-switch></p>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -236,7 +236,7 @@
         loading: boolean = false;
         headers = [{text: "SNP", value: "snp.chr", name: "name", align: "left", tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
-            {text: "maf",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
+            {text: "MAF",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
             {text: "annotation",value: "annotation", name: "annotation", sortable: false, tooltip: "Annotation related to associated SNP"},{text: "type",value: "snp.type", name: "type", sortable: false, tooltip: "Type of SNP"}];
         associations: Association[] =[];
         currentPage = 1;
@@ -338,6 +338,7 @@
         }
         _displayAggregatedData(data): void {
             this.percentage = data;
+
         }
         _displayData(data): void {
             this.associations = data.results;
@@ -356,10 +357,6 @@
         }
         showAssociation(item): void {
             this.$emit('association', item)
-        }
-        percentageString(el: number): string {
-            const outstr = " (" + Math.round(1000*el)/10 + "% of associations)";
-            return outstr
         }
 
         roundPerc(number): number {

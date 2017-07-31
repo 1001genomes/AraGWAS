@@ -126,7 +126,7 @@ export default function gwasHeatmap() {
             legend.append("text")
                 .text(function(d) {
                     var extend  = colorScale.invertExtent(d);
-                    return Math.round(extend[0]);
+                    return Math.round(10*extend[0])/10;
                  })
                 .attr("x", function(d, i) { return legendElementWidth * i; })
                 .attr("y", (cellSize * 2))
