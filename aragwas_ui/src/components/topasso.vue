@@ -39,6 +39,13 @@
                 <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
             </div>
+            <div class="text-xs-center">
+                <h6 class="mt-4">Download</h6>
+                <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
+                <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations'}">
+                    <v-icon dark>file_download</v-icon>
+                </v-btn>
+            </div>
         </v-flex>
         <v-flex xs9 wrap fill-height class="association-table-container" @mouseleave="showAssociation(null)" v-show="view.controlPosition !== 'right' || showSwitch">
             <v-data-table
@@ -171,6 +178,13 @@
                         <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                         <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
                     </div>
+                    <div class="text-xs-center">
+                        <h6 class="mt-4">Download</h6>
+                        <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
+                        <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations (since the file needs to be generated, this may take a while)'}">
+                            <v-icon dark>file_download</v-icon>
+                        </v-btn>
+                    </div>
             </v-flex>
             <v-flex xs2 class="text-xs-right">
                 <br>
@@ -199,7 +213,9 @@
     import {Component, Watch, Prop} from "vue-property-decorator";
     import Association from "../models/association"
 
-    import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene, loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype, loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics} from "../api";
+    import {loadTopAssociations, loadAssociationsOfPhenotype, loadAssociationsOfStudy, loadAssociationsOfGene,
+        loadSnpStatistics, loadAggregatedStatisticsOfGene, loadAggregatedStatisticsOfPhenotype,
+        loadAggregatedStatisticsOfStudy, loadTopAggregatedStatistics, getTopAssociationsParametersQuery} from "../api";
 
     import _ from "lodash";
 
@@ -379,6 +395,19 @@
         }
         _getAssociationId(association: Association): string {
             return association.snp.chr + "_" + association.snp.position + "_" + association.study.id;
+        }
+        _getDownloadHref(): string {
+            let url = "/api/associations/download/?"+getTopAssociationsParametersQuery(this.filters);
+            if (this.view.name == "top-associations") {
+            } else if (this.view.name == "phenotype") {
+                url = url + "&phenotype_id="+this.view.phenotypeId;
+            } else if (this.view.name == "study") {
+                url = url + "&study_id="+this.view.studyId;
+            } else if (this.view.name == "gene") {
+                url = url + "&gene_id="+this.view.geneId+"&zoom="+this.view.zoom;
+            }
+            console.log(url);
+            return url
         }
 
     }

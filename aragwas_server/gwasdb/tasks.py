@@ -3,6 +3,8 @@ import os
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 from celery import shared_task
+from celery.task import periodic_task
+from datetime import timedelta
 import h5py, numpy
 from gwasdb.models import Study
 from gwasdb import elastic
@@ -10,6 +12,16 @@ from gwasdb import hdf5
 from aragwas import settings
 from gwasdb import es2csv
 
+@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+def clean_temp_files():
+    folder = '../temp'
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
 
 @shared_task
 def index_study(study_id):

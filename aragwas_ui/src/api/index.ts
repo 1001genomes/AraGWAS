@@ -19,7 +19,7 @@ function convertToModel<T>(response): T {
     return response.json();
 }
 
-function getTopAssociationsParametersQuery(filter): string {
+export function getTopAssociationsParametersQuery(filter): string {
     let queryParam: string = "";
     for (const key of Object.keys(filter)) {
         let filterParam = "";

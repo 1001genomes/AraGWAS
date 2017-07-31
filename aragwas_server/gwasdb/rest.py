@@ -70,6 +70,25 @@ def _get_percentages_from_buckets(buckets):
             i['doc_count']) / tot_sum
     return out_dict
 
+def _is_filter_whole_dataset(filters):
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        return False
+    if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
+        return False
+    if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
+        return False
+    if 'type' in filters and len(filters['type'])==1:
+        return False
+    if 'study_id' in filters and len(filters['study_id']) > 0:
+        return False
+    if 'phenotype_id' in filters and len(filters['phenotype_id']) > 0:
+        return False
+    if 'start' in filters:
+        return False
+    if 'end' in filters:
+        return False
+    return True
+
 
 class EsQuerySet(object):
 
@@ -440,20 +459,34 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # Load studies from regular db
         import datetime
         filters = _get_filter_from_params(request.query_params)
-        # TODO: add an if statement for whole dataset. If no filters, it should return the pre-computed csv file.
-        file_name = 'temp/'+str(datetime.datetime.now())+'.csv' # give it a unique name
-        opts = dict(doc_type='associations', output_file=file_name)
-        fn = download_es2csv(opts, filters)
-        print(fn)
-        # wait for file to be done
-        chunk_size = 8192
-        response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
-                        content_type="text/csv")
-        response['Content-Length'] = os.path.getsize(file_name)
+        print(filters)
+        print(_is_filter_whole_dataset(filters))
+        gene_id = request.query_params.getlist('gene_id') # We need to do this because we cannot solely rely on the annotations of the SNPs for gene-name
+        if gene_id != []:
+            zoom = int(request.query_params.getlist('zoom')[0])
+            print(zoom)
+            gene = elastic.load_gene_by_id(gene_id[0])
+            filters['chr'] = [gene['chr']]
+            filters['start'] = gene['positions']['gte'] - zoom
+            filters['end'] = gene['positions']['lte'] + zoom
+        if _is_filter_whole_dataset(filters):
+            file_name = "%s/all_associations.csv" % (settings.HDF5_FILE_PATH)
+            chunk_size = 8192
+            response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
+                                             content_type="text/csv")
+            response['Content-Length'] = os.path.getsize(file_name)
+        else:
+            file_name = 'temp/'+str(datetime.datetime.now())+'.csv' # give it a unique name
+            opts = dict(doc_type='associations', output_file=file_name)
+            fn = download_es2csv(opts, filters)
+            print(fn)
+            # wait for file to be done
+            chunk_size = 8192
+            response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
+                            content_type="text/csv")
+            response['Content-Length'] = os.path.getsize(file_name)
         response['Content-Disposition'] = "attachment; filename=download.csv"
-
         return response
-
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
