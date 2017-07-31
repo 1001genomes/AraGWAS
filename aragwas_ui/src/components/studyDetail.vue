@@ -5,7 +5,7 @@
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
             <v-flex xs6 class="text-xs-right">
-                <v-btn floating primary class="mr-3 mt-2" tag="a" :href="'/aragwas_data/' + id.toString() + '.hdf5'" download>
+                <v-btn floating primary class="mr-3 mt-2" tag="a" :href="'/api/studies/'+id+'/download'" download v-tooltip:left="{html: 'Download whole HDF5 file'}">
                     <v-icon dark>file_download</v-icon>
                 </v-btn>
             </v-flex>

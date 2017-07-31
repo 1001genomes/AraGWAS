@@ -34,14 +34,6 @@
                     <v-layout class="text-xs-center">
                         <v-flex xs4>
                             <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                                <h5 class="text-xs-center">Public GWA Studies</h5>
-                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
-                            </div>
-                        </v-flex>
-                        <v-flex xs4>
-                            <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
                                 <h5 class="text-xs-center">Top Associations</h5>
                                 <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
@@ -56,9 +48,25 @@
                                 <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-genes-button" light  to="/top-genes"><v-icon left dark>whatshot</v-icon>Top Genes</v-btn>
                             </div>
                         </v-flex>
+                        <v-flex xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
+                                <h5 class="text-xs-center">Genome Heatmap</h5>
+                                <p class="light justify">Check out the heatmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/map"><v-icon left dark>grain</v-icon> Genome Heatmap</v-btn>
+                            </div>
+                        </v-flex>
                     </v-layout>
                     <v-layout class="text-xs-center mt-4">
-                        <v-flex xs4 offset-xs4>
+                        <v-flex xs4 offset-xs2>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
+                                <h5 class="text-xs-center">Public GWA Studies</h5>
+                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
+                            </div>
+                        </v-flex>
+                        <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
                                 <h5 class="text-xs-center">Take a tour</h5>
@@ -108,7 +116,7 @@
                                 </v-flex>
                                 <v-flex xs6>
                                     <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.4, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.2, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
