@@ -9,15 +9,15 @@
         </v-tabs-bar>
         <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4" ref="plots">
             <div id="statistics" class="mt-2" v-if="i === 'On genes'" >
-                <vue-chart v-if="plotStatistics.topGenes.rows.length > 0" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes'}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
+                <vue-chart v-if="plotStatistics.topGenes.rows.length > 0" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes', legend: {position: 'none'}}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
             </div>
             <div v-else>
                 <div v-if="plotStatistics.genic.rows.length>0">
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.genic.columns" :rows="plotStatistics.genic.rows" :options="{title: 'SNP type'}" chart-type="PieChart" ></vue-chart>
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.impact.columns" :rows="plotStatistics.impact.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.annotation.columns" :rows="plotStatistics.annotation.rows" :options="{title: 'SNP annotation'}" chart-type="PieChart"></vue-chart>
-                    <vue-chart :columns="plotStatistics.pvalueDistribution.columns" :rows="plotStatistics.pvalueDistribution.rows" :options="{title: 'Distribution of scores'}" chart-type="ColumnChart"></vue-chart>
-                    <vue-chart :columns="plotStatistics.mafDistribution.columns" :rows="plotStatistics.mafDistribution.rows" :options="{title: 'Distribution of MAF'}" chart-type="ColumnChart"></vue-chart>
+                    <vue-chart :columns="plotStatistics.pvalueDistribution.columns" :rows="plotStatistics.pvalueDistribution.rows" :options="{title: 'Distribution of scores',legend: {position: 'none'}}" chart-type="ColumnChart"></vue-chart>
+                    <vue-chart :columns="plotStatistics.mafDistribution.columns" :rows="plotStatistics.mafDistribution.rows" :options="{title: 'Distribution of MAF',legend: {position: 'none'}}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :show="false" :options="{width: width}" :columns="[]" :rows="[]"></vue-chart>
                 </div>
                 <h6 v-else style="text-align: center" >No significant hits.</h6>
@@ -42,7 +42,6 @@
         plotStatistics;
 
         currentViewIn: string = "On genes";
-        selected: Selection;
 
         width: number = 0;
         pieChartsRendered: boolean = false;
@@ -51,12 +50,8 @@
 
         chartEvents = {
             select: () => {
-//                let ev = this.$refs.barchart.chart.getSelection;
-                let e = getSelection();
-                this.selected = e;
-//                console.log(e.toString());
-//                alert('YEEEEAAAAAH! Nice selection! Gene:'+e);
-            },
+//                console.log(getSelection()[0]);
+                },
         };
 
         // Get width-information for optimal re-rendering
