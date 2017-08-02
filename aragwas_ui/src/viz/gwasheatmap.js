@@ -14,7 +14,7 @@ export default function gwasHeatmap() {
 
     var yScale;
     var padding = 50;
-    var margin = { "top": 10, "bottom": 50, "left": 100, "right": 50 };
+    var margin = { "top": 10, "bottom": 50, "left": 180, "right": 80 };
     var transitionDuration = 150;
     var colorScale = d3.scaleQuantile();
     var fillScale = d3.scaleLinear().clamp(true);

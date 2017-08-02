@@ -438,8 +438,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         recompute = request.query_params.getlist('recompute')
         if recompute == []:
             import requests
+            file_name = "%s/heatmap_data.json" % (settings.HDF5_FILE_PATH)
             url = 'https://gist.githubusercontent.com/mtog/95d29b45e0f58e5c11dc61818f4c57fb/raw/4e026e509103e45b3b0bed1ff163ad8ee52105bd/pre_loaded_heatmap_data.json'
             return Response(requests.get(url).json())
+            # with open(file_name) as data_file: # There seems to be a displaying problem when loading from file: the histograms are loaded and displayed twice
+            #     data = json.load(data_file)
+            # return Response(data)
         studies = Study.objects.all()
         studies_data = []
         for study in studies:

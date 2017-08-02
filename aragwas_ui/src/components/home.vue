@@ -8,7 +8,7 @@
                         <h1 class="white--text text-xs-center" >AraGWAS Catalog</h1>
                     </div>
                     <div class="banner-subtext">
-                        <h5 class="white--text text-xs-center">AraGWAS Catalog is a public database catalog of <em>Arabidopsis thaliana</em> associations from published GWASs.</h5>
+                        <h5 class="white--text text-xs-center">The AraGWAS Catalog is a public and manually curated database for standardised GWAS results for <em>Arabidopsis thaliana</em>.</h5>
                         <br>
                         <h6 class="white--text light text-xs-center">This Database allows to search and filter for public GWASs, phenotypes and genes and to obtain additional meta-information. All GWASs were recomputed following a uniformed methodology to allow for comparable results.</h6>
                     </div>
@@ -51,9 +51,9 @@
                         <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
-                                <h5 class="text-xs-center">Genome Heatmap</h5>
-                                <p class="light justify">Check out the heatmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/map"><v-icon left dark>grain</v-icon> Genome Heatmap</v-btn>
+                                <h5 class="text-xs-center">Genome Hitmap</h5>
+                                <p class="light justify">Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/map"><v-icon left dark>grain</v-icon> Genome Hitmap</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>

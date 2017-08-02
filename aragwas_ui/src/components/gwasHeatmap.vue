@@ -2,7 +2,7 @@
     <div>
         <h3 v-if="!loaded" class="mt-4 mb-4 text-xs-center">Loading can take some time (~20s). Thank you for your patience.</h3>
         <v-progress-linear v-bind:indeterminate="true" v-if="!loaded" ></v-progress-linear>
-        <svg id="heatmap" width="100%" :height="size[1]" >
+        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2">
         </svg>
     </div>
 </template>
