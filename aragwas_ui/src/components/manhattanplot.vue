@@ -1,6 +1,6 @@
 <template>
     <div>
-        <svg :id="'manhattanplot'+options.chr.toString()" :height="plotHeight" width="100%" class="manhattan" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation">
+        <svg :id="'manhattanplot'+options.chr.toString()" :height="plotHeight" width="100%" class="manhattan" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation">
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
             <v-card v-if="highlightedAssociation != null" class="mt-1 mb-1">
@@ -22,12 +22,14 @@
     import {Component, Prop, Watch} from "vue-property-decorator";
 
     import Association from "../models/association"
-    import {ManhattanPlotOptions} from "../models/study";
+    import Gene, {ManhattanPlotOptions} from "../models/study";
 
     import geneplot from "../viz/geneplot.js";
     import manhattanplotfullchromosome from "../viz/manhattanplotfullchromosome.js";
+    import {loadGenesByRegion} from "../api";
 
     import _ from "lodash";
+    import Router from "../router";
 
     @Component({
         name: "manhattan-plot",
@@ -54,6 +56,7 @@
         readonly padding = 40;
 
         highlightedAssociation: Object | null = null;
+        genes: Gene[] = [];
 
         scales = {x: d3.scaleLinear(), y: d3.scaleLinear()};
         axis = {x: d3.axisBottom(this.scales.x), y: d3.axisLeft(this.scales.y)};
@@ -82,6 +85,12 @@
 
         onUnhighlightAssociation(event): void {
             this.highlightedAssociation = null;
+        }
+
+        onClickAssociation(event): void {
+            let position = event.detail.associations[0][0];
+            let chromosome = this.options.chr;
+            loadGenesByRegion(chromosome.toString(), position-3000, position+3000, false).then( (genes) => this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }}));
         }
 
         @Watch("width")

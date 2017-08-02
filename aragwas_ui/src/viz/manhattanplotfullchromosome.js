@@ -41,6 +41,10 @@ export default function() {
         svg.dispatch("highlightassociation", { detail: {associations: [d], event: d3.event} });
     }
 
+    function onSnpClicked(d) {
+        svg.dispatch("clicksnp", { detail: {associations: [d], event: d3.event} });
+    }
+
     function onMouseOutSnp(d) {
         d.highlighted = false;
         d3.select(this).attr("r",2.5);
@@ -165,6 +169,7 @@ export default function() {
                         .attr("r", 2.5)
                         .style("fill", getSnpColor)
                         .on("mouseover", onMouseOverSnp)
+                        .on("click", onSnpClicked)
                         .on("mouseout", onMouseOutSnp)
                         .style("fill-opacity", 1)
                         // .transition(d3.transition().duration(transitionDuration))
