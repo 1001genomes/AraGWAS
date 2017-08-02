@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-import os
+import os, json
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 from celery import shared_task
@@ -22,6 +22,20 @@ def clean_temp_files():
                 os.unlink(file_path)
         except Exception as e:
             print(e)
+
+@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+def generate_hitmap_json():
+    studies = Study.objects.all()
+    studies_data = []
+    for study in studies:
+        studies_data.append(
+            {'id': study.id, 'name': study.phenotype.name})  # For now only add phenotype name for shorted strings
+    filters = dict()
+    results = elastic.get_gwas_overview_heatmap_data(filters)
+    results['studies'] = studies_data
+    file_name = "%s/heatmap_data.json" % (settings.HDF5_FILE_PATH)
+    with open(file_name, 'w') as out_file:
+        json.dump(results, out_file)
 
 @periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
 def generate_associations_csv():
