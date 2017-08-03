@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items class="black--text">
           <v-btn flat class="links" @click="starttour"><span class="black--text">Take a tour?</span></v-btn>
-          <v-btn flat class="links" id="faq-link" :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-btn>
+          <v-btn flat class="links faq" id="faq-link" :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-btn>
           <v-btn flat class="links" id="about-link" :to="{path: '/about'}"><span class="black--text">About</span></v-btn>
           <v-btn flat class="links" id="faq-link" href="/docs" target="_blank">REST API documentation</v-btn>
       </v-toolbar-items>

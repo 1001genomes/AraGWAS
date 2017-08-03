@@ -76,6 +76,8 @@ def _is_filter_whole_dataset(filters):
         return False
     if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
         return False
+    if 'mac' in filters and len(filters['mac']) > 0 and len(filters['mac']) < 2:
+        return False
     if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
         return False
     if 'type' in filters and len(filters['type'])==1:

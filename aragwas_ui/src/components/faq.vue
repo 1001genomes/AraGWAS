@@ -78,6 +78,7 @@
             //{question: "Why do we provide two significance thresholds (Bonferroni and permutation based)?", answer: ""}, // TODO: complete
             {question: "How is the association score defined?", html: "The score of an associated hit is defined as: -log<sub>10</sub>(p-value)."},
             {question: "What does top associated mean?", answer: "The top associations of a study are all the associations that have a p-value below the fixed threshold of 1e-4 (i.e. score above 4). These values are stored in the fast elasticsearch database and displayed in the top associations lists."}, // TODO: add  "All associations are present in the HDF5 files." once download can be performed
+            //TODO: change to only highlight permutation based hits
             {question: "Why are some associations scores displayed in blue?", answer: "The associations with a blue score are significant associations for which the score is above the least strict threshold for that study (Bonferroni or FDR)."},
         ];
 
@@ -100,6 +101,9 @@
             {question: "How to obtain detailed information about the GWAS study?", answer: "When clicking on the study name you can get more detailed information about the GWAS study. The detailed study view contains detailed information about the number of significantly associated hits using a conservative Bonferroni correction as well as a permutation based significance threshold.\
                     Further, you can get an overview about the distribution of genes or different SNP types for all associated hits. The Manhattan Plot tab shows Manhattan plots for the selected study."}, // add interactive manhattan plots once hover functionality is done
             {question: "How to obtain a gene centric view?", answer: "If you click on a gene name, you will access the gene-centric view. There, all top associations lying in that genomic region are plotted and listed independently of their study so as to visualize areas associated to multiple phenotypes. If you have a favourite gene, this view will tell you which phenotypes are associated with it."},
+            {question: "How to download my results?", answer: "After filtering, you can get the associations you are interested in by clicking on the download button at the bottom of the filtering panel. This will generate a custom csv file with information about the associations you are interested in. You can also obtain the entire dataset of a specific study in the HDF5 format by clicking on the download button at the top right corener of the study view."},
+            {question: "How can I get an overview of the genes with the largest number of associations?", html: "You can see a list of genes with the highest number of associations under the <a href=http://aragwas.1001genomes.org/#/top-genes/>Top Genes</a> view."},
+            {question: "What is the GWAS Hitmap?", html: "The <a href=http://aragwas.1001genomes.org/#/map/>GWAS Hitmap</a> gives a quick overview of the highest-scoring SNPs across the <i>Arabidopsis thaliana</i> genome for all studies in the AraGWAS Catalog."},
         ];
         faqs_rest = [
             {question: "What is a REST API?", html: "REST is an abbreviation for representational state transfer. It can be used to retrieve data from AraPheno using certain URLs. You also can write custom scripts (e.g. in Python, Pearl, Java etc.) to request and download the information you need.<br>\

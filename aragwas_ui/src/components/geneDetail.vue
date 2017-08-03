@@ -240,6 +240,11 @@
                     position: "right"
                 },
                 {
+                    element: ".faq",
+                    intro: "You will find more information and tutorials under the FAQ tab.",
+                    position: "bottom"
+                },
+                {
                     element: ".aragwas-logo",
                     intro: "This is the end of the tour. Enjoy AraGWAS Catalog!",
                     position: "bottom"

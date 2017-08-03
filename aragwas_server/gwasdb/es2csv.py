@@ -211,7 +211,7 @@ def add_default_options(opts):
         # Default included fields
         if opts['doc_type'] == 'associations':
             opts['fields'] = ['snp.chr','snp.position', 'score', 'maf', 'mac', 'study.name', 'study.id',
-                              'study.phenotype.name', 'study.genotype.name', 'study.thresholds.value', 'overFDR',
+                              'study.phenotype.name', 'study.genotype.name', 'study.thresholds', 'overFDR',
                               'snp.ref', 'snp.alt', 'snp.coding', 'snp.gene_name']
         else:
             opts['fields'] = ['_all']
