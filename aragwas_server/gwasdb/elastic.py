@@ -256,8 +256,8 @@ def get_aggregated_filtered_statistics(filters):
 
 def index_associations(study, associations, thresholds):
     """indexes associations"""
-    lowest_threshold = min(filter(None, [thresholds['bonferroni_threshold05'], thresholds['bonferroni_threshold01'], thresholds['bh_threshold']]))
-    thresholds = [{'name': key, 'value': val} for key, val in thresholds.items() ]
+    with_permutations = 'permutation_threshold' in thresholds.keys() and thresholds['permutation_threshold']
+    thresholds_study = [{'name': key, 'value': val} for key, val in thresholds.items() ]
     # first filter by chr to fetch annotations
     associations.sort(order = 'chr')
     annotations = {}
@@ -268,8 +268,11 @@ def index_associations(study, associations, thresholds):
     for assoc in associations:
         _id = '%s_%s_%s' % (study.pk, assoc['chr'], assoc['position'])
         study_data = serializers.EsStudySerializer(study).data
-        study_data['thresholds'] = thresholds
-        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'created': datetime.datetime.now(),'study':study_data, 'overFDR': bool(assoc['score'] > lowest_threshold)}
+        study_data['thresholds'] = thresholds_study
+        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'created': datetime.datetime.now(),'study':study_data, 'overFDR': bool(assoc['score'] > thresholds['bh_threshold'])}
+        _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_threshold05'])
+        if with_permutations:
+            _source['overPermutation'] = bool(assoc['score'] > thresholds['permutation_threshold'])
         snp = annotations[assoc['chr']].get(str(assoc['position']), None)
         if snp:
             _source['snp']  = snp

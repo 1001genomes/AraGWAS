@@ -12,17 +12,34 @@ class Command(BaseCommand):
                             type=int,
                             default=None,
                             help='Specify a primary key to index a specific study')
+        parser.add_argument('--permutations',
+                            dest='perm_file',
+                            type=str,
+                            default=None,
+                            help='Specify the file name containing the permutation thresholds')
 
     def handle(self, *args, **options):
         study_id = options.get('study_id', None)
+        perm_file = options.get('perm_file', None)
         try:
             if study_id:
                 studies = [Study.objects.get(pk=study_id)]
             else:
                 studies = Study.objects.all()
+            if perm_file:
+                with open(perm_file) as p_file:
+                    permutation_thresholds = dict()
+                    for line in p_file:
+                        cols = line[:-1].split()
+                        permutation_thresholds[int(cols[0])]=float(cols[1])
+            else:
+                permutation_thresholds = None
             for study in studies:
                 try:
-                    indexed_assoc, failed_assoc = index_study(study.pk)
+                    if permutation_thresholds:
+                        indexed_assoc, failed_assoc = index_study(study.pk, permutation_thresholds[study.pk])
+                    else:
+                        indexed_assoc, failed_assoc = index_study(study.pk)
                     if failed_assoc > 0:
                         self.stdout.write(self.style.ERROR('%s/%s SNPs failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
                     elif indexed_assoc == 0:

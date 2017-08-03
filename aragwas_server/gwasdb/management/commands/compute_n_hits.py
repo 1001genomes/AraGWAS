@@ -24,27 +24,43 @@ class Command(BaseCommand):
                             type=int,
                             default=None,
                             help='Specify a primary key to compute for a specific study. If empty will check entire phenotype list.')
+        parser.add_argument('--permutations',
+                            dest='perm_file',
+                            type=str,
+                            default=None,
+                            help='Specify the file name containing the permutation thresholds used to compute n_hits_perm')
 
     def handle(self, *args, **options):
         maf = options.get('maf', None)
         update_all = options.get('update_all', None)
         study_id = options.get('study_id', None)
+        perm_file = options.get('perm_file', None)
         try:
             if study_id:
                 ids_aragwas = [study_id]
             else:
                 # Run through all studies with hdf5 files
                 ids_aragwas = Study.objects.all().values_list('id', flat=True)
+            if perm_file:
+                with open(perm_file) as p_file:
+                    permutation_thresholds = dict()
+                    for line in p_file:
+                        cols = line[:-1].split()
+                        permutation_thresholds[int(cols[0])]=float(cols[1])
+            else:
+                permutation_thresholds = None
             counter = 0
             for id in ids_aragwas:
                 try:
                     study = Study.objects.get(pk=id)
                     if study.n_hits_bonf == None or update_all: # Condition for first run through, might be changed to update all
                         hdf5_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % study.pk)
-                        hits, thresholds = get_hit_count(hdf5_file, maf=maf)
+                        hits, thresholds = get_hit_count(hdf5_file, maf=maf, perm_threshold=permutation_thresholds[study.pk])
                         study.n_hits_bonf = hits['bonferroni_hits05']
                         study.n_hits_top = hits['thr_e-4']
                         study.n_hits_fdr = hits['bh_hits']
+                        if perm_file:
+                            study.n_hits_perm = hits['permutation_hits']
                         study.save()
                         counter +=1
                 except FileNotFoundError as err:

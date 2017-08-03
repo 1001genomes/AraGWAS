@@ -42,11 +42,13 @@ def generate_associations_csv():
     es2csv.generate_all_associations_file()
 
 @shared_task
-def index_study(study_id):
+def index_study(study_id, perm_threshold=None):
     study = Study.objects.get(pk=study_id)
     """ used to index a study in elasticseach """
     hdf5_file = os.path.join(settings.HDF5_FILE_PATH,'%s.hdf5' %  study.pk)
-    top_associations, thresholds = hdf5.get_top_associations(hdf5_file, val=1e-4, top_or_threshold='threshold' )
+    top_associations, thresholds = hdf5.get_top_associations(hdf5_file, val=1e-4, top_or_threshold='threshold',maf=0)
+    if perm_threshold:
+        thresholds['permutation_threshold'] = perm_threshold
     return elastic.index_associations(study, top_associations, thresholds)
 
 @shared_task

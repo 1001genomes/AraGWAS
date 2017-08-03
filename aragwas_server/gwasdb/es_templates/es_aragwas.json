@@ -19,6 +19,12 @@
                 "overFDR": {
                     "type": "boolean"
                 },
+                "overBonferroni": {
+                    "type": "boolean"
+                },
+                "overPermutation": {
+                    "type": "boolean"
+                },
                 "annotation": {
                     "type": "keyword"
                 },

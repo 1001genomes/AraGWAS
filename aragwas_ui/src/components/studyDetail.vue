@@ -37,7 +37,7 @@
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
-                                    <v-flex xs5 md3>N hits (FDR):</v-flex><v-flex xs7 mm9>{{ fdrHits }}</v-flex>
+                                    <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
                                     <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                                 </v-layout>
                             </v-layout>
