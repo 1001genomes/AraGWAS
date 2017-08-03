@@ -22,10 +22,14 @@
                                     v-model="significant"
                                     primary
                             ></v-switch>
+                            <div class="ml-3" v-if="significant">
+                                <v-radio label="Permutation threshold" v-model="threshold" value="p"></v-radio>
+                                <v-radio label="Bonferroni threshold" v-model="threshold" value="b"></v-radio>
+                            </div>
                             <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
                         </div>
                         <div>
-                            <h6 class="mt-4">Genes per page</h6>
+                            <h6 class="mt-5">Genes per page</h6>
                             <v-select
                                     v-bind:items="pageSizes"
                                     v-model="pagination.rowsPerPage"
@@ -126,12 +130,13 @@
         currentPage = 1;
         chr = ["1", "2", "3", "4", "5"];
         significant = true;
-        filters = {chr: this.chr, significant: "1"};
+        filters = {chr: this.chr, significant: "p"};
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "nHits", descending: true};
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
         pageSizes = [25, 50, 75, 100, 200,];
         pageCount = 5;
+        threshold = 'p';
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -140,11 +145,15 @@
         @Watch("significant")
         onSignificantChanged(val: boolean, oldVal: boolean) {
             if(val) {
-                this.filters.significant = "1";
+                this.filters.significant = this.threshold;
             }
             else {
                 this.filters.significant = "0";
             }
+        }
+        @Watch("threshold")
+        onThresholdChanged(val: boolean, oldVal: boolean) {
+            this.filters.significant = this.threshold;
         }
         @Watch("filters.significant")
         onFilterChanged(val: number, oldVal: number) {
