@@ -79,13 +79,14 @@
         highlightedAssociations: Association[] = [];
 
 
-        maf = ["5-10", "10"];
+        maf = ["1","1-5","5-10", "10"];
+        mac = ["5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
         chr = ["1", "2","3","4","5"];
         hideFields = [];
-        showControls = ["maf","annotation","type", "pageSize"];
-        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
+        showControls = ["maf","annotation","type", "pageSize","mac"];
+        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type};
         deboundedLoadGenes = _.debounce(this.loadGenesInRegion, 300);
 
         get startRegion(): number  {

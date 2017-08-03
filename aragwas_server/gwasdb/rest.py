@@ -51,6 +51,7 @@ def _get_filter_from_params(params):
     # retrieve and sort filters.
     filter_chr = params.getlist('chr')
     filter_maf = params.getlist('maf')
+    filter_mac = params.getlist('mac')
     annos = params.getlist('annotation')
     filter_annot = [annos_dict[k] for k in annos]
     filter_type = params.getlist('type')
@@ -58,7 +59,7 @@ def _get_filter_from_params(params):
     filter_phenotype = params.getlist('phenotype_id')
     filter_genotype = params.getlist('genotype_id')
     filter_significant = params.getlist('significant')
-    filters = {'chr':filter_chr, 'maf': filter_maf, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype, 'significant': filter_significant}
+    filters = {'chr':filter_chr, 'maf': filter_maf, 'mac': filter_mac, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype, 'significant': filter_significant}
     return filters
 
 def _get_percentages_from_buckets(buckets):
@@ -244,12 +245,13 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieves the top assocations for a study """
         filters = _get_filter_from_params(request.query_params)
         filters['study_id'] = [pk]
-        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
+        mac_dict = _get_percentages_from_buckets(mac)
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
     @detail_route(methods=['GET'], url_path='gwas')
     def assocations_from_hdf5(self, request, pk):
@@ -367,12 +369,13 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieves the top assocations for a phenotype """
         filters = _get_filter_from_params(request.query_params)
         filters['phenotype_id'] = [pk]
-        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
+        mac_dict = _get_percentages_from_buckets(mac)
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for associations """
@@ -400,12 +403,13 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     def aggregated_statistics(self, request):
         """ Retrieves the percentage for association meeting filters """
         filters = _get_filter_from_params(request.query_params)
-        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
+        mac_dict = _get_percentages_from_buckets(mac)
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
     @list_route(methods=['GET'], url_path='map_histogram')
     def data_for_histogram(self, request):
@@ -552,12 +556,13 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         filters['chr'] = [gene['chr']]
         filters['start'] = gene['positions']['gte'] - zoom
         filters['end'] = gene['positions']['lte'] + zoom
-        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
+        mac_dict = _get_percentages_from_buckets(mac)
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict,'types': type_dict, 'annotations': annotations_dict})
 
 
     @list_route(methods=['GET'], url_path='top')
@@ -632,12 +637,13 @@ class SNPViewSet(viewsets.ViewSet):
     @list_route(methods=['GET'], url_path='aggregated')
     def aggregated_statistics(self, requests):
         """ Retrieves the top genes based on the assocations """
-        chr, maf, type, annotations = elastic.get_aggregated_filtered_statistics({1:1})
+        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics({1:1})
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
+        mac_dict = _get_percentages_from_buckets(mac)
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'types': type_dict, 'annotations': annotations_dict})
+        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 
 class SearchViewSet(viewsets.ReadOnlyModelViewSet):

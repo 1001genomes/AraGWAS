@@ -41,13 +41,14 @@
     })
     export default class TopAssociations extends Vue {
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top Associations", href: "#/top-associations", disabled: true}];
-        maf = ["5-10", "10"];
+        maf = ["1","1-5","5-10", "10"];
+        mac = ["5"];
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
         hideFields = [];
-        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, type: this.type};
-        showControls = ["maf","chr","annotation","type"];
+        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type};
+        showControls = ["maf","chr","annotation","type","mac"];
         test = 'chr2:122242';
 
         tourOptions = {

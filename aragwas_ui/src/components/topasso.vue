@@ -15,9 +15,9 @@
             <div v-if="showControls.indexOf('maf')>-1">
                 <h6 class="mt-4">MAF</h6>
                 <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05-0.1']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05001']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
             </div>
             <div xs column v-if="showControls.indexOf('chr')>-1">
                 <h6 class="mt-4">Chromosomes</h6>
@@ -38,6 +38,11 @@
                 <h6 class="mt-4">Type</h6>
                 <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+            </div>
+            <div v-if="showControls.indexOf('mac')>-1">
+                <h6 class="mt-4">MAC</h6>
+                <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
             </div>
             <div class="text-xs-center">
                 <h6 class="mt-4">Download</h6>
@@ -72,6 +77,7 @@
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('mac') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.mac }}</td>
                         <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
@@ -122,6 +128,7 @@
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                        <td v-if="hideFields.indexOf('mac') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.mac }}</td>
                         <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
@@ -154,9 +161,9 @@
                     <div v-if="showControls.indexOf('maf')>-1">
                         <h6 class="mt-4">MAF</h6>
                         <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
-                        <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
-                        <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05-0.1']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
-                        <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05001']) + '% of associations)'" value="1-5" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
                     </div>
                     <div xs column v-if="showControls.indexOf('chr')>-1">
                         <h6 class="mt-4">Chromosomes</h6>
@@ -177,6 +184,11 @@
                         <h6 class="mt-4">Type</h6>
                         <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                         <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
+                    </div>
+                    <div v-if="showControls.indexOf('mac')>-1">
+                        <h6 class="mt-4">MAC</h6>
+                        <v-checkbox v-model="filters.mac" primary :label="'<5 (' + roundPerc(percentage.mac['0-6']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
                     </div>
                     <div class="text-xs-center">
                         <h6 class="mt-4">Download</h6>
@@ -245,14 +257,15 @@
         @Prop()
         view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
         @Prop()
-        filters: {chr: string[], annotation: string[], maf: string[], type: string[]};
+        filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[]};
         @Prop({type: null})
         highlightedAssociations: Association[];
         localfilters : {};
         loading: boolean = false;
         headers = [{text: "SNP", value: "snp.chr", name: "name", align: "left", tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
-            {text: "MAF",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
+            {text: "MAF",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "MAC",value: "mac", name: "mac", sortable: false, tooltip: "Minor Allele Count"},
+            {text: "phenotype",value: "study.phenotype.name", name: "phenotype", sortable: false, tooltip: "Phenotype"},
             {text: "annotation",value: "annotation", name: "annotation", sortable: false, tooltip: "Annotation related to associated SNP"},{text: "type",value: "snp.type", name: "type", sortable: false, tooltip: "Type of SNP"}];
         associations: Association[] =[];
         currentPage = 1;
@@ -268,7 +281,7 @@
         showSwitch = false;
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
-        percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}};
+        percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}, mac: {}};
         debouncedloadData = _.debounce(this.loadData, 300);
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
@@ -280,6 +293,10 @@
         }
         @Watch("filters.maf")
         onMafChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
+        @Watch("filters.mac")
+        onMacChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.chr")

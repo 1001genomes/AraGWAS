@@ -217,10 +217,16 @@ def filter_association_search(s, filters):
                 maf_filters.append(Q('range', maf={'lte': float(maf[1])/100,'gte':float(maf[0])/100}))
             else:
                 if maf[0] == '1':
-                    maf_filters.append(Q('range', maf={'lte':float(maf[0])/100}))
+                    maf_filters.append(Q('range', maf={'lt':float(maf[0])/100}))
                 else:
-                    maf_filters.append(Q('range', maf={'gte':float(maf[0])/100}))
+                    maf_filters.append(Q('range', maf={'gt':float(maf[0])/100}))
         s = s.filter(Q('bool',should = maf_filters))
+    if 'mac' in filters and len(filters['mac']) == 1:
+        print(filters['mac'])
+        if filters['mac'][0] == '0':
+            s = s.filter('range', mac={'lte': 5})
+        else:
+            s = s.filter('range', mac={'gt': 5})
     if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
         annot_filter = [Q('term', snp__annotations__effect=anno) for anno in filters['annotation']]
         s = s.filter(Q('nested', path='snp.annotations', query=Q('bool', should=annot_filter)))
@@ -246,13 +252,16 @@ def get_aggregated_filtered_statistics(filters):
     agg_annotation = A(
         {"nested": {"path": "snp.annotations"}, "aggs": {"annotations": {"terms": {"field": "snp.annotations.effect"}}}})
     agg_maf = A("range", field="maf",
-                ranges=[{"to": 0.01}, {"from": 0.01, "to": 0.05}, {"from": 0.05, "to": 0.1}, {"from": 0.1}])
+                ranges=[{"to": 0.01}, {"from": 0.01, "to": 0.05001}, {"from": 0.05001, "to": 0.1001}, {"from": 0.1001}])
+    agg_mac = A("range", field="mac",
+                ranges=[{"to": 6}, {"from": 6}])
     s.aggs.bucket('maf_count', agg_maf)
+    s.aggs.bucket('mac_count', agg_mac)
     s.aggs.bucket('chr_count', agg_chr)
     s.aggs.bucket('type_count', agg_type)
     s.aggs.bucket('annotation_count', agg_annotation)
     agg_results = s.execute().aggregations
-    return agg_results.chr_count.buckets, agg_results.maf_count.buckets, agg_results.type_count.buckets, agg_results.annotation_count.annotations.buckets
+    return agg_results.chr_count.buckets, agg_results.maf_count.buckets, agg_results.mac_count.buckets, agg_results.type_count.buckets, agg_results.annotation_count.annotations.buckets
 
 def index_associations(study, associations, thresholds):
     """indexes associations"""
