@@ -9,10 +9,11 @@
         </v-tabs-bar>
         <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4" ref="plots">
             <div id="statistics" class="mt-2" v-if="i === 'On genes'" >
-                <vue-chart v-if="plotStatistics.topGenes.rows.length > 0" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes', legend: {position: 'none'}}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
+                <vue-chart v-if="plotStatistics.topGenes.rows.length > 1" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes', legend: {position: 'none'}}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
+                <div v-else style="text-align: center">Not enough significant hits</div>
             </div>
             <div v-else>
-                <div v-if="plotStatistics.genic.rows.length>0">
+                <div v-if="plotStatistics.genic.rows.length>1">
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.genic.columns" :rows="plotStatistics.genic.rows" :options="{title: 'SNP type'}" chart-type="PieChart" ></vue-chart>
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.impact.columns" :rows="plotStatistics.impact.rows" :options="{title: 'SNP impact'}" chart-type="PieChart"></vue-chart>
                     <vue-chart v-if="_isSnpType" :columns="plotStatistics.annotation.columns" :rows="plotStatistics.annotation.rows" :options="{title: 'SNP annotation'}" chart-type="PieChart"></vue-chart>
@@ -20,7 +21,7 @@
                     <vue-chart :columns="plotStatistics.mafDistribution.columns" :rows="plotStatistics.mafDistribution.rows" :options="{title: 'Distribution of MAF',legend: {position: 'none'}}" chart-type="ColumnChart"></vue-chart>
                     <vue-chart :show="false" :options="{width: width}" :columns="[]" :rows="[]"></vue-chart>
                 </div>
-                <h6 v-else style="text-align: center" >No significant hits.</h6>
+                <h6 v-else style="text-align: center" >Not enough significant hits.</h6>
             </div>
         </v-tabs-content>
     </v-tabs>
