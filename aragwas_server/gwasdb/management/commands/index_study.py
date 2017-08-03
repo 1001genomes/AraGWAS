@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from gwasdb.tasks import index_study
 from gwasdb.models import Study
+from gwasdb.hdf5 import load_permutation_thresholds
 
 
 class Command(BaseCommand):
@@ -27,11 +28,7 @@ class Command(BaseCommand):
             else:
                 studies = Study.objects.all()
             if perm_file:
-                with open(perm_file) as p_file:
-                    permutation_thresholds = dict()
-                    for line in p_file:
-                        cols = line[:-1].split()
-                        permutation_thresholds[int(cols[0])]=float(cols[1])
+                permutation_thresholds = load_permutation_thresholds(perm_file)
             else:
                 permutation_thresholds = None
             for study in studies:

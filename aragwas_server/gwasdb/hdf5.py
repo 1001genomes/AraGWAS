@@ -17,6 +17,13 @@ def get_number_associations_after_filtering(associations_maf, maf):
     maf_filter_cond = associations_maf[:] > maf
     return np.count_nonzero(associations_maf[maf_filter_cond])
 
+def load_permutation_thresholds(perm_file):
+    with open(perm_file) as p_file:
+        permutation_thresholds = dict()
+        for line in p_file:
+            cols = line[:-1].split()
+            permutation_thresholds[int(cols[0])] = float(cols[1])
+    return permutation_thresholds
 
 def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     """Retrieves the top associations from an hdf5 file"""

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from gwasdb.hdf5 import get_hit_count
+from gwasdb.hdf5 import get_hit_count, load_permutation_thresholds
 from gwasdb.models import Study
 from aragwas import settings
 import os
@@ -42,11 +42,7 @@ class Command(BaseCommand):
                 # Run through all studies with hdf5 files
                 ids_aragwas = Study.objects.all().values_list('id', flat=True)
             if perm_file:
-                with open(perm_file) as p_file:
-                    permutation_thresholds = dict()
-                    for line in p_file:
-                        cols = line[:-1].split()
-                        permutation_thresholds[int(cols[0])]=float(cols[1])
+                permutation_thresholds = load_permutation_thresholds(perm_file)
             else:
                 permutation_thresholds = None
             counter = 0

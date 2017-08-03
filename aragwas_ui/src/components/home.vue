@@ -51,9 +51,9 @@
                         <v-flex xs4>
                             <div class="icon-block">
                                 <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
-                                <h5 class="text-xs-center">Genome Hitmap</h5>
+                                <h5 class="text-xs-center">GWAS Hitmap</h5>
                                 <p class="light justify">Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/map"><v-icon left dark>grain</v-icon> Genome Hitmap</v-btn>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS Hitmap</v-btn>
                             </div>
                         </v-flex>
                     </v-layout>
