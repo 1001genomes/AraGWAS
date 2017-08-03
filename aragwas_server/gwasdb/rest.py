@@ -668,7 +668,8 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
                                                       Q(phenotype__name__icontains=query_term)).order_by('name')
-                phenotypes = Phenotype.objects.filter(name__icontains=query_term).order_by('name')
+                phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
+                                                      Q(description__icontains=query_term)).order_by('name')
                 # Add chromosome position search for genomic regions
                 try:
                     int(query_term)
