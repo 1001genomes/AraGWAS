@@ -21,10 +21,11 @@
                                     label="Only count significant hits"
                                     v-model="significant"
                                     primary
+                                    class="mt-0 mb-0"
                             ></v-switch>
                             <div class="ml-3" v-if="significant">
-                                <v-radio label="Permutation threshold" v-model="threshold" value="p"></v-radio>
-                                <v-radio label="Bonferroni threshold" v-model="threshold" value="b"></v-radio>
+                                <v-radio label="Permutation threshold" v-model="threshold" value="p" class="mt-0 mb-0"></v-radio>
+                                <v-radio label="Bonferroni threshold" v-model="threshold" value="b" class="mt-0 mb-0"></v-radio>
                             </div>
                             <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
                         </div>
