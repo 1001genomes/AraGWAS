@@ -22,7 +22,12 @@ def load_permutation_thresholds(perm_file):
         permutation_thresholds = dict()
         for line in p_file:
             cols = line[:-1].split()
-            permutation_thresholds[int(cols[0])] = float(cols[1])
+            # Check if p-value or score already:
+            val = float(cols[1])
+            if val > 1:
+                permutation_thresholds[int(cols[0])] = val
+            else:
+                permutation_thresholds[int(cols[0])] = -math.log(val,10)
     return permutation_thresholds
 
 def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
