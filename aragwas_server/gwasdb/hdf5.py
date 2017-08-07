@@ -1,7 +1,7 @@
 """
 functions to load pvalues from hdf5 files
 """
-import math
+import math, csv
 import numpy as np
 import h5py
 
@@ -20,14 +20,26 @@ def get_number_associations_after_filtering(associations_maf, maf):
 def load_permutation_thresholds(perm_file):
     with open(perm_file) as p_file:
         permutation_thresholds = dict()
-        for line in p_file:
-            cols = line[:-1].split()
-            # Check if p-value or score already:
-            val = float(cols[1])
-            if val > 1:
-                permutation_thresholds[int(cols[0])] = val
-            else:
-                permutation_thresholds[int(cols[0])] = -math.log(val,10)
+        if perm_file[-3:] == 'csv':
+            filereader = csv.reader(p_file, delimiter=',')
+            next(filereader, None) #skip header
+            for row in filereader:
+                val = float(row[1])
+                if val > 1:
+                    permutation_thresholds[int(row[0])] = val
+                else:
+                    permutation_thresholds[int(row[0])] = -math.log(val, 10)
+        else:
+            # skip first line
+            p_file.readline()
+            for line in p_file:
+                cols = line[:-1].split(',')
+                # Check if p-value or score already:
+                val = float(cols[1])
+                if val > 1:
+                    permutation_thresholds[int(cols[0])] = val
+                else:
+                    permutation_thresholds[int(cols[0])] = -math.log(val,10)
     return permutation_thresholds
 
 def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):

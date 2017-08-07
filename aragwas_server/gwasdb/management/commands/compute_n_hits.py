@@ -59,7 +59,7 @@ class Command(BaseCommand):
                             study.n_hits_perm = hits['permutation_hits']
                         study.save()
                         counter +=1
-                except FileNotFoundError as err:
+                except Exception as err:
                     self.stdout.write(self.style.ERROR('HDF5 file for study %s not found' % study))
             print(str(counter) + ' studies updated in the database.')
         except Exception as err:
