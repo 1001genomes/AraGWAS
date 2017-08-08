@@ -224,7 +224,6 @@ def filter_association_search(s, filters):
                     maf_filters.append(Q('range', maf={'gt':float(maf[0])/100}))
         s = s.filter(Q('bool',should = maf_filters))
     if 'mac' in filters and len(filters['mac']) == 1:
-        print(filters['mac'])
         if filters['mac'][0] == '0':
             s = s.filter('range', mac={'lte': 5})
         else:
@@ -244,6 +243,11 @@ def filter_association_search(s, filters):
         s = s.filter('range', snp__position={'gte': int(filters['start'])})
     if 'end' in filters:
         s = s.filter('range', snp__position={'lte': int(filters['end'])})
+    if 'significant' in filters:
+        if filters['significant'][0] == "b":
+            s = s.filter('term', overBonferroni='T')
+        elif filters['significant'][0] == "p":
+            s = s.filter('term', overFDR='T') #TODO: ONCE THE PERM THRESHOLDS ARE ADDED, CHANGE THIS TO overPermutation
     return s
 
 def get_aggregated_filtered_statistics(filters):

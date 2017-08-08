@@ -66,9 +66,13 @@ def _get_percentages_from_buckets(buckets):
     out_dict = {}
     annos_dict = {'NON_SYNONYMOUS_CODING': 'ns', 'SYNONYMOUS_CODING': 's', 'INTERGENIC': 'i', 'INTRON': 'in'}
     tot_sum = sum(i['doc_count'] for i in buckets)
-    for i in buckets:
-        out_dict[annos_dict[i['key']] if i['key'] in annos_dict else str(i['key'])] = float(
-            i['doc_count']) / tot_sum
+    if tot_sum == 0:
+        for i in buckets:
+            out_dict[annos_dict[i['key']] if i['key'] in annos_dict else str(i['key'])] = 0
+    else:
+        for i in buckets:
+            out_dict[annos_dict[i['key']] if i['key'] in annos_dict else str(i['key'])] = float(
+                i['doc_count']) / tot_sum
     return out_dict
 
 def _is_filter_whole_dataset(filters):

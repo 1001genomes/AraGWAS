@@ -47,8 +47,8 @@
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
         hideFields = [];
-        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type};
-        showControls = ["maf","chr","annotation","type","mac"];
+        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "p"};
+        showControls = ["maf","chr","annotation","type","mac", "significant"];
         test = 'chr2:122242';
 
         tourOptions = {

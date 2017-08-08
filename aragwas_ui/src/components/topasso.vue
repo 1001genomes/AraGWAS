@@ -12,6 +12,20 @@
                         auto
                 ></v-select>
             </div>
+            <div v-if="showControls.indexOf('significant')>-1">
+                <h6 class="mt-4">Significance</h6>
+                <v-switch
+                        label="Only show significant hits"
+                        v-model="significant"
+                        primary
+                        class="mt-0 mb-0"
+                ></v-switch>
+                <div class="ml-3" v-if="significant">
+                    <v-radio label="Permutation threshold" v-model="filters.significant" value="p" class="mt-0 mb-0"></v-radio>
+                    <v-radio label="Bonferroni threshold" v-model="filters.significant" value="b" class="mt-0 mb-0"></v-radio>
+                </div>
+                <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
+            </div>
             <div v-if="showControls.indexOf('maf')>-1">
                 <h6 class="mt-4">MAF</h6>
                 <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
@@ -44,7 +58,7 @@
                 <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
             </div>
-            <div class="text-xs-center">
+            <div class="text-xs-center mb-3">
                 <h6 class="mt-4">Download</h6>
                 <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
                 <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations'}">
@@ -71,7 +85,7 @@
                     <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
                         <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
                         <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
@@ -122,7 +136,7 @@
                     <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
                         <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overFDR}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
                         <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
@@ -190,7 +204,21 @@
                         <v-checkbox v-model="filters.mac" primary :label="'<5 (' + roundPerc(percentage.mac['0-6']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
                         <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
                     </div>
-                    <div class="text-xs-center">
+                    <div v-if="showControls.indexOf('significant')>-1">
+                        <h6 class="mt-2">Significance</h6>
+                        <v-switch
+                                label="Only show significant hits"
+                                v-model="significant"
+                                primary
+                                class="mt-0 mb-0"
+                        ></v-switch>
+                        <div class="ml-3" v-if="significant">
+                            <v-radio label="Permutation threshold" v-model="filters.significant" value="p" class="mt-0 mb-0"></v-radio>
+                            <v-radio label="Bonferroni threshold" v-model="filters.significant" value="b" class="mt-0 mb-0"></v-radio>
+                        </div>
+                        <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
+                    </div>
+                    <div class="text-xs-center mb-3">
                         <h6 class="mt-4">Download</h6>
                         <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
                         <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations (since the file needs to be generated, this may take a while)'}">
@@ -202,7 +230,7 @@
                 <br>
                 <br>
                 <br>
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switch"></v-switch></p>
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switchright"></v-switch></p>
             </v-flex>
             </v-layout>
         </v-flex>
@@ -212,7 +240,7 @@
                     <br>
                     <br>
                     <br>
-                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switch"></v-switch></p>
+                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switchright"></v-switch></p>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -257,7 +285,7 @@
         @Prop()
         view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
         @Prop()
-        filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[]};
+        filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[], significant: string};
         @Prop({type: null})
         highlightedAssociations: Association[];
         localfilters : {};
@@ -285,6 +313,8 @@
         debouncedloadData = _.debounce(this.loadData, 300);
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
+        significant = this.filters.significant !== "0";
+
 
 
         @Watch("currentPage")
@@ -311,6 +341,20 @@
         onTypeChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
+        @Watch("filters.significant")
+        onSignificantChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
+        @Watch("significant")
+        onSigChanged(val: boolean, oldVal: boolean) {
+            if(val){
+                this.filters.significant = "p";
+            }
+            else {
+                this.filters.significant = "0";
+            }
+        }
+
         @Watch("view.zoom")
         onZoomChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
@@ -442,7 +486,7 @@ table.table tbody tr[active] {
         justify-content:center;
     }
 
-    .switch {
+    .switchright {
         transform: rotate(270deg);
     }
 </style>
