@@ -216,6 +216,8 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                 ordering += '__name'
             if ordering == 'nHitsBonferroni':
                 ordering = 'n_hits_bonf'
+            if ordering == 'nHitsPermutation':
+                ordering = 'n_hits_perm'
             else:
                 ordering = Lower(ordering)
             queryset = queryset.order_by(ordering)

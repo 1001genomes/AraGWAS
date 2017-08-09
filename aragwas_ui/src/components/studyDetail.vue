@@ -173,7 +173,7 @@
       chr = ["1", "2","3","4","5"];
       hideFields = ["phenotype", "study"];
       showControls = ["chr","maf","annotation","type","mac", "significant"];
-      filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "p"};
+      filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
       phenotypeView = {name: "study", studyId: this.id, controlPosition: "right"};
 
       @Watch("id")

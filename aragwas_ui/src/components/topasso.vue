@@ -181,8 +181,8 @@
                     </div>
                     <div v-if="showControls.indexOf('mac')>-1">
                         <h6 class="mt-4">MAC</h6>
-                        <v-checkbox v-model="filters.mac" primary :label="'<5 (' + roundPerc(percentage.mac['0-6']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
-                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
+                        <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
                     </div>
                     <div xs column v-if="showControls.indexOf('chr')>-1">
                         <h6 class="mt-4">Chromosomes</h6>
@@ -423,7 +423,7 @@
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
             this.lastElement = data.lastel;
-            this.$emit('load', this.associations);;
+            this.$emit('load', this.associations);
         }
         hideHeaders(fields): void {
             for(let i = this.headers.length-1; i>= 0; i--) {

@@ -27,7 +27,7 @@
          <td  class="text-xs-right">{{ props.item.transformation }}</td>
          <td  class="text-xs-right">{{ props.item.method }}</td>
          <td  class="text-xs-right">{{ props.item.genotype }}</td>
-         <td  class="text-xs-right">{{ props.item.nHitsBonf }}</td>
+         <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
        </template>
      </v-data-table>
    </div>
@@ -61,9 +61,9 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Bonferroni", value: "nHitsBonferroni",}];
+    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",}];
     studies = [];
-    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsBonferroni", descending: true};
+    pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPermutation", descending: true};
     totalItems: number = 0;
     search: string = '';
     currentPage = 1;
