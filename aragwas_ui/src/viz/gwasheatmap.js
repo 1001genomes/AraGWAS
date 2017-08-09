@@ -14,14 +14,14 @@ export default function gwasHeatmap() {
 
     var yScale;
     var padding = 50;
-    var margin = { "top": 10, "bottom": 50, "left": 180, "right": 80 };
+    var margin = { "top": 10, "bottom": 75, "left": 180, "right": 80 };
     var transitionDuration = 150;
     var colorScale = d3.scaleQuantile();
     var fillScale = d3.scaleLinear().clamp(true);
     var histogramHeight = 100;
     var cellSize = 12;
     var legendElementWidth = cellSize * 2.5;
-    var legendHeight = 50;
+    var legendHeight = 75;
 
     var draw, ticks;
 
@@ -106,6 +106,13 @@ export default function gwasHeatmap() {
             drawPoints();
             drawHistograms();
             drawLegend();
+
+            var legend = svg.selectAll(".legend")
+            legend.append("text")
+                .text("Scores")
+                .attr("x", legendElementWidth * 4)
+                .attr("y", (cellSize * 3))
+                .style("font-size", 10);
         };
 
         function drawLegend() {
@@ -131,7 +138,6 @@ export default function gwasHeatmap() {
                 .attr("x", function(d, i) { return legendElementWidth * i; })
                 .attr("y", (cellSize * 2))
                 .style("font-size", 10);
-
         }
 
         function drawHistograms() {
