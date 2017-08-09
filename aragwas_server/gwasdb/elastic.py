@@ -130,7 +130,7 @@ def load_gene_snps(id):
 def get_top_genes():
     """Retrieve top genes"""
     s = Search(using=es, doc_type='associations')
-    s = s.filter('term', overFDR='T')
+    s = s.filter('term', overPermutation='T')
     agg = A("terms", field="snp.gene_name")
     s.aggs.bucket('gene_count', agg)
     agg_results = s.execute().aggregations.gene_count.buckets
@@ -176,7 +176,7 @@ def get_top_genes_and_snp_type_for_study(study_id):
     """Retrive associations by neighboring gene id"""
     s = Search(using=es, doc_type='associations')
     s = s.filter(Q('bool', should=[Q('term', study__id=study_id)]))
-    s = s.filter('term', overFDR='T')
+    s = s.filter('term', overPermutation='T')
     agg_genes = A("terms", field="snp.gene_name")
     # agg_go_terms = A("terms", field="snp.") NOT DOABLE WITH CURRENT FIELDS IN ES
     agg_snp_type = A("terms", field="snp.coding")
@@ -247,7 +247,7 @@ def filter_association_search(s, filters):
         if filters['significant'][0] == "b":
             s = s.filter('term', overBonferroni='T')
         elif filters['significant'][0] == "p":
-            s = s.filter('term', overFDR='T') #TODO: ONCE THE PERM THRESHOLDS ARE ADDED, CHANGE THIS TO overPermutation
+            s = s.filter('term', overPermutation='T')
     return s
 
 def get_aggregated_filtered_statistics(filters):
@@ -426,11 +426,11 @@ def filter_heatmap_search(s, filters):
     if filters['chrom'] != 'all':
         s = s.filter(Q('bool', should=[Q('term', snp__chr=filters['chrom'] if len(filters['chrom']) > 3 else 'chr%s' % filters['chrom'])]))
     if filters['threshold'] == 'FDR':
-        s = s.filter('term', overFDR='T') # TODO: change this field lookup to other significant threshold later
+        s = s.filter('term', overFDR='T')
     elif filters['threshold'] == 'Bonferroni':
         s = s.filter('term', overBonferroni='T')
     elif filters['threshold'] == 'permutation':
-        s = s.filter('term', overPermutation='T') # TODO: Change these field names accordingly
+        s = s.filter('term', overPermutation='T')
     if filters['maf'] > 0:
         s = s.filter(Q('range', maf={'gte':filters['maf']}))
     if filters['mac'] > 0:
