@@ -379,7 +379,7 @@ def check_missing_filters(filters):
     if 'maf' not in filters.keys():
         filters['maf'] = 0
     if 'mac' not in filters.keys():
-        filters['mac'] = 0
+        filters['mac'] = 6
     return filters
 
 def get_top_hits_for_all_studies(filters):
