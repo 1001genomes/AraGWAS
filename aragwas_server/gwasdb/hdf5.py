@@ -13,6 +13,13 @@ def _filter_by_maf( top_assocations, maf_filter):
     maf_filter_cond = top_mafs > maf_filter
     return (np.compress(maf_filter_cond, top_assocations[0]), np.compress(maf_filter_cond, top_assocations[1]),np.compress(maf_filter_cond, top_mafs), np.compress(maf_filter_cond, top_assocations[3]))
 
+def _filter_by_mac( top_assocations, mac_filter):
+    if (mac_filter == 0):
+        return top_assocations
+    top_macs = top_assocations[3]
+    mac_filter_cond = top_macs > mac_filter
+    return (np.compress(mac_filter_cond, top_assocations[0]), np.compress(mac_filter_cond, top_assocations[1]),np.compress(mac_filter_cond, top_assocations[2]), np.compress(mac_filter_cond, top_macs))
+
 def get_number_associations_after_filtering(associations_maf, maf):
     maf_filter_cond = associations_maf[:] > maf
     return np.count_nonzero(associations_maf[maf_filter_cond])
@@ -106,7 +113,7 @@ def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
     top_associations = np.rec.fromarrays((chrs, positions, scores, mafs, macs), names='chr, position, score, maf, mac')
     return top_associations, thresholds
 
-def get_hit_count(hdf5_file, maf=0.05, perm_threshold=None):
+def get_hit_count(hdf5_file, maf=0.05, mac=6, perm_threshold=None):
     try:
         h5f = h5py.File(hdf5_file, 'r')
     except:
@@ -122,6 +129,7 @@ def get_hit_count(hdf5_file, maf=0.05, perm_threshold=None):
         num_associations += group_length
         end_idx = len(group['scores']) - np.searchsorted(group['scores'][:][::-1], 1e-4, side='left')
         top_positions, top_scores, top_mafs, top_macs = _filter_by_maf((group['positions'][:end_idx],group['scores'][:end_idx],group['mafs'][:end_idx],group['macs'][:end_idx]), maf)
+        top_positions, top_scores, top_mafs, top_macs = _filter_by_mac((top_positions, top_scores, top_mafs, top_macs), mac)
         scores = np.concatenate((scores, top_scores))
     bt05 = -math.log(0.05 / float(num_associations), 10)
     bt01 = -math.log(0.01 / float(num_associations), 10)

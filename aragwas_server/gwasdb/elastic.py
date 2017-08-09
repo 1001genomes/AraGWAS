@@ -131,6 +131,7 @@ def get_top_genes():
     """Retrieve top genes"""
     s = Search(using=es, doc_type='associations')
     s = s.filter('term', overPermutation='T')
+    s = s.filter(Q('range', mac={'gte': 6}))
     agg = A("terms", field="snp.gene_name")
     s.aggs.bucket('gene_count', agg)
     agg_results = s.execute().aggregations.gene_count.buckets
@@ -144,6 +145,7 @@ def load_filtered_top_genes(filters, start=0, size=50):
         s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in
                                        filters['chr']]))
     if 'significant' in filters:
+        s = s.filter(Q('range', mac={'gte': 6}))
         if filters['significant'][0] == "b":
             s = s.filter('term', overBonferroni='T')
         elif filters['significant'][0] == "p":
@@ -177,6 +179,7 @@ def get_top_genes_and_snp_type_for_study(study_id):
     s = Search(using=es, doc_type='associations')
     s = s.filter(Q('bool', should=[Q('term', study__id=study_id)]))
     s = s.filter('term', overPermutation='T')
+    s = s.filter(Q('range', mac={'gte': 6}))
     agg_genes = A("terms", field="snp.gene_name")
     # agg_go_terms = A("terms", field="snp.") NOT DOABLE WITH CURRENT FIELDS IN ES
     agg_snp_type = A("terms", field="snp.coding")

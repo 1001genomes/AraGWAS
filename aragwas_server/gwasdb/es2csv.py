@@ -212,7 +212,8 @@ def add_default_options(opts):
         if opts['doc_type'] == 'associations':
             opts['fields'] = ['snp.chr','snp.position', 'score', 'maf', 'mac', 'study.name', 'study.id',
                               'study.phenotype.name', 'study.genotype.name', 'study.thresholds', 'overFDR',
-                              'snp.ref', 'snp.alt', 'snp.coding', 'snp.gene_name']
+                              'overBonferroni', 'overPermutation','snp.ref', 'snp.alt', 'snp.coding', 'snp.gene_name',
+                              'snp.annotations']
         else:
             opts['fields'] = ['_all']
     if 'delimiter' not in opts.keys():
