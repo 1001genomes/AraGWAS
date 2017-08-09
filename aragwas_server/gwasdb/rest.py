@@ -94,6 +94,9 @@ def _is_filter_whole_dataset(filters):
         return False
     if 'end' in filters:
         return False
+    if 'significant' in filters:
+        if filters['significant'] == ['p'] or filters['significant'] == ['b']:
+            return False
     return True
 
 
@@ -475,8 +478,6 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # Load studies from regular db
         import datetime
         filters = _get_filter_from_params(request.query_params)
-        print(filters)
-        print(_is_filter_whole_dataset(filters))
         gene_id = request.query_params.getlist('gene_id') # We need to do this because we cannot solely rely on the annotations of the SNPs for gene-name
         import os
         if not os.path.isdir('temp'):
