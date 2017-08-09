@@ -33,6 +33,11 @@
                 <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
             </div>
+            <div v-if="showControls.indexOf('mac')>-1">
+                <h6 class="mt-4">MAC</h6>
+                <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
+                <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
+            </div>
             <div xs column v-if="showControls.indexOf('chr')>-1">
                 <h6 class="mt-4">Chromosomes</h6>
                 <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of associations)'" value="1" class="mb-0"> what</v-checkbox>
@@ -52,11 +57,6 @@
                 <h6 class="mt-4">Type</h6>
                 <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                 <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('mac')>-1">
-                <h6 class="mt-4">MAC</h6>
-                <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
-                <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
             </div>
             <div class="text-xs-center mb-3">
                 <h6 class="mt-4">Download</h6>
@@ -179,6 +179,11 @@
                         <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" class="mt-0 mb-0"></v-checkbox>
                         <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10" class="mt-0"></v-checkbox>
                     </div>
+                    <div v-if="showControls.indexOf('mac')>-1">
+                        <h6 class="mt-4">MAC</h6>
+                        <v-checkbox v-model="filters.mac" primary :label="'<5 (' + roundPerc(percentage.mac['0-6']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
+                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
+                    </div>
                     <div xs column v-if="showControls.indexOf('chr')>-1">
                         <h6 class="mt-4">Chromosomes</h6>
                         <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of associations)'" value="1" class="mb-0"> what</v-checkbox>
@@ -198,11 +203,6 @@
                         <h6 class="mt-4">Type</h6>
                         <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="mb-0"></v-checkbox>
                         <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" class="mt-0 mb-0"></v-checkbox>
-                    </div>
-                    <div v-if="showControls.indexOf('mac')>-1">
-                        <h6 class="mt-4">MAC</h6>
-                        <v-checkbox v-model="filters.mac" primary :label="'<5 (' + roundPerc(percentage.mac['0-6']) + '% of associations)'" value="0" class="mb-0"></v-checkbox>
-                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6-*']) + '% of associations)'" value="5" class="mt-0"></v-checkbox>
                     </div>
                     <div v-if="showControls.indexOf('significant')>-1">
                         <h6 class="mt-2">Significance</h6>
