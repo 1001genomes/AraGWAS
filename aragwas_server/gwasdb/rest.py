@@ -407,7 +407,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     def count(self, request):
         """  Retrieves the number of available associations """
         client = Elasticsearch([ES_HOST], timeout=60)
-        count = Search().using(client).doc_type('associations').query('match_all').count()
+        count = Search().using(client).doc_type('associations').query('match_all').filter('term',overPermutation='T').filter('range',mac={'gte':6}).count()
         return Response(count)
 
     @list_route(methods=['GET'], url_path='aggregated_statistics')
