@@ -55,8 +55,11 @@ class Command(BaseCommand):
                         study.n_hits_bonf = hits['bonferroni_hits05']
                         study.n_hits_top = hits['thr_e-4']
                         study.n_hits_fdr = hits['bh_hits']
+                        study.bonferroni_threshold = thresholds['bonferroni_threshold05']
+                        study.bh_threshold = thresholds['bh_threshold']
                         if perm_file:
                             study.n_hits_perm = hits['permutation_hits']
+                            study.permutation_threshold = thresholds['permutation']
                         study.save()
                         counter +=1
                 except Exception as err:

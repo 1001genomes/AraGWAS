@@ -214,6 +214,10 @@
         this.fdrHits = data.nHitsFdr;
         this.samples = data.numberSamples;
         this.countries = data.numberCountries;
+        this.permThr = data.permutationThreshold;
+        for (let i=1; i <=5; i++) {
+            this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
+        }
         loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);
       }
       _loadAraPhenoLink(data): void {
@@ -258,6 +262,7 @@
                 chrData.push(assoc);
             }
             this.dataChr[chrom] =  chrData;
+            this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["max_y"] = Math.max(data[chrom].scores[0]+1, 10);
         }

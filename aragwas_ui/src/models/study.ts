@@ -10,7 +10,8 @@ export default Study;
 
 export class ManhattanPlotOptions {
     constructor(readonly chr: number, readonly max_x: number,
-                readonly max_y: number, readonly bonferroniThreshold: number, readonly color: number
+                readonly max_y: number, readonly bonferroniThreshold: number, readonly color: number,
+                readonly permutationThreshold: number
     ) {
     }
 }

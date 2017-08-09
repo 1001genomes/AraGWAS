@@ -9,6 +9,7 @@
                         <dt><b>Position</b>: {{highlightedAssociation[0][0]}}</dt>
                         <dt><b>Score</b>: {{highlightedAssociation[0][1] | round}}</dt>
                         <dt><b>MAF</b>: {{highlightedAssociation[0][2] | round}}</dt>
+                        <dt class="blue--text">Click to go to closest gene!</dt>
                     </dl>
                 </v-card-title>
             </v-card>
@@ -126,6 +127,7 @@
                 max_y: 10,
                 max_x: 100000,
                 bonferroniThreshold: 10,
+                permutationThreshold: 11,
             };
             // Add the missing parameters
             for (const key of Object.keys(defaultOptions)) {

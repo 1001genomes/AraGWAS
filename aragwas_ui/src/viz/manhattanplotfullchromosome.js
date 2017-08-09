@@ -127,6 +127,15 @@ export default function() {
                 svg.append("svg:g")
                     .attr("transform", "translate(" + (padding * 4 + 50) + "," + (padding / 1.1) + ")")
                     .append("text").text("Bonferroni threshold [" + options.alpha + "]");
+                svg.append("rect")
+                    .attr("x", padding * 9 + 50)
+                    .attr("y", padding / 1.6)
+                    .attr("width", padding / 2.5)
+                    .attr("height", padding / 3.5)
+                    .style("fill", "#35bc35");
+                svg.append("svg:g")
+                    .attr("transform", "translate(" + (padding * 9 + 75) + "," + (padding / 1.1) + ")")
+                    .append("text").text("Permutation threshold");
             };
 
             drawThreshold = function() {
@@ -137,6 +146,14 @@ export default function() {
                     .attr("x2", scales.x(d2[1][0]))
                     .attr("y2", scales.y(d2[1][1]))
                     .style("stroke", "#F0001E")
+                    .style("stroke-width", 1.5 );
+                var d3 = [[0, options.permutationThreshold], [options.max_x, options.permutationThreshold]];
+                svg.append("svg:line")
+                    .attr("x1", scales.x(d3[0][0]))
+                    .attr("y1", scales.y(d3[0][1]))
+                    .attr("x2", scales.x(d3[1][0]))
+                    .attr("y2", scales.y(d3[1][1]))
+                    .style("stroke", "#35bc35")
                     .style("stroke-width", 1.5 );
             };
 

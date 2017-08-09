@@ -29,6 +29,9 @@ class Study(models.Model):
     n_hits_bonf = models.IntegerField(blank=True, null=True) # number of hits with Bonferoni threshold
     n_hits_fdr = models.IntegerField(blank=True, null=True) # number of hits above FDR (benjamini-hochberg) threshold
     n_hits_perm = models.IntegerField(blank=True, null=True) # number of hits with permutation threshold
+    bh_threshold = models.FloatField(blank=True, null=True) # FDR threshold
+    bonferroni_threshold = models.FloatField(blank=True, null=True) # bonferroni threshold
+    permutation_threshold = models.FloatField(blank=True, null=True) # permutation threshold
 
     def __str__(self):
         return "Study: %s" % (self.name)
