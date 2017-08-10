@@ -71,7 +71,11 @@
         onResize() {
             this.width = this.$el.offsetWidth;
         }
-
+        beforeUpdate() {
+            if( !(this.plotStatistics.topGenes.rows.length > 1) && this.plotStatistics.genic.rows.length>1){
+                this.currentViewIn = "On snp type"
+            }
+        }
         mounted() {
             window.addEventListener('resize', this.debouncedOnResize);
             this.debouncedOnResize();
