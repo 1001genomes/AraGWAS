@@ -49,7 +49,7 @@ class Command(BaseCommand):
             for id in ids_aragwas:
                 try:
                     study = Study.objects.get(pk=id)
-                    if study.n_hits_bonf == None or update_all: # Condition for first run through, might be changed to update all
+                    if study.n_hits_bonf == None or update_all or study_id: # Condition for first run through, might be changed to update all
                         hdf5_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % study.pk)
                         hits, thresholds = get_hit_count(hdf5_file, maf=maf, perm_threshold=permutation_thresholds[study.pk])
                         study.n_hits_bonf = hits['bonferroni_hits05']
