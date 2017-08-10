@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__+ "/../")))
 
 ADMINS = [('Matteo', 'matteo.togninalli@bsse.ethz.ch'),('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 
@@ -144,3 +144,8 @@ ES_HOST = os.environ.get('ES_HOST', 'http://elastic:changeme@localhost:9200')
 GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
 HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+DATACITE_PREFIX = ''
+DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
+DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+DATACITE_DOI_URL = 'http://search.datacite.org/works'
+DOI_BASE_URL = 'http://aragwas.1001genomes.org'
