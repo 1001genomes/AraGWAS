@@ -25,6 +25,7 @@ services:
       - "elasticsearch1"
     volumes:
       - /mnt/aragwas_data:/opt/aragwas_data
+      - /usr/share/nginx/html/aragwas_static:/usr/share/nginx/html/static
 
   amqp1:
     image: "rabbitmq:3-management"

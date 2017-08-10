@@ -130,6 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/usr/share/nginx/html/static'
 
 # Celery
 BROKER_URL = 'redis://localhost:6379/0'
