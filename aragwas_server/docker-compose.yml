@@ -13,6 +13,11 @@ services:
     environment:
       - ES_HOST=http://elastic:changeme@elasticsearch1:9200
       - ARAGWAS_HDF5_FILE_PATH=/opt/aragwas_data
+      - DATACITE_USERNAME=${DATACITE_USERNAME}
+      - DATACITE_PASSWORD=${DATACITE_PASSWORD}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_USER=${EMAIL_USER}
+      - DJANGO_SETTINGS_MODULE=aragwas.settings.prod
     networks:
       - aragwas
     depends_on:
