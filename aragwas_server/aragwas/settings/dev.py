@@ -6,7 +6,7 @@ import os
 from .defaults import *
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['TEMPLATE_DEBUG'] = DEBUG
 
 DATACITE_REST_URL='https://mds.test.datacite.org/'
 

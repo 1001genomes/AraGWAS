@@ -1,5 +1,6 @@
-from django.core.checks import Error,Warning, register
+from django.core.checks import Error, Warning, register
 from gwasdb import elastic
+from aragwas import settings
 
 @register()
 def check_elasticsearch(app_configs, **kwargs):
@@ -27,4 +28,20 @@ def check_elasticsearch(app_configs, **kwargs):
                     id='gwasdb.E002',
                 )
             )
+    return errors
+
+@register()
+def check_datacite(app_configs, **kwargs):
+    errors = []
+    CheckObj = Error
+    if settings.DEBUG:
+        CheckObj = Warning
+    if not settings.DATACITE_USERNAME:
+        errors.append(CheckObj('No DATACITE_USERNAME specified',
+            hint='Set the environment variable DATACITE_USERNAME before starting the backend if you want to register DOIs',
+            obj=None, id='gwasdb.E002'))
+    if not settings.DATACITE_PASSWORD:
+        errors.append(CheckObj('No DATACITE_PASSWORD specified',
+            hint='Set the environment variable DATACITE_PASSWORD before starting the backend if you want to register DOIs',
+            obj=None, id='gwasdb.E002'))
     return errors

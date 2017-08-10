@@ -24,10 +24,7 @@ ADMINS = [('Matteo', 'matteo.togninalli@bsse.ethz.ch'),('Uemit', 'uemit.seren@gm
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '!x&y+0o%^+*hc5phfjh2jm+vprr=6z00*f^z03k5%e0xqrgiz0'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['aragwas.1001genomes.org', 'aragwas.sci.gmi.oeaw.ac.at','localhost', '193.170.94.142', '127.0.0.1','lws-gmi-05']
+ALLOWED_HOSTS = ['aragwas.1001genomes.org', 'aragwas.sci.gmi.oeaw.ac.at','localhost', '127.0.0.1']
 
 
 # Application definition
@@ -145,7 +142,7 @@ GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
 HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DATACITE_PREFIX = ''
-DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
-DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+DATACITE_USERNAME = os.environ.get('DATACITE_USERNAME', None)
+DATACITE_PASSWORD = os.environ.get('DATACITE_PASSWORD', None)
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
 DOI_BASE_URL = 'http://aragwas.1001genomes.org'
