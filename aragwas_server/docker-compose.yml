@@ -26,6 +26,7 @@ services:
     volumes:
       - /mnt/aragwas_data:/opt/aragwas_data
       - /usr/share/nginx/html/static:/usr/share/nginx/html/static
+    restart: unless-stopped
 
   amqp1:
     image: "rabbitmq:3-management"
@@ -36,6 +37,7 @@ services:
       - 5672:5672
     networks:
       - aragwas
+    restart: unless-stopped
 
   elasticsearch1:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
@@ -59,6 +61,8 @@ services:
     networks:
       - esnet
       - aragwas
+    restart: unless-stopped
+
     # Celery worker
   worker:
     image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
@@ -84,6 +88,7 @@ services:
     volumes:
       - /mnt/aragwas_data:/opt/aragwas_data
       - /usr/share/nginx/html/static:/usr/share/nginx/html/static
+    restart: unless-stopped
 
 volumes:
   esdata1:
