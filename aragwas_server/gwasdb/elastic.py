@@ -371,7 +371,7 @@ def check_missing_filters(filters):
     if 'chrom' not in filters.keys():
         filters['chrom'] = 'all'
     if 'region_width' not in filters.keys():
-        filters['region_width'] = 200000
+        filters['region_width'] = 250000
     if 'threshold' not in filters.keys():
         filters['threshold'] = ''
     if 'region' not in filters.keys():
@@ -391,11 +391,11 @@ def get_top_hits_for_all_studies(filters):
     s.aggs['per_chrom'].metric('max', 'max', field='score')
     # Then aggregate for chromosomes
     s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size='200') #TODO: automatically check number of studies
-    s.aggs['per_chrom']['per_study'].metric('top_N', 'top_hits', size='25', _source=['score','snp.position'])
+    s.aggs['per_chrom']['per_study'].metric('top_N', 'top_hits', size='25', sort={'score':'desc'}, _source=['-score','snp.position'])
     # Then for regions (to avoid too many overlapping hits)
     s.aggs['per_chrom']['per_study'].bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))
     # Then state what info we want from top_hits (position and score)
-    s.aggs['per_chrom']['per_study']['per_region'].metric('top', 'top_hits', size='1', _source=['score','snp.position'])
+    s.aggs['per_chrom']['per_study']['per_region'].metric('top', 'top_hits', size='1', sort={'score':'desc'}, _source=['score','snp.position'])
     # Aggregate results
     agg_results = s.execute().aggregations
     # Find max score for
@@ -408,7 +408,7 @@ def get_top_hits_for_all_studies(filters):
         # data_bis[bucket.key] = []
         for element in bucket.per_study.buckets:
             # Combine results and get top 25 per chrom per study:
-            data[bucket.key].append(get_top_N_per_study(element, 40))
+            data[bucket.key].append(get_top_N_per_study(element, 25))
             # study_data = []
             # for top in element.top_N.hits.hits:
             #     study_data.append({'pos': top['_source']['snp']['position'],

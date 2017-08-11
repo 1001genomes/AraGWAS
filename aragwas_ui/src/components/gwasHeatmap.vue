@@ -63,7 +63,7 @@
         onClickAssociation(event): void {
             let position = event.detail.associations[0]['pos'];
             let chromosome = event.detail.chromosome;
-            loadGenesByRegion(chromosome.toString(), position-3000, position+3000, false).then( (genes) => this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }}));
+            loadGenesByRegion(chromosome.toString(), position-2000, position+2000, false).then( (genes) => this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }}));
         }
 
         @Watch("size")
