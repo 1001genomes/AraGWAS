@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+from django.core.urlresolvers import reverse
 
 class Phenotype(models.Model):
     """
@@ -9,6 +11,11 @@ class Phenotype(models.Model):
     date = models.DateTimeField(blank= True, null=True) # date of creation/update
     # to = models.CharField(max_length=255) # Trait ontology that regroups similar phenotypes TODO: add trait ontology to all phenotypes
     arapheno_link = models.URLField(blank=True, null=True) # link to phenotype entry in AraPheno
+
+    @property
+    def doi(self):
+        """Returns the DOI"""
+        return '%s/phenotype:%s' % (settings.DATACITE_PREFIX, self.id)
 
     def __str__(self):
         return "Phenotype: %s" % (self.name)
@@ -32,6 +39,24 @@ class Study(models.Model):
     bh_threshold = models.FloatField(blank=True, null=True) # FDR threshold
     bonferroni_threshold = models.FloatField(blank=True, null=True) # bonferroni threshold
     permutation_threshold = models.FloatField(blank=True, null=True) # permutation threshold
+    n_hits_total = models.IntegerField(blank=True, null=True) # total number of associations
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def get_absolute_url(self):
+        """returns the submission page or study detail page"""
+        url = reverse('index')
+        return url + "#/study/%s" % self.pk
+
+    @property
+    def doi(self):
+        """Returns the DOI"""
+        return '%s/gwas:%s' % (settings.DATACITE_PREFIX, self.id)
+
+    @property
+    def doi_link(self):
+        """Returns the DOI link to datacite"""
+        return '%s/%s' % (settings.DATACITE_DOI_URL, self.doi)
 
     def __str__(self):
         return "Study: %s" % (self.name)
