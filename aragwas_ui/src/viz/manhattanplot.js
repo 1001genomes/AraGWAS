@@ -398,7 +398,7 @@ export default function() {
                 .on("mouseout", function(d) {
                      svg.dispatch("unhighlightassociations", { detail: {associations: [], event: d3.event} });
                 });
-
+            
             // draw significance legend
             var legendGroup = plotGroup
                 .append("g")
