@@ -36,6 +36,8 @@
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">Link to original publication</a></v-flex>
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
+                                    <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
+                                    <v-flex xs5 md3>Permutation threshold:</v-flex><v-flex xs7 mm9>{{ permutationThreshold }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
                                     <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
                                     <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
@@ -112,10 +114,12 @@
       n = {phenotypes: 0, accessions: 0};
       bonferroniThr05: number = 0;
       bonferroniThr01: number = 0;
-      permThr: number = 0;
       bonferroniHits: number = 0;
       permHits: number = 0;
       fdrHits: number = 0;
+      bonferroniThreshold: number = 0;
+      permutationThreshold: number = 0;
+
       samples: number = 0;
       countries: number = 0;
       plotsWidth: number = 0;
@@ -214,7 +218,8 @@
         this.fdrHits = data.nHitsFdr;
         this.samples = data.numberSamples;
         this.countries = data.numberCountries;
-        this.permThr = data.permutationThreshold;
+        this.permutationThreshold = Number(Math.pow(10,-data.permutationThreshold).toPrecision(4));
+        this.bonferroniThreshold = Number(Math.pow(10,-data.bonferroniThreshold).toPrecision(4));
         for (let i=1; i <=5; i++) {
             this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
         }
