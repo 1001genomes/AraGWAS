@@ -45,7 +45,7 @@ export default function() {
     };
 
     var getSnpOpacity = function(d) {
-        if (d.highlighted) {
+        if (d.highlighted || d.overPermutation) {
             return 1;
         }
         return 0;
@@ -185,7 +185,7 @@ export default function() {
                 drawColorLegend();
                 drawAxes();
                 drawPoints();
-                drawThreshold();
+                // drawThreshold();
             };
 
             drawColorLegend = function() {
@@ -244,7 +244,7 @@ export default function() {
                     .attr("transform", positionSnp)
                     .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ",-100)"; })
-                    .style("fill-opacity", 0)
+                    .style("fill-opacity", function(d) { if(d.overPermutation){return 1} else {return 0}})
                     .remove();
                 snps
                     .transition(d3.transition().duration(transitionDuration))
@@ -268,7 +268,7 @@ export default function() {
                     .style("fill", getSnpColor)
                     .on("mouseover", onMouseOverSnp)
                     .on("mouseout", onMouseOutSnp)
-                    .style("fill-opacity", 0)
+                    .style("fill-opacity", function(d) { if(d.overPermutation){return 1} else {return 0}})
                     .attr("transform", function(d) { return "translate(" + scales.x(position(d)) + ", "+ getPlotHeight() +")" ; })
                     .transition(d3.transition().duration(transitionDuration))
                     .attr("transform", positionSnp);
@@ -379,7 +379,7 @@ export default function() {
                      svg.dispatch("unhighlightassociations", { detail: {associations: [], event: d3.event} });
                 });
 
-            drawThreshold();
+            // drawThreshold();
             drawPoints();
 
         });
