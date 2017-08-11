@@ -66,6 +66,11 @@ export default function gwasHeatmap() {
         d3.select(this).attr("r", function(d) { return getDataPointSize() * 1.5; });
     }
 
+    function onSnpClicked(d) {
+        svg.dispatch("clicksnp", { detail: {associations: [d], chromosome: this.parentNode.parentNode.__data__.chr, event: d3.event} });
+    }
+
+
     function mouseout(p, ix) {
         d3.selectAll("text").classed("active", false);
         var studyIdx = parseInt(this.parentNode.dataset.index);
@@ -86,6 +91,7 @@ export default function gwasHeatmap() {
                 //.style("fill-opacity", function(d) { return fillScale(d.score); })
                 .style("fill", function(d) { return colorScale(d.score); })
                 .on("mouseover", mouseover)
+                .on("click", onSnpClicked)
                 .on("mouseout", mouseout);
         }
 
@@ -107,7 +113,7 @@ export default function gwasHeatmap() {
             drawHistograms();
             drawLegend();
 
-            var legend = svg.selectAll(".legend")
+            var legend = svg.selectAll(".legend");
             legend.append("text")
                 .text("Scores")
                 .attr("x", legendElementWidth * 4)
@@ -162,7 +168,7 @@ export default function gwasHeatmap() {
                 .attr("class", "row")
                 .attr("data-index", function(d, ix) { return ix; })
                 .attr("transform", function(d, i) { return "translate(0," + yScale(data.studies[i].name) + ")"; })
-                .each(drawCell);getPlotWidth
+                .each(drawCell);
         }
 
         function drawAxes() {
