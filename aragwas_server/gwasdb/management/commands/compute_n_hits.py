@@ -57,6 +57,7 @@ class Command(BaseCommand):
                         study.n_hits_fdr = hits['bh_hits']
                         study.bonferroni_threshold = thresholds['bonferroni_threshold05']
                         study.bh_threshold = thresholds['bh_threshold']
+                        study.n_hits_total = thresholds['total_associations']
                         if perm_file:
                             study.n_hits_perm = hits['permutation_hits']
                             study.permutation_threshold = thresholds['permutation']
