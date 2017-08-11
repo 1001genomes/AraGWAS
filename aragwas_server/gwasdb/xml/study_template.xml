@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd" xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <identifier identifierType="DOI">{{ study.doi }}</identifier>
+    <creators>
+        <creator>
+            <creatorName>AraGWAS Catalog</creatorName>
+        </creator>
+    </creators>
+    <titles>
+        <title xml:lang="en-us">{{ study.name }}</title>
+    </titles>
+    <publisher>AraGWAS Catalog</publisher>
+    <publicationYear>{{ study.create_date|date:"Y" }}</publicationYear>
+    <language>en-us</language>
+    <resourceType resourceTypeGeneral="Dataset">GWAS study</resourceType>
+    <relatedIdentifiers>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsDerivedFrom" >{{ study.phenotype.doi }}</relatedIdentifier>
+    </relatedIdentifiers>
+    <sizes>
+        <size>{{ study.n_hits_total }} Total associations</size>
+        <size>{{ study.n_hits_bonf }} Significant associations (Bonferroni)</size>
+        <size>{{ study.n_hits_perm }} Significant associations (permuation)</size>
+        <size>{{ study.number_samples }} Samples</size>
+    </sizes>
+    <formats>
+        <format>text/csv</format>
+        <format>application/json</format>
+        <format>application/x-hdf5</format>
+    </formats>
+    <version>1</version>
+   <descriptions>
+        <description xml:lang="en-us" descriptionType="Abstract">
+            GWAS study using the method "{{ study.method }}" with the "{{ study.genotype.name }}" genotype and "{{ study.transformation }}"" transformation
+        </description>
+    </descriptions>
+</resource>

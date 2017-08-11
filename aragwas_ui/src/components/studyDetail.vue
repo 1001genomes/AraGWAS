@@ -29,6 +29,8 @@
                                 <v-divider></v-divider>
                                 <v-layout row wrap class="mt-4">
                                     <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ studyName }}</v-flex>
+                                    <!-- TODO uncomment once DOI works and is registered -->
+                                    <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
                                     <v-flex xs5 md3>Phenotype:</v-flex><v-flex xs7 md9 ><router-link :to="{name: 'phenotypeDetail', params: { id: phenotypeId }}">{{ phenotype }}</router-link></v-flex>
                                     <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
                                     <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
@@ -101,6 +103,7 @@
       @Prop({required: true})
       id: number;
       studyName: string = "";
+      studyDOI: string = "";
       phenotype: string = "";
       phenotypeId: number = 0;
       genotype: string = "";
@@ -209,6 +212,7 @@
         this.publication = data.publication;
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.name;
+        this.studyDOI = data.doi;
         if (data.nHitsBonf) {
           this.bonferroniHits = data.nHitsBonf;
         }

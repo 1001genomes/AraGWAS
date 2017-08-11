@@ -67,7 +67,7 @@ ROOT_URLCONF = 'aragwas.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'gwasdb/xml/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -162,7 +162,7 @@ HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-DATACITE_PREFIX = ''
+DATACITE_PREFIX = '10.21958'
 DATACITE_USERNAME = os.environ.get('DATACITE_USERNAME', None)
 DATACITE_PASSWORD = os.environ.get('DATACITE_PASSWORD', None)
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
