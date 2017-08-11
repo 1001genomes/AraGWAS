@@ -59,6 +59,31 @@ services:
     networks:
       - esnet
       - aragwas
+    # Celery worker
+  worker:
+    image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
+    entrypoint:
+      - /srv/web/wait-for-it.sh
+      - elasticsearch1:9200
+      - --
+      - sh
+      - /srv/web/worker-entrypoint.sh
+    environment:
+      - ES_HOST=http://elastic:changeme@elasticsearch1:9200
+      - ARAGWAS_HDF5_FILE_PATH=/opt/aragwas_data
+      - DATACITE_USERNAME=${DATACITE_USERNAME}
+      - DATACITE_PASSWORD=${DATACITE_PASSWORD}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_USER=${EMAIL_USER}
+      - DJANGO_SETTINGS_MODULE=aragwas.settings.prod
+    networks:
+      - aragwas
+    depends_on:
+      - "amqp1"
+      - "elasticsearch1"
+    volumes:
+      - /mnt/aragwas_data:/opt/aragwas_data
+      - /usr/share/nginx/html/static:/usr/share/nginx/html/static
 
 volumes:
   esdata1:

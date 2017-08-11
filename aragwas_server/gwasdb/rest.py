@@ -480,8 +480,9 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         filters = _get_filter_from_params(request.query_params)
         gene_id = request.query_params.getlist('gene_id') # We need to do this because we cannot solely rely on the annotations of the SNPs for gene-name
         import os
-        if not os.path.isdir('temp'):
-            os.mkdir('temp')
+        export_folder = '%s/export' % settings.HDF5_FILE_PATH
+        if not os.path.isdir(export_folder):
+            os.mkdir(export_folder)
         if gene_id != []:
             zoom = int(request.query_params.getlist('zoom')[0])
             print(zoom)
@@ -496,7 +497,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
                                              content_type="text/csv")
             response['Content-Length'] = os.path.getsize(file_name)
         else:
-            file_name = 'temp/'+str(datetime.datetime.now())+'.csv' # give it a unique name
+            file_name = '%s'+str(datetime.datetime.now())+'.csv' % export_folder # give it a unique name
             opts = dict(doc_type='associations', output_file=file_name)
             fn = download_es2csv(opts, filters)
             print(fn)

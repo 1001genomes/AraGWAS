@@ -11,19 +11,22 @@ from gwasdb import elastic
 from gwasdb import hdf5
 from aragwas import settings
 from gwasdb import es2csv
+import glob
 
-@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+
+@shared_task
+def debug_task():
+    print('TEST OK')
+
+@shared_task
 def clean_temp_files():
-    folder = '../temp'
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+    folder = '%s/export' % settings.HDF5_FILE_PATH
+    if os.path.exists(folder):
+        r = glob.glob(folder+'/*')
+        for i in r:
+            os.remove(i)
 
-@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+@shared_task
 def generate_hitmap_json():
     studies = Study.objects.all()
     studies_data = []
@@ -37,7 +40,7 @@ def generate_hitmap_json():
     with open(file_name, 'w') as out_file:
         json.dump(results, out_file)
 
-@periodic_task(run_every=timedelta(days=1)) # TODO: check the right configuration for the server.
+@shared_task
 def generate_associations_csv():
     es2csv.generate_all_associations_file()
 
