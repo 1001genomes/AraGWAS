@@ -498,7 +498,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
                                              content_type="text/csv")
             response['Content-Length'] = os.path.getsize(file_name)
         else:
-            file_name = '%s' % export_folder +str(datetime.datetime.now())+'.csv' # give it a unique name
+            file_name = '%s/' % export_folder +str(datetime.datetime.now())+'.csv' # give it a unique name
             opts = dict(doc_type='associations', output_file=file_name)
             fn = download_es2csv(opts, filters)
             # wait for file to be done
