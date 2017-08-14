@@ -36,9 +36,10 @@
         loaded: boolean = true;
 
         mounted() {
+            this.onResize();
             this.loadData();
             window.addEventListener('resize', this.debouncedOnResize);
-            this.debouncedOnResize();
+//            this.debouncedOnResize();
         }
 
         beforeDestroy() {
@@ -90,6 +91,8 @@
                     this.loaded=true;
                     d3.select("#heatmap").data([this.data]).call(this.heatmap);
                 });
+
+
         }
 
     }
