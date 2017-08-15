@@ -482,7 +482,16 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         import os
         if not os.path.isdir('temp'):
             os.mkdir('temp')
+        # Other download basenames:
+        download_name = "aragwas_associations"
+        if filters['study_id'] != []:
+            study_name = Study.objects.get(pk=filters['study_id']).name
+            download_name = "{}_associations".format(study_name)
+        elif filters['phenotype_id'] != []:
+            phenotype_name = Phenotype.objects.get(pk=filters['phenotype_id']).name
+            download_name = "{}_associations".format(phenotype_name)
         if gene_id != []:
+            download_name = "{}_associations".format(gene_id[0]) # Override previous ones
             zoom = int(request.query_params.getlist('zoom')[0])
             print(zoom)
             gene = elastic.load_gene_by_id(gene_id[0])
@@ -490,6 +499,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             filters['start'] = gene['positions']['gte'] - zoom
             filters['end'] = gene['positions']['lte'] + zoom
         if _is_filter_whole_dataset(filters):
+            # download_name = "all_associations"
             file_name = "%s/all_associations.csv" % (settings.HDF5_FILE_PATH)
             chunk_size = 8192
             response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
@@ -501,11 +511,28 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             fn = download_es2csv(opts, filters)
             print(fn)
             # wait for file to be done
+            # Add filters to name:
+            if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+                download_name += "_chr"
+                for c in filters['chr']:
+                    download_name += "_{}".format(c)
+            if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
+                download_name += "_maf_filtered"
+            if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
+                download_name += "_annotation_filtered"
+            if 'type' in filters and len(filters['type']) == 1:
+                download_name += "_{}".format(filters['type'][0])
+            if 'significant' in filters:
+                if filters['significant'] == ['p']:
+                    download_name += "_significant_permutation"
+                elif filters['significant'] == ['b']:
+                    download_name += "_significant_bonferroni"
+
             chunk_size = 8192
             response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
                             content_type="text/csv")
             response['Content-Length'] = os.path.getsize(file_name)
-        response['Content-Disposition'] = "attachment; filename=download.csv"
+        response['Content-Disposition'] = "attachment; filename={}.csv".format(download_name)
         return response
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
