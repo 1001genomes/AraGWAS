@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   amqp1:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3.6.11-management"
     hostname: "amqp1"
     container_name: "amqp1"
     ports:

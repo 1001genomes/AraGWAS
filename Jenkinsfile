@@ -52,6 +52,9 @@ pipeline {
 
         // not _really_ deploy, but push to local registry
         stage('deploy') {
+            when{
+                branch 'master'
+            }
             steps {
                 script {
                     sh 'sh write_version.sh'
