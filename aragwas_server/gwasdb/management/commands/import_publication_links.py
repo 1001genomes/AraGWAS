@@ -8,7 +8,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            publication_links_dict = {'Atwell et. al, Nature 2010': 'https://doi.org/10.1038/nature08800', 'Flowering time in simulated seasons': 'https://doi.org/10.1073/pnas.1007431107', 'Mejion': 'https://doi.org/10.1038/ng.2824', 'DAAR': 'https://doi.org/10.21958/STUDY:4', 'Ion Concentration':'https://doi.org/10.21958/STUDY:16', '1001genomes flowering time phenotypes': 'https://doi.org/10.21958/STUDY:12'}
+            publication_links_dict = {
+                'Atwell et. al, Nature 2010': 'https://doi.org/10.1038/nature08800',
+                'Flowering time in simulated seasons': 'https://doi.org/10.1073/pnas.1007431107',
+                'Mejion': 'https://doi.org/10.1038/ng.2824', 'DAAR': 'https://doi.org/10.1073/pnas.1503272112',
+                'Ion Concentration':'https://doi.org/10.1371/journal.pbio.1002009',
+                '1001genomes flowering time phenotypes': 'https://doi.org/10.1016/j.cell.2016.05.063'}
             # Retrieve list of all phenotypes from AraPheno:
             r = requests.get('https://arapheno.1001genomes.org/rest/phenotype/list.json')
             phenos_arapheno = r.json()
