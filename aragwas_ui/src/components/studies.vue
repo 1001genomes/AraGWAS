@@ -28,6 +28,7 @@
          <td  class="text-xs-right">{{ props.item.method }}</td>
          <td  class="text-xs-right">{{ props.item.genotype }}</td>
          <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
+         <td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>
        </template>
      </v-data-table>
    </div>
@@ -61,7 +62,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",}];
+    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text: "Publication",align: "left", value: "publication",}];
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPermutation", descending: true};
     totalItems: number = 0;
@@ -69,8 +70,10 @@
     currentPage = 1;
     pageCount = 5;
     breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "studies", disabled: true}];
+    pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.21958/STUDY:4':'DAAR', 'https://doi.org/10.21958/STUDY:16':'Ion Concentration', 'https://doi.org/10.21958/STUDY:12':'1001genomes flowering time phenotypes'};
 
-    @Watch("pagination")
+
+      @Watch("pagination")
     onPaginationChanged(val: {}, oldVal: {}) {
       // only load when sorting is changed
       if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {
