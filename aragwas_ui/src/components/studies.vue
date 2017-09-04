@@ -70,7 +70,7 @@
     currentPage = 1;
     pageCount = 5;
     breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "studies", disabled: true}];
-    pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.21958/STUDY:4':'DAAR', 'https://doi.org/10.21958/STUDY:16':'Ion Concentration', 'https://doi.org/10.21958/STUDY:12':'1001genomes flowering time phenotypes'};
+    pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.1073/pnas.1503272112':'DAAR', 'https://doi.org/10.1371/journal.pbio.1002009':'Ion Concentration','https://doi.org/10.1016/j.cell.2016.05.063':'1001genomes flowering time phenotypes'};
 
 
       @Watch("pagination")
