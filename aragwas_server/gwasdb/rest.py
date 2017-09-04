@@ -275,7 +275,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
             threshold_or_top = int(threshold_or_top)
 
         association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
-        top_associations, thresholds = get_top_associations(association_file, val=threshold_or_top, top_or_threshold=filter_type)
+        top_associations, thresholds = get_top_associations(association_file, maf=0, val=threshold_or_top, top_or_threshold=filter_type)
         output = {}
         prev_idx = 0
         for chrom in range(1, 6):
@@ -452,13 +452,14 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # Load studies from regular db
         recompute = request.query_params.getlist('recompute')
         if recompute == []:
-            import requests
+            # import requests
             file_name = "%s/heatmap_data.json" % (settings.HDF5_FILE_PATH)
-            url = 'https://gist.githubusercontent.com/mtog/95d29b45e0f58e5c11dc61818f4c57fb/raw/b5bf20b80d168e6d3a3a261e204c34a97c72ba5b/pre_loaded_heatmap_data.json'
-            return Response(requests.get(url).json())
-            # with open(file_name) as data_file: # There seems to be a displaying problem when loading from file: the histograms are loaded and displayed twice
-            #     data = json.load(data_file)
-            # return Response(data)
+        #     url = 'https://gist.githubusercontent.com/mtog/95d29b45e0f58e5c11dc61818f4c57fb/raw/b5bf20b80d168e6d3a3a261e204c34a97c72ba5b/pre_loaded_heatmap_data.json'
+        #     return Response(requests.get(url).json())
+            import json
+            with open(file_name) as data_file: # There seems to be a displaying problem when loading from file: the histograms are loaded and displayed twice
+                data = json.load(data_file)
+            return Response(data)
         studies = Study.objects.all()
         studies_data = []
         for study in studies:
@@ -480,8 +481,9 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         filters = _get_filter_from_params(request.query_params)
         gene_id = request.query_params.getlist('gene_id') # We need to do this because we cannot solely rely on the annotations of the SNPs for gene-name
         import os
-        if not os.path.isdir('temp'):
-            os.mkdir('temp')
+        export_folder = '%s/export' % settings.HDF5_FILE_PATH
+        if not os.path.isdir(export_folder):
+            os.mkdir(export_folder)
         # Other download basenames:
         download_name = "aragwas_associations"
         if filters['study_id'] != []:
@@ -506,10 +508,9 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
                                              content_type="text/csv")
             response['Content-Length'] = os.path.getsize(file_name)
         else:
-            file_name = 'temp/'+str(datetime.datetime.now())+'.csv' # give it a unique name
+            file_name = '%s/' % export_folder +str(datetime.datetime.now())+'.csv' # give it a unique name
             opts = dict(doc_type='associations', output_file=file_name)
             fn = download_es2csv(opts, filters)
-            print(fn)
             # wait for file to be done
             # Add filters to name:
             if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:

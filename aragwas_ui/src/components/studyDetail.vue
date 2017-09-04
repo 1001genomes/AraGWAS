@@ -29,6 +29,8 @@
                                 <v-divider></v-divider>
                                 <v-layout row wrap class="mt-4">
                                     <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ studyName }}</v-flex>
+                                    <!-- TODO uncomment once DOI works and is registered -->
+                                    <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
                                     <v-flex xs5 md3>Phenotype:</v-flex><v-flex xs7 md9 ><router-link :to="{name: 'phenotypeDetail', params: { id: phenotypeId }}">{{ phenotype }}</router-link></v-flex>
                                     <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
                                     <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
@@ -36,6 +38,8 @@
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">Link to original publication</a></v-flex>
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
+                                    <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
+                                    <v-flex xs5 md3>Permutation threshold:</v-flex><v-flex xs7 mm9>{{ permutationThreshold }}</v-flex>
                                     <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
                                     <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
                                     <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
@@ -99,6 +103,7 @@
       @Prop({required: true})
       id: number;
       studyName: string = "";
+      studyDOI: string = "";
       phenotype: string = "";
       phenotypeId: number = 0;
       genotype: string = "";
@@ -112,10 +117,12 @@
       n = {phenotypes: 0, accessions: 0};
       bonferroniThr05: number = 0;
       bonferroniThr01: number = 0;
-      permThr: number = 0;
       bonferroniHits: number = 0;
       permHits: number = 0;
       fdrHits: number = 0;
+      bonferroniThreshold: number = 0;
+      permutationThreshold: number = 0;
+
       samples: number = 0;
       countries: number = 0;
       plotsWidth: number = 0;
@@ -205,6 +212,7 @@
         this.publication = data.publication;
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.name;
+        this.studyDOI = data.doi;
         if (data.nHitsBonf) {
           this.bonferroniHits = data.nHitsBonf;
         }
@@ -214,7 +222,8 @@
         this.fdrHits = data.nHitsFdr;
         this.samples = data.numberSamples;
         this.countries = data.numberCountries;
-        this.permThr = data.permutationThreshold;
+        this.permutationThreshold = Number(Math.pow(10,-data.permutationThreshold).toPrecision(4));
+        this.bonferroniThreshold = Number(Math.pow(10,-data.bonferroniThreshold).toPrecision(4));
         for (let i=1; i <=5; i++) {
             this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
         }

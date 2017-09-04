@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__+ "/../")))
@@ -66,7 +67,7 @@ ROOT_URLCONF = 'aragwas.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'gwasdb/xml/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,16 +134,35 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/usr/share/nginx/html/static'
 
 # Celery
-BROKER_URL = 'redis://localhost:6379/0'
+BROKER_HOST = os.environ.get('AMQP_HOST', 'amqp1')
+CELERY_BROKER_URL = 'amqp://%s' % (BROKER_HOST)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'rpc'
+CELERY_BEAT_SCHEDULE = {
+    'cleanup': {
+        'task': 'gwasdb.tasks.clean_temp_files',
+        'schedule': crontab(minute=0, hour=3)
+    },
+    'generate_heatmap': {
+        'task': 'gwasdb.tasks.generate_hitmap_json',
+        'schedule': crontab(minute=0, hour=0)
+    },
+    'generate_csv_for_download': {
+        'task': 'gwasdb.tasks.generate_associations_csv',
+        'schedule': crontab(minute=0, hour=1)
+    }
+}
+
+
 ES_HOST = os.environ.get('ES_HOST', 'http://elastic:changeme@localhost:9200')
 GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
 HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-DATACITE_PREFIX = ''
+
+DATACITE_PREFIX = '10.21958'
 DATACITE_USERNAME = os.environ.get('DATACITE_USERNAME', None)
 DATACITE_PASSWORD = os.environ.get('DATACITE_PASSWORD', None)
 DATACITE_DOI_URL = 'http://search.datacite.org/works'

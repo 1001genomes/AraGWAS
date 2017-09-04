@@ -16,7 +16,8 @@ export default function() {
     var showXAxis = true;
     var legendPadding = 15;
     var sideSettingsWidth = 80;
-    var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}]
+    var legend = [{symbol: d3.symbolCircle, type: 'INTRON' }, {symbol: d3.symbolTriangle, type: 'MISSENSE' }, {symbol: d3.symbolSquare , type: "SILENT"}];
+    var legendSignificance = [{symbol: d3.symbolCircle, type: 'Significant' }, {symbol: d3.symbolCircle, type: 'Non Significant' }];
     var highlightedAssociations = [];
     var colorLegend = colorlegend();
 
@@ -116,6 +117,16 @@ export default function() {
                 return true;
             }
             return false;
+        });
+    }
+    function  findAssociationBySignificance(type, lookup) {
+        return lookup.filter(function(assoc) {
+            if(type === "Significant"){
+                return assoc.overPermutation;
+            } else {
+                return assoc.overPermutation === false
+            }
+            return ;
         });
     }
 
@@ -230,6 +241,15 @@ export default function() {
                         .attr("opacity", (isActive ? 1 : 0.5))
                         .attr("font-weight", (isActive ? "bold" : "normal"));
                 });
+                svg.select("g.legend-significance")
+                    .selectAll("g.legend-item")
+                    .each(function(d) {
+                        var isActive = findAssociationBySignificance(d.type, highlightedSnps).length > 0;
+
+                        d3.select(this)
+                            .attr("opacity", (isActive ? 1 : 0.5))
+                            .attr("font-weight", (isActive ? "bold" : "normal"));
+                    });
                 colorLegend.highlightItems(highlightedSnps);
             };
 
@@ -377,6 +397,45 @@ export default function() {
                 })
                 .on("mouseout", function(d) {
                      svg.dispatch("unhighlightassociations", { detail: {associations: [], event: d3.event} });
+                });
+
+            // draw significance legend
+            var legendGroup = plotGroup
+                .append("g")
+                .attr("class", "legend-significance")
+                .attr("transform", "translate(" + (margins.left + 10) + ",30)");
+
+            var runningWidth = 0;
+            legendGroup.selectAll("g")
+                .data(legendSignificance)
+                .enter()
+                .append("g")
+                .attr("class", "legend-item")
+                .attr("opacity", 0.5)
+                .each(function(d, i) {
+                    var legendItem = d3.select(this);
+                    legendItem.append("path")
+                        .attr("class", "legend")
+                        .attr("d", d3.symbol().type(d.symbol).size(100))
+                        .style("fill", function(d) { if(d.type === "Significant"){return "#000"} else {return "#fff"}})
+                        .style("stroke", "black");
+
+                    legendItem.append("text")
+                        .attr("class", "legend")
+                        .attr("x", "5")
+                        .attr("y", 0)
+                        .attr("dy", "0.4em")
+                        .attr("dx", "0.7em")
+                        .text(d.type)
+                        .style("fill", "#000");
+                    legendItem.attr("transform", "translate(" + (runningWidth ) + ",0)");
+                    runningWidth += legendItem.node().getBoundingClientRect().width +  legendPadding;
+                })
+                .on("mouseover", function(d) {
+                    svg.dispatch("highlightassociations",  { detail: {associations: findAssociationByType(d.type, associations), event: d3.event} });
+                })
+                .on("mouseout", function(d) {
+                    svg.dispatch("unhighlightassociations", { detail: {associations: [], event: d3.event} });
                 });
 
             // drawThreshold();

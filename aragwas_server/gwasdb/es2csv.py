@@ -21,7 +21,7 @@ import json
 import csv
 import elasticsearch
 from functools import wraps
-from aragwas.settings import ES_HOST
+from aragwas.settings import ES_HOST, HDF5_FILE_PATH
 
 from gwasdb.elastic import filter_association_search
 from elasticsearch_dsl import Search
@@ -187,7 +187,7 @@ class Es2csv:
         if self.num_results > 0:
             self.num_results = sum(1 for line in open(self.tmp_file, 'r'))
             if self.num_results > 0:
-                output_file = open(self.opts['output_file'], 'a')
+                output_file = open(self.opts['output_file'], 'w+')
                 csv_writer = csv.DictWriter(output_file, fieldnames=self.csv_headers, delimiter=self.opts['delimiter'])
                 csv_writer.writeheader()
 
@@ -258,5 +258,5 @@ def prepare_csv(opts, filters):
     es.clean_scroll_ids()
 
 def generate_all_associations_file():
-    opts=dict(output_file='temp/all_associations.csv', doc_type='associations')
+    opts=dict(output_file='%s/all_associations.csv' % HDF5_FILE_PATH, doc_type='associations')
     prepare_csv(opts, dict())

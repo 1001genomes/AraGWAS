@@ -66,7 +66,7 @@ class StudySerializer(serializers.ModelSerializer):
         model = Study
         fields = ('name','genotype','phenotype','phenotype_pk','method','transformation', 'publication',
                   'association_count','pk','n_hits_bonf','n_hits_perm','n_hits_fdr','n_hits_thr','bonferroni_threshold',
-                  'permutation_threshold','bh_threshold','number_samples', 'number_countries')
+                  'permutation_threshold','bh_threshold','number_samples', 'number_countries', 'doi')
 
     def get_association_count(self, obj):
         try:
