@@ -703,14 +703,14 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
         is_gene_suggest = False
         if request.method == "GET":
             client = Elasticsearch([ES_HOST], timeout=60)
-            search_gene = Search().using(client).doc_type('genes').source(exclude=['isoforms','GO'])#'isoforms.cds','GO'])
+            search_gene = Search().using(client).doc_type('genes').source(exclude=['isoforms.cds','isoforms.exons','GO'])#'isoforms.cds','GO'])
             if query_term==None:
                 studies = Study.objects.all()
                 phenotypes = Phenotype.objects.all()
                 # Elasticsearch query cannot be made before knowing the ordering and the page number, etc as this is taken into account by elasticsearch.py
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
-                                                      Q(phenotype__name__icontains=query_term)).order_by('name')
+                                                      Q(phenotype__name__icontains=query_term) | Q(phenotype__description__icontains=query_term)).order_by('n_hits_perm').reverse()
                 phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
                                                       Q(description__icontains=query_term)).order_by('name')
                 # Add chromosome position search for genomic regions
@@ -748,7 +748,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                     search_gene = search_gene.suggest('gene_suggest', query_term, completion={'field': 'suggest', 'size': 200})
             # custom ordering
             ordering = request.query_params.get('ordering', None)
-            ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'genes': ['name', 'chr', 'start_position', 'end_position', 'SNPs_count', 'association_count', 'description']}
+            ordering_fields = {'studies': ['name','genotype','phenotype','method','transformation'], 'phenotypes': ['name', 'description'], 'genes': ['name', 'chr', 'start', 'end', 'SNPs_count', 'association_count', 'description']}
             if ordering is not None:
                 from django.db.models.functions import Lower
                 inverted = False
@@ -758,20 +758,23 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 if ordering in ordering_fields['studies'] and studies:
                     if ordering == 'phenotype' or ordering == 'genotype': # Need to reference the names and not the internal IDs for ordering
                         ordering += '__name'
-                    studies = studies.order_by(Lower(ordering))
+                    studies = studies.order_by(Lower(ordering)).reverse()
                     if inverted:
                         studies = studies.reverse()
                 if ordering in ordering_fields['phenotypes'] and phenotypes:
                     phenotypes = phenotypes.order_by(Lower(ordering))
                     if inverted:
                         phenotypes = phenotypes.reverse()
-                if ordering in ordering_fields['genes'] and genes:
+                if ordering in ordering_fields['genes']:
                     # if ordering == 'snp' or ordering == 'study':
                     #     ordering += '__name'
                     # genes = genes.order_by(Lower(ordering))
-                    search_gene.sort(ordering)
+                    if ordering == 'start' or ordering == 'end':
+                        ordering += '_position'
                     if inverted:
-                        genes = genes.reverse()
+                        ordering = "-"+ordering
+                    search_gene.sort(ordering)
+
             n_genes = search_gene.count()
             if studies:
                 pagest = self.paginate_queryset(studies)

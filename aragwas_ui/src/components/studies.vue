@@ -22,12 +22,13 @@
             {{ props.header.text }}
        </template>
        <template slot="items" scope="props">
-         <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}</router-link></td>
-         <td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotypePk }}">{{ props.item.phenotype }}</router-link></td>
+         <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+         <!--<td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotypePk }}">{{ props.item.phenotype }}</router-link></td>-->
          <td  class="text-xs-right">{{ props.item.transformation }}</td>
          <td  class="text-xs-right">{{ props.item.method }}</td>
          <td  class="text-xs-right">{{ props.item.genotype }}</td>
          <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
+         <!--<td  class="text-xs-left">{{ props.item.nHitsPerm }}</td> TODO: add phenotype description here-->
          <td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>
        </template>
      </v-data-table>
@@ -62,7 +63,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", align: "left", value: "name",},{text:  "Phenotype", align: "left",  value: "phenotype",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text: "Publication",align: "left", value: "publication",}];
+    columns = [{text: "Name", align: "left", value: "name",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text: "Publication",align: "left", value: "publication",}]; // Removed/hidden: {text: "Phenotype", value: "phenotype"}
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPermutation", descending: true};
     totalItems: number = 0;
@@ -73,7 +74,7 @@
     pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.1073/pnas.1503272112':'DAAR', 'https://doi.org/10.1371/journal.pbio.1002009':'Ion Concentration','https://doi.org/10.1016/j.cell.2016.05.063':'1001genomes flowering time phenotypes'};
 
 
-      @Watch("pagination")
+    @Watch("pagination")
     onPaginationChanged(val: {}, oldVal: {}) {
       // only load when sorting is changed
       if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {

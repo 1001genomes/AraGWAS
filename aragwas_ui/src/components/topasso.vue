@@ -87,7 +87,7 @@
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
                         <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.phenotype.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
@@ -138,7 +138,7 @@
                             <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
                         <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.name }}</router-link></td>
+                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.phenotype.name }}</router-link></td>
                         <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
                             <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
                         <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>

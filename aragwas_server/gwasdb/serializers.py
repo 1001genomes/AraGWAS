@@ -61,10 +61,11 @@ class StudySerializer(serializers.ModelSerializer):
     genotype = serializers.SerializerMethodField()
     phenotype = serializers.SerializerMethodField()
     phenotype_pk = serializers.SerializerMethodField()
+    phenotype_description = serializers.SerializerMethodField()
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','phenotype_pk','method','transformation', 'publication',
+        fields = ('name','genotype','phenotype','phenotype_pk','phenotype_description','method','transformation', 'publication',
                   'association_count','pk','n_hits_bonf','n_hits_perm','n_hits_fdr','n_hits_thr','bonferroni_threshold',
                   'permutation_threshold','bh_threshold','number_samples', 'number_countries', 'doi')
 
@@ -88,6 +89,11 @@ class StudySerializer(serializers.ModelSerializer):
     def get_phenotype_pk(self,obj):
         try:
             return obj.phenotype.pk
+        except:
+            return ""
+    def get_phenotype_description(self,obj):
+        try:
+            return obj.phenotype.description
         except:
             return ""
 

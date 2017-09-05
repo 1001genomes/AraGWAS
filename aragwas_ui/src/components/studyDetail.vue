@@ -28,13 +28,14 @@
                                 <h5 class="mb-1">Description</h5>
                                 <v-divider></v-divider>
                                 <v-layout row wrap class="mt-4">
-                                    <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ studyName }}</v-flex>
+                                    <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotype }}</v-flex>
                                     <!-- TODO uncomment once DOI works and is registered -->
                                     <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
-                                    <v-flex xs5 md3>Phenotype:</v-flex><v-flex xs7 md9 ><router-link :to="{name: 'phenotypeDetail', params: { id: phenotypeId }}">{{ phenotype }}</router-link></v-flex>
+                                    <v-flex xs5 md3>Phenotype description:</v-flex><v-flex xs7 md9 >{{ phenotypeDescription }}</v-flex>
                                     <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
                                     <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
                                     <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
+                                    <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
                                     <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">{{ pub_names[publication] }}</a></v-flex>
                                     <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                     <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
@@ -112,6 +113,7 @@
       publication: string = "";
       associationCount: number = 0 ;
       araPhenoLink: string = "";
+      phenotypeDescription: string = "";
       currentView: string = "study-detail-tabs-manhattan";
       currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
@@ -171,7 +173,7 @@
           },
       };
 
-      breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.studyName, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.phenotype, href: "", disabled: true}];
       pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.1073/pnas.1503272112':'DAAR', 'https://doi.org/10.1371/journal.pbio.1002009':'Ion Concentration','https://doi.org/10.1016/j.cell.2016.05.063':'1001genomes flowering time phenotypes'};
 
 
@@ -213,7 +215,7 @@
         this.phenotype = data.phenotype;
         this.publication = data.publication;
         this.phenotypeId = data.phenotypePk;
-        this.breadcrumbs[2].text = data.name;
+        this.breadcrumbs[2].text = data.phenotype;
         this.studyDOI = data.doi;
         if (data.nHitsBonf) {
           this.bonferroniHits = data.nHitsBonf;
@@ -229,10 +231,11 @@
         for (let i=1; i <=5; i++) {
             this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
         }
-        loadPhenotype(this.phenotypeId).then(this._loadAraPhenoLink);
+        loadPhenotype(this.phenotypeId).then(this._loadPhenoData);
       }
-      _loadAraPhenoLink(data): void {
-        this.araPhenoLink = data.araPhenoLink;
+      _loadPhenoData(data): void {
+        this.araPhenoLink = data.araphenoLink;
+        this.phenotypeDescription = data.description;
       }
       _displayPieCharts(data): void {
         this.plotStatistics.topGenes.rows = data.geneCount;

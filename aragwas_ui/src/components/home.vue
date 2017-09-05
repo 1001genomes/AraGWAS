@@ -131,7 +131,7 @@
                     <v-tabs-bar slot="activators">
                         <v-tabs-slider></v-tabs-slider>
                         <v-tabs-item :href="i" ripple class="green lighten-1"
-                                v-for="i in ['studies','phenotypes','genes']" :key="i">
+                                v-for="i in ['studies','genes']" :key="i">
                             <section>
                                 <div class="bold">Results: {{ i }}</div>
                                 <div class="" v-if="n[i] === 1"><span class="arabadge">{{n[i]}} Result</span></div>
@@ -144,31 +144,50 @@
                             <v-card-text>
                                 <div id="results" class="col s12"><br>
                                     <h5 class="center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
-                                    <table v-else class="table">
-                                        <thead>
-                                        <tr>
-                                            <th v-for="key in columns[currentView]"
-                                                @click="sortBy(key)"
-                                                :class="{ active: sortKey == key }"
-                                                style="font-size:11pt">
-                                                {{ key | capitalize }}
-                                        <span class="arrow" :class="sortOrders[currentView][key] > 0 ? 'asc' : 'dsc' ">
-                                        </span>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="entry in filteredData">
-                                            <td v-for="key in columns[currentView]">
-                                                <router-link v-if="(key==='name' && currentView === 'studies')" :to="{name: 'studyDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='phenotype' && currentView === 'studies')" :to="{name: 'phenotypeDetail', params: { id: entry['phenotypePk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='name' && currentView==='phenotypes')" :to="{name: 'phenotypeDetail', params: { id: entry['pk'] }}" >{{entry[key]}}</router-link>
-                                                <router-link v-else-if="(key==='name' && currentView==='genes')" :to="{name: 'geneDetail', params: { geneId: entry[key] }}" >{{entry[key]}}</router-link>
-                                                <div v-else>{{entry[key]}}</div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                    <div v-else>
+                                        <v-data-table  v-if=" currentView === 'studies' "
+                                                       v-bind:headers="columnsStudies"
+                                                       v-bind:items="dataObserved['studies']"
+                                                       v-bind:pagination.sync="pagination"
+                                                       hide-actions
+                                                       :loading="loading"
+                                                       :total-items="n['studies']"
+                                                       class="elevation-0"
+                                        >
+                                            <template slot="headerCell" scope="props">
+                                                {{ props.header.text }}
+                                            </template>
+                                            <template slot="items" scope="props">
+                                                <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+                                                <td  class="text-xs-right">{{ props.item.transformation }}</td>
+                                                <td  class="text-xs-right">{{ props.item.method }}</td>
+                                                <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                                                <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
+                                                <td  class="text-xs-left">{{ props.item.phenotypeDescription }}</td>
+                                            </template>
+                                        </v-data-table>
+                                        <v-data-table  v-else
+                                                       v-bind:headers="columnsGenes"
+                                                       v-bind:items="dataObserved['genes']"
+                                                       v-bind:pagination.sync="pagination"
+                                                       hide-actions
+                                                       :loading="loading"
+                                                       :total-items="n['genes']"
+                                                       class="elevation-0"
+                                        >
+                                            <template slot="headerCell" scope="props">
+                                                {{ props.header.text }}
+                                            </template>
+                                            <template slot="items" scope="props">
+                                                <td><router-link :to="{name: 'geneDetail', params: { id: props.item.name }}">{{ props.item.name }}</router-link></td>
+                                                <td  class="text-xs-right">{{ props.item.chr }}</td>
+                                                <td  class="text-xs-right">{{ props.item.start }}</td>
+                                                <td  class="text-xs-right">{{ props.item.end }}</td>
+                                                <td  class="text-xs-right">{{ props.item.strand }}</td>
+                                                <td  class="text-xs-left">{{ props.item.description }}</td>
+                                            </template>
+                                        </v-data-table>
+                                    </div>
                                 </div>
                             </v-card-text>
                         </v-card>
@@ -217,17 +236,14 @@
       currentPage: number = 1;
       focused: boolean = false;
       searchQuery: string = "";
-      sortOrdersStudies = {name: 1, phenotype: 1, transformation: 1, method: 1, genotype: 1};
-      columnsStudies = ["name", "phenotype", "transformation", "method", "genotype"];
-      sortOrdersPhenotypes = {name: 1, description: 1};
-      columnsPhenotypes = ["name", "description"];
-      sortOrdersGenes = {name: 1, chr: 1, start_pos: 1, end_pos: 1, strand: 1, description: 1};
-      columnsGenes = ["name", "chr", "start position", "end position", "strand", "description"];
-      columns = {studies: this.columnsStudies, phenotypes: this.columnsPhenotypes, genes: this.columnsGenes};
-      sortOrders = {studies: this.sortOrdersStudies, phenotypes: this.sortOrdersPhenotypes, genes: this.sortOrdersGenes};
-      sortKey: string = "";
-      ordered: string = "";
-      filterKey: string = "";
+      columnsStudies = [{text: "Name", align: "left", value: "name",},{text:  "Transformation", value: "transformation"},{text:  "Method", value: "method"},{text:  "Genotype", value: "genotype"},{text:  "N Hits Permutation", value: "nHitsPerm"},{text: "Phenotype Description",align: "left", value: "phenotypeDescription", sortable: false,}];
+//      columnsStudies = ["name", "transformation", "method", "genotype", "n Hits Permutation","phenotype Description"];
+      pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPerm", descending: true};
+      loading: boolean = true;
+
+//      columnsPhenotypes = ["name", "description"];
+      columnsGenes = [{text: "Name", align: "left", value: "name",sortable: false},{text:"Chr", value:"chr",sortable: false},{text:"Start position", value:"start",sortable: false},{text:"End position", value:"end",sortable: false}, {text: "Strand", value: "strand",sortable: false},{text:"Description",value:"description",align:"left",sortable: false}];
+//      columnsGenes = ["name", "chr", "start position", "end position", "strand", "description"];
       dataObserved = {studies: [], phenotypes: [], genes: []};
       observed = {studies: "Study", phenotypes: "Phenotype", genes: "Gene"};
       n = {studies: 0, phenotypes: 0, genes: 0};
@@ -289,6 +305,15 @@
           }
       }
 
+      @Watch("pagination")
+      onPaginationChanged(val: {}, oldVal: {}) {
+        // only load when sorting is changed
+        if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {
+          this.loading = true;
+          this.loadData(this.queryTerm, this.currentPage);
+        }
+      }
+
       @Watch("page")
       onPageChanged(val: number, oldVal: number) {
           this.currentPage = val;
@@ -323,21 +348,6 @@
         return 300;
       }
 
-      get filteredData () {
-        let filterKey = this.filterKey;
-        if (filterKey) {
-          filterKey = filterKey.toLowerCase();
-        }
-        let data = this.dataObserved[this.currentView];
-        if (filterKey) {
-          data = data.filter((row) => {
-            return Object.keys(row).some((key) => {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
-            });
-          });
-        }
-        return data;
-      }
 
       @Watch("currentPage")
       onCurrentPageChanged(val: number, oldVal: number) {
@@ -359,7 +369,19 @@
         this.loadSummaryData();
       }
       loadData(queryTerm: string, page: number): void {
-        search(queryTerm, page, this.ordered).then(this._displayData);
+        const {sortBy, descending} = this.pagination;
+
+        let ordered = '';
+        if (sortBy === null){
+          ordered = '';
+        } else {
+          if (descending) {
+            ordered = "-"+sortBy;
+          } else {
+            ordered = sortBy;
+          }
+        }
+        search(queryTerm, page, ordered).then(this._displayData);
       }
       loadSummaryData(): void {
         loadStudies().then(this._countStudies);
@@ -389,13 +411,14 @@
           this.dataObserved.genes = [];
         } else {
             for (const gIdx of Object.keys(this.dataObserved.genes)) {
-                this.dataObserved.genes[gIdx]["start position"] = this.dataObserved.genes[gIdx]["positions"]["gte"];
-                this.dataObserved.genes[gIdx]["end position"] = this.dataObserved.genes[gIdx]["positions"]["lte"];
+                this.dataObserved.genes[gIdx]["start"] = this.dataObserved.genes[gIdx]["positions"]["gte"];
+                this.dataObserved.genes[gIdx]["end"] = this.dataObserved.genes[gIdx]["positions"]["lte"];
                 if (this.dataObserved.genes[gIdx]["aliases"].length > 0) {
-                    this.dataObserved.genes[gIdx]["description"] = this.dataObserved.genes[gIdx]["aliases"][0]["full_name"];
+                    this.dataObserved.genes[gIdx]["description"] = this.dataObserved.genes[gIdx].isoforms[0].shortDescription;
                 }
             }
         }
+        this.loading = false;
         this.chooseBestView()
       }
       chooseBestView(): void {
@@ -419,16 +442,6 @@
       }
       _countAssociations(data): void {
         this.nAssociations = data;
-      }
-      sortBy(key): void {
-        this.sortOrders[this.currentView][key] = this.sortOrders[this.currentView][key] * -1;
-        if (this.sortOrders[this.currentView][key] < 0) {
-          this.ordered = "-" + key;
-        } else {
-          this.ordered = key;
-        }
-        this.sortKey = key;
-        this.loadData(this.queryTerm, this.currentPage);
       }
     }
 </script>
