@@ -199,7 +199,7 @@
                                                 {{ props.header.text }}
                                             </template>
                                             <template slot="items" scope="props">
-                                                <td><router-link :to="{name: 'geneDetail', params: { id: props.item.name }}">{{ props.item.name }}</router-link></td>
+                                                <td><router-link :to="{name: 'geneDetail', params: { geneId: props.item.name }}">{{ props.item.name }}</router-link></td>
                                                 <td  class="text-xs-right">{{ props.item.chr }}</td>
                                                 <td  class="text-xs-right">{{ props.item.start }}</td>
                                                 <td  class="text-xs-right">{{ props.item.end }}</td>
