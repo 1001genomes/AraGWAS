@@ -130,7 +130,9 @@
 
         onHighlightAssociations(event): void {
             var associations = event.detail.associations;
-            this.genePlt.highlightPos(associations[0].snp.position);
+            if (associations.length > 0 ) {
+                this.genePlt.highlightPos(associations[0].snp.position);
+            }
             this.$emit("highlightassociations", associations);
         }
 
