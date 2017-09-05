@@ -3,6 +3,7 @@ from gff3 import Gff3
 import gff3
 gff3.gff3.logger.setLevel(100)
 import io, re
+from urllib import parse
 
 SNPEFF_REGEX = re.compile(r"(\w+)\((.+)\)")
 
@@ -65,11 +66,11 @@ def _parse_isoforms(gff, gene):
                     'strand':mRNA['strand'],'name':mRNA_id,'type':mRNA['type'],
                     'cds':cds,'exons':exons, 'five_prime_UTR': five_prime_UTR, 'three_prime_UTR': three_prime_UTR}
         if short_description:
-            mRNA_dict['short_description'] = short_description
+            mRNA_dict['short_description'] = parse.unquote(short_description)
         if curator_summary:
-            mRNA_dict['curator_summary'] = curator_summary
+            mRNA_dict['curator_summary'] = parse.unquote(curator_summary)
         if description:
-            mRNA_dict['description'] = description
+            mRNA_dict['description'] = parse.unquote(description)
         isoforms.append(mRNA_dict)
     return isoforms
 

@@ -490,7 +490,7 @@ def index_genes(genes):
     """Indexes the genes"""
     num_genes = len(genes)
     documents = [{'_index':'geno_%s' % gene['chr'].lower(),'_type':'genes','_id':gene_id,'_source':gene} for gene_id, gene in genes.items()]
-    success, errors = helpers.bulk(es,documents,chunk_size=10000,stats_only=True)
+    success, errors = helpers.bulk(es,documents,chunk_size=10000,stats_only=True,request_timeout=300)
     return success, errors
 
 
