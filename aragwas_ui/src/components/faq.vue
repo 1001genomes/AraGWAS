@@ -106,9 +106,20 @@
             {question: "What is the GWAS Hitmap?", html: "The <a href=http://aragwas.1001genomes.org/#/map/>GWAS Hitmap</a> gives a quick overview of the highest-scoring SNPs across the <i>Arabidopsis thaliana</i> genome for all studies in the AraGWAS Catalog."},
         ];
         faqs_rest = [
-            {question: "What is a REST API?", html: "REST is an abbreviation for representational state transfer. It can be used to retrieve data from AraPheno using certain URLs. You also can write custom scripts (e.g. in Python, Pearl, Java etc.) to request and download the information you need.<br>\
+            {question: "What is a REST API?", html: "REST is an abbreviation for representational state transfer. It can be used to retrieve data from the AraGWAS Catalog using certain URLs. You also can write custom scripts (e.g. in Python, Pearl, Java etc.) to request and download the information you need.<br>\
                 More information can be found on Wikipedia: <a target=_blank href=https://en.wikipedia.org/wiki/Representational_state_transfer>What is REST?</a>"},
             {question: "How to access a detailed documentation about the REST API?", html: "Detailed information about all functions supported by the REST API from the AraGWAS Catalog can be accessed here: <a target=_blank href=http://aragwas.1001genomes.org/docs/>AraGWAS Catalog REST API Documentation</a>"},
+            {question: "What are the filters I can use in several REST endpoints?", html: "There are several filter options one can use, these filters require you to list all your requests one by one, if left blank, no filter for that criteria is applied:\
+                <ul>\
+                    <li> Chromosomes: <code>chr</code>, the categories are [1, 2, 3, 4, 5]. Example: <code>chr=1&chr=4&chr=3</code></li>\
+                    <li> Minor Allele Frequency: <code>maf</code>, the categories are [1, 1-5, 5-10, 10]. Example: <code>maf=1&maf=1-5</code></li>\
+                    <li> Minor Allele Count: <code>mac</code>, the categories are [0,5] including 0 will also includ associations for which MAC≤5. Example: <code>mac=5</code></li>\
+                    <li> Annotation: <code>annotation</code>, the categories are [n, s, in, i] for [Non-Synonymous coding, Synonymous coding, Intron, Intergenic] respectively. Example: <code>annotation=in&annotation=i</code></li>\
+                    <li> Type: <code>type</code>, the categories are [genic, non-genic]. Example: <code>type=genic</code></li>\
+                    <li> Significant: <code>significant</code>, only keeps significant associations, the categories are [0, b, p] for [no threshold, bonferroni-significant, permutation-significant]. Example: <code>significant=p</code></li>\
+                </ul>\
+                One can also filter by genomic region, study or phenotype using the gene, study and phenotype-based views. \
+                A final request might look like: <code>https://aragwas.1001genomes.org/api/associations/?limit=25&offset=0&chr=1&chr=2&chr=3&mac=5&type=genic&significant=p</code>"},
         ]
 
 
