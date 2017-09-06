@@ -64,6 +64,7 @@ export default function gwasHeatmap() {
         var studyIdx = parseInt(this.parentNode.dataset.index);
         d3.selectAll(".y.axis text").filter(function(d, i) { return i === studyIdx; }).style("fill", "red");
         d3.select(this).attr("r", function(d) { return getDataPointSize() * 1.5; });
+        svg.dispatch("highlightassociation", { detail: {associations: {position: p.pos, score: p.score, study: studyIdx}, event: d3.event} });
     }
 
     function onSnpClicked(d) {
@@ -76,6 +77,7 @@ export default function gwasHeatmap() {
         var studyIdx = parseInt(this.parentNode.dataset.index);
         d3.selectAll(".y.axis text").filter(function(d, i) { return i === studyIdx; }).style("fill", "#000");
         d3.select(this).attr("r", getDataPointSize);
+        svg.dispatch("unhighlightassociation", { detail: {associations: [p], event: d3.event} });
     }
 
     function chart(selection) {

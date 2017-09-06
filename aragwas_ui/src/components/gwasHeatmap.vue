@@ -2,8 +2,20 @@
     <div>
         <h3 v-if="!loaded" class="mt-4 mb-4 text-xs-center">Loading can take some time. Thank you for your patience.</h3>
         <v-progress-linear v-bind:indeterminate="true" v-if="!loaded" ></v-progress-linear>
-        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:clicksnp="onClickAssociation">
+        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation">
         </svg>
+        <div  v-bind:style="popupStyle" id="associationpopup"  >
+            <v-card v-if="highlightedPosition != 0" class="mt-1 mb-1">
+                <v-card-title>
+                    <dl>
+                        <dt><b>Phenotype</b>: {{highlightedStudy}}</dt>
+                        <dt><b>Position</b>: {{highlightedPosition}}</dt>
+                        <dt><b>Score</b>: {{highlightedScore | round}}</dt>
+                        <dt class="blue--text">Click to go to closest gene!</dt>
+                    </dl>
+                </v-card-title>
+            </v-card>
+        </div>
     </div>
 </template>
 
@@ -34,6 +46,14 @@
         debouncedOnResize = _.debounce(this.onResize, 300);
         data: Array<{}> = [];
         loaded: boolean = true;
+        highlightedPosition = 0;
+        highlightedScore = 0;
+        highlightedStudy: string = "";
+
+        popupStyle = {
+            top: '0',
+            left: '0'
+        };
 
         mounted() {
             this.onResize();
@@ -60,11 +80,28 @@
             return Math.round(30427671 / ((this.width  - 150) / 5));
         }
 
+        onHighlightAssociation(event): void {
+            this.highlightedPosition = event.detail.associations.position;
+            this.highlightedScore = event.detail.associations.score;
+            this.highlightedStudy = this.data['studies'][event.detail.associations.study].name;
+            let e = event.detail.event;
+            this.popupStyle.top = e.layerY + 10 + "px";
+            this.popupStyle.left = e.layerX + "px";
+        }
+
+        onUnhighlightAssociation(event): void {
+            this.highlightedPosition = 0;
+        }
 
         onClickAssociation(event): void {
             let position = event.detail.associations[0]['pos'];
             let chromosome = event.detail.chromosome;
-            loadGenesByRegion(chromosome.toString(), position-2000, position+2000, false).then( (genes) => this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }}));
+            // Introduce an increasing search radius
+            this.loadNeighboringGenes(chromosome, position, 1000);
+        }
+
+        loadNeighboringGenes(chromosome, position, distance): void {
+            loadGenesByRegion(chromosome.toString(), position-distance, position+distance, false).then( (genes) => {if (genes.length != 0) {this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }})} else {this.loadNeighboringGenes(chromosome, position, 2*distance)}});
         }
 
         @Watch("size")
@@ -98,6 +135,10 @@
     }
 </script>
 <style lang="stylus">
-
+    #associationpopup{
+        max-width:200px;
+        position:absolute;
+        z-index:9999;
+    }
 
 </style>
