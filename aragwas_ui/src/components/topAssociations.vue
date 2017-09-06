@@ -46,7 +46,7 @@
         chr = ["1", "2", "3", "4", "5"];
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
-        hideFields = [];
+        hideFields = ["phenotype"];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "p"};
         showControls = ["maf","chr","annotation","type","mac", "significant"];
         test = 'chr2:122242';

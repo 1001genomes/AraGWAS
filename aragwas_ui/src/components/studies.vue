@@ -24,12 +24,10 @@
        <template slot="items" scope="props">
          <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
          <!--<td><router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotypePk }}">{{ props.item.phenotype }}</router-link></td>-->
-         <td  class="text-xs-right">{{ props.item.transformation }}</td>
-         <td  class="text-xs-right">{{ props.item.method }}</td>
-         <td  class="text-xs-right">{{ props.item.genotype }}</td>
+         <td  class="text-xs-left">{{ props.item.phenotypeDescription }}</td>
          <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
-         <!--<td  class="text-xs-left">{{ props.item.nHitsPerm }}</td> TODO: add phenotype description here-->
-         <td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>
+         <!--<td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>-->
+         <td  class="text-xs-right">{{ props.item.genotype }}</td>
        </template>
      </v-data-table>
    </div>
@@ -63,7 +61,7 @@
   export default class Studies extends Vue {
     loading: boolean = false;
     studyPage: Page<Study>;
-    columns = [{text: "Name", align: "left", value: "name",},{text:  "Transformation", value: "transformation",},{text:  "Method", value: "method",},{text:  "Genotype", value: "genotype",},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text: "Publication",align: "left", value: "publication",}]; // Removed/hidden: {text: "Phenotype", value: "phenotype"}
+    columns = [{text: "Name", align: "left", value: "name",},{text: "Phenotype Description",align: "left", value: "phenotypeDescription",},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text:  "Genotype", value: "genotype",}]; // Removed/hidden: {text: "Phenotype", value: "phenotype"}, {text: "Publication",align: "left", value: "publication",},
     studies = [];
     pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPermutation", descending: true};
     totalItems: number = 0;
