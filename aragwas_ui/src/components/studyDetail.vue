@@ -230,6 +230,7 @@
         this.bonferroniThreshold = Number(Math.pow(10,-data.bonferroniThreshold).toPrecision(4));
         for (let i=1; i <=5; i++) {
             this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
+            this.options[i.toString()]["max_y"] = Math.max(data.permutationThreshold + 1, this.options[i.toString()]["max_y"]);
         }
         loadPhenotype(this.phenotypeId).then(this._loadPhenoData);
       }
@@ -277,8 +278,7 @@
             }
             this.dataChr[chrom] =  chrData;
             this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
-            this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
-            this.options[i.toString()]["max_y"] = Math.max(data[chrom].scores[0]+1, 10);
+            this.options[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.options[i.toString()]["max_y"]);
         }
       }
     }
