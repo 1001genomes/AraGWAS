@@ -571,11 +571,17 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         """ Returns snps for that gene """
         gene = elastic.load_gene_by_id(pk)
         zoom = int(request.query_params.get('zoom', 0))
+        selected = bool(request.query_params.get('gene', '') == "1")
         # last_el = [request.query_params.get('lastel', '')]
         filters = _get_filter_from_params(request.query_params)
         filters['chr'] = [gene['chr']]
         filters['start'] = gene['positions']['gte'] - zoom
         filters['end'] = gene['positions']['lte'] + zoom
+        if selected:
+            filters['start'] = gene['positions']['gte']
+            filters['end'] = gene['positions']['lte']
+            filters['gene_id'] = gene['name']
+            print(gene['name'])
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
         associations, count = elastic.load_filtered_top_associations(filters, offset, limit)

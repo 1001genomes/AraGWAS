@@ -85,8 +85,8 @@
         type = ["genic", "non-genic"];
         chr = ["1", "2","3","4","5"];
         hideFields = ["phenotype"];
-        showControls = ["maf","annotation","type", "pageSize","mac","significant"];
-        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
+        showControls = ["maf","annotation","type", "pageSize","mac","significant",'geneonly'];
+        filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0", gene: "1"};
         deboundedLoadGenes = _.debounce(this.loadGenesInRegion, 300);
 
         get startRegion(): number  {

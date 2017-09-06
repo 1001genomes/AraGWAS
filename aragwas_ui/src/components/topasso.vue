@@ -26,6 +26,16 @@
                 </div>
                 <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
             </div>
+            <div v-if="showControls.indexOf('geneonly')>-1">
+                <h6 class="mt-4">Gene options</h6>
+                <v-switch
+                        label="Only show SNPs for selected gene"
+                        v-model="showOnlySelectedGene"
+                        primary
+                        class="mt-0 mb-0"
+                ></v-switch>
+                <div>If turned off, all associations in the area covered by the zoom will be displayed.</div>
+            </div>
             <div v-if="showControls.indexOf('maf')>-1">
                 <h6 class="mt-4">MAF</h6>
                 <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="mb-0"></v-checkbox>
@@ -285,7 +295,7 @@
         @Prop()
         view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
         @Prop()
-        filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[], significant: string};
+        filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[], significant: string, gene: string};
         @Prop({type: null})
         highlightedAssociations: Association[];
         localfilters : {};
@@ -314,6 +324,7 @@
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
         significant = this.filters.significant !== "0";
+        showOnlySelectedGene = this.filters.gene != null;
 
 
 
@@ -345,6 +356,10 @@
         onSignificantChanged(val: number, oldVal: number) {
             this.debouncedloadData(this.currentPage);
         }
+        @Watch("filters.gene")
+        onSelectedChanged(val: number, oldVal: number) {
+            this.debouncedloadData(this.currentPage);
+        }
         @Watch("significant")
         onSigChanged(val: boolean, oldVal: boolean) {
             if(val){
@@ -352,6 +367,18 @@
             }
             else {
                 this.filters.significant = "0";
+            }
+        }
+        @Watch("showOnlySelectedGene")
+        onSelChanged(val: boolean, oldVal: boolean) {
+            console.log("true")
+            if(val){
+                console.log("true")
+                this.filters.gene = "1";
+            }
+            else {
+                console.log("false")
+                this.filters.gene = "0";
             }
         }
 
@@ -467,7 +494,6 @@
             } else if (this.view.name == "gene") {
                 url = url + "&gene_id="+this.view.geneId+"&zoom="+this.view.zoom;
             }
-            console.log(url);
             return url
         }
 

@@ -242,6 +242,8 @@ def filter_association_search(s, filters):
         s = s.filter(Q('bool', should=[Q('term',study__phenotype__id = phenotype_id) for phenotype_id in filters['phenotype_id']]))
     if 'genotype_id' in filters and len(filters['genotype_id']) > 0:
         s = s.filter(Q('bool', should=[Q('term',study__genotype__id = genotype_id) for genotype_id in filters['genotype_id']]))
+    if 'gene_id' in filters and len(filters['gene_id']) > 0:
+        s = s.filter(Q({'nested': {'path': 'snp.annotations', 'query': {'match': {'snp.annotations.gene_name': filters['gene_id']}}}}) | (Q('range', snp__position={'gte': int(filters['start'])}) & Q('range', snp__position={'gte': int(filters['start'])})))
     if 'start' in filters:
         s = s.filter('range', snp__position={'gte': int(filters['start'])})
     if 'end' in filters:
