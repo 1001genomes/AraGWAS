@@ -30,7 +30,7 @@
         </v-container>
         <section v-if="!search">
             <div class="section">
-                <v-container v-if="false">
+                <v-container>
                     <v-layout class="text-xs-center">
                         <v-flex xs6 offset-xs3>
                         <v-card style="max-width: 600px;margin:0 auto;" class="pt-2 pb-2">
@@ -44,57 +44,42 @@
                     </v-layout>
                 </v-container>
                 <v-container class="mt-4 mb-4">
-                    <v-card style="max-width: 1200px;margin:0 auto;" class="pt-4 pb-4">
-                        <v-layout class="text-xs-center">
-                            <v-flex xs5 offset-xs1>
-                                <div class="icon-block">
-                                    <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
-                                    <h5 class="text-xs-center">Top Associations</h5>
-                                    <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
-                                    <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light  to="/top-associations"><v-icon left dark>trending_up</v-icon>Top Associations</v-btn>
-                                </div>
-                            </v-flex>
-                            <v-flex xs5>
-                                <div class="icon-block">
-                                    <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">whatshot</i></h3>
-                                    <h5 class="text-xs-center">Top Genes</h5>
-                                    <p class="light justify">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
-                                    <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-genes-button" light  to="/top-genes"><v-icon left dark>whatshot</v-icon>Top Genes</v-btn>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </v-card>
-                    <v-layout class="text-xs-center mt-4 mb-4">
-                        <v-flex xs6 offset-xs3>
-                            <v-card style="max-width: 600px;margin:0 auto;" class="pt-4 pb-4">
-                                <div class="icon-block">
-                                    <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
-                                    <h5 class="text-xs-center">Take a tour</h5>
-                                    <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
-                                    <v-btn dark class="btn--large icon--left green lighten-1" id="tour-button" light @click="starttour"><v-icon left dark>rowing</v-icon> Take a tour</v-btn>
-                                </div>
-                            </v-card></v-flex>
+                    <v-layout class="text-xs-center">
+                        <v-flex xs4 offset-xs2>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
+                                <h5 class="text-xs-center">Top Associations</h5>
+                                <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
+                                <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light  to="/top-associations"><v-icon left dark>trending_up</v-icon>Top Associations</v-btn>
+                            </div>
+                        </v-flex>
+                        <v-flex xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">whatshot</i></h3>
+                                <h5 class="text-xs-center">Top Genes</h5>
+                                <p class="light justify">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
+                                <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-genes-button" light  to="/top-genes"><v-icon left dark>whatshot</v-icon>Top Genes</v-btn>
+                            </div>
+                        </v-flex>
                     </v-layout>
-                    <v-card style="max-width: 1200px;margin:0 auto;" class="pt-4 pb-4">
-                        <v-layout class="text-xs-center">
-                            <v-flex xs4 offset-xs2>
-                                <div class="icon-block">
-                                    <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                                    <h5 class="text-xs-center">Public GWA Studies</h5>
-                                    <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
-                                    <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
-                                </div>
-                            </v-flex>
-                            <v-flex xs4>
-                                <div class="icon-block">
-                                    <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
-                                    <h5 class="text-xs-center">GWAS HitMap</h5>
-                                    <p class="light justify">Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
-                                    <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </v-card>
+                    <v-layout class="text-xs-center mt-4">
+                        <v-flex xs4 offset-xs2>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
+                                <h5 class="text-xs-center">Public GWA Studies</h5>
+                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
+                            </div>
+                        </v-flex>
+                        <v-flex xs4>
+                            <div class="icon-block">
+                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
+                                <h5 class="text-xs-center">GWAS HitMap</h5>
+                                <p class="light justify">Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
+                                <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
+                            </div>
+                        </v-flex>
+                    </v-layout>
                 </v-container>
             </div>
             <v-container>
