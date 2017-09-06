@@ -20,7 +20,7 @@
                 <div class="pl-4 pt-1 pr-4">
                     <v-text-field
                             name="input-1"
-                            label="Search the catalog (e.g. FLC, AT2G27035, chr2:1153551)"
+                            label="Search the catalog (e.g. FLC, AT2G27035, chr2:1153551, flowering, PMC300268)"
                             v-model="searchQuery"
                             v-bind:focused="focused"
                             prepend-icon="search"

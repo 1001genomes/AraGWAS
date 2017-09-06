@@ -713,7 +713,7 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
                 # Elasticsearch query cannot be made before knowing the ordering and the page number, etc as this is taken into account by elasticsearch.py
             else:
                 studies = Study.objects.filter(Q(name__icontains=query_term) |
-                                                      Q(phenotype__name__icontains=query_term) | Q(phenotype__description__icontains=query_term)).order_by('n_hits_perm').reverse()
+                                                      Q(phenotype__name__icontains=query_term) | Q(phenotype__description__icontains=query_term) | Q(publication_pmid__icontains=query_term) | Q(publication_pmcid__icontains=query_term)).order_by('n_hits_perm').reverse()
                 phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
                                                       Q(description__icontains=query_term)).order_by('name')
                 # Add chromosome position search for genomic regions

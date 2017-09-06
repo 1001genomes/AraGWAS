@@ -30,6 +30,9 @@ class Study(models.Model):
     phenotype = models.ForeignKey("Phenotype", null=True) # foregin key to the phenotype of interest
     method = models.CharField(max_length=255) # method used to individuate associations (LM, KW, LMM, etc)
     publication = models.URLField(blank=True, null=True) # link to a DOI for a published study
+    publication_name = models.CharField(max_length=255, blank=True, null=True) # internal name of the publication
+    publication_pmid = models.CharField(max_length=255, blank=True, null=True) # pubmed id of publication
+    publication_pmcid = models.CharField(max_length=255, blank=True, null=True) # pubmed central id of publication
     number_samples = models.IntegerField(blank=True, null=True) # number of samples used in the GWAS
     number_countries = models.IntegerField(blank=True, null=True) # number of countries of origin for the various accessions
     n_hits_thr = models.IntegerField(blank=True, null=True)  # number of hits with 1e-4 threshold
