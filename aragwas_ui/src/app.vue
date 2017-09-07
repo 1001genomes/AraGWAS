@@ -42,6 +42,7 @@
       </v-toolbar-items>
     </v-toolbar>
     <main>
+      <rotate-overlay v-if="rotateNotificationView"></rotate-overlay>
       <v-container fluid class="pa-0">
         <router-view></router-view>
       </v-container>
@@ -111,13 +112,15 @@
 
 <script lang="ts">
   import Vue from "vue";
-  import Component from "vue-class-component";
-
+  import {Component} from "vue-property-decorator";
+  import RotateOverlay from "./components/rotateOverlay.vue";
 
   import {loadApiVersion, loadStudies} from "./api";
   import ApiVersion from "./models/apiversion";
 
-  @Component({})
+  @Component({
+    components: {'rotate-overlay': RotateOverlay,},
+  })
   export default class AppComponent extends Vue {
     versionInfo: ApiVersion = {} as ApiVersion;
     dialog = false;
@@ -125,6 +128,12 @@
 
     starttour(): void {
       this.$router.push({name:'home', query:{tour:'true'}})
+    }
+
+    get rotateNotificationView() {
+      console.log(this.$route.name );
+      const routeName = this.$route.name;
+      return routeName == 'geneDetail' || routeName == 'map';
     }
 
     async created() {
@@ -181,7 +190,7 @@
 
   .footer-text {
     width:100%;
-    font-size: 0.79em;
+    font-size: 0.70em;
   }
 
   @media only screen and (min-width: 601px) {
