@@ -29,105 +29,91 @@
             </v-card>
         </v-container>
         <section v-if="!search">
-            <div class="section">
-                <v-container>
-                    <v-layout class="text-xs-center">
-                        <v-flex xs6 offset-xs3>
-                        <v-card style="max-width: 600px;margin:0 auto;" class="pt-2 pb-2">
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">rowing</i></h3>
-                                <h5 class="text-xs-center">Take a tour</h5>
-                                <p class="light justify">Take a quick tour of AraGWAS to learn about the important functionalities.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="tour-button" light @click="starttour"><v-icon left dark>rowing</v-icon> Take a tour</v-btn>
-                            </div>
-                        </v-card></v-flex>
-                    </v-layout>
-                </v-container>
-                <v-container class="mt-4 mb-4">
-                    <v-layout class="text-xs-center">
-                        <v-flex xs4 offset-xs2>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">trending_up</i></h3>
-                                <h5 class="text-xs-center">Top Associations</h5>
-                                <p class="light justify">Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
-                                <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-assocations-button" light  to="/top-associations"><v-icon left dark>trending_up</v-icon>Top Associations</v-btn>
-                            </div>
-                        </v-flex>
-                        <v-flex xs4>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">whatshot</i></h3>
-                                <h5 class="text-xs-center">Top Genes</h5>
-                                <p class="light justify">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
+            <v-container>
+                <v-layout row wrap>
+                    <v-flex xs12 >
+                        <div class="icon-block">
+                            <i class="icon material-icons">rowing</i>
+                            <h5 >Take a tour</h5>
+                            <p>Take a quick tour of AraGWAS to learn about the important functionalities.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" id="tour-button" light @click="starttour">
+                                <v-icon left dark>rowing</v-icon> Take a tour
+                            </v-btn>
+                        </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md3>
+                        <div class="icon-block">
+                            <i class="material-icons" >trending_up</i>
+                            <h5>Top Associations</h5>
+                            <p >Check out the top hits across the <em>Arabidopsis thaliana</em> genome.</p>
+                            <v-btn dark class="btn--large green lighten-1 icon--left " id="top-assocations-button" light  to="/top-associations"><v-icon left dark>trending_up</v-icon>Top Associations</v-btn>
+                        </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md3>
+                        <div class="icon-block">
+                                <i class="material-icons" >whatshot</i>
+                                <h5 >Top Genes</h5>
+                                <p >Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome.</p>
                                 <v-btn dark class="btn--large green lighten-1 icon--left "   id="top-genes-button" light  to="/top-genes"><v-icon left dark>whatshot</v-icon>Top Genes</v-btn>
                             </div>
-                        </v-flex>
-                    </v-layout>
-                    <v-layout class="text-xs-center mt-4">
-                        <v-flex xs4 offset-xs2>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                                <h5 class="text-xs-center">Public GWA Studies</h5>
-                                <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
-                            </div>
-                        </v-flex>
-                        <v-flex xs4>
-                            <div class="icon-block">
-                                <h3 class="text-xs-center green--text lighten-1"><i class="material-icons" style="font-size:35px">grain</i></h3>
-                                <h5 class="text-xs-center">GWAS HitMap</h5>
-                                <p class="light justify">Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
-                                <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
-                            </div>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
-            </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md3>
+                         <div class="icon-block">
+                            <i class="material-icons" >view_list</i>
+                            <h5 >Public GWA Studies</h5>
+                            <p >Browse through all available public <em>Arabidopsis thaliana</em> GWA studies.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" id="studies-button" light  to="/studies"><v-icon left dark>view_list</v-icon> GWA Studies</v-btn>
+                        </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md3>
+                        <div class="icon-block">
+                            <i class="material-icons" >grain</i>
+                            <h5 >GWAS HitMap</h5>
+                            <p >Check out the hitmap of hits across the <em>Arabidopsis thaliana</em> genome for all public GWA studies.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
+                        </div>
+                    </v-flex>
+                </v-layout>
+            </v-container>
             <v-container>
-                <div class="section">
-                    <v-layout>
-                        <v-flex xs4 >
-                            <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
-                            <v-card>
-                                <v-card-text>
-                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
-                                    <div>
-                                        <p class="light">
-                                            We finalized a complete recomputation of Genome Wide Association Studies (GWAS) for 167 phenotypes with the brandly new imputed 2029 genomes from the 1001genomes consortium.
-                                        </p>
-                                    </div>
-                                </v-card-text>
-                            </v-card>
-                            <br>
-                            <v-card>
-                                <v-card-text>
-                                    <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog is online</div>
-                                    <div>
-                                        <p class="light">
-                                            We are proud to announce that the first public GWAS catalog for the model organism <em>Arabidopsis thaliana</em> has launched.
-                                        </p>
-                                    </div>
-                                </v-card-text>
-                            </v-card>
-                        </v-flex>
-                        <v-flex xs8 >
-                            <v-layout>
-                                <v-flex xs6>
-                                <h5 class="black--text light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
-                                        <v-card>
-                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</div><v-divider></v-divider>
-                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</div><v-divider ></v-divider>
-                                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Significant associations</div>
-                                        </v-card>
-                                </v-flex>
-                                <v-flex xs6>
-                                    <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
-                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.2, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
-
-                    </v-layout>
-                </div>
+                <v-layout row wrap>
+                    <v-flex xs12 md4 order-md1 order-xs3 class="mt-5">
+                        <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
+                        <v-card>
+                            <v-card-text>
+                                <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
+                                <div>
+                                    <p class="light">
+                                        We finalized a complete recomputation of Genome Wide Association Studies (GWAS) for 167 phenotypes with the brandly new imputed 2029 genomes from the 1001genomes consortium.
+                                    </p>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                        <br>
+                        <v-card>
+                            <v-card-text>
+                                <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog is online</div>
+                                <div>
+                                    <p class="light">
+                                        We are proud to announce that the first public GWAS catalog for the model organism <em>Arabidopsis thaliana</em> has launched.
+                                    </p>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4 order-md2 class="mt-5">
+                        <h5 class="black--text light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
+                        <v-card>
+                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</div><v-divider></v-divider>
+                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</div><v-divider ></v-divider>
+                            <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Significant associations</div>
+                        </v-card>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4 order-md3 class="mt-5">
+                        <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
+                            <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.2, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
+                    </v-flex>
+                </v-layout>
             </v-container>
         </section>
 
@@ -488,8 +474,9 @@
         margin-bottom: 2rem;
     }
 
-      .banner-title h1 {
-        font-size: 4.2rem;
+    .banner-title h1 {
+        font-size: 2.8rem;
+
         line-height: 110%;
         margin: 2.1rem 0 1.68rem 0;
     }
@@ -539,6 +526,40 @@
 
     th.active .arrow {
         opacity: 1;
+    }
+
+    .icon-block {
+        text-align:center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding-top: 50px;
+        align-items: center;
+    }
+
+    .icon-block > i.material-icons {
+        font-size:2.2em;
+        color: #4caf50 ;
+    }
+    .icon-block h5 {
+        margin-bottom:5px;
+    }
+
+    .icon-block p {
+        font-weight: 300;
+        flex:1;
+    }
+
+    @media only screen and (min-width: 601px) {
+        .banner-title h1 {
+           font-size: 3.0rem;
+        }
+    }
+
+    @media only screen and (min-width: 1024px) {
+        .banner-title h1 {
+           font-size: 4.2rem;
+        }
     }
     /*ANIMATIONS*/
 

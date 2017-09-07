@@ -1,11 +1,42 @@
 <template>
  <v-app fill-height footer toolbar id="app">
+    <v-navigation-drawer disable-route-watcher light right v-model="drawer">
+      <v-toolbar flat>
+        <v-list>
+          <v-list-tile> <span>Menu</span></v-list-tile>
+        </v-list>
+      </v-toolbar>
+      <v-divider></v-divider>
+      <v-list dense class="pt-0">
+        <v-list-tile @click="starttour">
+          <v-list-tile-content>
+            <v-list-tile-title  ><span class="black--text">Take a tour?</span></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile :to="{path: '/faq'}">
+          <v-list-tile-content>
+            <v-list-tile-title ><span class="black--text">FAQ</span></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile :to="{path: '/about'}">
+          <v-list-tile-content>
+            <v-list-tile-title><span class="black--text">About</span></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile href="/docs" target="_blank">
+          <v-list-tile-content>
+            <v-list-tile-title><span>REST API documentation</span></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
     <v-toolbar class="white toolbar">
       <v-toolbar-title class="logo aragwas-logo"><router-link :to="{name: 'home'}">AraGWAS Catalog</router-link></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items class="black--text">
+      <v-toolbar-side-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-items class="hidden-sm-and-down black--text">
           <v-btn flat class="links" @click="starttour"><span class="black--text">Take a tour?</span></v-btn>
-          <v-btn flat class="links faq" id="faq-link" :to="{path: '/faq'}" style="display: block"><span class="black--text">FAQ</span></v-btn>
+          <v-btn flat class="links faq" id="faq-link" :to="{path: '/faq'}" ><span class="black--text">FAQ</span></v-btn>
           <v-btn flat class="links" id="about-link" :to="{path: '/about'}"><span class="black--text">About</span></v-btn>
           <v-btn flat class="links" id="faq-link" href="/docs" target="_blank">REST API documentation</v-btn>
       </v-toolbar-items>
@@ -16,9 +47,9 @@
       </v-container>
     </main>
     <v-footer class="green" id="footer" >
-      <div style="width:100%;" >
+      <div class="footer-text"  >
           AraGWAS is a public database for <em>Arabidopsis thaliana</em> GWAS studies.
-        <div class="version">
+        <div class="version hidden-sm-and-down">
           <ul>
             <li>{{versionInfo.version}}</li>
             <li>
@@ -90,6 +121,7 @@
   export default class AppComponent extends Vue {
     versionInfo: ApiVersion = {} as ApiVersion;
     dialog = false;
+    drawer = false;
 
     starttour(): void {
       this.$router.push({name:'home', query:{tour:'true'}})
@@ -117,7 +149,7 @@
     color:black;
     text-decoration:none;3em
     font-weight:300;
-    font-size: 2em;
+    font-size: 1em;
   }
   .links a {
       color:black;
@@ -145,6 +177,20 @@
   .version ul li {
     display: inline-block;
     padding: 2px;
+  }
+
+  .footer-text {
+    width:100%;
+    font-size: 0.79em;
+  }
+
+  @media only screen and (min-width: 601px) {
+    .footer-text {
+        font-size:inherit;
+    }
+    .logo a {
+      font-size: 2em;
+    }
   }
 
   #app
