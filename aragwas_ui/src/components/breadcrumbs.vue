@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-breadcrumbs icons divider="chevron_right" class="left white--text" style="font-size: 24pt">
+        <v-breadcrumbs icons divider="chevron_right" class="left white--text" >
             <v-breadcrumbs-item
                     v-for="item in breadcrumbsItems" :key="item.text"
                     :disabled="item.disabled"
@@ -9,7 +9,7 @@
 
             >
                 <div v-if="detailvue">
-                    <span :class="['title', {'green--text': !item.disabled}]">{{ item.text }}</span>
+                    <span :class="[ {'green--text': !item.disabled}]">{{ item.text }}</span>
                 </div>
                 <div v-else>
                     <h4 v-if="item.disabled" class="grey--text text--lighten-2">{{ item.text }}</h4>
@@ -47,4 +47,29 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+ul.breadcrumbs {
+    padding-left:0px;
+}
+.breadcrumbsitem {
+    font-size:1em;
+}
+.breadcrumbsitem h4 {
+    font-size:20px;
+}
+
+@media only screen and (min-width: 601px) {
+    .breadcrumbsitem {
+        font-size:32px;
+    }
+    .breadcrumbsitem span  {
+        font-size:24px;
+    }
+    .breadcrumbsitem h4 {
+        font-size:34px;
+    }
+
+}
+
+
 </style>
