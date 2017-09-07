@@ -201,6 +201,8 @@
       font-size: 2em;
     }
   }
+  main
+    position:relative;
 
   #app
     background-color: #fff;
