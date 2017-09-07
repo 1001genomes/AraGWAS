@@ -34,7 +34,7 @@
                 color:white;
                 font-size:3em;
                 position:fixed;
-                top:50%;
+                top: calc(50% - 42px);
 
 
     @media only screen and (max-device-width: 479px) and (orientation: portrait) {
