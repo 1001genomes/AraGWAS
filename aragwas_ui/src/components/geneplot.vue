@@ -116,7 +116,6 @@
             let e = event.detail.event;
             this.popupStyle.top = e.layerY + 10 + "px";
             this.popupStyle.left = e.layerX + "px";
-            console.log(this.truncatedIsoforms.indexOf(gene.name))
             if (this.truncatedIsoforms.indexOf(gene.name.split(".")[0])!=-1){
                 this.disclaimer = true
             }
@@ -266,6 +265,7 @@
 
         drawManhattanPlot() {
             this.manhattanPlt.data(this.associations);
+            this.$emit('drawn') // emit this to allow queries on the drawn associations (highlighting)
         }
 
         drawGenePlot() {

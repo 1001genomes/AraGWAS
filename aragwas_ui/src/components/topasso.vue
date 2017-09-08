@@ -330,6 +330,7 @@
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
+            this.$emit('loading'); //send it here to avoid the debounce time.
             this.debouncedloadData(this.currentPage);
         }
         @Watch("filters.maf")
@@ -371,13 +372,13 @@
         }
         @Watch("showOnlySelectedGene")
         onSelChanged(val: boolean, oldVal: boolean) {
-            console.log("true")
+            console.log("true");
             if(val){
-                console.log("true")
+                console.log("true");
                 this.filters.gene = "1";
             }
             else {
-                console.log("false")
+                console.log("false");
                 this.filters.gene = "0";
             }
         }
@@ -450,7 +451,7 @@
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
             this.lastElement = data.lastel;
-            this.$emit('load', this.associations);
+            this.$emit('loaded', this.associations);
         }
         hideHeaders(fields): void {
             for(let i = this.headers.length-1; i>= 0; i--) {
@@ -460,7 +461,7 @@
             }
         }
         showAssociation(item): void {
-            this.$emit('association', item)
+            this.$emit('association', item) // this event will be blocked by geneDetail if the associations are not drawn on manhattanplot.js
         }
 
         roundPerc(number): number {

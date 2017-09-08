@@ -92,6 +92,7 @@ export default function() {
         legendMap = d3.nest().key(function(d) {return _.get(d, activeLegendType.name); }).map(data, d3.map);
         var legendItems = legendMap.keys();
         var numOfLegendItems = legendItems.length;
+        console.log(activeLegendType)
         if (!activeLegendType.isNumber) {
             colorScale = d3.scaleOrdinal().domain(legendItems);
             if (overrideColors.has(activeLegendType.name)) {
@@ -110,6 +111,12 @@ export default function() {
             legendItems = legendItems.map(function(d) { return parseFloat(d) || 0; }).sort(d3.ascending);
             if (activeLegendType.name !== "") {
                 var range = d3.extent(legendItems);
+                console.log(range);
+                if (range[1]==range[0]){
+                    range[0]=0.9*range[0];
+                    range[1]=1.01*range[1]; // 1.1 gave a color not distinguishable enough, here it's red..
+                }
+                console.log(range)
                 colorScale = d3.scaleSequential(interpolateRdYlBu).domain([range[1], range[0]]);
                 colorsForScale = schemeRdYlBu[11];
             } else {

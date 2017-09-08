@@ -12,13 +12,13 @@
             </div>
         </v-flex>
         <v-flex xs12>
-            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:highlightassociations="onHighlightAssociations" v-on:unhighlightassociations="onUnhighlightAssociations"></gene-plot>
+            <gene-plot class="flex" :genes="genes" :options="options" :associations="associations" :highlightedAssociations="highlightedAssociations" v-on:drawn="onDrawn" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:highlightassociations="onHighlightAssociations" v-on:unhighlightassociations="onUnhighlightAssociations"></gene-plot>
         </v-flex>
         <v-flex xs12 class="pl-4 pr-4">
             <div >
                     <h5 class="mb-1 gene-associations">Associations List</h5>
                     <v-divider></v-divider>
-                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView" :highlightedAssociations="highlightedAssociations" v-on:load="onLoadAssociations" v-on:association="onHighlightAssocInTable" ></top-associations>
+                    <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="geneView" :highlightedAssociations="highlightedAssociations" v-on:loaded="onLoadAssociations" v-on:association="onHighlightAssocInTable" v-on:loading="onLoading"></top-associations>
             </div>
         </v-flex>
     </v-layout >
@@ -88,6 +88,7 @@
         showControls = ["maf","annotation","type", "pageSize","mac","significant",'geneonly'];
         filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0", gene: "1"};
         deboundedLoadGenes = _.debounce(this.loadGenesInRegion, 300);
+        loadingAsso = false;
 
         get startRegion(): number  {
             if (this.selectedGene) {
@@ -139,18 +140,26 @@
         onUnhighlightGene(gene) {
             this.highlightedAssociations = [];
         }
+        onLoading() {
+            this.loadingAsso = true;
+        }
+        onDrawn() {
+            this.loadingAsso = false;
+        }
 
         onLoadAssociations(associations) {
-            this.associations = associations
+            this.associations = associations;
         }
 
         onHighlightAssocInTable(association: Association | null) {
             // TODO use array operators
-            if (association == null) {
-                this.highlightedAssociations = [];
-                return;
+            if (!this.loadingAsso){
+                if (association == null) {
+                    this.highlightedAssociations = [];
+                    return;
+                }
+                this.highlightedAssociations = [association];
             }
-            this.highlightedAssociations = [association];
         }
 
         @Watch("selectedGene")

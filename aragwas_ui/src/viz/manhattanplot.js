@@ -181,6 +181,8 @@ export default function() {
     function chart(selection) {
         colorLegend.on("highlightlegend", onHighlightLegend).on("unhighlightlegend",onUnhighlightLegend);
         selection.each(function(data) {
+            // flush previously highlighted associations:
+            highlightedAssociations = [];
             svg = d3.select(this);
             svg.append("defs").append("svg:clipPath")
                 .attr("id", "manhattan-clip")
