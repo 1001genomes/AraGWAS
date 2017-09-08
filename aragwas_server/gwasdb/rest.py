@@ -433,7 +433,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             #     mac = indicate a minimum mac (default=0)
         # Get bin size
         filters = dict()
-        filters['region_width'] = int(request.query_params.getlist('region_width')[0])
+        filters['region_width'] = int(request.query_params.get('region_width'))
+        recompute = request.query_params.getlist('recompute')
+        if recompute != []:
+            filters['chrom'] = request.query_params.get('chromosome')
+            region = request.query_params.getlist('region')
+            filters['region'] = (int(region[0]), int(region[1]))
         # get the rest of the data
         results = elastic.get_gwas_overview_bins_data(filters)
         return Response(results)
@@ -464,7 +469,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             studies_data.append(
                 {'id': study.id, 'name': study.phenotype.name})  # For now only add phenotype name for shorted strings
         # get the rest of the data
-        filters = dict()  # TODO: add parameters fetching from url, for now default values should be fine
+        filters = dict()
+        # Get region params for zoomed regions...
+        filters['chrom'] = request.query_params.get('chromosome')
+        region = request.query_params.getlist('region')
+        filters['region']=(int(region[0]),int(region[1]))
+        filters['region_width'] = request.query_params.get('regionwidth')
         results = elastic.get_gwas_overview_heatmap_data(filters)
         results['studies'] = studies_data
         return Response(results)

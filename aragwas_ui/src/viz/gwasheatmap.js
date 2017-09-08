@@ -22,6 +22,15 @@ export default function gwasHeatmap() {
     var cellSize = 12;
     var legendElementWidth = cellSize * 2.5;
     var legendHeight = 75;
+    var zoomRectBeginning = 0;
+    var zoomBeginning = 0;
+    var zoomChromosome = 0;
+    var zoomEnd = 0;
+    var zoombar;
+    var selectedscatterplot;
+    var isClick = false;
+    var delay = 300;
+    var clickedSnp;
 
     var draw, ticks;
 
@@ -60,6 +69,10 @@ export default function gwasHeatmap() {
         }
     }
 
+    function dontClick() {
+        isClick = false;
+    }
+
     function mouseover(p, ix) {
         var studyIdx = parseInt(this.parentNode.dataset.index);
         d3.selectAll(".y.axis text").filter(function(d, i) { return i === studyIdx; }).style("fill", "red");
@@ -67,8 +80,8 @@ export default function gwasHeatmap() {
         svg.dispatch("highlightassociation", { detail: {associations: {position: p.pos, score: p.score, study: studyIdx}, event: d3.event} });
     }
 
-    function onSnpClicked(d) {
-        svg.dispatch("clicksnp", { detail: {associations: [d], chromosome: this.parentNode.parentNode.__data__.chr, event: d3.event} });
+    function onSnpClicked(d, chromosome) {
+        svg.dispatch("clicksnp", { detail: {associations: [d], chromosome: chromosome, event: d3.event} });
     }
 
 
@@ -78,6 +91,68 @@ export default function gwasHeatmap() {
         d3.selectAll(".y.axis text").filter(function(d, i) { return i === studyIdx; }).style("fill", "#000");
         d3.select(this).attr("r", getDataPointSize);
         svg.dispatch("unhighlightassociation", { detail: {associations: [p], event: d3.event} });
+    }
+
+    function mousedown(d) {
+        var m = d3.mouse(this);
+        var dd;
+        if (d.chr){
+            dd = d;
+        } else {
+            isClick = true;
+            clickedSnp = d;
+            setTimeout(dontClick, delay);
+            // this is for when the user starts by clicking on an association
+            dd = this.parentNode.parentNode.__data__;
+        }
+        zoomChromosome = parseInt(dd.chr[3]);
+        zoomRectBeginning = m[0];
+
+        // pick up initial position & chromosome
+        var range = [0, getChromosomeWidth() - padding];
+        xScale.get(this).domain(dd.region).range(range);
+        zoomBeginning = parseInt(Math.round(xScale.get(this).invert(m[0])));
+        zoombar = svg.select("g#"+dd.chr+".chr").select("g.scatterplot")
+            .append("rect")
+            .attr("id", "zoombar")
+            .style("fill", "grey").style("fill-opacity","0.2")
+            .attr("x", m[0])
+            .attr("width", 0)
+            .attr("y", -5)
+            .attr("height", getPlotHeight()+10);
+
+        selectedscatterplot = svg.select("g#"+dd.chr+".chr").select("g.scatterplot");
+        selectedscatterplot.on("mousemove", mousemove);
+        selectedscatterplot.on("mouseup", mouseup);
+
+    }
+    function mousemove() {
+        var m = d3.mouse(this);
+        if (m[0] < zoomRectBeginning) {
+            zoombar.attr("x", m[0]).attr("width", zoomRectBeginning-m[0]);
+        } else {
+            zoombar.attr("width", m[0]-zoomRectBeginning);
+        }
+    }
+
+    function mouseup() {
+        selectedscatterplot.on("mousemove", null);
+        var m = d3.mouse(this);
+        if (isClick){
+            onSnpClicked(clickedSnp, zoomChromosome)
+        } else {
+            if (m[0] < zoomRectBeginning) {
+                zoomBeginning = parseInt(Math.round(xScale.get(this).invert(m[0])));
+                zoomEnd = parseInt(Math.round(xScale.get(this).invert(zoomRectBeginning)));
+            } else {
+                zoomEnd = parseInt(Math.round(xScale.get(this).invert(m[0])));
+            }
+            if (zoomEnd != zoomBeginning) {
+                console.log("Zoom beginning: "+zoomBeginning+", zoom end: "+zoomEnd);
+                // pick up final position (or min/max) and push to next view
+                svg.dispatch("zoomin", { detail: {range: [zoomBeginning,zoomEnd],chromosome:zoomChromosome, event: d3.event} });
+            }
+        }
     }
 
     function chart(selection) {
@@ -94,7 +169,8 @@ export default function gwasHeatmap() {
                 .style("fill", function(d) { return colorScale(d.score); })
                 .on("mouseover", mouseover)
                 .on("click", onSnpClicked)
-                .on("mouseout", mouseout);
+                .on("mouseout", mouseout)
+                .on("mousedown", mousedown);
         }
 
         draw = function() {
@@ -110,18 +186,37 @@ export default function gwasHeatmap() {
                     xScale.get(this).domain(d.region).range(range);
             });
 
+            var legend = svg.selectAll(".legend");
+            console.log(legend.select("#scores")._groups[0].length);
+            if (legend.select("#scores")._groups[0].length > 1) {
+                // updateField();
+                // console.log(svg.selectAll("g.chr").selectAll("g.scatterplot")
+                //     .selectAll("g.row"))
+            }
+
+
             drawAxes();
             drawPoints();
             drawHistograms();
             drawLegend();
 
-            var legend = svg.selectAll(".legend");
             legend.append("text")
                 .text("Scores")
+                .attr("id", "scores")
                 .attr("x", legendElementWidth * 4)
                 .attr("y", (cellSize * 3))
                 .style("font-size", 10);
         };
+
+        function updateField() {
+            var legend = svg.selectAll(".legend");
+            console.log(legend.select("text#scores"));
+
+            // legend.select("text#scores")._groups[0][0]=undefined;
+            // legend.selectAll("text#legendvalues").remove();
+            console.log(legend.select("text#scores"));
+
+        }
 
         function drawLegend() {
             var legend = svg.selectAll(".legend")
@@ -143,6 +238,7 @@ export default function gwasHeatmap() {
                     var extend  = colorScale.invertExtent(d);
                     return Math.round(10*extend[0])/10;
                  })
+                .attr("id", "legendvalues")
                 .attr("x", function(d, i) { return legendElementWidth * i; })
                 .attr("y", (cellSize * 2))
                 .style("font-size", 10);
@@ -174,6 +270,15 @@ export default function gwasHeatmap() {
         }
 
         function drawAxes() {
+            // Attribute the mousedown event on the scatterplot background
+            svg.selectAll("g.chr").selectAll("g.scatterplot")
+                .append("rect")
+                .style("fill-opacity", "0")
+                .attr("x", 0)
+                .attr("width", getChromosomeWidth() - padding)
+                .attr("y", -5)
+                .attr("height", getPlotHeight()+10)
+                .on("mousedown",mousedown);
 
             yScale.range([0, getPlotHeight()]);
             svg.selectAll("g.x.axis")
@@ -192,7 +297,8 @@ export default function gwasHeatmap() {
 
             svg.select("g.y.axis")
                 .transition().duration(transitionDuration)
-                .call(d3.axisLeft(yScale));
+                .call(d3.axisLeft(yScale))
+
         }
 
         selection.each(function(dt) {

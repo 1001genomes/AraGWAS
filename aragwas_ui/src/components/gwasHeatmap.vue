@@ -2,7 +2,7 @@
     <div>
         <h3 v-if="!loaded" class="mt-4 mb-4 text-xs-center">Loading can take some time. Thank you for your patience.</h3>
         <v-progress-linear v-bind:indeterminate="true" v-if="!loaded" ></v-progress-linear>
-        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation">
+        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation" v-on:zoomin="onZoomIn">
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
             <v-card v-if="highlightedPosition != 0" class="mt-1 mb-1">
@@ -26,7 +26,7 @@
 
     import gwasheatmap from "../viz/gwasheatmap.js";
 
-    import {loadAssociationsHeatmap, loadAssociationsHistogram, loadGenesByRegion} from "../api";
+    import {loadAssociationsHeatmap,loadAssociationsHeatmapZoomed, loadAssociationsHistogram,loadAssociationsHistogramZoomed, loadGenesByRegion} from "../api";
 
     import _ from "lodash";
 
@@ -100,6 +100,13 @@
             this.loadNeighboringGenes(chromosome, position, 1000);
         }
 
+        onZoomIn(event): void {
+            let region = [event.detail.chromosome, event.detail.range[0], event.detail.range[1]];
+            console.log(region);
+            let regionwidth = Math.round((region[2]-region[1]) / ((this.width  - 150)));
+            this.loadZoomedData(region, regionwidth)
+        }
+
         loadNeighboringGenes(chromosome, position, distance): void {
             loadGenesByRegion(chromosome.toString(), position-distance, position+distance, false).then( (genes) => {if (genes.length != 0) {this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }})} else {this.loadNeighboringGenes(chromosome, position, 2*distance)}});
         }
@@ -131,6 +138,23 @@
 
 
         }
+        loadZoomedData(region, regionwidth) {
+            this.loaded=false;
+            Promise.all([loadAssociationsHeatmapZoomed(region,regionwidth), loadAssociationsHistogramZoomed(region,regionwidth)])
+                .then((results) => {
+                    let data = results[0];
+                    let histogramData = results[1];
+                    for (let i=0;i<histogramData['data'].length;i++) {
+                        data['data'][i]['bins'] = histogramData['data'][i]['bins'];
+                    }
+                    this.data = data;
+                    this.loaded=true;
+                    d3.select("#heatmap").data([this.data]).call(this.heatmap);
+                });
+
+
+        }
+
 
     }
 </script>

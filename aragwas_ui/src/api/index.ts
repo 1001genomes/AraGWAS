@@ -283,15 +283,28 @@ export async  function loadApiVersion(): Promise<ApiVersion> {
         .then(checkStatus)
         .then<ApiVersion>(convertToModel);
 }
-
 export async function loadAssociationsHeatmap(): Promise<Array<{}>> {
     return fetch(`/api/associations/map_heat/`)
+        .then(checkStatus)
+        .then<Array<{}>>(convertToModel);
+}
+export async function loadAssociationsHeatmapZoomed(region=[], regionwidth=25000): Promise<Array<{}>> {
+    let url = `/api/associations/map_heat/`;
+    if (region.length != 0){
+        url += `?recompute=1&chromosome=${region[0]}&region=${region[1]}&region=${region[2]}&regionwidth=${regionwidth}`
+    }
+    return fetch(url)
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
 
 export async function loadAssociationsHistogram(regionWidth: number): Promise<Array<{}>> {
     return fetch(`/api/associations/map_histogram/?region_width=${regionWidth}`)
+        .then(checkStatus)
+        .then<Array<{}>>(convertToModel);
+}
+export async function loadAssociationsHistogramZoomed(region=[], regionWidth: number): Promise<Array<{}>> {
+    return fetch(`/api/associations/map_histogram/?region_width=${regionWidth}&recompute=1&chromosome=${region[0]}&region=${region[1]}&region=${region[2]}`)
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
