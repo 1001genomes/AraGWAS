@@ -56,7 +56,7 @@
                     </v-flex>
                     <v-flex xs12 sm6 md8>
                         <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView" @showAssociation></top-associations>
+                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations>
                     </v-flex>
                 </v-layout>
             </v-tabs-content>
@@ -185,11 +185,12 @@
       hideFields = ["phenotype", "study"];
       showControls = ["chr","maf","annotation","type","mac", "significant"];
       filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
-      phenotypeView = {name: "study", studyId: this.id, controlPosition: "right"};
+      studyView = {name: "study", studyId: this.id, controlPosition: "right"};
 
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
+          this.studyView.studyId = val;
       }
       created(): void {
           this.loadData();

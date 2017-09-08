@@ -10,7 +10,7 @@
         <v-tabs-content :id="i" v-for="i in ['On genes', 'On snp type']" :key="i" class="pa-4" ref="plots">
             <div id="statistics" class="mt-2" v-if="i === 'On genes'" >
                 <vue-chart v-if="plotStatistics.topGenes.rows.length > 1" :columns="plotStatistics.topGenes.columns" :rows="plotStatistics.topGenes.rows" :options="{title: 'Distribution of significant associations on genes', legend: {position: 'none'}}" chart-type="BarChart" :chart-events="chartEvents"></vue-chart>
-                <div v-else style="text-align: center">Not enough significant hits</div>
+                <h6 v-else style="text-align: center">Not enough significant hits</h6>
             </div>
             <div v-else>
                 <div v-if="plotStatistics.genic.rows.length>1">
