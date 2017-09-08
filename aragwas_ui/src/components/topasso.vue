@@ -320,13 +320,16 @@
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}, mac: {}};
-        debouncedloadData = _.debounce(this.loadData, 300);
+        debouncedloadDataTrue = _.debounce(this.loadData, 300);
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
         significant = this.filters.significant !== "0";
         showOnlySelectedGene = this.filters.gene != null;
 
-
+        debouncedloadData(a):void {
+            this.$emit('loading'); //send it here to avoid the debounce time.
+            this.debouncedloadDataTrue(this.currentPage)
+        }
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
