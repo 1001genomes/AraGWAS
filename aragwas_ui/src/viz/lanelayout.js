@@ -15,6 +15,7 @@ export default function() {
     var gap = 0;
     var fixedExtent = false;
     var maximumHeight = Infinity;
+    // var maxNIsoforms = 5;
 
     function processTimelines() {
         timelines.forEach(function(band) {
@@ -75,6 +76,9 @@ export default function() {
                 swimlanes[x].push(band);
                 return;
             }
+            // if (x > maxNIsoforms) {
+            //     return;
+            // }
             x++;
         }
         swimlanes[x] = [band];

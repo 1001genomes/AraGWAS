@@ -24,6 +24,7 @@
                     <dl>
                         <dt>Position:</dt><dd>{{highlightedGene.originalStart}} - {{highlightedGene.originalEnd}}</dd>
                         <dt>Description:</dt><dd>{{highlightedGene.description}}</dd>
+                        <dt v-if="disclaimer" class="red--text">Disclaimer:</dt><dd v-if="disclaimer" class="red--text">Some isoforms of this gene are not displayed for better readability.</dd>
                     </dl>
                 </v-card-text>
             </v-card>
@@ -81,6 +82,8 @@
         axis = {x: d3.axisBottom(this.scales.x), y: d3.axisLeft(this.scales.y)};
         genePlt = geneplot();
         manhattanPlt = manhattanplot();
+        truncatedIsoforms: Array<string>;
+        disclaimer = false;
         debouncedOnResize = _.debounce(this.onResize, 300);
 
         debouncedDrawGenePlot = _.debounce(this.drawGenePlot, 300);
@@ -91,7 +94,7 @@
         popupStyle = {
             top: '0',
             left: '0'
-        }
+        };
         popupPosY = 0;
         activeColor= "red";
         fontSize = 30;
@@ -105,7 +108,7 @@
             right: 50,
             bottom: 0,
             top: 0,
-        }
+        };
 
         onHighlightGene(event): void {
             let gene = event.detail.gene;
@@ -113,6 +116,10 @@
             let e = event.detail.event;
             this.popupStyle.top = e.layerY + 10 + "px";
             this.popupStyle.left = e.layerX + "px";
+            console.log(this.truncatedIsoforms.indexOf(gene.name))
+            if (this.truncatedIsoforms.indexOf(gene.name.split(".")[0])!=-1){
+                this.disclaimer = true
+            }
             // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
             /*this.manhattanPlt.highlightSnps(this.associations.filter(function(assoc) {
                 return assoc.snp.position >= gene.positions.gte && assoc.snp.position <= gene.positions.lte;
@@ -123,6 +130,7 @@
 
         onUnhighlightGene(event): void {
             this.highlightedGene = null;
+            this.disclaimer = false;
             // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
             // this.manhattanPlt.highlightSnps([]);
             this.$emit("unhighlightgene", []);
@@ -141,6 +149,22 @@
             this.$emit("unhighlightassociations", []);
         }
 
+        getOverlappingGenes(): Array<any> {
+            var intervals;
+            var genes: Array<string> = [];
+            for(let i=0; i<this.genes.length; i++) {
+                const posA = this.genes[i].positions;
+                for(let j = i+1; j<this.genes.length; j++) {
+                    const posB = this.genes[j].positions;
+                    if ((posA.gte < posB.lte && posA.gte > posB.gte) || (posA.lte < posB.lte && posA.lte > posB.gte) || (posA.gte < posB.gte && posA.lte > posB.lte)) {
+                        genes.push(this.genes[i].name);
+                        genes.push(this.genes[j].name);
+                    }
+                }
+            }
+            return genes;
+        }
+
         get height() {
             return this.scatterPlotHeight + this.genePlotHeight;
         }
@@ -156,9 +180,18 @@
 
         get isoforms() {
             const isoforms = [];
+            let overlappingGenes = this.getOverlappingGenes();
             this.genes.forEach(function(d) {
-                isoforms.push.apply(isoforms, d['isoforms']);
+                if (overlappingGenes.indexOf(d.name)!=-1){
+                    isoforms.push.apply(isoforms, d['isoforms']!.slice(0,2));
+                } else {
+                    isoforms.push.apply(isoforms, d['isoforms']!.slice(0,5));
+                    if(d.isoforms!.length>5){
+                        overlappingGenes.push.apply((d.name).toString())
+                    }
+                }
             });
+            this.truncatedIsoforms = overlappingGenes;
             return isoforms;
         }
 

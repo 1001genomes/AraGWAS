@@ -117,6 +117,7 @@ export default function() {
 
                 // draw text
                 newIsoForms
+                    .filter(function(d){ return (d.end-d.start)>75})
                     .append("text")
                     .attr("fill", "black");
 
