@@ -186,8 +186,8 @@
                     isoforms.push.apply(isoforms, d['isoforms']!.slice(0,2));
                 } else {
                     isoforms.push.apply(isoforms, d['isoforms']!.slice(0,5));
-                    if(d.isoforms!.length>5){
-                        overlappingGenes.push.apply((d.name).toString())
+                    if(d['isoforms']!.length>5){
+                        overlappingGenes.push.apply([(d.name).toString()])
                     }
                 }
             });
