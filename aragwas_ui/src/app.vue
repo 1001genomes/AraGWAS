@@ -1,6 +1,6 @@
 <template>
  <v-app fill-height footer toolbar id="app">
-    <v-navigation-drawer disable-route-watcher light right v-model="drawer">
+    <v-navigation-drawer disable-route-watcher temporary light overflow absolute right v-model="drawer">
       <v-toolbar flat>
         <v-list>
           <v-list-tile> <span>Menu</span></v-list-tile>
@@ -43,7 +43,7 @@
     </v-toolbar>
     <main>
       <rotate-overlay v-if="rotateNotificationView"></rotate-overlay>
-      <v-container fluid class="pa-0">
+      <v-container fluid class="pa-0" >
         <router-view></router-view>
       </v-container>
     </main>

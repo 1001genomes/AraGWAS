@@ -29,7 +29,7 @@
             </v-card>
         </v-container>
         <section v-if="!search">
-            <v-container>
+            <v-container grid-list-md>
                 <v-layout row wrap>
                     <v-flex xs12 >
                         <div class="icon-block">
@@ -75,7 +75,7 @@
                     </v-flex>
                 </v-layout>
             </v-container>
-            <v-container>
+            <v-container grid-list-md>
                 <v-layout row wrap>
                     <v-flex xs12 md4 order-md1 order-xs3 class="mt-5">
                         <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
@@ -119,8 +119,7 @@
 
         <section v-if="search" class="container">
                 <v-tabs id="search-result-tabs" grow icons dark v-model="currentView">
-                    <v-tabs-bar slot="activators">
-                        <v-tabs-slider></v-tabs-slider>
+                    <v-tabs-bar>
                         <v-tabs-item :href="i" ripple class="green lighten-1"
                                 v-for="i in ['studies','genes']" :key="i">
                             <section>
@@ -129,59 +128,62 @@
                                 <div class="" v-else><span class="arabadge">{{n[i]}}<span v-if="i==='genes' & n[i]===200">+</span> Results</span></div>
                             </section>
                         </v-tabs-item>
+                        <v-tabs-slider></v-tabs-slider>
                     </v-tabs-bar>
-                    <v-tabs-content :id="i" v-for="i in ['studies','phenotypes','genes']" :key="i">
-                        <v-card>
-                            <v-card-text>
-                                <div id="results" class="col s12"><br>
-                                    <h5 class="center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
-                                    <div v-else>
-                                        <v-data-table  v-if=" currentView === 'studies' "
-                                                       v-bind:headers="columnsStudies"
-                                                       v-bind:items="dataObserved['studies']"
-                                                       v-bind:pagination.sync="pagination"
-                                                       hide-actions
-                                                       :loading="loading"
-                                                       :total-items="n['studies']"
-                                                       class="elevation-0"
-                                        >
-                                            <template slot="headerCell" scope="props">
-                                                {{ props.header.text }}
-                                            </template>
-                                            <template slot="items" scope="props">
-                                                <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
-                                                <td  class="text-xs-left">{{ props.item.phenotypeDescription }}</td>
-                                                <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
-                                                <!--<td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>-->
-                                                <td  class="text-xs-right">{{ props.item.genotype }}</td>
-                                            </template>
-                                        </v-data-table>
-                                        <v-data-table  v-else
-                                                       v-bind:headers="columnsGenes"
-                                                       v-bind:items="dataObserved['genes']"
-                                                       v-bind:pagination.sync="pagination"
-                                                       hide-actions
-                                                       :loading="loading"
-                                                       :total-items="n['genes']"
-                                                       class="elevation-0"
-                                        >
-                                            <template slot="headerCell" scope="props">
-                                                {{ props.header.text }}
-                                            </template>
-                                            <template slot="items" scope="props">
-                                                <td><router-link :to="{name: 'geneDetail', params: { geneId: props.item.name }}">{{ props.item.name }}</router-link></td>
-                                                <td  class="text-xs-right">{{ props.item.chr }}</td>
-                                                <td  class="text-xs-right">{{ props.item.start }}</td>
-                                                <td  class="text-xs-right">{{ props.item.end }}</td>
-                                                <td  class="text-xs-right">{{ props.item.strand }}</td>
-                                                <td  class="text-xs-left">{{ props.item.description }}</td>
-                                            </template>
-                                        </v-data-table>
+                    <v-tabs-items>
+                        <v-tabs-content :id="i" v-for="i in ['studies','phenotypes','genes']" :key="i">
+                            <v-card>
+                                <v-card-text>
+                                    <div id="results" class="col s12"><br>
+                                        <h5 class="center" v-if="n[currentView] === 0">No {{observed[currentView]}} found for query: {{queryTerm}}</h5>
+                                        <div v-else>
+                                            <v-data-table  v-if=" currentView === 'studies' "
+                                                        v-bind:headers="columnsStudies"
+                                                        v-bind:items="dataObserved['studies']"
+                                                        v-bind:pagination.sync="pagination"
+                                                        hide-actions
+                                                        :loading="loading"
+                                                        :total-items="n['studies']"
+                                                        class="elevation-0"
+                                            >
+                                                <template slot="headerCell" scope="props">
+                                                    {{ props.header.text }}
+                                                </template>
+                                                <template slot="items" scope="props">
+                                                    <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+                                                    <td  class="text-xs-left">{{ props.item.phenotypeDescription }}</td>
+                                                    <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
+                                                    <!--<td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>-->
+                                                    <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                                                </template>
+                                            </v-data-table>
+                                            <v-data-table  v-else
+                                                        v-bind:headers="columnsGenes"
+                                                        v-bind:items="dataObserved['genes']"
+                                                        v-bind:pagination.sync="pagination"
+                                                        hide-actions
+                                                        :loading="loading"
+                                                        :total-items="n['genes']"
+                                                        class="elevation-0"
+                                            >
+                                                <template slot="headerCell" scope="props">
+                                                    {{ props.header.text }}
+                                                </template>
+                                                <template slot="items" scope="props">
+                                                    <td><router-link :to="{name: 'geneDetail', params: { geneId: props.item.name }}">{{ props.item.name }}</router-link></td>
+                                                    <td  class="text-xs-right">{{ props.item.chr }}</td>
+                                                    <td  class="text-xs-right">{{ props.item.start }}</td>
+                                                    <td  class="text-xs-right">{{ props.item.end }}</td>
+                                                    <td  class="text-xs-right">{{ props.item.strand }}</td>
+                                                    <td  class="text-xs-left">{{ props.item.description }}</td>
+                                                </template>
+                                            </v-data-table>
+                                        </div>
                                     </div>
-                                </div>
-                            </v-card-text>
-                        </v-card>
-                    </v-tabs-content>
+                                </v-card-text>
+                            </v-card>
+                        </v-tabs-content>
+                    </v-tabs-items>
                 </v-tabs>
                 <div class="page-container mt-3 mb-3">
                     <v-layout align-center justify-center >
@@ -543,6 +545,7 @@
     }
     .icon-block h5 {
         margin-bottom:5px;
+        color: #4caf50 ;
     }
 
     .icon-block p {

@@ -13,22 +13,19 @@
     "lint": "tslint -c tslint.json  'src/**/*.{ts,js}' 'test/unit/specs/*.{ts,js}' 'test/e2e/specs/*.{ts,js}'"
   },
   "dependencies": {
-    "css-loader": "^0.28.4",
     "d3": "^4.9.1",
     "d3-scale-chromatic": "^1.1.1",
     "intro.js": "^2.5.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1",
     "vue": "^2.4.1",
     "vue-analytics": "^4.1.2",
     "vue-charts": "^0.2.1",
     "vue-class-component": "^5.0.2",
     "vue-router": "^2.7.0",
     "vue-timeago": "^3.3.5",
-    "vueify": "^9.4.1",
-    "whatwg-fetch": "^2.0.3"
+    "whatwg-fetch": "^2.0.3",
+    "vuetify": "^0.15.2"
   },
   "devDependencies": {
     "@types/d3": "^4.9.0",
@@ -100,7 +97,6 @@
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.4.1",
     "vue-ts-loader": "0.0.3",
-    "vuetify": "^0.14.1",
     "webpack": "^2.7.0",
     "webpack-bundle-analyzer": "^2.8.3",
     "webpack-dev-middleware": "^1.11.0",

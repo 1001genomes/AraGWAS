@@ -22,7 +22,7 @@
                 </v-flex>
                 <v-flex xs12 class="mt-4">
                     <v-tabs id="similar-tabs" grow scroll-bars >
-                        <v-tabs-bar slot="activators">
+                        <v-tabs-bar>
                             <v-tabs-slider></v-tabs-slider>
                             <v-tabs-item href="#similar-tabs-studies" ripple class="grey lighten-4 black--text">
                                 <div>List of Studies</div>
@@ -31,45 +31,47 @@
                                 <div>Similar Phenotypes</div>
                             </v-tabs-item>
                         </v-tabs-bar>
-                        <v-tabs-content id = "similar-tabs-studies">
-                             <v-data-table
-                                    v-bind:headers="studyColumns"
-                                    v-bind:items="studies"
-                                    hide-actions
-                            >
-                            <template slot="headerCell" scope="props">
-                                    {{ props.header.text }}
-                            </template>
-                            <template slot="items" scope="props">
-                                <td>
-                                    <router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}
-                                    </router-link>
-                                </td>
-                                <td  class="text-xs-right">{{ props.item.method }}</td>
-                                <td  class="text-xs-right">{{ props.item.genotype }}</td>
-                            </template>
-                            </v-data-table>
-                        </v-tabs-content>
-                        <v-tabs-content id="similar-tabs-phenotypes" >
-                            <v-data-table
-                                    v-bind:headers="phenotypeColumns"
-                                    v-bind:items="similarPhenotypes"
-                                    hide-actions
-                            >
-                            <template slot="headerCell" scope="props">
-                                    {{ props.header.text }}
-                            </template>
-                            <template slot="items" scope="props" >
-                                    <td v-if="props.item.phenotype_id!=id">
-                                        <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotype_id }}">{{ props.item.name }}
+                        <v-tabs-items>
+                            <v-tabs-content id = "similar-tabs-studies">
+                                <v-data-table
+                                        v-bind:headers="studyColumns"
+                                        v-bind:items="studies"
+                                        hide-actions
+                                >
+                                <template slot="headerCell" scope="props">
+                                        {{ props.header.text }}
+                                </template>
+                                <template slot="items" scope="props">
+                                    <td>
+                                        <router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.name }}
                                         </router-link>
                                     </td>
-                                    <td v-if="props.item.phenotype_id!=id">
-                                        {{ props.item.to_name }}
-                                    </td>
-                            </template>
-                            </v-data-table>
-                        </v-tabs-content>
+                                    <td  class="text-xs-right">{{ props.item.method }}</td>
+                                    <td  class="text-xs-right">{{ props.item.genotype }}</td>
+                                </template>
+                                </v-data-table>
+                            </v-tabs-content>
+                            <v-tabs-content id="similar-tabs-phenotypes" >
+                                <v-data-table
+                                        v-bind:headers="phenotypeColumns"
+                                        v-bind:items="similarPhenotypes"
+                                        hide-actions
+                                >
+                                <template slot="headerCell" scope="props">
+                                        {{ props.header.text }}
+                                </template>
+                                <template slot="items" scope="props" >
+                                        <td v-if="props.item.phenotype_id!=id">
+                                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.phenotype_id }}">{{ props.item.name }}
+                                            </router-link>
+                                        </td>
+                                        <td v-if="props.item.phenotype_id!=id">
+                                            {{ props.item.to_name }}
+                                        </td>
+                                </template>
+                                </v-data-table>
+                            </v-tabs-content>
+                        </v-tabs-items>
                     </v-tabs>
                 </v-flex>
             </v-flex>
