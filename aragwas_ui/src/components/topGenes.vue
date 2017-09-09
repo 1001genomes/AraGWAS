@@ -10,7 +10,7 @@
         <div class="page-container">
             <div class="section">
                 <v-layout row class="mb-4">
-                    <v-flex xs12><h5 class="mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">whatshot</v-icon> Top Genes</h5><v-divider class="mb-3"></v-divider>
+                    <v-flex xs12><h5 class="green--text mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">whatshot</v-icon> Top Genes</h5><v-divider class="mb-3"></v-divider>
                         <span style="font-size: 1.2rem">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome. This table shows all top genes (sorted by number of high-scoring hits) that are stored in the database. Genes with 0 hits are not shown.</span></v-flex>
                 </v-layout>
                 <v-layout row-xs child-flex-xs wrap justify-space-around>
@@ -21,11 +21,13 @@
                                     label="Only count significant hits"
                                     v-model="significant"
                                     primary
-                                    class="mt-0 mb-0"
+                                    class="mt-0 mb-0 pt-0" hide-details
                             ></v-switch>
                             <div class="ml-3" v-if="significant">
-                                <v-radio label="Permutation threshold" v-model="threshold" value="p" class="mt-0 mb-0"></v-radio>
-                                <v-radio label="Bonferroni threshold" v-model="threshold" value="b" class="mt-0 mb-0"></v-radio>
+                                <v-radio-group v-model="threshold" >
+                                    <v-radio label="Permutation threshold" value="p" ></v-radio>
+                                    <v-radio label="Bonferroni threshold"  value="b" ></v-radio>
+                                </v-radio-group>
                             </div>
                             <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
                         </div>
@@ -37,16 +39,17 @@
                                     label="Genes per page"
                                     light
                                     single-line
-                                    auto
+                                    auto hide-details
+                                    class="pt-0"
                             ></v-select>
                         </div>
                         <div>
                             <h6 class="mt-4">Chromosomes</h6>
-                            <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of all genes)'" value="1" class="mb-0"> what</v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of all genes)'" value="2" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of all genes)'" value="3" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of all genes)'" value="4" class="mt-0 mb-0"></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of all genes)'" value="5" class="mt-0"></v-checkbox>
+                            <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of all genes)'" value="1" class="mb-0" hide-details> what</v-checkbox>
+                            <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of all genes)'" value="2" class="mt-0 mb-0" hide-details></v-checkbox>
+                            <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of all genes)'" value="3" class="mt-0 mb-0" hide-details></v-checkbox>
+                            <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of all genes)'" value="4" class="mt-0 mb-0" hide-details></v-checkbox>
+                            <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of all genes)'" value="5" class="mt-0" hide-details></v-checkbox>
                         </div>
                     </v-flex>
                     <v-flex xs9 wrap fill-height class="association-table-container">
@@ -196,7 +199,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="stylus">
+
     .section {
         width: 90%;
         padding-top: 1rem;

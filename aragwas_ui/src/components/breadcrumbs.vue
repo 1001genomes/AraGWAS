@@ -6,6 +6,7 @@
                     :disabled="item.disabled"
                     class="breadcrumbsitem"
                     :to="item.href"
+                    exact
 
             >
                 <div v-if="detailvue">

@@ -127,7 +127,12 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="stylus">
+    @import "../stylus/main"
+
+    h4
+        color:$theme.primary
+
     h6 {
         font-weight: 400;
     }

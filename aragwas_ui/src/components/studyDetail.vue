@@ -11,7 +11,7 @@
             </v-flex>
         </v-layout>
         <v-tabs id="study-detail-tabs" grow scroll-bars v-model="currentView" class="mt-3">
-            <v-tabs-bar slot="activators">
+            <v-tabs-bar>
                 <v-tabs-slider></v-tabs-slider>
                 <v-tabs-item href="#study-detail-tabs-details" ripple class="grey lighten-4 black--text">
                     <div>Study Details</div>
@@ -19,58 +19,60 @@
                 <v-tabs-item href="#study-detail-tabs-manhattan" ripple class="grey lighten-4 black--text" >
                     <div>Manhattan plots</div>
                 </v-tabs-item>
-                </v-tabs-bar>
-            <v-tabs-content id="study-detail-tabs-details" class="pa-4" >
-                <v-layout row-sm wrap column >
-                    <v-flex xs12 sm6 md4>
-                        <v-flex xs12 >
+            </v-tabs-bar>
+            <v-tabs-items>
+                <v-tabs-content id="study-detail-tabs-details" class="pa-4 " >
+                    <v-layout row wrap >
+                        <v-flex xs12 sm6 md4 class="pa-1">
                             <v-layout column>
-                                <h5 class="mb-1">Description</h5>
+                                <v-flex xs12 >
+                                    <h5 class="mb-1">Description</h5>
+                                    <v-divider></v-divider>
+                                    <v-layout row wrap class="mt-4">
+                                        <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotype }}</v-flex>
+                                        <!-- TODO uncomment once DOI works and is registered -->
+                                        <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
+                                        <v-flex xs5 md3>Phenotype description:</v-flex><v-flex xs7 md9 >{{ phenotypeDescription }}</v-flex>
+                                        <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
+                                        <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
+                                        <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
+                                        <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
+                                        <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">{{ pub_names[publication] }}</a></v-flex>
+                                        <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
+                                        <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
+                                        <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
+                                        <v-flex xs5 md3>Permutation threshold:</v-flex><v-flex xs7 mm9>{{ permutationThreshold }}</v-flex>
+                                        <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
+                                        <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
+                                        <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
+                                    </v-layout>
+                                </v-flex>
+                                <v-flex xs12 class="mt-4">
+                                    <v-layout column>
+                                        <h5 class="mb-1">Distribution of significant associations</h5>
+                                        <study-plots :plotStatistics="plotStatistics"></study-plots>
+                                    </v-layout>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
+                        <v-flex xs12 sm6 md8 class="pa-1">
+                            <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
+                            <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView" @showAssociation></top-associations>
+                        </v-flex>
+                    </v-layout>
+                    </v-tabs-content>
+                    <v-tabs-content id="study-detail-tabs-manhattan" class="pa-4" >
+                        <v-layout column child-flex>
+                            <v-flex xs12>
+                                <h5 class="mb-1">Manhattan Plots</h5>
                                 <v-divider></v-divider>
-                                <v-layout row wrap class="mt-4">
-                                    <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotype }}</v-flex>
-                                    <!-- TODO uncomment once DOI works and is registered -->
-                                    <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
-                                    <v-flex xs5 md3>Phenotype description:</v-flex><v-flex xs7 md9 >{{ phenotypeDescription }}</v-flex>
-                                    <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
-                                    <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
-                                    <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
-                                    <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
-                                    <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">{{ pub_names[publication] }}</a></v-flex>
-                                    <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
-                                    <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
-                                    <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
-                                    <v-flex xs5 md3>Permutation threshold:</v-flex><v-flex xs7 mm9>{{ permutationThreshold }}</v-flex>
-                                    <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
-                                    <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
-                                    <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
-                                </v-layout>
-                            </v-layout>
-                        </v-flex>
-                        <v-flex xs12 class="mt-4">
-                            <v-layout column>
-                                <h5 class="mb-1">Distribution of significant associations</h5>
-                                <study-plots :plotStatistics="plotStatistics"></study-plots>
-                            </v-layout>
-                        </v-flex>
-                    </v-flex>
-                    <v-flex xs12 sm6 md8>
-                        <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                        <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations>
-                    </v-flex>
-                </v-layout>
-            </v-tabs-content>
-            <v-tabs-content id="study-detail-tabs-manhattan" class="pa-4" >
-                <v-layout column child-flex>
-                    <v-flex xs12>
-                        <h5 class="mb-1">Manhattan Plots</h5>
-                        <v-divider></v-divider>
-                    </v-flex>
-                    <v-flex xs12>
-                        <manhattan-plot class="flex" :shown="(currentView==='study-detail-tabs-manhattan')" :dataPoints="dataChr['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
-                    </v-flex>
-                </v-layout>
-            </v-tabs-content>
+                            </v-flex>
+                            <v-flex xs12>
+                                <manhattan-plot class="flex" :shown="(currentView==='study-detail-tabs-manhattan')" :dataPoints="dataChr['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
+                            </v-flex>
+                        </v-layout>
+                </v-tabs-content>
+            </v-tabs-items>
         </v-tabs>
     </div>
 </template>
@@ -287,7 +289,13 @@
 
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="stylus">
+
+    @import "../stylus/main"
+
+    h5 {
+        color:$theme.primary;
+    }
 
     .banner-title h1 {
         font-size: 4.2rem;
