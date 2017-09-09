@@ -242,7 +242,7 @@
                 <br>
                 <br>
                 <br>
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switchright"></v-switch></p>
+                <p class="text-xs-right"><v-switch v-model="showSwitch" primary hide-details label="Filters" class="mb-0 switchright"></v-switch></p>
             </v-flex>
             </v-layout>
         </v-flex>
@@ -252,7 +252,7 @@
                     <br>
                     <br>
                     <br>
-                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary label="Filters" class="mb-0 switchright"></v-switch></p>
+                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary hide-details label="Filters" class="mb-0 switchright"></v-switch></p>
                 </v-flex>
             </v-layout>
         </v-flex>

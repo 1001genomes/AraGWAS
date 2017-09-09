@@ -57,7 +57,7 @@
                         </v-flex>
                         <v-flex xs12 sm6 md8 class="pa-1">
                             <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                            <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="phenotypeView" @showAssociation></top-associations>
+                            <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations>
                         </v-flex>
                     </v-layout>
                     </v-tabs-content>
