@@ -1,6 +1,6 @@
 <template>
  <v-app fill-height footer toolbar id="app">
-    <v-navigation-drawer disable-route-watcher temporary light overflow absolute right v-model="drawer">
+    <v-navigation-drawer disable-route-watcher temporary light overflow right v-model="drawer">
       <v-toolbar flat>
         <v-list>
           <v-list-tile> <span>Menu</span></v-list-tile>
