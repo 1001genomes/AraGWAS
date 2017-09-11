@@ -288,7 +288,7 @@ export async function loadAssociationsHeatmap(): Promise<Array<{}>> {
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
-export async function loadAssociationsHeatmapZoomed(region=[], regionwidth=25000): Promise<Array<{}>> {
+export async function loadAssociationsHeatmapZoomed(region=[0,0,0], regionwidth=25000): Promise<Array<{}>> {
     let url = `/api/associations/map_heat/`;
     if (region.length != 0){
         url += `?recompute=1&chromosome=${region[0]}&region=${region[1]}&region=${region[2]}&regionwidth=${regionwidth}`
@@ -303,7 +303,7 @@ export async function loadAssociationsHistogram(regionWidth: number): Promise<Ar
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
-export async function loadAssociationsHistogramZoomed(region=[], regionWidth: number): Promise<Array<{}>> {
+export async function loadAssociationsHistogramZoomed(region=[0,0,0], regionWidth: number): Promise<Array<{}>> {
     return fetch(`/api/associations/map_histogram/?region_width=${regionWidth}&recompute=1&chromosome=${region[0]}&region=${region[1]}&region=${region[2]}`)
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);

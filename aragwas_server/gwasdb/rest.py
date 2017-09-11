@@ -435,7 +435,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             #     mac = indicate a minimum mac (default=0)
         # Get bin size
         filters = dict()
-        filters['region_width'] = int(request.query_params.get('region_width'))
+        filters['region_width'] = max(1,int(request.query_params.get('region_width')))
         recompute = request.query_params.getlist('recompute')
         if recompute != []:
             filters['chrom'] = request.query_params.get('chromosome')

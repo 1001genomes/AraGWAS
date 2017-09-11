@@ -32,7 +32,7 @@ export default function gwasHeatmap() {
     var delay = 300;
     var clickedSnp;
 
-    var draw, ticks;
+    var draw, ticks, changeSize;
 
     function getScatterPlotTop() {
         return histogramHeight + margin.top;
@@ -54,8 +54,8 @@ export default function gwasHeatmap() {
         return 2.5;
     }
 
-    function ticks() {
-        return Math.floor(getChromosomeWidth() / 40);
+    function ticks(n) {
+        return Math.floor(getChromosomeWidth() / n);
     }
 
     function initData() {
@@ -174,6 +174,22 @@ export default function gwasHeatmap() {
         }
 
         draw = function() {
+            changeSize();
+
+            drawAxes();
+            drawPoints();
+            drawHistograms();
+            drawLegend();
+
+            var legend = svg.selectAll(".legend");
+            legend.append("text")
+                .text("Scores")
+                .attr("id", "scores")
+                .attr("x", legendElementWidth * 4)
+                .attr("y", (cellSize * 3))
+                .style("font-size", 10);
+        };
+        changeSize = function() {
             svg.selectAll("g.chr")
                 .attr("transform", function(d, i) {
                     return "translate(" + (margin.left + i * getChromosomeWidth()) + ",0)";
@@ -184,39 +200,8 @@ export default function gwasHeatmap() {
                     histogram.x.domain(d.bins.map(function(b, ix) { return ix; })).range(range);
                     histogram.y.domain(d3.extent(d.bins)).range([histogramHeight, 0]);
                     xScale.get(this).domain(d.region).range(range);
-            });
-
-            var legend = svg.selectAll(".legend");
-            console.log(legend.select("#scores")._groups[0].length);
-            if (legend.select("#scores")._groups[0].length > 1) {
-                // updateField();
-                // console.log(svg.selectAll("g.chr").selectAll("g.scatterplot")
-                //     .selectAll("g.row"))
-            }
-
-
-            drawAxes();
-            drawPoints();
-            drawHistograms();
-            drawLegend();
-
-            legend.append("text")
-                .text("Scores")
-                .attr("id", "scores")
-                .attr("x", legendElementWidth * 4)
-                .attr("y", (cellSize * 3))
-                .style("font-size", 10);
+                });
         };
-
-        function updateField() {
-            var legend = svg.selectAll(".legend");
-            console.log(legend.select("text#scores"));
-
-            // legend.select("text#scores")._groups[0][0]=undefined;
-            // legend.selectAll("text#legendvalues").remove();
-            console.log(legend.select("text#scores"));
-
-        }
 
         function drawLegend() {
             var legend = svg.selectAll(".legend")
@@ -247,9 +232,11 @@ export default function gwasHeatmap() {
         function drawHistograms() {
             var bars = svg.selectAll("g.chr")
                 .selectAll("g.histogram").selectAll("rect.bar").data(function(d) { return d.bins; });
+            bars.exit().remove();
             bars.enter()
                 .append("rect")
                 .style("fill", "steelblue")
+                .merge(bars)
                 .attr("x", function(d, i) { return histogramScale.get(this).x(i); })
                 .attr("width", function(d) { return histogramScale.get(this).x.bandwidth(); })
                 .attr("y", function(d) { return histogramScale.get(this).y(d); })
@@ -278,7 +265,11 @@ export default function gwasHeatmap() {
                 .attr("width", getChromosomeWidth() - padding)
                 .attr("y", -5)
                 .attr("height", getPlotHeight()+10)
-                .on("mousedown",mousedown);
+                .on("mousedown",mousedown)
+                .on("contextmenu", function(d,i){
+                    d3.event.preventDefault();
+                    svg.dispatch("dezoom");
+                });
 
             yScale.range([0, getPlotHeight()]);
             svg.selectAll("g.x.axis")
@@ -287,7 +278,12 @@ export default function gwasHeatmap() {
                 })
                 .transition().duration(transitionDuration)
                 .each(function(d) {
-                    d3.axisBottom(xScale.get(this)).ticks(ticks()).tickFormat(d3.formatPrefix(".1", 1e6))(d3.select(this));
+                    if (d.region[1]-d.region[0]>1e6){
+                        d3.axisBottom(xScale.get(this)).ticks(ticks(40)).tickFormat(d3.formatPrefix(".1", 1e6))(d3.select(this));
+                    } else {
+                        d3.axisBottom(xScale.get(this)).ticks(ticks(80))(d3.select(this));
+                    }
+
                 });
 
             svg.selectAll(".xaxislabel")
@@ -302,6 +298,8 @@ export default function gwasHeatmap() {
         }
 
         selection.each(function(dt) {
+            d3.selectAll("svg > *").remove(); // used when zooming
+            d3.select("svg").node().oncontextmenu = function(){svg.dispatch("dezoom"); return false;}; //prevent contextmenu in Chrome
             svg = d3.select(this);
             data = dt;
             initData();
@@ -336,7 +334,7 @@ export default function gwasHeatmap() {
             chromGroupsEntered
                 .append("text")
                 .attr("class", "xaxislabel")
-                .text(function(d) { return d.chr + " (Mbp)";});
+                .text(function(d) { if(d.region[1]-d.region[0]>1e6){return d.chr + " (Mbp)";} else {return d.chr;}});
 
 
             chromGroupsEntered
@@ -360,7 +358,7 @@ export default function gwasHeatmap() {
         }
         size = value;
         if (typeof draw === "function") {
-            draw();
+            changeSize();
         }
     };
 

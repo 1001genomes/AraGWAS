@@ -2,7 +2,7 @@
     <div>
         <h3 v-if="!loaded" class="mt-4 mb-4 text-xs-center">Loading can take some time. Thank you for your patience.</h3>
         <v-progress-linear v-bind:indeterminate="true" v-if="!loaded" ></v-progress-linear>
-        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation" v-on:zoomin="onZoomIn">
+        <svg id="heatmap" width="100%" :height="size[1]" class="mt-2" v-on:highlightassociation="onHighlightAssociation" v-on:unhighlightassociation="onUnhighlightAssociation" v-on:clicksnp="onClickAssociation" v-on:zoomin="onZoomIn" v-on:dezoom="onDezoom">
         </svg>
         <div  v-bind:style="popupStyle" id="associationpopup"  >
             <v-card v-if="highlightedPosition != 0" class="mt-1 mb-1">
@@ -54,6 +54,9 @@
             top: '0',
             left: '0'
         };
+        pointData;
+        zoomed: boolean = false;
+        zoomRegion: Array<number> = [0,0,0];
 
         mounted() {
             this.onResize();
@@ -77,7 +80,10 @@
         }
 
         get regionWidth() {
-            return Math.round(30427671 / ((this.width  - 150) / 5));
+            return 2*Math.round(30427671 / ((this.width  - 150) / 5));
+        }
+        get zoomRegionWidth() {
+            return 2*Math.round((this.zoomRegion[2]-this.zoomRegion[1]) / ((this.width  - 150)));
         }
 
         onHighlightAssociation(event): void {
@@ -101,10 +107,14 @@
         }
 
         onZoomIn(event): void {
-            let region = [event.detail.chromosome, event.detail.range[0], event.detail.range[1]];
-            console.log(region);
-            let regionwidth = Math.round((region[2]-region[1]) / ((this.width  - 150)));
-            this.loadZoomedData(region, regionwidth)
+            this.zoomRegion = [event.detail.chromosome, event.detail.range[0], event.detail.range[1]];
+            this.loadZoomedData(this.zoomRegion, this.zoomRegionWidth)
+        }
+
+        onDezoom(event): void {
+            if (this.zoomed) {
+                this.loadData();
+            }
         }
 
         loadNeighboringGenes(chromosome, position, distance): void {
@@ -113,7 +123,10 @@
 
         @Watch("size")
         onWidthChanged(newSize: number[], oldSize: number[]) {
-            this.heatmap.size(newSize);
+            if((newSize[0]!=oldSize[0])||(newSize[1]!=oldSize[1])) {
+                this.loadHistogramData();
+                this.heatmap.size(newSize);
+            }
         }
 
         onResize() {
@@ -122,11 +135,42 @@
                 this.height = this.$el.parentElement.offsetHeight;
             }
         }
+        loadHistogramData() {
+            this.loaded=false;
+            if (this.zoomed) {
+                Promise.all([loadAssociationsHistogramZoomed(this.zoomRegion, this.zoomRegionWidth)])
+                    .then((results) => {
+                        let data = this.pointData;
+                        let histogramData = results[0];
+                        for (let i=0;i<histogramData['data'].length;i++) {
+                            data['data'][i]['bins'] = histogramData['data'][i]['bins'];
+                        }
+                        this.data = data;
+                        this.loaded=true;
+                        d3.select("#heatmap").data([this.data]).call(this.heatmap);
+                    });
+            } else {
+                Promise.all([loadAssociationsHistogram(this.regionWidth)])
+                    .then((results) => {
+                        let data = this.pointData;
+                        let histogramData = results[0];
+                        for (let i = 0; i < histogramData['data'].length; i++) {
+                            data['data'][i]['bins'] = histogramData['data'][i]['bins'];
+                        }
+                        this.data = data;
+                        this.loaded = true;
+                        d3.select("#heatmap").data([this.data]).call(this.heatmap);
+                    });
+            }
+        }
+
         loadData() {
             this.loaded=false;
+            console.log('reg')
             Promise.all([loadAssociationsHeatmap(), loadAssociationsHistogram(this.regionWidth)])
                 .then((results) => {
                     let data = results[0];
+                    this.pointData = results[0];
                     let histogramData = results[1];
                     for (let i=0;i<histogramData['data'].length;i++) {
                         data['data'][i]['bins'] = histogramData['data'][i]['bins'];
@@ -143,12 +187,14 @@
             Promise.all([loadAssociationsHeatmapZoomed(region,regionwidth), loadAssociationsHistogramZoomed(region,regionwidth)])
                 .then((results) => {
                     let data = results[0];
+                    this.pointData = results[0];
                     let histogramData = results[1];
                     for (let i=0;i<histogramData['data'].length;i++) {
                         data['data'][i]['bins'] = histogramData['data'][i]['bins'];
                     }
                     this.data = data;
                     this.loaded=true;
+                    this.zoomed = true
                     d3.select("#heatmap").data([this.data]).call(this.heatmap);
                 });
 
