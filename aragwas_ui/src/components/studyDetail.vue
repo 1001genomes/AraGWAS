@@ -30,8 +30,7 @@
                                     <v-divider></v-divider>
                                     <v-layout row wrap class="mt-4">
                                         <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotype }}</v-flex>
-                                        <!-- TODO uncomment once DOI works and is registered -->
-                                        <!--<v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>-->
+                                        <v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
                                         <v-flex xs5 md3>Phenotype description:</v-flex><v-flex xs7 md9 >{{ phenotypeDescription }}</v-flex>
                                         <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
                                         <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
