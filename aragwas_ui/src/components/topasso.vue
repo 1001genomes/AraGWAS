@@ -432,12 +432,12 @@ table.table tbody tr[active] {
         width:131px;
     }
 
-    .right-controls .associations-control-container {
+    .right-controls .row .associations-control-container {
         -webkit-box-ordinal-group: 3;
         -ms-flex-order: 2;
         order: 2;
     }
-    .right-controls .associations-table-container {
+    .right-controls .row .associations-table-container {
         -webkit-box-ordinal-group: 2;
         -ms-flex-order: 1;
         order: 1;
