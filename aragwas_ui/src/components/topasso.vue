@@ -1,200 +1,59 @@
 <template>
-    <v-layout row-xs child-flex-xs wrap justify-space-around>
-        <v-flex xs3 wrap v-if="showControls.length>0 && view.controlPosition !== 'right'" class="pr-1 pl-1 associations-control-container">
-            <div v-if="showControls.indexOf('pageSize')>-1">
-                <h6 class="mt-4">Associations per page</h6>
-                <v-select
-                        v-bind:items="pageSizes"
-                        v-model="pagination.rowsPerPage"
-                        label="Associations per page"
-                        light
-                        single-line
-                        auto hide-details
-                ></v-select>
-            </div>
-            <div v-if="showControls.indexOf('significant')>-1">
-                <h6 class="mt-4">Significance</h6>
-                <v-switch
-                        label="Only show significant hits"
-                        v-model="significant"
-                        primary
-                        class="mt-0 mb-0 pt-0" hide-details
-                ></v-switch>
-                <div class="ml-3" v-if="significant">
-                    <v-radio-group v-model="filters.significant" >
-                        <v-radio label="Permutation threshold" value="p" ></v-radio>
-                        <v-radio label="Bonferroni threshold"  value="b" ></v-radio>
-                    </v-radio-group>
-                </div>
-                <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
-            </div>
-            <div v-if="showControls.indexOf('geneonly')>-1">
-                <h6 class="mt-4">Gene options</h6>
-                <v-switch
-                        label="Only show SNPs for selected gene"
-                        v-model="showOnlySelectedGene"
-                        primary
-                        class="mt-0 mb-0 pt-0" hide-details
-                ></v-switch>
-                <div>If turned off, all associations in the area covered by the zoom will be displayed.</div>
-            </div>
-            <div v-if="showControls.indexOf('maf')>-1">
-                <h6 class="mt-4">MAF</h6>
-                <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1"  class="pt-0" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05001']) + '% of associations)'" value="1-5"  hide-details></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10"  hide-details></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('mac')>-1">
-                <h6 class="mt-5">MAC</h6>
-                <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="pt-0" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" hide-details></v-checkbox>
-            </div>
-            <div xs column v-if="showControls.indexOf('chr')>-1">
-                <h6 class="mt-5">Chromosomes</h6>
-                <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of associations)'" value="1" class="pt-0" hide-details> what</v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of associations)'" value="2" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of associations)'" value="3" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of associations)'" value="4" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of associations)'" value="5" hide-details></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('annotation')>-1">
-                <h6 class="mt-5">Annotation</h6>
-                <v-checkbox v-model="filters.annotation" primary :label="'Non-synonymous coding (' + roundPerc(percentage.annotations.ns) + '% of associations)'" class="pt-0" value="ns" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary :label="'Synonymous coding (' + roundPerc(percentage.annotations.s) + '% of associations)'" value="s" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary :label="'Intron (' + roundPerc(percentage.annotations.in) + '% of associations)'" value="in" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.annotation" primary :label="'Intergenic (' + roundPerc(percentage.annotations.i) + '% of associations)'" value="i" hide-details></v-checkbox>
-            </div>
-            <div v-if="showControls.indexOf('type')>-1">
-                <h6 class="mt-5">Type</h6>
-                <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="pt-0" hide-details></v-checkbox>
-                <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" hide-details></v-checkbox>
-            </div>
-            <div class="text-xs-center mb-3">
-                <h6 class="mt-5">Download</h6>
-                <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
-                <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations'}">
-                    <v-icon dark>file_download</v-icon>
-                </v-btn>
-            </div>
-        </v-flex>
-        <v-flex xs9 wrap fill-height class="pl-1 pr-1 association-table-container" @mouseleave="showAssociation(null)" v-show="view.controlPosition !== 'right' || showSwitch">
-            <v-data-table
-                    v-bind:headers="headers"
-                    v-bind:items="associations"
-                    v-bind:pagination.sync="pagination"
-                    hide-actions
-                    :loading="loading"
-                    class="elevation-1 mt-2 asso-table"
-
-            >
-                <template slot="headerCell" scope="props">
-                    <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
-                      {{ props.header.text | capitalize }}
-                    </span>
-                </template>
-                <template slot="items" scope="props">
-                    <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
-                        <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('mac') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.mac }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item">
-                                <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
-                            </div>
-                            <div v-else>Missing SNP info</div>
-                        </td>
-                        <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item">
-                                <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
-                            </div>
-                            <div v-else>Missing SNP info</div>
-                        </td>
-                    </tr>
-                </template>
-            </v-data-table>
-            <div class="page-container mt-5 mb-3">
-                <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
-                </v-pagination>
-                <div v-else>
-                    <v-btn floating secondary @click="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
-                    <v-btn floating secondary @click="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
-                </div>
-            </div>
-        </v-flex >
-        <v-flex xs11 wrap fill-height class="pl-1 pr-1 association-table-container" v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch">
-            <v-data-table
-                    v-bind:headers="headers"
-                    v-bind:items="associations"
-                    v-bind:pagination.sync="pagination"
-                    hide-actions
-                    :loading="loading"
-                    class="elevation-1 mt-2 asso-table"
-            >
-                <template slot="headerCell" scope="props">
-                    <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
-                      {{ props.header.text | capitalize }}
-                    </span>
-                </template>
-                <template slot="items" scope="props" @mouseover.native="showAssociation">
-                    <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
-                        <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
-                        <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
-                        <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
-                        <td v-if="hideFields.indexOf('mac') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.mac }}</td>
-                        <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
-                        <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item">
-                                <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
-                            </div>
-                            <div v-else>Missing SNP info</div>
-                        </td>
-                        <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
-                            <div v-if="'snp' in props.item">
-                                <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
-                            </div>
-                            <div v-else>Missing SNP info</div>
-                        </td>
-                    </tr>
-                </template>
-            </v-data-table>
-            <div class="page-container mt-5 mb-3">
-                <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
-                </v-pagination>
-                <div v-else>
-                    <v-btn floating secondary @click="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
-                    <v-btn floating secondary @click="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
-                </div>
-            </div>
-        </v-flex>
-        <v-flex xs3 row v-show="showSwitch"  class="pl-1 pr-1"  >
-            <v-layout row>
-                <v-flex xs10 wrap v-if="showControls.length>0 && view.controlPosition === 'right' && showSwitch" class="associations-control-container">
+    <v-layout wrap column justify-space-around v-bind:class="{'right-controls':view.controlPosition}">
+        <div class="switch-container">
+            <v-switch v-model="showFilters" primary hide-details label="Show filters" class="mb-0"></v-switch>
+        </div>
+        <v-flex>
+            <v-layout v-bind="layoutBinding">
+                <div v-bind:open="showFilters" class="pr-1 pl-1 associations-control-container">
+                    <div v-if="showControls.indexOf('pageSize')>-1">
+                        <h6 class="mt-4">Associations per page</h6>
+                        <v-select
+                                v-bind:items="pageSizes"
+                                v-model="pagination.rowsPerPage"
+                                label="Associations per page"
+                                light
+                                single-line
+                                auto hide-details
+                        ></v-select>
+                    </div>
+                    <div v-if="showControls.indexOf('significant')>-1">
+                        <h6 class="mt-4">Significance</h6>
+                        <v-switch
+                                label="Only show significant hits"
+                                v-model="significant"
+                                primary
+                                class="mt-0 mb-0 pt-0" hide-details
+                        ></v-switch>
+                        <div class="ml-3" v-if="significant">
+                            <v-radio-group v-model="filters.significant" >
+                                <v-radio label="Permutation threshold" value="p" ></v-radio>
+                                <v-radio label="Bonferroni threshold"  value="b" ></v-radio>
+                            </v-radio-group>
+                        </div>
+                        <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
+                    </div>
+                    <div v-if="showControls.indexOf('geneonly')>-1">
+                        <h6 class="mt-4">Gene options</h6>
+                        <v-switch
+                                label="Only show SNPs for selected gene"
+                                v-model="showOnlySelectedGene"
+                                primary
+                                class="mt-0 mb-0 pt-0" hide-details
+                        ></v-switch>
+                        <div>If turned off, all associations in the area covered by the zoom will be displayed.</div>
+                    </div>
                     <div v-if="showControls.indexOf('maf')>-1">
                         <h6 class="mt-4">MAF</h6>
-                        <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1" class="pt-0" hide-details></v-checkbox>
-                        <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05001']) + '% of associations)'" value="1-5" hide-details></v-checkbox>
-                        <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10"hide-details></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'<1% (' + roundPerc(percentage.maf['*-0.01']) + '% of associations)'" value="1"  class="pt-0" hide-details></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'1-5% (' + roundPerc(percentage.maf['0.01-0.05001']) + '% of associations)'" value="1-5"  hide-details></v-checkbox>
+                        <v-checkbox v-model="filters.maf" primary :label="'5-10% (' + roundPerc(percentage.maf['0.05001-0.1001']) + '% of associations)'" value="5-10" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.maf" primary :label="'>10% (' + roundPerc(percentage.maf['0.1001-*']) + '% of associations)'" value="10"  hide-details></v-checkbox>
                     </div>
                     <div v-if="showControls.indexOf('mac')>-1">
                         <h6 class="mt-5">MAC</h6>
                         <v-checkbox v-model="filters.mac" primary :label="'≤5 (' + roundPerc(percentage.mac['*-6.0']) + '% of associations)'" value="0" class="pt-0" hide-details></v-checkbox>
-                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5"  hide-details></v-checkbox>
+                        <v-checkbox v-model="filters.mac" primary :label="'>5 (' + roundPerc(percentage.mac['6.0-*']) + '% of associations)'" value="5" hide-details></v-checkbox>
                     </div>
                     <div xs column v-if="showControls.indexOf('chr')>-1">
                         <h6 class="mt-5">Chromosomes</h6>
@@ -206,7 +65,7 @@
                     </div>
                     <div v-if="showControls.indexOf('annotation')>-1">
                         <h6 class="mt-5">Annotation</h6>
-                        <v-checkbox v-model="filters.annotation" primary :label="'Non-synonymous coding (' + roundPerc(percentage.annotations.ns) + '% of associations)'" value="ns" class="pt-0" hide-details></v-checkbox>
+                        <v-checkbox v-model="filters.annotation" primary :label="'Non-synonymous coding (' + roundPerc(percentage.annotations.ns) + '% of associations)'" class="pt-0" value="ns" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.annotation" primary :label="'Synonymous coding (' + roundPerc(percentage.annotations.s) + '% of associations)'" value="s" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.annotation" primary :label="'Intron (' + roundPerc(percentage.annotations.in) + '% of associations)'" value="in" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.annotation" primary :label="'Intergenic (' + roundPerc(percentage.annotations.i) + '% of associations)'" value="i" hide-details></v-checkbox>
@@ -216,44 +75,66 @@
                         <v-checkbox v-model="filters.type" primary :label="'Genic (' + roundPerc(percentage.types['1']) + '% of associations)'" value="genic" class="pt-0" hide-details></v-checkbox>
                         <v-checkbox v-model="filters.type" primary :label="'Non-genic (' + roundPerc(percentage.types['0']) + '% of associations)'" value="non-genic" hide-details></v-checkbox>
                     </div>
-                    <div v-if="showControls.indexOf('significant')>-1">
-                        <h6 class="mt-2">Significance</h6>
-                        <v-switch
-                                label="Only show significant hits"
-                                v-model="significant"
-                                primary
-                                class="mt-0 mb-0"
-                        ></v-switch>
-                        <div class="ml-3" v-if="significant">
-                            <v-radio label="Permutation threshold" v-model="filters.significant" value="p" class="mt-0 mb-0"></v-radio>
-                            <v-radio label="Bonferroni threshold" v-model="filters.significant" value="b" class="mt-0 mb-0"></v-radio>
-                        </div>
-                        <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be displayed.</div>
-                    </div>
                     <div class="text-xs-center mb-3">
-                        <h6 class="mt-4">Download</h6>
+                        <h6 class="mt-5">Download</h6>
                         <div class="grey--text">Download the filtered associations (since the file first needs to be generated, this may take a while, please only click once)</div>
-                        <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations (since the file needs to be generated, this may take a while)'}">
+                        <v-btn floating primary class="mr-3 mt-2 btn--large" tag="a" :href="_getDownloadHref()" download v-tooltip:bottom="{html: 'Download set of filtered associations'}">
                             <v-icon dark>file_download</v-icon>
                         </v-btn>
                     </div>
-            </v-flex>
-            <v-flex xs2 class="text-xs-right">
-                <br>
-                <br>
-                <br>
-                <p class="text-xs-right"><v-switch v-model="showSwitch" primary hide-details label="Filters" class="mb-0 switchright"></v-switch></p>
-            </v-flex>
-            </v-layout>
-        </v-flex>
-        <v-flex xs1 v-show="showControls.length>0 && view.controlPosition === 'right' && !showSwitch" class="text-xs-right">
-            <v-layout>
-                <v-flex xs6 offset-xs6>
-                    <br>
-                    <br>
-                    <br>
-                    <p class="text-xs-right"><v-switch v-model="showSwitch" primary hide-details label="Filters" class="mb-0 switchright"></v-switch></p>
-                </v-flex>
+                </div>
+                <v-flex wrap fill-height class="pl-1 pr-1 associations-table-container" >
+                    <v-data-table
+                            v-bind:headers="headers"
+                            v-bind:items="associations"
+                            v-bind:pagination.sync="pagination"
+                            hide-actions
+                            :loading="loading"
+                            class="elevation-1 mt-2 asso-table"
+
+                    >
+                        <template slot="headerCell" scope="props">
+                            <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                            {{ props.header.text | capitalize }}
+                            </span>
+                        </template>
+                        <template slot="items" scope="props">
+                            <tr :id="('snp' in props.item)? props.item.snp.chr + '_'+props.item.snp.position+'_' + props.item.study.id : 'missing_info'" >
+                                <td v-if="hideFields.indexOf('name') == -1" @mouseover="showAssociation(props.item)">
+                                    <div v-if="'snp' in props.item" >{{ props.item.snp.chr | capitalize }}:{{ props.item.snp.position }}</div><div v-else >Missing SNP info</div></td>
+                                <td v-if="hideFields.indexOf('score') == -1" v-bind:class="['text-xs-right',{'blue--text' : props.item.overPermutation}]" @mouseover="showAssociation(props.item)">{{ props.item.score | round }}</td>
+                                <td v-if="hideFields.indexOf('study') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                                    <router-link :to="{name: 'studyDetail', params: { id: props.item.study.id }}" >{{ props.item.study.phenotype.name }}</router-link></td>
+                                <td v-if="hideFields.indexOf('gene') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                                    <router-link v-if="'snp' in props.item" :to="{name: 'geneDetail', params: { geneId: props.item.snp.geneName }}">{{ props.item.snp.geneName }}</router-link><div v-else class="text-xs-right">Missing SNP info</div></td>
+                                <td v-if="hideFields.indexOf('maf') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.maf | round }}</td>
+                                <td v-if="hideFields.indexOf('mac') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">{{ props.item.mac }}</td>
+                                <td v-if="hideFields.indexOf('phenotype') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                                    <router-link :to="{name: 'phenotypeDetail', params: { id: props.item.study.phenotype.id }}">{{ props.item.study.phenotype.name }}</router-link></td>
+                                <td v-if="hideFields.indexOf('annotation') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                                    <div v-if="'snp' in props.item">
+                                        <span v-if="props.item.snp.annotations.length > 0 ">{{ props.item.snp.annotations[0].effect | toLowerCap }}</span>
+                                    </div>
+                                    <div v-else>Missing SNP info</div>
+                                </td>
+                                <td v-if="hideFields.indexOf('type') == -1" class="text-xs-right" @mouseover="showAssociation(props.item)">
+                                    <div v-if="'snp' in props.item">
+                                        <span v-if="props.item.snp.coding">Genic</span><span v-else>Non-genic</span>
+                                    </div>
+                                    <div v-else>Missing SNP info</div>
+                                </td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                    <div class="page-container mt-5 mb-3">
+                        <v-pagination :length="pageCount" v-model="currentPage"  v-if="view.name !== 'top-associations'">
+                        </v-pagination>
+                        <div v-else>
+                            <v-btn floating secondary @click="previous" :disabled="pager===1"><v-icon light>keyboard_arrow_left</v-icon></v-btn>
+                            <v-btn floating secondary @click="next" :disabled="pager===pageCount"><v-icon light>keyboard_arrow_right</v-icon></v-btn>
+                        </div>
+                    </div>
+                </v-flex >
             </v-layout>
         </v-flex>
     </v-layout>
@@ -295,7 +176,7 @@
         @Prop()
         hideFields: string[];
         @Prop()
-        view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left"};
+        view: {name: "top-associations", phenotypeId: 0, studyId: 0, geneId: "1", zoom: 0, controlPosition: "left", filtersOpen: true};
         @Prop()
         filters: {chr: string[], annotation: string[], maf: string[], mac: string[], type: string[], significant: string, gene: string};
         @Prop({type: null})
@@ -318,7 +199,7 @@
         annotation = ["ns", "s", "in", "i"];
         type = ["genic", "non-genic"];
         pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "score", descending: true};
-        showSwitch = false;
+        showFilters = false;
         lastElement: [number, string];
         lastElementHistory = {'1': [0,''], };
         percentage = {chromosomes: {}, annotations: {}, types: {}, maf: {}, mac: {}};
@@ -327,10 +208,16 @@
         pageSizes = [25, 50, 75, 100, 200,];
         significant = this.filters.significant !== "0";
         showOnlySelectedGene = this.filters.gene != null;
+        readonly showFilterWidth = 1090;
 
         debouncedloadData(a):void {
             this.$emit('loading'); //send it here to avoid the debounce time.
             this.debouncedloadDataTrue(this.currentPage)
+        }
+
+        @Watch("$vuetify.breakpoint")
+        onBreakPointChanged() {
+            this.showFilters = this.$el.offsetWidth >= this.showFilterWidth;
         }
 
         @Watch("currentPage")
@@ -414,6 +301,8 @@
         }
 
         mounted(): void {
+            console.log((<any>this)['$vuetify']['breakpoint'])
+            this.showFilters = this.$el.offsetWidth >= this.showFilterWidth;
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);
         }
@@ -503,13 +392,21 @@
             return url
         }
 
+        get layoutBinding() {
+            const binding = {}
+
+            if ((<any>this)['$vuetify']['breakpoint']['xsOnly']) binding['wrap'] = true;
+            else  binding['row'] = true;
+            return binding
+        }
+
     }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 table.table tbody tr[active] {
-        background-color:#FFEB3B;
+        background-color:#FFEB3B !important;
 }
 </style>
 <style scoped>
@@ -518,7 +415,32 @@ table.table tbody tr[active] {
         justify-content:center;
     }
 
-    .switchright {
-        transform: rotate(270deg);
+    .associations-control-container {
+        flex: 0 0 360px;
+        display:none;
     }
+
+    .associations-control-container[open] {
+        display:block;
+    }
+    .associations-table-container {
+        min-width: 0;
+    }
+
+    .right-controls div.switch-container {
+        margin-left: auto;
+        width:131px;
+    }
+
+    .right-controls .associations-control-container {
+        -webkit-box-ordinal-group: 3;
+        -ms-flex-order: 2;
+        order: 2;
+    }
+    .right-controls .associations-table-container {
+        -webkit-box-ordinal-group: 2;
+        -ms-flex-order: 1;
+        order: 1;
+    }
+
 </style>
