@@ -261,12 +261,16 @@
           intro: "The global search form allows the user to search across all phenotypes, studies and genomic regions"
         },
         {
-          element: "#faq-link",
-          intro: "The FAQ section provides tutorials of the various features of AraGWAS Catalog"
-        },
-        {
           element: "#studies-button",
           intro: "You can access the list of available GWA studies by clicking here"
+        },
+        {
+          element: "#top-genes-button",
+          intro: "To see the the genes with most associations, press here."
+        },
+        {
+          element: "#hitmap-button",
+          intro: "The GWAS Hitmap provides a 10.000 foot view on all significant associations across all phenotypes. It allows the user to easily spot pleiotropic effects of certain genomic regions"
         },
         {
           element: "#top-assocations-button",

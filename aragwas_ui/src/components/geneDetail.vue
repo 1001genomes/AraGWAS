@@ -239,7 +239,7 @@
                     position: "bottom"
                 },
                  {
-                    element: ".association-table-container",
+                    element: ".associations-table-container",
                     intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
                     position: "top"
                 },
@@ -252,6 +252,10 @@
                     element: ".faq",
                     intro: "You will find more information and tutorials under the FAQ tab.",
                     position: "bottom"
+                },
+                {
+                    element: "#rest-link",
+                    intro: "The REST documentation provides information about how to access the GWAS catalog programatically"
                 },
                 {
                     element: ".aragwas-logo",
