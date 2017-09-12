@@ -301,7 +301,6 @@
         }
 
         mounted(): void {
-            console.log((<any>this)['$vuetify']['breakpoint'])
             this.showFilters = this.$el.offsetWidth >= this.showFilterWidth;
             this.hideHeaders(this.hideFields);
             this.loadData(this.currentPage);

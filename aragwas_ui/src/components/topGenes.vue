@@ -8,88 +8,95 @@
             </div>
         </v-parallax>
         <div class="page-container">
-            <div class="section">
+            <div class="section pa-3">
                 <v-layout row class="mb-4">
                     <v-flex xs12><h5 class="green--text mb-2 mt-3"><v-icon class="green--text lighten-1" style="vertical-align: middle;">whatshot</v-icon> Top Genes</h5><v-divider class="mb-3"></v-divider>
                         <span style="font-size: 1.2rem">Check out the genes with most hits across the <em>Arabidopsis thaliana</em> genome. This table shows all top genes (sorted by number of high-scoring hits) that are stored in the database. Genes with 0 hits are not shown.</span></v-flex>
                 </v-layout>
-                <v-layout row-xs child-flex-xs wrap justify-space-around>
-                    <v-flex xs3 wrap class="associations-control-container">
-                        <div>
-                            <h6 class="mt-4">Significance</h6>
-                            <v-switch
-                                    label="Only count significant hits"
-                                    v-model="significant"
-                                    primary
-                                    class="mt-0 mb-0 pt-0" hide-details
-                            ></v-switch>
-                            <div class="ml-3" v-if="significant">
-                                <v-radio-group v-model="threshold" >
-                                    <v-radio label="Permutation threshold" value="p" ></v-radio>
-                                    <v-radio label="Bonferroni threshold"  value="b" ></v-radio>
-                                </v-radio-group>
+               <v-layout wrap column justify-space-around>
+                    <div>
+                        <v-switch v-model="showFilters" primary hide-details label="Show filters" class="mb-0"></v-switch>
+                    </div>
+                    <v-flex>
+                        <v-layout v-bind="layoutBinding">
+                            <div v-bind:open="showFilters" class="pl-1 pr-1 associations-control-container">
+                                <div>
+                                    <h6 class="mt-4">Significance</h6>
+                                    <v-switch
+                                            label="Only count significant hits"
+                                            v-model="significant"
+                                            primary
+                                            class="mt-0 mb-0 pt-0" hide-details
+                                    ></v-switch>
+                                    <div class="ml-3" v-if="significant">
+                                        <v-radio-group v-model="threshold" >
+                                            <v-radio label="Permutation threshold" value="p" ></v-radio>
+                                            <v-radio label="Bonferroni threshold"  value="b" ></v-radio>
+                                        </v-radio-group>
+                                    </div>
+                                    <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
+                                </div>
+                                <div>
+                                    <h6 class="mt-5">Genes per page</h6>
+                                    <v-select
+                                            v-bind:items="pageSizes"
+                                            v-model="pagination.rowsPerPage"
+                                            label="Genes per page"
+                                            light
+                                            single-line
+                                            auto hide-details
+                                            class="pt-0"
+                                    ></v-select>
+                                </div>
+                                <div>
+                                    <h6 class="mt-4">Chromosomes</h6>
+                                    <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of all genes)'" value="1" class="mb-0" hide-details> what</v-checkbox>
+                                    <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of all genes)'" value="2" class="mt-0 mb-0" hide-details></v-checkbox>
+                                    <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of all genes)'" value="3" class="mt-0 mb-0" hide-details></v-checkbox>
+                                    <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of all genes)'" value="4" class="mt-0 mb-0" hide-details></v-checkbox>
+                                    <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of all genes)'" value="5" class="mt-0" hide-details></v-checkbox>
+                                </div>
                             </div>
-                            <div>If turned off, all associations with p-value < 10<sup>-4</sup> will be taken into account.</div>
-                        </div>
-                        <div>
-                            <h6 class="mt-5">Genes per page</h6>
-                            <v-select
-                                    v-bind:items="pageSizes"
-                                    v-model="pagination.rowsPerPage"
-                                    label="Genes per page"
-                                    light
-                                    single-line
-                                    auto hide-details
-                                    class="pt-0"
-                            ></v-select>
-                        </div>
-                        <div>
-                            <h6 class="mt-4">Chromosomes</h6>
-                            <v-checkbox v-model="filters.chr" primary :label="'1 (' + roundPerc(percentage.chromosomes.chr1) + '% of all genes)'" value="1" class="mb-0" hide-details> what</v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'2 (' + roundPerc(percentage.chromosomes.chr2) + '% of all genes)'" value="2" class="mt-0 mb-0" hide-details></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'3 (' + roundPerc(percentage.chromosomes.chr3) + '% of all genes)'" value="3" class="mt-0 mb-0" hide-details></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'4 (' + roundPerc(percentage.chromosomes.chr4) + '% of all genes)'" value="4" class="mt-0 mb-0" hide-details></v-checkbox>
-                            <v-checkbox v-model="filters.chr" primary :label="'5 (' + roundPerc(percentage.chromosomes.chr5) + '% of all genes)'" value="5" class="mt-0" hide-details></v-checkbox>
-                        </div>
-                    </v-flex>
-                    <v-flex xs9 wrap fill-height class="association-table-container">
-                        <v-data-table
-                                v-bind:headers="headers"
-                                v-bind:items="genes"
-                                v-bind:pagination.sync="pagination"
-                                hide-actions
-                                :loading="loading"
-                                class="elevation-1 mt-2 asso-table"
+                            <v-flex wrap fill-height class="pl-1 pr-1 associations-table-container">
+                                <v-data-table
+                                        v-bind:headers="headers"
+                                        v-bind:items="genes"
+                                        v-bind:pagination.sync="pagination"
+                                        hide-actions
+                                        :loading="loading"
+                                        class="elevation-1 mt-2 asso-table"
 
-                        >
-                            <template slot="headerCell" scope="props">
-                                <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
-                                  {{ props.header.text | capitalize }}
-                                </span>
-                            </template>
-                            <template slot="items" scope="props">
-                                <td>
-                                    <router-link :to="{name: 'geneDetail', params: { geneId: props.item.name }}">{{ props.item.name }}</router-link></td>
-                                <td>
-                                    <div>{{ props.item.nHits }}</div></td>
-                                <td>
-                                    <div>{{ props.item.chr[3] }}</div></td>
-                                <td>
-                                    <div>{{ props.item.positions.gte }} - {{ props.item.positions.lte }}</div></td>
-                                <td>
-                                    <div>{{ props.item.strand }}</div></td>
-                                <td>
-                                    <div v-for="isoform in props.item.isoforms">{{ isoform.name }}</div></td>
-                                <td>
-                                    <div>{{ props.item.isoforms[0].shortDescription }}</div></td>
-                            </template>
-                        </v-data-table>
-                        <div class="page-container mt-5 mb-3">
-                            <v-pagination :length="pageCount" v-model="currentPage">
-                            </v-pagination>
-                        </div>
-                    </v-flex >
-                </v-layout>
+                                >
+                                    <template slot="headerCell" scope="props">
+                                        <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                                        {{ props.header.text | capitalize }}
+                                        </span>
+                                    </template>
+                                    <template slot="items" scope="props">
+                                        <td>
+                                            <router-link :to="{name: 'geneDetail', params: { geneId: props.item.name }}">{{ props.item.name }}</router-link></td>
+                                        <td>
+                                            <div>{{ props.item.nHits }}</div></td>
+                                        <td>
+                                            <div>{{ props.item.chr[3] }}</div></td>
+                                        <td>
+                                            <div>{{ props.item.positions.gte }} - {{ props.item.positions.lte }}</div></td>
+                                        <td>
+                                            <div>{{ props.item.strand }}</div></td>
+                                        <td>
+                                            <div v-for="isoform in props.item.isoforms">{{ isoform.name }}</div></td>
+                                        <td>
+                                            <div>{{ props.item.isoforms[0].shortDescription }}</div></td>
+                                    </template>
+                                </v-data-table>
+                                <div class="page-container mt-5 mb-3">
+                                    <v-pagination :length="pageCount" v-model="currentPage">
+                                    </v-pagination>
+                                </div>
+                            </v-flex >
+                        </v-layout>
+                    </v-flex>
+               </v-layout>
             </div>
         </div>
     </div>
@@ -141,6 +148,13 @@
         pageSizes = [25, 50, 75, 100, 200,];
         pageCount = 5;
         threshold = 'p';
+        showFilters = false;
+        readonly showFilterWidth = 1090;
+
+        @Watch("$vuetify.breakpoint")
+        onBreakPointChanged() {
+            this.showFilters = this.$el.offsetWidth >= this.showFilterWidth;
+        }
 
         @Watch("currentPage")
         onCurrentPageChanged(val: number, oldVal: number) {
@@ -172,6 +186,7 @@
             this.debouncedloadData(this.currentPage);
         }
         mounted(): void {
+            this.showFilters = this.$el.offsetWidth >= this.showFilterWidth;
             this.loadData(this.currentPage);
         }
         loadData(pageToLoad): void {
@@ -195,6 +210,14 @@
             }
             return Math.round(number * 1000) / 10;
         }
+
+        get layoutBinding() {
+            const binding = {}
+
+            if ((<any>this)['$vuetify']['breakpoint']['xsOnly']) binding['wrap'] = true;
+            else  binding['row'] = true;
+            return binding
+        }
     }
 </script>
 
@@ -202,11 +225,21 @@
 <style scoped lang="stylus">
 
     .section {
-        width: 90%;
-        padding-top: 1rem;
+        width:100%;
     }
     .page-container {
         display:flex;
         justify-content:center;
+    }
+    .associations-control-container {
+        flex: 0 0 360px;
+        display:none;
+    }
+
+    .associations-control-container[open] {
+        display:block;
+    }
+    .associations-table-container {
+        min-width: 0;
     }
 </style>
