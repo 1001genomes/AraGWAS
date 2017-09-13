@@ -49,7 +49,7 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'gwasdb.paginator.CustomPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
 }
 
 MIDDLEWARE = [

@@ -61,11 +61,15 @@ router.register(r'snps', rest.SNPViewSet, base_name="snps")
 srouter = SearchRouter()
 srouter.register(r'search', rest.SearchViewSet)
 
+from gwasdb.custom_documentation import include_custom_docs_urls
+
+
 urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^admin/', admin.site.urls),
-    url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
-    url(r'^api/', include(router.urls)),
+    # url(r'^docs/', include_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
+    url(r'^docs/', include_custom_docs_urls(title="AraGWAS API", description="REST API for AraGWAS")),
+    url(r'^api/', include(router.urls, namespace="router_apis")),
     url(r'^api/', include(srouter.urls)),
     url(r'^api/version/$',rest.ApiVersionView.as_view(),name='api-version')
 ]

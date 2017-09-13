@@ -248,7 +248,7 @@ def filter_association_search(s, filters):
         s = s.filter('range', snp__position={'gte': int(filters['start'])})
     if 'end' in filters:
         s = s.filter('range', snp__position={'lte': int(filters['end'])})
-    if 'significant' in filters:
+    if 'significant' in filters and len(filters['significant'])>0:
         if filters['significant'][0] == "b":
             s = s.filter('term', overBonferroni='T')
         elif filters['significant'][0] == "p":

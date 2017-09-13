@@ -1,4 +1,4 @@
-import os
+import os, coreapi, coreschema
 
 from rest_framework import permissions
 from rest_framework import viewsets, generics, filters, renderers
@@ -60,6 +60,11 @@ def _get_filter_from_params(params):
     filter_genotype = params.getlist('genotype_id')
     filter_significant = params.getlist('significant')
     filters = {'chr':filter_chr, 'maf': filter_maf, 'mac': filter_mac, 'annotation': filter_annot, 'type': filter_type, 'study_id':filter_study, 'phenotype_id': filter_phenotype, 'genotype_id': filter_genotype, 'significant': filter_significant}
+    return filters
+
+def _check_missing_filters(filters):
+    if 'chrom' not in filters.keys():
+        filters['significant']=['p']
     return filters
 
 def _get_percentages_from_buckets(buckets):
@@ -191,6 +196,9 @@ class GenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Genotype.objects.all()
     serializer_class = GenotypeSerializer
 
+    def filter_queryset(self, queryset):
+        return queryset
+
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API for studies
@@ -203,6 +211,12 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Study.objects.all()
     serializer_class = StudySerializer
+
+    def filter_queryset(self, queryset):
+        return queryset
+
+    def hide_list_fields(self, view):
+        return
 
     # Overriding get_queryset to allow for case-insensitive custom ordering
     def get_queryset(self):
@@ -239,7 +253,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
     @detail_route(methods=['GET'], url_path='associations')
-    def top_assocations(self, request, pk):
+    def top_associations(self, request, pk):
         """ Retrieve top associations for the selected study. Can add other filters. Check the FAQ for details on the filters. """
         filters = _get_filter_from_params(request.query_params)
         filters['study_id'] = [pk]
@@ -339,6 +353,9 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Phenotype.objects.all()
     serializer_class = PhenotypeListSerializer
 
+    def filter_queryset(self, queryset):
+        return queryset
+
     # Overriding get_queryset to allow for case-insensitive custom ordering
     def get_queryset(self):
         queryset = self.queryset
@@ -365,38 +382,42 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = StudySerializer(studies, many=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['GET'], url_path='associations')
-    def top_assocations(self, request, pk):
-        """ Retrieve top associations for the selected phenotype. Can add other filters. Check the FAQ for details on the filters. """
-        filters = _get_filter_from_params(request.query_params)
-        filters['phenotype_id'] = [pk]
-        paginator = EsPagination()
-        limit = paginator.get_limit(request)
-        offset = paginator.get_offset(request)
-        associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
-        queryset = EsQuerySet(associations, count)
-        paginated_asso = self.paginate_queryset(queryset)
-        return self.get_paginated_response(paginated_asso)
+    # @detail_route(methods=['GET'], url_path='associations')
+    # def top_assocations(self, request, pk):
+    #     """ Retrieve top associations for the selected phenotype. Can add other filters. Check the FAQ for details on the filters. """
+    #     filters = _get_filter_from_params(request.query_params)
+    #     filters['phenotype_id'] = [pk]
+    #     paginator = EsPagination()
+    #     limit = paginator.get_limit(request)
+    #     offset = paginator.get_offset(request)
+    #     associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
+    #     queryset = EsQuerySet(associations, count)
+    #     paginated_asso = self.paginate_queryset(queryset)
+    #     return self.get_paginated_response(paginated_asso)
 
-    @detail_route(methods=['GET'], url_path='aggregated_statistics')
-    def aggregated_statistics(self, request, pk):
-        """ Retrieve the aggregation statistics of the top assocations for a phenotype and a specific set of filters. Check the FAQ for details on the filters. """
-        filters = _get_filter_from_params(request.query_params)
-        filters['phenotype_id'] = [pk]
-        chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
-        chr_dict = _get_percentages_from_buckets(chr)
-        maf_dict = _get_percentages_from_buckets(maf)
-        mac_dict = _get_percentages_from_buckets(mac)
-        type_dict = _get_percentages_from_buckets(type)
-        annotations_dict = _get_percentages_from_buckets(annotations)
-        return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
+    # @detail_route(methods=['GET'], url_path='aggregated_statistics')
+    # def aggregated_statistics(self, request, pk):
+    #     """ Retrieve the aggregation statistics of the top assocations for a phenotype and a specific set of filters. Check the FAQ for details on the filters. """
+    #     filters = _get_filter_from_params(request.query_params)
+    #     filters['phenotype_id'] = [pk]
+    #     chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
+    #     chr_dict = _get_percentages_from_buckets(chr)
+    #     maf_dict = _get_percentages_from_buckets(maf)
+    #     mac_dict = _get_percentages_from_buckets(mac)
+    #     type_dict = _get_percentages_from_buckets(type)
+    #     annotations_dict = _get_percentages_from_buckets(annotations)
+    #     return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for associations """
+    def hide_list_fields(self, view):
+        return
 
     def list(self, request):
         """ List all associations sorted by score. """
         filters = _get_filter_from_params(request.query_params)
+        if len(filters['significant']) == 0:
+            filters['significant'] = 'p'
         last_el = request.query_params.get('lastel', '')
         associations, count, lastel = elastic.load_filtered_top_associations_search_after(filters,last_el)
         queryset = EsQuerySetLastEl(associations, count, lastel)
@@ -414,7 +435,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
 
     @list_route(methods=['GET'], url_path='aggregated_statistics')
     def aggregated_statistics(self, request):
-        """ Retrieve the aggregation percentage for associations meeting filters criteria. Check the FAQ for details on the filters. """
+        """ Retrieve the aggregation percentage for associations meeting filters criteria. Check the FAQ for details on the filters."""
         filters = _get_filter_from_params(request.query_params)
         chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
@@ -552,9 +573,9 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
 
     def list(self, request):
         """List all genes in the database. Can add 'chr', 'start' and 'end' as params in the url request."""
-        chrom = request.query_params['chr']
-        start = request.query_params['start']
-        end = request.query_params['end']
+        chrom = request.query_params.get('chr','1')
+        start = request.query_params.get('start',0)
+        end = request.query_params.get('end', 100000)
         is_features = 'features' in request.query_params
         genes = elastic.load_genes_by_region(chrom,start,end,is_features)
         return Response(genes)
@@ -571,12 +592,12 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         genes = elastic.autocomplete_genes(search_term)
         return Response(genes)
 
-    @detail_route(methods=['GET'], url_path='snps')
-    def snps(self, request, pk):
-        """ Return SNPs for the selected gene. """
-        gene = elastic.load_gene_by_id(pk)
-        gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
-        return Response(gene)
+    # @detail_route(methods=['GET'], url_path='snps')
+    # def snps(self, request, pk):
+    #     """ Return SNPs for the selected gene. """
+    #     gene = elastic.load_gene_by_id(pk)
+    #     gene['snps'] = elastic.load_snps_by_region(gene['chr'], gene['positions']['gte'],gene['positions']['lte'])
+    #     return Response(gene)
 
     @detail_route(methods=['GET'], url_path='associations')
     def associations(self, request, pk):
@@ -593,7 +614,6 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
             filters['start'] = gene['positions']['gte']
             filters['end'] = gene['positions']['lte']
             filters['gene_id'] = gene['name']
-            print(gene['name'])
         limit = self.paginator.get_limit(request)
         offset = self.paginator.get_offset(request)
         associations, count = elastic.load_filtered_top_associations(filters, offset, limit)
@@ -606,11 +626,16 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         """ Retrieve the aggregation percentage for associations meeting filters criteria for this gene. Check the FAQ for details on the filters. """
         gene = elastic.load_gene_by_id(pk)
         zoom = int(request.query_params.get('zoom', 0))
+        selected = bool(request.query_params.get('gene', '') == "1")
         # last_el = [request.query_params.get('lastel', '')]
         filters = _get_filter_from_params(request.query_params)
         filters['chr'] = [gene['chr']]
         filters['start'] = gene['positions']['gte'] - zoom
         filters['end'] = gene['positions']['lte'] + zoom
+        if selected:
+            filters['start'] = gene['positions']['gte']
+            filters['end'] = gene['positions']['lte']
+            filters['gene_id'] = gene['name']
         chr, maf, mac, type, annotations = elastic.get_aggregated_filtered_statistics(filters)
         chr_dict = _get_percentages_from_buckets(chr)
         maf_dict = _get_percentages_from_buckets(maf)
@@ -633,6 +658,8 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     def top_list(self, request):
         """ Retrieve the top genes based on the number of significant associations and provide full gene information. """
         filters = _get_filter_from_params(request.query_params)
+        if filters['significant'] == []:
+            filters['significant'] = ['p']
         paginator = EsPagination()
         limit = paginator.get_limit(request)
         offset = paginator.get_offset(request)
@@ -660,34 +687,34 @@ class SNPViewSet(viewsets.ViewSet):
         """ Retrieve information about a particular SNP. (Inactive) """
         pass
 
-    @detail_route(methods=['GET'], url_path='neighboring')
-    def neighboring_snps(self, request, pk):
-        """
-        Return a list of the neighboring SNPs. (Inactive)
-        """
-        window_size=request.GET.get('window_size', 1000000)
-        include = 'include' in request.GET
-        # TODO implement
-        return Response({})
-
-    @detail_route(methods=['GET'], url_path='ld')
-    def snps_in_ld(request, pk):
-        """
-        Return a list of the neighboring SNPs in high LD. (Inactive)
-        """
-        N = request.GET.get('N',20)
-        # TODO implement
-        ordered_positions, ordered_ld = compute_ld(snp.chromosome, snp.position, genotype_name)
-
-        # return highest N SNPs
-        snps = SNP.objects.filter(chromosome__equals=snp.chromosome).filter(position__in=ordered_positions)
-
-        # Serialize
-        serializer = SNPListSerializer(snps)
-        # Attach correlation information
-        return Response({'top_ld_snps': serializer.data,
-                         'ld_values': ordered_ld,
-                         'top_snps_positions': ordered_positions})
+    # @detail_route(methods=['GET'], url_path='neighboring')
+    # def neighboring_snps(self, request, pk):
+    #     """
+    #     Return a list of the neighboring SNPs. (Inactive)
+    #     """
+    #     window_size=request.GET.get('window_size', 1000000)
+    #     include = 'include' in request.GET
+    #     # TODO implement
+    #     return Response({})
+    #
+    # @detail_route(methods=['GET'], url_path='ld')
+    # def snps_in_ld(request, pk):
+    #     """
+    #     Return a list of the neighboring SNPs in high LD. (Inactive)
+    #     """
+    #     N = request.GET.get('N',20)
+    #     # TODO implement
+    #     ordered_positions, ordered_ld = compute_ld(snp.chromosome, snp.position, genotype_name)
+    #
+    #     # return highest N SNPs
+    #     snps = SNP.objects.filter(chromosome__equals=snp.chromosome).filter(position__in=ordered_positions)
+    #
+    #     # Serialize
+    #     serializer = SNPListSerializer(snps)
+    #     # Attach correlation information
+    #     return Response({'top_ld_snps': serializer.data,
+    #                      'ld_values': ordered_ld,
+    #                      'top_snps_positions': ordered_positions})
 
     @list_route(methods=['GET'], url_path='aggregated')
     def aggregated_statistics(self, requests):
@@ -708,6 +735,8 @@ class SearchViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StudySerializer
     pagination_class = CustomSearchPagination
 
+    def filter_queryset(self, queryset):
+        return queryset
 
     @list_route(url_path='search_results')
     def search_result(self, request):
