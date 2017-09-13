@@ -91,7 +91,12 @@
         onClickAssociation(event): void {
             let position = event.detail.associations[0][0];
             let chromosome = this.options.chr;
-            loadGenesByRegion(chromosome.toString(), position-3000, position+3000, false).then( (genes) => this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }}));
+            // Introduce an increasing search radius
+            this.loadNeighboringGenes(chromosome, position, 1000);
+        }
+
+        loadNeighboringGenes(chromosome, position, distance): void {
+            loadGenesByRegion(chromosome.toString(), position-distance, position+distance, false).then( (genes) => {if (genes.length != 0) {this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name, geneOnly: "nomac" }})} else {this.loadNeighboringGenes(chromosome, position, 2*distance)}});
         }
 
         @Watch("width")

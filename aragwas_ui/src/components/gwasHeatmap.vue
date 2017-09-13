@@ -118,7 +118,7 @@
         }
 
         loadNeighboringGenes(chromosome, position, distance): void {
-            loadGenesByRegion(chromosome.toString(), position-distance, position+distance, false).then( (genes) => {if (genes.length != 0) {this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name }})} else {this.loadNeighboringGenes(chromosome, position, 2*distance)}});
+            loadGenesByRegion(chromosome.toString(), position-distance, position+distance, false).then( (genes) => {if (genes.length != 0) {this.$router.push({ name: 'geneDetail', params: { geneId: genes[0].name, geneOnly: "n" }})} else {this.loadNeighboringGenes(chromosome, position, 2*distance)}});
         }
 
         @Watch("size")

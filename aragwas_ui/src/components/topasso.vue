@@ -207,7 +207,7 @@
         selected = [];
         pageSizes = [25, 50, 75, 100, 200,];
         significant = this.filters.significant !== "0";
-        showOnlySelectedGene = this.filters.gene != null;
+        showOnlySelectedGene = this.filters.gene != "0";
         readonly showFilterWidth = 1090;
 
         debouncedloadData(a):void {
@@ -339,6 +339,12 @@
 
         }
         _displayData(data): void {
+            // Check if list is empty (in case reload data from first page)
+            if(data.results.length == 0 && this.currentPage != 1){
+                this.currentPage = 1;
+                this.debouncedloadData(this.currentPage);
+                return
+            }
             this.associations = data.results;
             this.pagination.totalItems = data.count;
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);

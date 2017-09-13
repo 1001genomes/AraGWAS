@@ -62,6 +62,8 @@
         router = Router;
         @Prop()
         geneId: string;
+        @Prop()
+        geneOnly: string;
         selectedGene: Gene = {id: '', name: '', strand: '',chr: '', type: '', positions: {gte: 0, lte: 0 }};
         searchTerm: string = "";
         associationCount = 0;
@@ -181,6 +183,13 @@
         }
 
         created(): void {
+            if(this.geneOnly == "nomac"){ // comes from study manhattan plot
+                this.filters.gene = "0";
+                this.filters.mac = ["0","5"];
+            }
+            if(this.geneOnly == "n"){ // comes from hitmap
+                this.filters.gene = "0";
+            }
             this.loadData();
         }
 
