@@ -36,7 +36,7 @@
                                         <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
                                         <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
                                         <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
-                                        <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="publication">{{ pub_names[publication] }}</a></v-flex>
+                                        <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="'https://www.ncbi.nlm.nih.gov/pubmed/'+pubmedId">{{ pub_names[publication] }}</a></v-flex>
                                         <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
                                         <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
                                         <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
@@ -112,6 +112,7 @@
       transformation: string = "";
       method: string = "";
       publication: string = "";
+      pubmedId: string = "";
       associationCount: number = 0 ;
       araPhenoLink: string = "";
       phenotypeDescription: string = "";
@@ -216,6 +217,7 @@
         this.method = data.method;
         this.phenotype = data.phenotype;
         this.publication = data.publication;
+        this.pubmedId = data.publicationPmid;
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.phenotype;
         this.studyDOI = data.doi;

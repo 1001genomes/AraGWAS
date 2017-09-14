@@ -68,7 +68,7 @@ class StudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('name','genotype','phenotype','phenotype_pk','phenotype_description','method','transformation', 'publication',
+        fields = ('name','genotype','phenotype','phenotype_pk','phenotype_description','method','transformation', 'publication', 'publication_pmid',
                   'association_count','pk','n_hits_bonf','n_hits_perm','n_hits_fdr','n_hits_thr','bonferroni_threshold',
                   'permutation_threshold','bh_threshold','number_samples', 'number_countries', 'doi', 'phenotype_to_id', 'phenotype_to_name', 'phenotype_to_description')
 
