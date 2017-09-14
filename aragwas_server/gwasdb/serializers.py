@@ -62,12 +62,15 @@ class StudySerializer(serializers.ModelSerializer):
     phenotype = serializers.SerializerMethodField()
     phenotype_pk = serializers.SerializerMethodField()
     phenotype_description = serializers.SerializerMethodField()
+    phenotype_to_id = serializers.SerializerMethodField()
+    phenotype_to_name = serializers.SerializerMethodField()
+    phenotype_to_description = serializers.SerializerMethodField()
 
     class Meta:
         model = Study
         fields = ('name','genotype','phenotype','phenotype_pk','phenotype_description','method','transformation', 'publication',
                   'association_count','pk','n_hits_bonf','n_hits_perm','n_hits_fdr','n_hits_thr','bonferroni_threshold',
-                  'permutation_threshold','bh_threshold','number_samples', 'number_countries', 'doi')
+                  'permutation_threshold','bh_threshold','number_samples', 'number_countries', 'doi', 'phenotype_to_id', 'phenotype_to_name', 'phenotype_to_description')
 
     def get_association_count(self, obj):
         try:
@@ -96,6 +99,21 @@ class StudySerializer(serializers.ModelSerializer):
             return obj.phenotype.description
         except:
             return ""
+    def get_phenotype_to_id(self,obj):
+        try:
+            return obj.phenotype.trait_ontology_id
+        except:
+            return ""
+    def get_phenotype_to_name(self,obj):
+        try:
+            return obj.phenotype.trait_ontology_name
+        except:
+            return ""
+    def get_phenotype_to_description(self,obj):
+        try:
+            return obj.phenotype.trait_ontology_description
+        except:
+            return ""
 
 """
 Phenotype List Serializer Class (read-only)
@@ -103,4 +121,4 @@ Phenotype List Serializer Class (read-only)
 class PhenotypeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phenotype
-        fields = ('name','description','arapheno_link','pk','study_set')
+        fields = ('name','description','arapheno_link','pk','study_set','trait_ontology_id','trait_ontology_name','trait_ontology_description')

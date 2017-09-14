@@ -11,6 +11,9 @@ class Phenotype(models.Model):
     date = models.DateTimeField(blank= True, null=True) # date of creation/update
     # to = models.CharField(max_length=255) # Trait ontology that regroups similar phenotypes TODO: add trait ontology to all phenotypes
     arapheno_link = models.URLField(blank=True, null=True) # link to phenotype entry in AraPheno
+    trait_ontology_id = models.CharField(max_length=50, default="")
+    trait_ontology_name = models.CharField(max_length=255, default="")
+    trait_ontology_description = models.CharField(max_length=255, default="", null=True)
 
     @property
     def doi(self):

@@ -151,6 +151,7 @@
                                                 </template>
                                                 <template slot="items" scope="props">
                                                     <td><router-link :to="{name: 'studyDetail', params: { id: props.item.pk }}">{{ props.item.phenotype }}</router-link></td>
+                                                    <td  class="text-xs-left">{{ props.item.phenotypeToName }}</td>
                                                     <td  class="text-xs-left">{{ props.item.phenotypeDescription }}</td>
                                                     <td  class="text-xs-right">{{ props.item.nHitsPerm }}</td>
                                                     <!--<td  class="text-xs-left"><a :href="props.item.publication" target="_blank">{{ pub_names[props.item.publication] }}</a></td>-->
@@ -228,7 +229,7 @@
       currentPage: number = 1;
       focused: boolean = false;
       searchQuery: string = "";
-      columnsStudies = [{text: "Name", align: "left", value: "name",},{text: "Phenotype Description",align: "left", value: "phenotypeDescription", sortable: false,},{text:  "N Hits Permutation", value: "nHitsPerm"},{text:  "Genotype", value: "genotype"}]; //,{text: "Publication",align: "left", value: "publication", sortable: false}
+      columnsStudies = [{text: "Name", align: "left", value: "name",},{text: "Phenotype Ontology",align: "left", value: "phenotypeToName",sortable:false},{text: "Phenotype Description",align: "left", value: "phenotypeDescription", sortable: false,},{text:  "N Hits Permutation", value: "nHitsPerm"},{text:  "Genotype", value: "genotype"}]; //,{text: "Publication",align: "left", value: "publication", sortable: false}
 //      columnsStudies = ["name", "transformation", "method", "genotype", "n Hits Permutation","phenotype Description"];
       pagination = {rowsPerPage: 25, totalItems: 0, page: 1, sortBy: "nHitsPerm", descending: true};
       loading: boolean = true;
