@@ -81,10 +81,13 @@
                         <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
                         <v-card>
                             <v-card-text>
-                                <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> New Study Published</div>
+                                <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog paper published</div>
                                 <div>
                                     <p class="light">
-                                        We finalized a complete recomputation of Genome Wide Association Studies (GWAS) for 167 phenotypes with the brandly new imputed 2029 genomes from the 1001genomes consortium.
+                                        We are happy to announce that the AraGWAS Catalog was published in the Database issue of Nucleic Acids Research:
+                                    </p>
+                                    <p class="light">
+                                        Matteo Togninalli, Ümit Seren, Dazhe Meng, Joffrey Fitz, Magnus Nordborg, Detlef Weigel, Karsten Borgwardt, Arthur Korte, and Dominik G. Grimm; <b>The AraGWAS Catalog: a curated and standardized Arabidopsis thaliana GWAS catalog;</b> Nucleic Acids Research, gkx954, <a target=_blank href=https://doi.org/10.1093/nar/gkx954>https://doi.org/10.1093/nar/gkx954</a>
                                     </p>
                                 </div>
                             </v-card-text>
@@ -95,7 +98,7 @@
                                 <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog is online</div>
                                 <div>
                                     <p class="light">
-                                        We are proud to announce that the first public GWAS catalog for the model organism <em>Arabidopsis thaliana</em> has launched.
+                                        We are proud to announce that the first public GWAS catalog for the model organism <em>Arabidopsis thaliana</em> has launched. We finalized a complete recomputation of Genome Wide Association Studies (GWAS) for 167 phenotypes with the brandly new imputed 2029 genomes from the 1001genomes consortium.
                                     </p>
                                 </div>
                             </v-card-text>
