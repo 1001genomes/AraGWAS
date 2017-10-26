@@ -80,13 +80,14 @@ def _get_percentages_from_buckets(buckets):
                 i['doc_count']) / tot_sum
     return out_dict
 
-def _is_filter_whole_dataset(filters):
+def _is_filter_whole_dataset(filters, mac=True):
     if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
         return False
     if 'maf' in filters and len(filters['maf']) > 0 and len(filters['maf']) < 4:
         return False
-    if 'mac' in filters and len(filters['mac']) > 0 and len(filters['mac']) < 2:
-        return False
+    if mac:
+        if 'mac' in filters and len(filters['mac']) > 0 and len(filters['mac']) < 2:
+            return False
     if 'annotation' in filters and len(filters['annotation']) > 0 and len(filters['annotation']) < 4:
         return False
     if 'type' in filters and len(filters['type'])==1:
@@ -534,7 +535,19 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             filters['end'] = gene['positions']['lte'] + zoom
         if _is_filter_whole_dataset(filters):
             # download_name = "all_associations"
+            file_name = "%s/all_associations_no_mac_filter.csv" % (settings.HDF5_FILE_PATH)
+            if not os.path.isfile(file_name):
+                opts = dict(doc_type='associations', output_file=file_name)
+                fn = download_es2csv(opts, filters)
+            chunk_size = 8192
+            response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
+                                             content_type="text/csv")
+            response['Content-Length'] = os.path.getsize(file_name)
+        elif _is_filter_whole_dataset(filters, mac=False):
             file_name = "%s/all_associations.csv" % (settings.HDF5_FILE_PATH)
+            if not os.path.isfile(file_name):
+                opts = dict(doc_type='associations', output_file=file_name)
+                fn = download_es2csv(opts, filters)
             chunk_size = 8192
             response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
                                              content_type="text/csv")
