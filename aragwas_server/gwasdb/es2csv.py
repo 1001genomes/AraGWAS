@@ -72,7 +72,7 @@ class Es2csv:
 
     @retry(elasticsearch.exceptions.ConnectionError, tries=TIMES_TO_TRY)
     def create_connection(self):
-        es = elasticsearch.Elasticsearch([ES_HOST],timeout=600)
+        es = elasticsearch.Elasticsearch([ES_HOST],timeout=60)
         self.es_conn = es
 
     @retry(elasticsearch.exceptions.ConnectionError, tries=TIMES_TO_TRY)
