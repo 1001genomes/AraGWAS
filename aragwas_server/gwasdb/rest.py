@@ -517,9 +517,11 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # Other download basenames:
         download_name = "aragwas_associations"
         if filters['study_id'] != []:
+            stid = filters['study_id']
             if isinstance(filters['study_id'], list):
-                filters['study_id'] = filters['study_id'][0]
-            study_name = Study.objects.get(pk=filters['study_id']).name
+                stid = stid[0]
+                # filters['study_id'] = filters['study_id'][0]
+            study_name = Study.objects.get(pk=stid).name
             download_name = "{}_associations".format(study_name)
         elif filters['phenotype_id'] != []:
             phenotype_name = Phenotype.objects.get(pk=filters['phenotype_id']).name
