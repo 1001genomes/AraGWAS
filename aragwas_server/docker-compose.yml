@@ -10,6 +10,7 @@ services:
       - --
       - sh
       - /srv/web/web-entrypoint.sh
+      - manage.py
     environment:
       - ES_HOST=http://elastic:changeme@elasticsearch1:9200
       - ARAGWAS_HDF5_FILE_PATH=/opt/aragwas_data

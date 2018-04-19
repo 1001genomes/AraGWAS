@@ -30,4 +30,5 @@ RUN chown aragwas -R /srv/web/
 
 USER aragwas
 
-ENTRYPOINT /srv/web/web-entrypoint.sh
+ENTRYPOINT ["/srv/web/web-entrypoint.sh"]
+CMD ["manage.py"]
