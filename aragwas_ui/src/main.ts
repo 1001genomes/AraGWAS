@@ -23,6 +23,9 @@ Vue.use(VueTimeago, {
 
 Vue.use(VueAnalytics, {
   id: "UA-26150757-9",
+  set: [
+    { field: 'anonymizeIp', value: true }
+  ],
   router,
   autoTracking: {
     exception: true,
