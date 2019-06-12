@@ -73,6 +73,16 @@
                             <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
                         </div>
                     </v-flex>
+                    <v-flex xs12>
+                        <div class="icon-block">
+                            <i class="material-icons" >file_download</i>
+                            <h5 >Bulk Download</h5>
+                            <p >Download all associations scores recorded in AraGWAS here.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" :href="'/api/studies/bulk_download'" download v-tooltip:left="{html: 'Download AraGWAS in bulk'}">
+                                <v-icon left dark>file_download</v-icon> Download
+                            </v-btn>
+                        </div>
+                    </v-flex>
                 </v-layout>
             </v-container>
             <v-container grid-list-md>

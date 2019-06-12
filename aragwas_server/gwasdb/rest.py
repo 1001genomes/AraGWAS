@@ -251,6 +251,15 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         response['Content-Disposition'] = "attachment; filename=%s.hdf5" % pk
         return response
 
+    @list_route(methods=['GET'], url_path='bulk_download')
+    def bulkdownload(self, request):
+        """Download all the compressed HDF5 files. """
+        bulk_file = "%s/aragwas_db.zip" % (settings.HDF5_FILE_PATH)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(bulk_file,"rb"), chunk_size),content_type="application/x-zip")
+        response['Content-Length'] = os.path.getsize(bulk_file)
+        response['Content-Disposition'] = "attachment; filename=aragwas_db.zip"
+        return response
 
     @detail_route(methods=['GET'], url_path='associations')
     def top_associations(self, request, pk):
