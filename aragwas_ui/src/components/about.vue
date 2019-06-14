@@ -37,6 +37,26 @@
                         <v-card class="mt-2 mb-4">
                             <v-card-text>
                                 <div class="waves-effect waves-block waves-light">
+                                    <a target="_blank" href="https://bit.cs.tum.de">
+                                        <img style="height:60px;padding:5px 5px;" class="activator" src="/static/img/tumcs_logo.png">
+                                    </a>
+                                    </br>
+                                    <a target="_blank" href="https://bit.cs.tum.de">
+                                        <img style="height:60px;padding:5px 5px;" class="activator" src="/static/img/hswt_logo.png">
+                                    </a>
+                                </div>
+                                <div  class="card-content">
+                                    <h5 class="light grey--text text--darken-4">TUM Campus Straubing for Biotechnology and Sustainability</h5>
+                                    <h5 class="light grey--text text--darken-4">Weihenstephan-Triesdorf University of Applied Sciences</h5>
+                                    <p><a target="_blank" href="https://www.bsse.ethz.ch/mlcb">Prof. Dr. Dominik Grimm</a>
+                                        <a href="mailto:dominik.grimm@bsse.ethz.ch" target="_top"><v-icon class="green--text">email</v-icon></a>
+                                    </p>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                        <v-card class="mt-2 mb-4">
+                            <v-card-text>
+                                <div class="waves-effect waves-block waves-light">
                                     <a target="_blank" href="https://www.bsse.ethz.ch/mlcb">
                                         <img style="height:60px;padding:5px 5px;" class="activator" src="/static/img/eth_logo.png">
                                     </a>
@@ -45,9 +65,6 @@
                                     <h5 class="light grey--text text--darken-4">ETH Zürich, Department for Biosystems Science and Engineering</h5>
                                     <p><a target="_blank" href="https://www.bsse.ethz.ch/mlcb">Prof. Dr. Karsten Borgwardt</a>
                                         <a href="mailto:karsten.borgwardt@bsse.ethz.ch" target="_top"><v-icon class="green--text">email</v-icon></a>
-                                    </p>
-                                    <p><a target="_blank" href="https://www.bsse.ethz.ch/mlcb">Dr. Dominik Grimm</a>
-                                        <a href="mailto:dominik.grimm@bsse.ethz.ch" target="_top"><v-icon class="green--text">email</v-icon></a>
                                     </p>
                                     <p><a target="_blank" href="https://www.bsse.ethz.ch/mlcb">Matteo Togninalli</a>
                                         <a href="mailto:matteo.togninalli@bsse.ethz.ch" target="_top"><v-icon class="green--text">email</v-icon></a>
