@@ -98,3 +98,5 @@ ENV/
 
 GENOTYPE_DATA
 *.csv
+
+.pytest_cache/

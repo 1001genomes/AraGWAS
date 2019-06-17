@@ -81,10 +81,11 @@ pipeline {
 
     // post block is executed after all the stages/steps in the pipeline
     post {
-        always {
-            // notify build results, see https://jenkins.io/blog/2016/07/18/pipline-notifications/
-            notifyBuild(currentBuild.result)
-        }
+        // always {
+        //     // notify build results, see https://jenkins.io/blog/2016/07/18/pipline-notifications/
+        //     // notifyBuild(currentBuild.result)
+
+        // }
         changed {
             echo "build changed"
         }

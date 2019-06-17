@@ -68,29 +68,6 @@ class ApiVersionTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'date': '2017-04-26T09:11:18Z', 'version': 'N/A', 'build_url': None, 'build': 'N/A', 'github_url': 'https://github.com/1001genomes/aragwas/commit', 'githash': 'N/A'})
 
-class SNPTests(TestCase):
-
-    def test_neightboring_snps(self):
-        """
-        Test the rest.py neighboring_snps serializer
-        """
-        generate_basic_db()
-        factory = APIRequestFactory()
-        view = rest.SNPViewSet.as_view(actions={'get': 'neighboring_snps'})
-        request = factory.get(reverse('snps-neighboring', args=(2,))+'?include=True')
-        response1 = view(request, pk=2)
-        request = factory.get(reverse('snps-neighboring', args=(2,)))
-        response2 = view(request, pk=2)
-        request = factory.get(reverse('snps-neighboring', args=(1,)))
-        response3 = view(request, pk=1)
-        self.assertEqual(response1.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response1.data), 0)
-        self.assertEqual(response2.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response2.data), 0)
-        self.assertEqual(response3.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response3.data), 0)
-
-
 
 class HDF5LoadingTests(TestCase):
 
