@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
+    image: "docker.artifactory.imp.ac.at/the1001genomes/aragwas:latest"
     ports:
      - "8000:8000"
     entrypoint:
@@ -66,7 +66,7 @@ services:
 
     # Celery worker
   worker:
-    image: "docker.sci.gmi.oeaw.ac.at/nordborg/aragwas:testing"
+    image: "docker.artifactory.imp.ac.at/the1001genomes/aragwas:latest"
     entrypoint:
       - /srv/web/wait-for-it.sh
       - elasticsearch1:9200

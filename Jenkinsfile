@@ -59,13 +59,13 @@ pipeline {
                 script {
                     sh 'sh write_version.sh'
                     //FIXME leaking local infra details
-                    docker.withRegistry('https://docker.sci.gmi.oeaw.ac.at', 'platinum-docker-registry') {
+                    docker.withRegistry('https://docker.artifactory.imp.ac.at', 'jenkins_artifactory_creds') {
 
                         // push DB docker img to registry
-                        def server_img = docker.build("docker.sci.gmi.oeaw.ac.at/nordborg/aragwas", "aragwas_server")
+                        def server_img = docker.build("docker.artifactory.imp.ac.at/the1001genomes/aragwas", "aragwas_server")
 
-                        server_img.push('testing')
-                        sshagent(['801dbf20-4259-4d3b-8948-e84fe1b52c7f']) {
+                        server_img.push('latest')
+                        sshagent(['1001genome_deploy_ssh_key']) {
                             env.DEPLOY_HOST = 'aragwas.sci.gmi.oeaw.ac.at'
                             sh '''
                                 scp -o StrictHostKeyChecking=no aragwas_server/docker-compose.yml root@$DEPLOY_HOST:/root/
