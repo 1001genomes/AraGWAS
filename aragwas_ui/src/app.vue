@@ -23,6 +23,11 @@
             <v-list-tile-title><span class="black--text">About</span></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile :to="{path: '/links'}">
+          <v-list-tile-content>
+            <v-list-tile-title><span class="black--text">Links</span></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile href="/docs" target="_blank">
           <v-list-tile-content>
             <v-list-tile-title><span>REST API documentation</span></v-list-tile-title>
@@ -38,6 +43,7 @@
           <v-btn flat class="links" @click="starttour"><span class="black--text">Take a tour?</span></v-btn>
           <v-btn flat class="links faq" id="faq-link" :to="{path: '/faq'}" ><span class="black--text">FAQ</span></v-btn>
           <v-btn flat class="links" id="about-link" :to="{path: '/about'}"><span class="black--text">About</span></v-btn>
+          <v-btn flat class="links" id="links-link" :to="{path: '/links'}"><span class="black--text">Links</span></v-btn>
           <v-btn flat class="links" id="rest-link" href="/docs" target="_blank">REST API documentation</v-btn>
       </v-toolbar-items>
     </v-toolbar>

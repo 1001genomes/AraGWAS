@@ -4,7 +4,7 @@
             <div class="section">
                 <div class="container mt-2">
                     <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
-                    <v-divider></v-divider>
+                    <!-- <v-divider></v-divider> -->
                 </div>
             </div>
         </v-parallax>

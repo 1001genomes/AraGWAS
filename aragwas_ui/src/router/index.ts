@@ -4,6 +4,7 @@ import GeneDetail from "@/components/geneDetail.vue";
 import Genes from "@/components/genes.vue";
 import GwasHeatmap from "@/components/gwasHeatmap.vue";
 import Home from "@/components/home.vue";
+import Links from "@/components/links.vue";
 import PhenotypeDetail from "@/components/phenotypeDetail.vue";
 import Phenotypes from "@/components/phenotypes.vue";
 import Studies from "@/components/studies.vue";
@@ -57,6 +58,11 @@ export default new Router({
       path: "/about",
       name: "about",
       component: About,
+    },
+    {
+      path: "/links",
+      name: "links",
+      component: Links,
     },
     {
       path: "/top-associations",
