@@ -21,10 +21,11 @@
                                 <v-flex xs5 md4 >Chromosome:</v-flex><v-flex xs7 md8>{{ chr }}</v-flex>
                                 <v-flex xs5 md4 >Position:</v-flex><v-flex xs7 md8><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
                                 <v-flex xs5 md4>Gene:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
-                                <v-flex xs10 md12> INSERT ALLELIC DISTRIBUTION </v-flex> 
-                                <v-flex xs5 md4>MAF:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
                                 <v-flex xs5 md4>Annotation:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
                                 <v-flex xs5 md4>Type:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
+                                <v-flex xs10 md12> 
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.3, title: 'Allelic Distribution'}" chart-type="PieChart"></vue-chart> 
+                                </v-flex>
                                 <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                             </v-layout>
                         </v-flex>
@@ -32,10 +33,10 @@
                             <v-layout column>
                                 <h5 class="mb-1">Association details</h5>
                                 <!-- <study-plots :plotStatistics="plotStatistics"></study-plots> -->
-                                <v-flex xs5 md4>Score:</v-flex><v-flex xs7 md8 >{{ score }}</v-flex>
-                                <v-flex xs5 md4>Significant:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
-                                <v-flex xs5 md4>Standard error of Beta estimate :</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
-                                <v-flex xs5 md4>Closeby associated SNPs?</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
+                                <v-flex xs5 md6>Score:</v-flex><v-flex xs7 md6 >{{ score }}</v-flex>
+                                <v-flex xs5 md6>Significant:</v-flex><v-flex xs7 md6 >{{ phenotypeOntology }}</v-flex>
+                                <v-flex xs5 md6>Standard error of Beta estimate:</v-flex><v-flex xs7 md6>{{ associationCount }}</v-flex>
+                                <v-flex xs5 md6>Closeby associated SNPs?</v-flex><v-flex xs7 md6>{{ bonferroniThreshold }}</v-flex>
                             </v-layout>
                         </v-flex>
                     </v-layout>
@@ -136,6 +137,9 @@
       samples: number = 0;
       countries: number = 0;
       plotsWidth: number = 0;
+
+      plotRows = [["A",121],["C",663]];
+      plotColumns = [{"type": "string", "label": "Condition"},{"type": "number","label":"#Count"}];
 
       dataChr = {
           1: [],
