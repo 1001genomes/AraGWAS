@@ -114,17 +114,20 @@
                             </v-card-text>
                         </v-card>
                     </v-flex>
-                    <v-flex xs12 sm6 md4 order-md2 class="mt-5">
-                        <h5 class="black--text light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>
+                    <v-flex xs12 sm6 md4 order-md3 class="mt-5">
+                        <h5 class="black--text light"><v-icon class="green--text lighten-1 small-icon">assessment</v-icon> Quick Stats</h5>                      
                         <v-card>
                             <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">assignment</v-icon> {{ nStudies }} Studies</div><v-divider></v-divider>
                             <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">local_florist</v-icon> {{ nPhenotypes }} Phenotypes</div><v-divider ></v-divider>
                             <div class="title pa-4"><v-icon class="green--text lighten-1 small-icon">swap_calls</v-icon> {{ nAssociations }} Significant associations</div>
                         </v-card>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4 order-md3 class="mt-5">
-                        <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
+
+                        <h5 class="pt-4 black--text light"><v-icon class="green--text lighten-1 small-icon">data_usage</v-icon> Data</h5>
                             <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.2, title: 'Top genes by number of high-scoring associations'}" chart-type="PieChart"></vue-chart>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4 order-md2 class="mt-5">
+                        <h5 class=" black--text light"><v-icon class="green--text lighten-1 small-icon">insert_chart</v-icon> Twitter</h5>
+                            <Timeline id="aragwas" sourceType="profile" :options="{ tweetLimit: '3' }"><div class="spinner"></div></Timeline>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -211,6 +214,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
+    import { Timeline, Tweet } from 'vue-tweet-embed';
 
     import {search, loadPhenotypes, loadStudies, loadAssociationCount, loadTopGenes} from '../api';
     import LineChart from "../components/linechart.vue";
@@ -228,6 +232,7 @@
       },
       components: {
           "line-chart": LineChart,
+          "Timeline": Timeline,
       },
       mixins: [tourMixin]
     })

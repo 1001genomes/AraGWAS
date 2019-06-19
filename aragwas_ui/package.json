@@ -24,8 +24,9 @@
     "vue-class-component": "^5.0.2",
     "vue-router": "^2.7.0",
     "vue-timeago": "^3.3.5",
-    "whatwg-fetch": "^2.0.3",
-    "vuetify": "^0.15.2"
+    "vue-tweet-embed": "^2.3.0",
+    "vuetify": "^0.15.2",
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
     "@types/d3": "^4.9.0",
@@ -38,7 +39,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.24.1",
-    "chai": "^4.1.0",
+    "chai": "^3.5.0",
     "chalk": "^1.1.3",
     "chromedriver": "^2.30.1",
     "connect-history-api-fallback": "^1.3.0",
@@ -90,7 +91,7 @@
     "tslint": "^5.5.0",
     "tslint-language-service": "^0.9.6",
     "tslint-loader": "^3.5.3",
-    "typescript": "^2.4.1",
+    "typescript": "2.4.1",
     "url-loader": "^0.5.9",
     "vue-loader": "^12.2.2",
     "vue-property-decorator": "^5.1.1",
