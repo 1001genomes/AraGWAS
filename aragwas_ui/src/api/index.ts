@@ -308,3 +308,9 @@ export async function loadAssociationsHistogramZoomed(region=[0,0,0], regionWidt
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
+// export async function loadAssociation(): Promise<Association> {
+//     return fetch(`/api/associations/map_heat/`)
+//         .then(checkStatus)
+//         .then<Array<{}>>(convertToModel);
+// }
+// TODO: implement rest functions for association retrieval.

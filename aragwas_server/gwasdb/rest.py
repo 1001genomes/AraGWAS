@@ -453,6 +453,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
+    
+    # @list_route(methods=['GET'], url_path='association')
+    # def retrieve(self, request, pk):
+    #     """ Retrieve information about a specific gene """
+    #     gene = elastic.load_gene_by_id(pk)
+    #     return Response(gene)
 
     @list_route(methods=['GET'], url_path='map_histogram')
     def data_for_histogram(self, request):
