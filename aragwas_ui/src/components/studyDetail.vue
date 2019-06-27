@@ -19,6 +19,9 @@
                 <v-tabs-item href="#study-detail-tabs-manhattan" ripple class="grey lighten-4 black--text" >
                     <div>Manhattan plots</div>
                 </v-tabs-item>
+                <v-tabs-item href="#study-detail-tabs-ko-mutations" ripple class="grey lighten-4 black--text" >
+                    <div>KO Mutations</div>
+                </v-tabs-item>
             </v-tabs-bar>
             <v-tabs-items>
                 <v-tabs-content id="study-detail-tabs-details" class="pa-4 " >
@@ -72,6 +75,17 @@
                             </v-flex>
                         </v-layout>
                 </v-tabs-content>
+                <v-tabs-content id="study-detail-tabs-ko-mutations" class="pa-4" >
+                        <v-layout column child-flex>
+                            <v-flex xs12>
+                                <h5 class="mb-1">KO Mutations Plots</h5>
+                                <v-divider></v-divider>
+                            </v-flex>
+                            <v-flex xs12>
+                                <ko-mutation-plot class="flex" :shown="(currentView==='study-detail-tabs-ko-mutations')" :dataPoints="dataChrKO['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="optionsKO[i.toString()]"></ko-mutation-plot>
+                            </v-flex>
+                        </v-layout>
+                </v-tabs-content>
             </v-tabs-items>
         </v-tabs>
     </div>
@@ -82,8 +96,9 @@
 
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
+    import {loadAssociationsForManhattan, loadKOAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
     import ManhattanPlot from "./manhattanplot.vue";
+    import KOMutationPlot from "./komutationplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
     import StudyPlots from "./studyplots.vue"
@@ -97,6 +112,7 @@
       },
       components: {
           "manhattan-plot": ManhattanPlot,
+          "ko-mutation-plot": KOMutationPlot,
           "breadcrumbs": Breadcrumbs,
           "top-associations": TopAssociationsComponent,
           "study-plots": StudyPlots,
@@ -134,15 +150,18 @@
       plotsWidth: number = 0;
 
       dataChr = {
-          1: [],
-          2: [],
-          3: [],
-          4: [],
-          5: [],
       };
+      dataChrKO = {};
 
       // Manhattan plots options
       options = {
+          1: {chr: 1, max_x: 30427671},
+          2: {chr: 2, max_x: 19698289},
+          3: {chr: 3, max_x: 23459830},
+          4: {chr: 4, max_x: 18585056},
+          5: {chr: 5, max_x: 26975502},
+      };
+      optionsKO = {
           1: {chr: 1, max_x: 30427671},
           2: {chr: 2, max_x: 19698289},
           3: {chr: 3, max_x: 23459830},
@@ -200,6 +219,7 @@
           this.loadData();
       }
       mounted(): void {
+          this.currentView = "study-detail-tabs-ko-mutations";
           this.currentView = "study-detail-tabs-details";
       }
 
@@ -208,6 +228,7 @@
             loadStudy(this.id).then(this._displayStudyData);
             loadStudyTopHits(this.id).then(this._displayPieCharts);
             loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
+            loadKOAssociationsForManhattan(this.id).then(this._displayKOMutationsPlots);
         } catch (err) {
             console.log(err);
         }
@@ -286,6 +307,22 @@
             this.dataChr[chrom] =  chrData;
             this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.options[i.toString()]["max_y"]);
+        }
+      }
+      _displayKOMutationsPlots(data): void {
+        console.log(data.thresholds)
+        for (let i=1; i <=3; i++) {
+            let chrom = "chr" + i.toString();
+            const positionsKO = data[chrom].positions;
+            const chrDataKO: any[] = [];
+            for (let j = 0; j < positionsKO.length; j++) {
+                const assoc = [positionsKO[j],data[chrom].scores[j], data[chrom].mafs[j], data[chrom].genes[j]];
+                chrDataKO.push(assoc);
+            }
+            this.dataChrKO[chrom] =  chrDataKO;
+            this.optionsKO[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
+            this.optionsKO[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.optionsKO[i.toString()]["max_y"]);
+            this.optionsKO[i.toString()]["permutationThreshold"] = 0; // temporary fix
         }
       }
     }

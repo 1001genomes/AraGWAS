@@ -107,6 +107,12 @@ export async function loadAssociationsForManhattan(studyId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
+// Load ko associations for manhattan plots
+export async function loadKOAssociationsForManhattan(studyId: number) {
+    return fetch(`/api/studies/${studyId}/ko_mutations/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 
 // Phenotype list
 export async function loadPhenotypes(page: number = 1, ordering= "") {
