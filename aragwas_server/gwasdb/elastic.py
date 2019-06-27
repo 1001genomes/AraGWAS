@@ -166,8 +166,8 @@ def load_filtered_top_genes(filters, start=0, size=50):
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
         # Retrieve KO information on gene if any
-        gene['KO_hits'] = load_gene_ko_associations(top['key'])#, return_only_significant=True)
-        gene['n_KO_hits'] = len(gene['KO_hits'])
+        gene['ko_associations'] = load_gene_ko_associations(top['key'])#, return_only_significant=True)
+        # gene['n_KO_hits'] = len(gene['KO_hits'])
         genes.append(gene)
     return genes, len(top_genes)
 
@@ -585,7 +585,6 @@ def load_gene_ko_associations(id, return_only_significant=False):
     if return_only_significant:
         asso_search = asso_search.filter('term', overPermutation='T')
     q = Q('bool', should=Q('term',gene__name = id))
-    # q = Q({'nested':{'path':'gene', 'query':{'match':{'gene.name':id}}}})
     asso_search = asso_search.filter(q).sort('score').source(exclude=['gene'])
     results = asso_search[0:min(500, asso_search.count())].execute()
     ko_associations = results.to_dict()['hits']['hits']

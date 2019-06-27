@@ -89,8 +89,8 @@
                                             <div>{{ props.item.isoforms[0].shortDescription }}</div></td>
                                         <!-- <td>
                                             <div>{{ props.item.n_KO_hits }}</div></td> -->
-                                        <td v-if="props.item.n_KO_hits!=0">
-                                            <div v-for="kohit in props.item.KO_hits">
+                                        <td v-if="props.item.koAssociations.length!=0">
+                                            <div v-for="kohit in props.item.koAssociations">
                                                 <router-link :to="{name: 'studyDetail', params: { id: kohit.study.phenotype.id }}">{{ kohit.study.phenotype.name }}</router-link>
                                                 (Score: {{ Number((kohit.score).toFixed(2)) }})
                                             </div>
