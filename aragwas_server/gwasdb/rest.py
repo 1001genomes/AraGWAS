@@ -620,7 +620,7 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     def retrieve(self, request, pk):
         """ Retrieve information about a specific gene """
         gene = elastic.load_gene_by_id(pk)
-        gene['ko_associations'] = elastic.load_gene_ko_associations(pk)#, return_only_significant=True)
+        gene['ko_associations'] = elastic.load_gene_ko_associations(pk, return_only_significant=True)
         return Response(gene)
 
     @list_route(methods=['GET'], url_path='autocomplete')

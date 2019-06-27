@@ -166,7 +166,7 @@ def load_filtered_top_genes(filters, start=0, size=50):
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
         # Retrieve KO information on gene if any
-        gene['ko_associations'] = load_gene_ko_associations(top['key'])#, return_only_significant=True)
+        gene['ko_associations'] = load_gene_ko_associations(top['key'], return_only_significant=True)
         # gene['n_KO_hits'] = len(gene['KO_hits'])
         genes.append(gene)
     return genes, len(top_genes)
@@ -213,7 +213,10 @@ def load_genes_by_region(chrom, start, end, features):
     search_genes = Search().using(es).doc_type('genes').index(index).filter("range", positions={"lte": end, "gte":start})
     if not features:
         search_genes.source(exclude=['isoforms'])
-    return [gene.to_dict() for gene in search_genes.scan() ]
+    genes = [gene.to_dict() for gene in search_genes.scan() ]
+    for gene in genes:
+        gene['ko_associations'] = load_gene_ko_associations(gene['name'], return_only_significant=True)
+    return genes
 
 
 def filter_association_search(s, filters):
@@ -561,7 +564,7 @@ def index_ko_associations(study, associations, thresholds):
         study_data['thresholds'] = thresholds_study
         _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'beta': float(assoc['beta']), 
             'se_beta': float(assoc['se_beta']), 'created': datetime.datetime.now(),'study':study_data}
-        _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_ara'])
+        _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_threshold05'])
         if with_permutations:
             _source['overPermutation'] = bool(assoc['score'] > thresholds['permutation_threshold'])
         try:
@@ -583,26 +586,9 @@ def load_gene_ko_associations(id, return_only_significant=False):
     chrom = matches.group(1)
     asso_search = Search(using=es).doc_type('ko_associations')
     if return_only_significant:
-        asso_search = asso_search.filter('term', overPermutation='T')
+        asso_search = asso_search.filter('term', overBonferroni='T')
     q = Q('bool', should=Q('term',gene__name = id))
-    asso_search = asso_search.filter(q).sort('score').source(exclude=['gene'])
+    asso_search = asso_search.filter(q).sort('-score').source(exclude=['gene'])
     results = asso_search[0:min(500, asso_search.count())].execute()
     ko_associations = results.to_dict()['hits']['hits']
     return [association['_source'] for association in ko_associations]
-
-def load_study_ko_associations(study_id):
-    """Retrieve KO associations by study id"""
-    s = Search(using=es, doc_type='ko_associations')
-    s = s.filter(Q('bool', should=[Q('term', study__id=study_id)]))
-    # TODO
-    
-    matches = GENE_ID_PATTERN.match(id)
-    if not matches:
-        raise Exception('Wrong Gene ID %s' % id)
-    chrom = matches.group(1)
-    asso_search = Search(using=es).doc_type('ko_associations').source(exclude=['isoforms','GO'])
-    q = Q({'nested':{'path':'ko_associations.gene', 'query':{'match':{'ko_associations.gene.gene_name':id}}}})
-    asso_search = asso_search.filter(q).sort('score')
-    results = asso_search[0:min(500, asso_search.count())].execute()
-    associations = results.to_dict()['hits']['hits']
-    return [{association['_id']: association['_source']} if association['found'] else {} for association in associations]
