@@ -103,6 +103,10 @@ def load_gene_by_id(id):
         raise Exception('Gene with ID %s not found' %id)
     gene = doc['_source']
     gene['id'] = doc['_id']
+    # # Potentially, load KO associated phenos if any
+    # if return_KOs:
+    #     # check if gene has any associated phenotypes
+    #     pass
     return gene
 
 def load_gene_associations(id):
@@ -551,16 +555,16 @@ def index_ko_associations(study, associations, thresholds):
     for assoc in associations:
         _id = '%s_%s' % (study.pk, assoc['gene'])
         study_data = serializers.EsStudySerializer(study).data
+        study_data['thresholds'] = thresholds_study
         _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'beta': float(assoc['beta']), 
-            'se_beta': float(assoc['se_beta']), 'created': datetime.datetime.now(),'study':study_data, 'thresholds': thresholds_study}
-
+            'se_beta': float(assoc['se_beta']), 'created': datetime.datetime.now(),'study':study_data}
         _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_ara'])
         if with_permutations:
             _source['overPermutation'] = bool(assoc['score'] > thresholds['permutation_threshold'])
         try:
             gene = load_gene_by_id(assoc['gene'])
         except:
-            gene = assoc['gene']
+            gene = {'name': assoc['gene']}
         _source['gene'] = gene
         documents.append({'_index':'aragwas','_type':'ko_associations','_id': _id, '_source': _source })
     if len(documents) == 0:
@@ -569,7 +573,24 @@ def index_ko_associations(study, associations, thresholds):
     return success, errors
 
 def load_gene_ko_associations(id):
-    """Retrive KO associations by gene id"""
+    """Retrieve KO associations by gene id"""
+    matches = GENE_ID_PATTERN.match(id)
+    if not matches:
+        raise Exception('Wrong Gene ID %s' % id)
+    chrom = matches.group(1)
+    asso_search = Search(using=es).doc_type('ko_associations').source(exclude=['isoforms','GO'])
+    q = Q({'nested':{'path':'ko_associations.gene', 'query':{'match':{'ko_associations.gene.gene_name':id}}}})
+    asso_search = asso_search.filter(q).sort('score')
+    results = asso_search[0:min(500, asso_search.count())].execute()
+    ko_associations = results.to_dict()['hits']['hits']
+    return [{ko_association['_id']: ko_association['_source']} if ko_association['found'] else {} for ko_association in ko_associations]
+
+def load_study_ko_associations(study_id):
+    """Retrieve KO associations by study id"""
+    s = Search(using=es, doc_type='ko_associations')
+    s = s.filter(Q('bool', should=[Q('term', study__id=study_id)]))
+    # TODO
+    
     matches = GENE_ID_PATTERN.match(id)
     if not matches:
         raise Exception('Wrong Gene ID %s' % id)

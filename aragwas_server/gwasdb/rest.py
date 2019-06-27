@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.settings import api_settings
-from gwasdb.hdf5 import get_top_associations, regroup_associations
+from gwasdb.hdf5 import get_top_associations, regroup_associations, get_ko_associations
 
 from gwasdb.tasks import compute_ld, download_es2csv
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
@@ -306,6 +306,26 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         for chrom in range(1, 6):
             chr_idx = top_associations['chr'].searchsorted(str(chrom+1))
             output['chr%s' % chrom] = {'scores': top_associations['score'][prev_idx:chr_idx], 'positions': top_associations['position'][prev_idx:chr_idx], 'mafs': top_associations['maf'][prev_idx:chr_idx]}
+            prev_idx = chr_idx
+        for key, value in thresholds.items():
+            value = int(value) if key == 'total_associations' else float(value)
+            thresholds[key] = value
+        output['thresholds'] = thresholds
+        return Response(output, status=status.HTTP_200_OK)
+
+    @detail_route(methods=['GET'], url_path='ko_mutations')
+    def ko_assocations_from_csv(self, request, pk):
+        """ Retrieve KO associations from the csv file of the study."""
+        ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko_csv', 'LOS_out%s.csv' % pk)
+        ko_associations, thresholds = get_ko_associations(ko_association_file)
+        output = {}
+        prev_idx = 0
+        for chrom in range(1, 6):
+            chr_idx = ko_associations['chr'].searchsorted(str(chrom+1))
+            output['chr%s' % chrom] = {'genes': ko_associations['gene'][prev_idx:chr_idx],
+                'scores': ko_associations['score'][prev_idx:chr_idx], 
+                'positions': ko_associations['position'][prev_idx:chr_idx], 
+                'mafs': ko_associations['maf'][prev_idx:chr_idx]}
             prev_idx = chr_idx
         for key, value in thresholds.items():
             value = int(value) if key == 'total_associations' else float(value)

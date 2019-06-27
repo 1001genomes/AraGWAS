@@ -33,6 +33,7 @@ class Command(BaseCommand):
                 permutation_thresholds = None
             for study in studies:
                 try:
+                    print(study)
                     if permutation_thresholds:
                         indexed_assoc, failed_assoc = index_ko_associations(study.pk, permutation_thresholds[study.pk])
                     else:
@@ -48,3 +49,4 @@ class Command(BaseCommand):
         except Exception as err:
             raise CommandError(
                 'Error indexing GWAS studies. Reason: %s' % str(err))
+            pass

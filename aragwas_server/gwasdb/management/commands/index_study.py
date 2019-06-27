@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     else:
                         indexed_assoc, failed_assoc = index_study(study.pk)
                     if failed_assoc > 0:
-                        self.stdout.write(self.style.ERROR('%s/%s SNPs failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
+                        self.stdout.write(self.style.ERROR('%s/%s KOs correlations failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
                     elif indexed_assoc == 0:
                         self.stdout.write(self.style.WARNING('No associations found that match the threshold. Skipping "%s" in elasticsearch' % (str(study))))
                     else:
