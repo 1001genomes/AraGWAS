@@ -165,6 +165,9 @@ def load_filtered_top_genes(filters, start=0, size=50):
             continue
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
+        # Retrieve KO information on gene if any
+        gene['KO_hits'] = load_gene_ko_associations(top['key'])#, return_only_significant=True)
+        gene['n_KO_hits'] = len(gene['KO_hits'])
         genes.append(gene)
     return genes, len(top_genes)
 
@@ -572,18 +575,21 @@ def index_ko_associations(study, associations, thresholds):
     success, errors = helpers.bulk(es,documents, chunk_size=1000, stats_only=True)
     return success, errors
 
-def load_gene_ko_associations(id):
+def load_gene_ko_associations(id, return_only_significant=False):
     """Retrieve KO associations by gene id"""
     matches = GENE_ID_PATTERN.match(id)
     if not matches:
         raise Exception('Wrong Gene ID %s' % id)
     chrom = matches.group(1)
-    asso_search = Search(using=es).doc_type('ko_associations').source(exclude=['isoforms','GO'])
-    q = Q({'nested':{'path':'ko_associations.gene', 'query':{'match':{'ko_associations.gene.gene_name':id}}}})
-    asso_search = asso_search.filter(q).sort('score')
+    asso_search = Search(using=es).doc_type('ko_associations')
+    if return_only_significant:
+        asso_search = asso_search.filter('term', overPermutation='T')
+    q = Q('bool', should=Q('term',gene__name = id))
+    # q = Q({'nested':{'path':'gene', 'query':{'match':{'gene.name':id}}}})
+    asso_search = asso_search.filter(q).sort('score').source(exclude=['gene'])
     results = asso_search[0:min(500, asso_search.count())].execute()
     ko_associations = results.to_dict()['hits']['hits']
-    return [{ko_association['_id']: ko_association['_source']} if ko_association['found'] else {} for ko_association in ko_associations]
+    return [association['_source'] for association in ko_associations]
 
 def load_study_ko_associations(study_id):
     """Retrieve KO associations by study id"""
