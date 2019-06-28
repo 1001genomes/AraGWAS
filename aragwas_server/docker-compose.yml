@@ -47,6 +47,10 @@ services:
       - cluster.name=aragwas
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
     ulimits:
       memlock:
         soft: -1
