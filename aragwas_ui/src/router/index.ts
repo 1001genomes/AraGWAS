@@ -23,6 +23,7 @@ function idToNumber(route: any): any {
   };
 }
 
+
 function homeSearchParams(route: any): any {
   const page = route.query.page ? Number(route.query.page) : undefined;
   return { view: route.query.view, queryTerm: route.query.queryTerm, page };
@@ -91,9 +92,14 @@ export default new Router({
       component: GeneDetail, props: true,
     },
     {
-      path: "/association/:id",
+      path: "/study/:id/associations/:assocId",
       name: "associationDetail",
-      component: AssociationDetail,
+      component: AssociationDetail, props: function(route: any): any {
+        return {
+          id: Number(route.params.id),
+          assocId: route.params.assocId,
+        };
+      },
     },
     {
       path: "/map",

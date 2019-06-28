@@ -10,64 +10,124 @@
                 </v-btn>
             </v-flex> -->
         </v-layout>
-        <v-container>
-            <v-layout row wrap >
-                <v-flex xs12 sm6 md6 class="pa-1">
-                    <v-layout column>
-                        <v-flex xs12 >
-                            <h5 class="mb-1">SNP information</h5>
-                            <v-divider></v-divider>
-                            <v-layout row wrap class="mt-4">
-                                <v-flex xs5 md4 >Chromosome:</v-flex><v-flex xs7 md8>{{ chr }}</v-flex>
-                                <v-flex xs5 md4 >Position:</v-flex><v-flex xs7 md8><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
-                                <v-flex xs5 md4>Gene:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
-                                <v-flex xs5 md4>Annotation:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
-                                <v-flex xs5 md4>Type:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
-                                <v-flex xs10 md12> 
-                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.3, title: 'Allelic Distribution'}" chart-type="PieChart"></vue-chart> 
+        <v-layout row wrap class="pa-4 " >
+            <v-flex xs12 md4 class="pa-1">
+                <h5 class="mb-1">Association</h5>
+                <v-divider></v-divider>
+                <v-layout row wrap class="mt-4">
+                    <v-flex xs5 md4 >Chromosome:</v-flex><v-flex xs7 md8>{{ chr | capitalize }}</v-flex>
+                    <v-flex xs5 md4 >Position:</v-flex><v-flex xs7 md8>{{ position }}</v-flex>
+                    <v-flex xs5 md4 >Ref:</v-flex><v-flex xs7 md8>{{ ref }}</v-flex>
+                    <v-flex xs5 md4 >Alt:</v-flex><v-flex xs7 md8>{{ alt }}</v-flex>
+                    <v-flex xs5 md4>Gene:</v-flex><v-flex xs7 md8 >{{ gene }}</v-flex>
+                    <v-flex xs5 md4>Annotation:</v-flex><v-flex xs8 mm8>{{ annotation }}</v-flex>
+                    <v-flex xs5 md4>Score:</v-flex><v-flex xs7 md8 >{{ score }}</v-flex>
+                    <v-flex xs5 md4>Significant:</v-flex><v-flex xs7 md8 >{{ overPermutation }}</v-flex>
+                    <!--<v-flex xs5 md4>Type:</v-flex><v-flex xs7 mm8>{{ type }}</v-flex>-->
+                    <v-flex xs12 md12>
+                        <vue-chart :columns="pieColumns" :rows="pieRows" :options="{pieHole: 0.3, title: 'Allelic Distribution'}" chart-type="PieChart"></vue-chart>
+                    </v-flex>
+                </v-layout>
+                <h5 class="mb-1">Study information</h5><v-divider></v-divider>
+                <v-layout row wrap class="mt-4">
+                    <v-flex xs5 md4>Genotype:</v-flex><v-flex xs7 mm8>{{ genotype }}</v-flex>
+                    <v-flex xs5 md4>Transformation:</v-flex><v-flex xs7 mm8>{{ transformation }}</v-flex>
+                    <v-flex xs5 md4>Method:</v-flex><v-flex xs7 mm8>{{ method }}</v-flex>
+                    <v-flex xs5 md4>Number of samples:</v-flex><v-flex xs7 mm8>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
+                    <v-flex xs5 md4>Total associations:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
+                    <v-flex xs5 md4>Bonferroni threshold:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
+                    <v-flex xs5 md4>Permutation threshold:</v-flex><v-flex xs7 mm8>{{ permutationThreshold }}</v-flex>
+                    <v-flex xs5 md4>N hits (Bonferroni):</v-flex><v-flex xs7 mm8>{{ bonferroniHits }}</v-flex>
+                    <v-flex xs5 md4>N hits (permutation):</v-flex><v-flex xs7 mm8>{{ permHits }}</v-flex>
+                </v-layout>
+            </v-flex>
+            <v-flex xs12 md8>
+                <v-tabs id="assocation-detail-tabs" class="fill-height" grow scroll-bars v-model="currentView" >
+                    <v-tabs-bar>
+                        <v-tabs-slider></v-tabs-slider>
+                        <v-tabs-item href="#association-detail-tabs-table" ripple class="grey lighten-4 black--text">
+                            <div>Accession Table</div>
+                        </v-tabs-item>
+                        <v-tabs-item href="#association-detail-tabs-explorer" ripple class="grey lighten-4 black--text" >
+                            <div>Phenotype explorer</div>
+                        </v-tabs-item>
+                        <v-tabs-item href="#association-detail-tabs-plots" ripple class="grey lighten-4 black--text" >
+                            <div>Candlestick charts</div>
+                        </v-tabs-item>
+                    </v-tabs-bar>
+                    <v-tabs-items class="fill-height">
+                        <v-tabs-content id="association-detail-tabs-table" class="pa-4 " >
+                            <v-layout >
+                                <v-flex wrap fill-height class="pl-1 pr-1 associations-table-container" >
+                                    <v-data-table
+                                        :headers="headers"
+                                        :items="accessionTable"
+                                        :pagination.sync="pagination"
+                                        hide-details
+                                        :loading="loading"
+                                        class="elevation-1 mt-2 asso-table"
+                                    >
+                                    <template slot="headerCell" scope="props">
+                                        <span v-tooltip:bottom="{ 'html': props.header.tooltip}">
+                                        {{ props.header.text | capitalize }}
+                                        </span>
+                                    </template>
+                                    <template slot="items" scope="props">
+                                        <tr :id="props.item.obsUnitId">
+                                            <td>
+                                                {{ props.item.accessionId }}
+                                            </td>
+                                            <td class="text-xs-right">{{ props.item.accessionName }}</td>
+                                            <td class="text-xs-right">
+                                                <span>
+                                                    <div class="phenotpe-bar" :style="{width: ((props.item.phenotypeValue - phenotypeMinValue)/( phenotypeMaxValue - phenotypeMinValue))* 100 + '%'}"></div>
+                                                </span>
+                                                <span> {{ props.item.phenotypeValue }} </span>
+
+                                            </td>
+                                            <td class="text-xs-right">{{ props.item.accessionLongitude }}</td>
+                                            <td class="text-xs-right">{{ props.item.accessionLatitude }}</td>
+                                            <td class="text-xs-right">{{ props.item.accessionCountry }}</td>
+                                            <td class="text-xs-right">{{ props.item.allele }}</td>
+                                        </tr>
+                                    </template>
+                                </v-data-table>
                                 </v-flex>
-                                <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                             </v-layout>
-                        </v-flex>
-                        <v-flex xs12 class="mt-4">
-                            <v-layout column>
-                                <h5 class="mb-1">Association details</h5>
-                                <!-- <study-plots :plotStatistics="plotStatistics"></study-plots> -->
-                                <v-flex xs5 md6>Score:</v-flex><v-flex xs7 md6 >{{ score }}</v-flex>
-                                <v-flex xs5 md6>Significant:</v-flex><v-flex xs7 md6 >{{ phenotypeOntology }}</v-flex>
-                                <v-flex xs5 md6>Standard error of Beta estimate:</v-flex><v-flex xs7 md6>{{ associationCount }}</v-flex>
-                                <v-flex xs5 md6>Closeby associated SNPs?</v-flex><v-flex xs7 md6>{{ bonferroniThreshold }}</v-flex>
+                        </v-tabs-content>
+                        <v-tabs-content id="association-detail-tabs-explorer"   class="pa-4 fill-height" >
+                            <v-flex wrap fill-height class="pl-1 pr-1"  >
+                                <vue-chart ref="motionChart" v-if="motionRows!=null"  :columns="motionColumns" :rows="motionRows" :options="{width: width, height: height, state: state}" :packages="[{'packages': ['motionchart']}]" chart-type="MotionChart">
+                                </vue-chart>
+                                <div v-if="!hasFlash" class="flash_warning">
+                                    <h5>
+                                        This visualization requires Flash to be active/installed.<br>
+                                        If you use Safari, try Firefox or Chrome
+                                    </h5>
+                                </div>
+                            </v-flex>
+                        </v-tabs-content>
+                        <v-tabs-content id="association-detail-tabs-plots" class="pa-4" >
+                            <v-layout row wrap class="pa-4 " >
+                                <v-flex xs12 class="pa-1">
+                                    <v-select
+                                        :items="accessionCountries"
+                                        v-model="selectedCountry"
+                                        label="Select"
+                                        single-line
+                                        bottom
+                                    ></v-select>
+                                </v-flex>
+                                <v-flex xs12 class="pa-1">
+                                    <distro-chart v-if="variationData != null" :data="variationData" ></distro-chart>
+                                </v-flex>
                             </v-layout>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-                <v-flex xs12 sm6 md6 class="pa-1">
-                    <h5 class="mb-1">Study information</h5><v-divider></v-divider>
-                    <v-layout row wrap class="mt-4">
-                        <v-flex xs5 md4 >Name:</v-flex><v-flex xs7 md8>{{ phenotype }}</v-flex>
-                        <v-flex xs5 md4 >DOI:</v-flex><v-flex xs7 md8><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
-                        <v-flex xs5 md4>Phenotype ontology:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
-                        <v-flex xs5 md4>Phenotype description:</v-flex><v-flex xs7 md8 >{{ phenotypeDescription }}</v-flex>
-                        <v-flex xs5 md4>Phenotype scoring:</v-flex><v-flex xs7 md8 >{{ phenotypeScoring }}</v-flex>
-                        <v-flex xs5 md4>Genotype:</v-flex><v-flex xs7 mm8>{{ genotype }}</v-flex>
-                        <v-flex xs5 md4>Transformation:</v-flex><v-flex xs7 mm8>{{ transformation }}</v-flex>
-                        <v-flex xs5 md4>Method:</v-flex><v-flex xs7 mm8>{{ method }}</v-flex>
-                        <v-flex xs5 md4>AraPheno link:</v-flex><v-flex xs7 mm8><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
-                        <v-flex xs5 md4>Original publication:</v-flex><v-flex xs7 mm8><a v-bind:href="'https://www.ncbi.nlm.nih.gov/pubmed/'+pubmedId" target="_blank">{{ pub_names[publication] }}</a></v-flex>
-                        <v-flex xs5 md4>Number of samples:</v-flex><v-flex xs7 mm8>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
-                        <v-flex xs5 md4>Total associations:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
-                        <v-flex xs5 md4>Bonferroni threshold:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
-                        <v-flex xs5 md4>Permutation threshold:</v-flex><v-flex xs7 mm8>{{ permutationThreshold }}</v-flex>
-                        <v-flex xs5 md4>N hits (Bonferroni):</v-flex><v-flex xs7 mm8>{{ bonferroniHits }}</v-flex>
-                        <v-flex xs5 md4>N hits (permutation):</v-flex><v-flex xs7 mm8>{{ permHits }}</v-flex>
-                        <v-flex xs10 md12> INSERT Phenotype DISTRIBUTION </v-flex> 
-                            <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
-                        </v-layout>
-                    <!-- <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations> -->
-                    <div>Insert info from AraPheno here (geographical distribution, scoring, link to study, etc...)</div>
-                </v-flex>
-            </v-layout>
-        </v-container>
+                        </v-tabs-content>
+                    </v-tabs-items>
+                </v-tabs>
+            </v-flex>
+        </v-layout>
+
     </div>
 </template>
 
@@ -75,12 +135,14 @@
     import Vue from "vue";
 
     import {Component, Prop, Watch} from "vue-property-decorator";
+    import {loadStudy, loadPhenotype, loadAssociation, loadAssociationDetails} from "../api";
+    import Breadcrumbs from "./breadcrumbs.vue";
+    import Association from "../models/association";
+    import Accession from "../models/accession";
+    import DistroChart from "./distroChart.vue";
+    import * as d3 from "d3";
 
-    import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
-    import ManhattanPlot from "./manhattanplot.vue";
-    import Breadcrumbs from "./breadcrumbs.vue"
-    import TopAssociationsComponent from "./topasso.vue"
-    import StudyPlots from "./studyplots.vue"
+    import _ from "lodash";
 
     @Component({
       filters: {
@@ -90,26 +152,29 @@
         },
       },
       components: {
-          "manhattan-plot": ManhattanPlot,
           "breadcrumbs": Breadcrumbs,
-          "top-associations": TopAssociationsComponent,
-          "study-plots": StudyPlots,
+          "distro-chart": DistroChart,
       },
     })
     export default class AssociationDetail extends Vue {
       @Prop({required: true})
       id: number;
-      chr: string = "1";
-      position: number;
-      score: number;
-      gene: string;
-      maf: number;
-      annotation: string;
-      type: boolean;
-      selected: boolean;
+      @Prop({required: true})
+      assocId: string;
 
-      highlighted: boolean;
+      // Assocation information
+      chr: string = "";
+      position: number = 0;
+      score: number = 0;
+      gene: string = "";
+      ref: string = "";
+      alt: string = "";
+      maf: number = 0;
+      annotation: string = "";
+      overPermutation: boolean = false;
+      overFDR: boolean = false;
 
+      // Study information
       studyName: string = "";
       studyDOI: string = "";
       phenotype: string = "";
@@ -123,8 +188,6 @@
       araPhenoLink: string = "";
       phenotypeDescription: string = "";
       phenotypeOntology: string = "";
-      currentView: string = "study-detail-tabs-manhattan";
-      currentViewIn: string = "On genes";
       n = {phenotypes: 0, accessions: 0};
       bonferroniThr05: number = 0;
       bonferroniThr01: number = 0;
@@ -133,93 +196,179 @@
       fdrHits: number = 0;
       bonferroniThreshold: number = 0;
       permutationThreshold: number = 0;
-
       samples: number = 0;
       countries: number = 0;
       plotsWidth: number = 0;
+      height: number = 0;
+      width: number = 0;
+      state: string = '{"dimensions":{"iconDimensions":["dim0"]},"xZoomedDataMin":0,"iconType":"VBAR","xZoomedIn":false,"time":"1988","yZoomedIn":false,"playDuration":15000,"xAxisOption":"5","iconKeySettings":[],"orderedByY":false,"yZoomedDataMax":70,"nonSelectedAlpha":0.4,"xLambda":1,"yZoomedDataMin":-40,"orderedByX":true,"xZoomedDataMax":389,"yAxisOption":"5","showTrails":false,"yLambda":1,"duration":{"multiplier":1,"timeUnit":"D"},"sizeOption":"_UNISIZE","uniColorForNonSelected":false,"colorOption":"6"}';
 
-      plotRows = [["A",121],["C",663]];
-      plotColumns = [{"type": "string", "label": "Condition"},{"type": "number","label":"#Count"}];
+      debouncedOnResize = _.debounce(this.onResize, 300);
+      phenotypeMinValue: number = 1;
+      phenotypeMaxValue: number = 1;
+      accessionTable: Accession[] = [];
+      pagination = {rowsPerPage: 25, totalItems: 0, page: 1, ordering: name, sortBy: "name", descending: true};
+      currentPage = 1;
+      hasFlash: boolean = false;
+      variationData: any= null;
 
-      dataChr = {
-          1: [],
-          2: [],
-          3: [],
-          4: [],
-          5: [],
-      };
+      loading: boolean = false;
+      headers = [
+          { text: "ID", value: "accessionId", name: "id", align: "left", tooltip: "ID of accession"},
+          { text: "Name", value: "accessionName", name: "name", align: "right", tooltip: "Name of accession" },
+          { text: "Phenotype", value: "phenotypeValue", name: "phenotype", align: "right", tooltip: "Phenotype"},
+          { text: "Lon", value: "accessionLongitude", name: "longitude", align: "right", tooltip: "Longitude"},
+          { text: "Lat", value: "accessionLatitude", name: "latitude", align: "right", tooltip: "Latitude"},
+          { text: "Country", value: "accessionCountry", name: "country", align: "right", tooltip: "Country"},
+          { text: "Allele", value: "allele", name: "allele", align: "right", tooltip: "Allele"},
+      ];
 
-      // Manhattan plots options
-      options = {
-          1: {chr: 1, max_x: 30427671},
-          2: {chr: 2, max_x: 19698289},
-          3: {chr: 3, max_x: 23459830},
-          4: {chr: 4, max_x: 18585056},
-          5: {chr: 5, max_x: 26975502},
-      };
+      currentView: string = "association-detail-tabs-plots";
 
-      plotStatistics = {
-          topGenes: {
-              columns: [{type: "string", label: "Gene"}, {type: "number", label: "Count"}],
-              rows: [["te", 0]],
-          },
-          genic: {
-              columns: [{type: "string", label: "Condition"}, {type: "number", label: "Count"}],
-              rows: [["te", 1]],
-          },
-          impact: {
-              columns: [{type: "string", label: "Impact"}, {type: "number", label: "Count"}],
-              rows: [["te", 1]],
-          },
-          annotation: {
-              columns: [{type: "string", label: "Annotation"}, {type: "number", label: "Count"}],
-              rows: [["te", 1]],
-          },
-          pvalueDistribution: {
-              columns: [{type: "number", label: "pvalue range"}, {type: "number", label: "Count"}],
-              rows: [[0, 1]],
-          },
-          mafDistribution: {
-              columns: [{type: "string", label: "MAF range"}, {type: "number", label: "Count"}],
-              rows: [['1', 0]],
-          },
-      };
+      pieRows = [];
+      pieColumns = [
+          { type: "string", label: "Allele"},
+          { type: "number", label: "#Count"},
+        ];
 
-      breadcrumbs = [{text: "Home", href: "/"}, {text: "Associations", href: "", disabled: true}, {text: this.phenotype, href: "", disabled: true}];
-      pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.1073/pnas.1503272112':'DAAR', 'https://doi.org/10.1371/journal.pbio.1002009':'Ion Concentration','https://doi.org/10.1016/j.cell.2016.05.063':'1001genomes flowering time phenotypes'};
+      //motionRows = [];
+      motionRows = null;
+
+      motionColumns = [
+        { type: "string", label: "Accession"},
+        { type: "date", label: "Date"},
+        { type: "string", label: "County"},
+        { type: "number", label: "Phenotype"},
+        { type: "number", label: "Longitude"},
+        { type: "number", label: "Latitude"},
+        { type: "string", label: "Allele"},
+      ];
 
 
-    //   maf = ["1","1-5","5-10", "10"];
-    //   mac = ["5"];
-    //   annotation = ["ns", "s", "in", "i"];
-    //   type = ["genic", "non-genic"];
-    //   chr = ["1", "2","3","4","5"];
-    //   hideFields = ["phenotype", "study"];
-    //   showControls = ["chr","maf","annotation","type","mac", "significant"];
-    //   filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
-      studyView = {name: "study", studyId: this.id, controlPosition: "right"};
+     selectedCountry: string = "";
+     accessionCountries = [{value: "", text: "Worldwide"}];
+
+      breadcrumbs = [{text: "Home", href: "/"},
+      {text: "Associations", href: "/top-associations", disabled: false},
+      {text: this.phenotype, href: "/study/" + this.id, disabled: false},
+      {text: this.assocId, href: "" + this.id, disabled: true},
+      ];
 
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
-          this.studyView.studyId = val;
       }
-      created(): void {
-          this.loadData();
+      @Watch("currentView")
+      onChangeTab(val: number, oldVal: number) {
+          Vue.nextTick(() => {
+              this.onResize()
+          });
       }
+
+    @Watch("selectedCountry")
+      onChangeSelectedCountry(val: string, oldVal: string) {
+           const variationData = [] as any;
+           for (const accession of this.accessionTable) {
+               if (val === "" || val === accession.accessionCountry) {
+                variationData.push({ 'label': accession.allele, 'value': accession.phenotypeValue});
+               }
+           }
+           this.variationData = variationData;
+      }
+
       mounted(): void {
-          this.currentView = "study-detail-tabs-details";
+          this.onResize();
+          this.loadData();
+          window.addEventListener('resize', this.debouncedOnResize);
+          this.hasFlash = ('undefined' != typeof navigator.mimeTypes['application/x-shockwave-flash']);
+      }
+      beforeDestroy() {
+            window.removeEventListener('resize', this.debouncedOnResize);
+     }
+
+     onResize() {
+         const chartComponent = this.$refs.motionChart as Vue;
+         if (chartComponent == null)
+            return;
+         this.width = chartComponent.$el.offsetWidth;
+         if (chartComponent.$el.parentElement != null) {
+            this.height = chartComponent.$el.parentElement.offsetHeight;
+        }
       }
 
       loadData(): void {
         try {
+            this.loading = true;
             loadStudy(this.id).then(this._displayStudyData);
-            loadStudyTopHits(this.id).then(this._displayPieCharts);
-            loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
+            const id: string = `${this.id}_${this.assocId}`;
+            loadAssociation(id).then(this._displayAssociationData);
+            loadAssociationDetails(id).then(this._displayAssocationDetails);
         } catch (err) {
             console.log(err);
         }
       }
+      _displayAssociationData(data: Association): void {
+          this.chr = data.snp.chr;
+          this.score = data.score;
+          this.position = data.snp.position;
+          this.overPermutation = data.overPermutation;
+          this.overFDR = data.overFDR;
+          if (data.snp.annotations && data.snp.annotations.length > 0) {
+            this.annotation = data.snp.annotations[0].effect;
+          }
+          this.ref = data.snp.ref;
+          this.alt = data.snp.alt;
+          this.score = this.score;
+          this.gene = data.snp.geneName;
+      }
+      _displayAssocationDetails(data): void {
+          this.accessionTable = data;
+          const motionData = [] as any;
+          const pieRows = [] as any;
+          const accessionCountries = [] as any;
+          const countryMap = {} as any;
+          const alleleMap = {} as any;
+          let minimumValue:number = Number.MAX_VALUE;
+          let maximumValue:number = 0;
+          const variationData = [] as any;
+          for (const accession of this.accessionTable) {
+              const row = [accession.accessionName, new Date (1988,0,1), accession.accessionCountry, accession.phenotypeValue, accession.accessionLongitude, accession.accessionLatitude, accession.allele];
+              motionData.push(row);
+              variationData.push({ 'label': accession.allele, 'value': accession.phenotypeValue});
+              if (accession.allele in alleleMap) {
+                  alleleMap[accession.allele] += 1;
+              } else {
+                  alleleMap[accession.allele] = 1;
+              }
+              if (accession.accessionCountry in countryMap) {
+                  countryMap[accession.accessionCountry] += 1;
+              } else {
+                  countryMap[accession.accessionCountry] = 1;
+              }
+              if (minimumValue > accession.phenotypeValue) {
+                  minimumValue = accession.phenotypeValue;
+              }
+              if (maximumValue < accession.phenotypeValue) {
+                  maximumValue = accession.phenotypeValue;
+              }
+          }
+          this.variationData = variationData;
+          this.phenotypeMinValue = minimumValue;
+          this.phenotypeMaxValue = maximumValue;
+          for (const allele in alleleMap) {
+              pieRows.push([allele, alleleMap[allele]]);
+          }
+          accessionCountries.push({'text': `Worldwide (${data.length})`, value: ""})
+          for (const country in countryMap) {
+              accessionCountries.push({text: `${country} ${countryMap[country]}`,value: country });
+          }
+          this.accessionCountries = accessionCountries;
+          this.pieRows = pieRows;
+          this.motionRows = motionData;
+          this.loading = false;
+          this.$emit('redrawChart');
+      }
+
       _displayStudyData(data): void {
         this.studyName = data.name;
         this.genotype = data.genotype;
@@ -242,26 +391,9 @@
         this.countries = data.numberCountries;
         this.permutationThreshold = Number(Math.pow(10,-data.permutationThreshold).toPrecision(4));
         this.bonferroniThreshold = Number(Math.pow(10,-data.bonferroniThreshold).toPrecision(4));
-        for (let i=1; i <=5; i++) {
-            this.options[i.toString()]["permutationThreshold"] = data.permutationThreshold;
-            this.options[i.toString()]["max_y"] = Math.max(data.permutationThreshold + 1, this.options[i.toString()]["max_y"]);
-        }
         this.phenotypeOntology = data.phenotypeToName;
-        loadPhenotype(this.phenotypeId).then(this._loadPhenoData);
-      }
-      _loadPhenoData(data): void {
-        this.araPhenoLink = data.araphenoLink;
-        this.phenotypeDescription = data.description;
       }
       _displayPieCharts(data): void {
-        this.plotStatistics.topGenes.rows = data.geneCount;
-        this.plotStatistics.genic.rows = data.onSnpType;
-        this.plotStatistics.impact.rows = data.impactCount;
-        this.capitalize(this.plotStatistics.impact.rows);
-        this.plotStatistics.annotation.rows = data.annotationCount;
-        this.capitalize(this.plotStatistics.annotation.rows);
-        this.plotStatistics.pvalueDistribution.rows = data.pvalueHist;
-        this.plotStatistics.mafDistribution.rows = this.adjustHistogramsRows(data.mafHist);
         this.$emit('redrawChart');
       }
       capitalize(rows): void {
@@ -271,30 +403,6 @@
               str = str.split("_").join(" ");
               theArray[index][0] = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
           });
-      }
-      adjustHistogramsRows(rows): Array<Array<string|number>> {
-          rows.forEach(function(part, index, theArray){
-              let str = theArray[index][0].toString()+'-'+(Math.round((theArray[index][0]+0.1)*10)/10).toString();
-              theArray[index][0] = str;
-          });
-          return rows
-      }
-      _displayManhattanPlots(data): void {
-        this.bonferroniThr01 = data.thresholds.bonferroniThreshold01;
-        this.bonferroniThr05 = data.thresholds.bonferroniThreshold05;
-        this.associationCount = data.thresholds.totalAssociations;
-        for (let i=1; i <=5; i++) {
-            let chrom = "chr" + i.toString();
-            const positions = data[chrom].positions;
-            const chrData: any[] = [];
-            for (let j = 0; j < positions.length; j++) {
-                const assoc = [positions[j],data[chrom].scores[j], data[chrom].mafs[j]];
-                chrData.push(assoc);
-            }
-            this.dataChr[chrom] =  chrData;
-            this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
-            this.options[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.options[i.toString()]["max_y"]);
-        }
       }
     }
 </script>
@@ -309,6 +417,22 @@
         color:$theme.primary;
     }
 
+    .tabs__items
+    {
+        height:100%;
+    }
+
+    .flash_warning {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+    }
+    .flash_warning h5 {
+        align-self: center;
+        width: 60%;
+        text-align: center;
+    }
+
     .banner-title h1 {
         font-size: 4.2rem;
         line-height: 110%;
@@ -317,6 +441,14 @@
     .banner-subtext h5 {
         font-weight:300;
         color:black;
+    }
+    .phenotpe-bar {
+        background-color: #058dc7;
+        display: inline;
+        float: left;
+        height: 1.17em;
+        margin: 0 10px 0 0;
+        min-width: 1px;
     }
 
     .table {

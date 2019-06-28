@@ -109,6 +109,17 @@ def load_gene_by_id(id):
     #     pass
     return gene
 
+
+def load_associations_by_id(id):
+    """Retrieve an association by id"""
+    doc = es.get('aragwas', id, doc_type='associations', _source=['overFDR','overPermutation','overPermutation','maf','mac','score', 'snp', 'study'], realtime=False)
+    if not doc['found']:
+        raise Exception('Associations with ID %s not found' %id)
+    association = doc['_source']
+    association['id'] = doc['_id']
+    return association
+
+
 def load_gene_associations(id):
     """Retrive associations by neighboring gene id"""
     matches = GENE_ID_PATTERN.match(id)
@@ -340,6 +351,8 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     # Transformation needed to saveguard url transmition
     last_el[1] = "-".join(last_el[1].split('#'))
     return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
+
+
 
 def get_gwas_overview_bins_data(filters):
     """Collect the data used to plot the gwas heatmap histograms"""

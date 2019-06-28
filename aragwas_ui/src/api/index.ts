@@ -1,5 +1,6 @@
 import ApiVersion from "../models/apiversion";
 import Association from "../models/association";
+import Accession from "../models/accession";
 import Gene from "../models/gene";
 import Page from "../models/page";
 import Study from "../models/study";
@@ -70,7 +71,7 @@ export async function loadStudies(page: number = 1, ordering = ""): Promise<Stud
 
 // Import single study information
 export async function loadStudy(studyId: number): Promise<Study> {
-    return fetch(`/api/studies/${studyId}`)
+    return fetch(`/api/studies/${studyId}/`)
         .then(checkStatus)
         .then<Study>(convertToModel);
 }
@@ -123,7 +124,7 @@ export async function loadPhenotypes(page: number = 1, ordering= "") {
 
 // Import single phenotype information
 export async  function loadPhenotype(phenotypeId: number) {
-    return fetch(`/api/phenotypes/${phenotypeId}`)
+    return fetch(`/api/phenotypes/${phenotypeId}/`)
         .then(checkStatus)
         .then(convertToModel);
 }
@@ -289,6 +290,19 @@ export async  function loadApiVersion(): Promise<ApiVersion> {
         .then(checkStatus)
         .then<ApiVersion>(convertToModel);
 }
+
+export async function loadAssociation(id: string): Promise<Association> {
+    return fetch(`/api/associations/${id}/`)
+        .then(checkStatus)
+        .then<Association>(convertToModel);
+}
+
+export async function loadAssociationDetails(id: string): Promise<Accession> {
+    return fetch(`/api/associations/${id}/details`)
+    .then(checkStatus)
+    .then<Accession>(convertToModel);
+}
+
 export async function loadAssociationsHeatmap(): Promise<Array<{}>> {
     return fetch(`/api/associations/map_heat/`)
         .then(checkStatus)

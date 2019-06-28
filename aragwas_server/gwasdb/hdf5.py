@@ -161,7 +161,6 @@ def regroup_associations(top_associations):
     top_associations.sort(order = 'score')
     return top_associations[::-1]
 
-
 def get_ko_associations(csv_file):
     """Retrieves all KO associations from a csv file"""
     with open(csv_file) as csv_file_open:
@@ -190,6 +189,31 @@ def get_ko_associations(csv_file):
     bt01 = -math.log(0.01 / float(num_associations), 10)
     bt_ara = -math.log(0.01 / float(28000), 10) # total number of genes in AraGWAS
     associations = np.rec.fromarrays((genes, chrs, positions, n_kos, scores, betas, se_betas, mafs, macs), names='gene, chr, position, n_ko, score, beta, se_beta, maf, mac')
-    thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01, 
+    thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01,
                 'bonferroni_ara': bt_ara, 'total_associations': num_associations}
     return associations, thresholds
+def get_snps_from_genotype(genotype_hdf5, chr, pos_start, pos_end, accession_filter=None):
+    """ Returns the snps for a given genotype for a specific range/position """
+    h5f = h5py.File(genotype_hdf5, 'r')
+    accessions = h5f['accessions'][:]
+    pos = h5f['positions']
+    snps = h5f['snps']
+    chr_idx = np.where(pos.attrs['chrs'] == chr)[0]
+    if len(chr_idx) != 1:
+        raise Exception("Chr %s not found in genotype data" % chr)
+    chr_idx = chr_idx[0]
+    chr_start, chr_end = pos.attrs['chr_regions'][chr_idx]
+    chr_positions = pos[chr_start:chr_end]
+    start_pos_idx = chr_positions.searchsorted(pos_start)
+    if pos_start == pos_end:
+        end_pos_idx = start_pos_idx + 1
+    else:
+        end_pos_idx = chr_positions.searchsorted(pos_end)
+    filtered_snps = snps[chr_start + start_pos_idx:chr_start+end_pos_idx]
+    if accession_filter is not None:
+        accession_idx = np.in1d(accessions, accession_filter)
+
+        return filtered_snps[:,accession_idx], accessions[accession_idx]
+    return filtered_snps, accessions
+
+
