@@ -587,7 +587,8 @@ def load_gene_ko_associations(id, return_only_significant=False):
     asso_search = Search(using=es).doc_type('ko_associations')
     if return_only_significant:
         asso_search = asso_search.filter('term', overBonferroni='T')
-    q = Q('bool', should=Q('term',gene__name = id))
+#     q = Q('bool', should=Q('term',gene__name = id))
+    q = Q({'nested':{'path':'gene', 'query':{'match':{'gene.name':id}}}})
     asso_search = asso_search.filter(q).sort('-score').source(exclude=['gene'])
     results = asso_search[0:min(500, asso_search.count())].execute()
     ko_associations = results.to_dict()['hits']['hits']
