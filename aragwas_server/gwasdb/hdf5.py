@@ -160,3 +160,36 @@ def regroup_associations(top_associations):
     """regroups associations from a hdf5 file to generate an ordered top list, not chromosome-specific"""
     top_associations.sort(order = 'score')
     return top_associations[::-1]
+
+
+def get_ko_associations(csv_file):
+    """Retrieves all KO associations from a csv file"""
+    with open(csv_file) as csv_file_open:
+        filereader = csv.DictReader(csv_file_open,  delimiter=',')
+        genes = []
+        chrs = []
+        positions = []
+        n_kos = []
+        mafs = []
+        macs = []
+        scores = []
+        betas = []
+        se_betas = []
+        for row in filereader:
+            genes.append(row['SNP'])
+            chrs.append(row['Chr'])
+            positions.append(row['Pos'])
+            n_kos.append(row['AC_1'])
+            mafs.append(row['MAF'])
+            macs.append(row['MAC'])
+            scores.append(-math.log(float(row['Pval']),10))
+            betas.append(float(row['beta']))
+            se_betas.append(float(row['se_beta']))
+    num_associations = len(genes)
+    bt05 = -math.log(0.05 / float(num_associations), 10)
+    bt01 = -math.log(0.01 / float(num_associations), 10)
+    bt_ara = -math.log(0.01 / float(28000), 10) # total number of genes in AraGWAS
+    associations = np.rec.fromarrays((genes, chrs, positions, n_kos, scores, betas, se_betas, mafs, macs), names='gene, chr, position, n_ko, score, beta, se_beta, maf, mac')
+    thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01, 
+                'bonferroni_ara': bt_ara, 'total_associations': num_associations}
+    return associations, thresholds

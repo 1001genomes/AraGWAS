@@ -103,6 +103,10 @@ def load_gene_by_id(id):
         raise Exception('Gene with ID %s not found' %id)
     gene = doc['_source']
     gene['id'] = doc['_id']
+    # # Potentially, load KO associated phenos if any
+    # if return_KOs:
+    #     # check if gene has any associated phenotypes
+    #     pass
     return gene
 
 def load_gene_associations(id):
@@ -161,6 +165,9 @@ def load_filtered_top_genes(filters, start=0, size=50):
             continue
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
+        # Retrieve KO information on gene if any
+        gene['ko_associations'] = load_gene_ko_associations(top['key'], return_only_significant=True)
+        # gene['n_KO_hits'] = len(gene['KO_hits'])
         genes.append(gene)
     return genes, len(top_genes)
 
@@ -206,7 +213,10 @@ def load_genes_by_region(chrom, start, end, features):
     search_genes = Search().using(es).doc_type('genes').index(index).filter("range", positions={"lte": end, "gte":start})
     if not features:
         search_genes.source(exclude=['isoforms'])
-    return [gene.to_dict() for gene in search_genes.scan() ]
+    genes = [gene.to_dict() for gene in search_genes.scan() ]
+    for gene in genes:
+        gene['ko_associations'] = load_gene_ko_associations(gene['name'], return_only_significant=True)
+    return genes
 
 
 def filter_association_search(s, filters):
@@ -535,3 +545,50 @@ def _get_index_from_chr(chrom):
     else:
         index = index % 'chr' + chrom
     return index
+
+# Need to index KO genes association differently.
+
+def index_ko_associations(study, associations, thresholds):
+    """
+    indexes gene knockout associations
+    
+    They are stored differently cause they represent associations between genes and phenotypes
+    """
+    with_permutations = 'permutation_threshold' in thresholds.keys() and thresholds['permutation_threshold'] # This will always be FALSE
+    thresholds_study = [{'name': key, 'value': val} for key, val in thresholds.items() ]
+    annotations = {}
+    documents = []
+    for assoc in associations:
+        _id = '%s_%s' % (study.pk, assoc['gene'])
+        study_data = serializers.EsStudySerializer(study).data
+        study_data['thresholds'] = thresholds_study
+        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'beta': float(assoc['beta']), 
+            'se_beta': float(assoc['se_beta']), 'created': datetime.datetime.now(),'study':study_data}
+        _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_threshold05'])
+        if with_permutations:
+            _source['overPermutation'] = bool(assoc['score'] > thresholds['permutation_threshold'])
+        try:
+            gene = load_gene_by_id(assoc['gene'])
+        except:
+            gene = {'name': assoc['gene']}
+        _source['gene'] = gene
+        documents.append({'_index':'aragwas','_type':'ko_associations','_id': _id, '_source': _source })
+    if len(documents) == 0:
+        return 0,0
+    success, errors = helpers.bulk(es,documents, chunk_size=1000, stats_only=True)
+    return success, errors
+
+def load_gene_ko_associations(id, return_only_significant=False):
+    """Retrieve KO associations by gene id"""
+    matches = GENE_ID_PATTERN.match(id)
+    if not matches:
+        raise Exception('Wrong Gene ID %s' % id)
+    chrom = matches.group(1)
+    asso_search = Search(using=es).doc_type('ko_associations')
+    if return_only_significant:
+        asso_search = asso_search.filter('term', overBonferroni='T')
+    q = Q('bool', should=Q('term',gene__name = id))
+    asso_search = asso_search.filter(q).sort('-score').source(exclude=['gene'])
+    results = asso_search[0:min(500, asso_search.count())].execute()
+    ko_associations = results.to_dict()['hits']['hits']
+    return [association['_source'] for association in ko_associations]

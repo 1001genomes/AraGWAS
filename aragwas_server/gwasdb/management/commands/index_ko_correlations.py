@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
-from gwasdb.tasks import index_study
+from gwasdb.tasks import index_ko_associations
 from gwasdb.models import Study
 from gwasdb.hdf5 import load_permutation_thresholds
 
 
 class Command(BaseCommand):
-    help = 'Index a GWAS study in elasticsearch'
+    help = 'Index KO correlations in elasticsearch'
 
     def add_arguments(self, parser):
         parser.add_argument('--id',
@@ -33,12 +33,13 @@ class Command(BaseCommand):
                 permutation_thresholds = None
             for study in studies:
                 try:
+                    print(study)
                     if permutation_thresholds:
-                        indexed_assoc, failed_assoc = index_study(study.pk, permutation_thresholds[study.pk])
+                        indexed_assoc, failed_assoc = index_ko_associations(study.pk, permutation_thresholds[study.pk])
                     else:
-                        indexed_assoc, failed_assoc = index_study(study.pk)
+                        indexed_assoc, failed_assoc = index_ko_associations(study.pk)
                     if failed_assoc > 0:
-                        self.stdout.write(self.style.ERROR('%s/%s KOs correlations failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
+                        self.stdout.write(self.style.ERROR('%s/%s genes failed to index for "%s" in elasticsearch' % (failed_assoc, indexed_assoc + failed_assoc, study)))
                     elif indexed_assoc == 0:
                         self.stdout.write(self.style.WARNING('No associations found that match the threshold. Skipping "%s" in elasticsearch' % (str(study))))
                     else:
@@ -48,3 +49,4 @@ class Command(BaseCommand):
         except Exception as err:
             raise CommandError(
                 'Error indexing GWAS studies. Reason: %s' % str(err))
+            pass

@@ -1,4 +1,5 @@
 import About from "@/components/about.vue";
+import AssociationDetail from "@/components/associationDetail.vue";
 import FAQ from "@/components/faq.vue";
 import GeneDetail from "@/components/geneDetail.vue";
 import Genes from "@/components/genes.vue";
@@ -88,6 +89,11 @@ export default new Router({
       path: "/gene/:geneId?",
       name: "geneDetail",
       component: GeneDetail, props: true,
+    },
+    {
+      path: "/association/:id",
+      name: "associationDetail",
+      component: AssociationDetail,
     },
     {
       path: "/map",

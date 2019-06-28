@@ -1,3 +1,5 @@
+import Study from "./study";
+
 type GeneAlias = [string, string];
 type Allele = string;
 
@@ -62,6 +64,24 @@ interface Isoform {
     readonly utr3: UTR;
 }
 
+interface KOAssociation {
+    score: number;
+    beta: number;
+    seBeta: number;
+    study: Study;
+    gene: Gene;
+    maf: number;
+    annotation: string;
+    type: boolean;
+    selected: boolean;
+    significant: boolean;
+
+}
+
+interface KOAssociationMap {
+    [pos: number]: KOAssociation;
+}
+
 interface Gene {
     readonly id: string;
     readonly name: string;
@@ -72,5 +92,6 @@ interface Gene {
     readonly aliases?: GeneAlias[];
     readonly isoforms?: Isoform[];
     readonly snps?: SNPMap;
+    readonly koAssociations?: KOAssociationMap;
 }
 export default Gene;

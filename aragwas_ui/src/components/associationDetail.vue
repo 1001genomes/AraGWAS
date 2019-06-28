@@ -1,93 +1,73 @@
 <template>
     <div>
         <v-layout row align-start>
-            <v-flex xs9>
+            <v-flex xs12>
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
-            <v-flex xs3 class="text-xs-right">
+            <!-- <v-flex xs3 class="text-xs-right">
                 <v-btn floating primary small class="mr-3 mt-2" tag="a" :href="'/api/studies/'+id+'/download'" download v-tooltip:left="{html: 'Download whole HDF5 file'}">
                     <v-icon dark>file_download</v-icon>
                 </v-btn>
-            </v-flex>
+            </v-flex> -->
         </v-layout>
-        <v-tabs id="study-detail-tabs" grow scroll-bars v-model="currentView" class="mt-3">
-            <v-tabs-bar>
-                <v-tabs-slider></v-tabs-slider>
-                <v-tabs-item href="#study-detail-tabs-details" ripple class="grey lighten-4 black--text">
-                    <div>Study Details</div>
-                </v-tabs-item>
-                <v-tabs-item href="#study-detail-tabs-manhattan" ripple class="grey lighten-4 black--text" >
-                    <div>Manhattan plots</div>
-                </v-tabs-item>
-                <v-tabs-item href="#study-detail-tabs-ko-mutations" ripple class="grey lighten-4 black--text" >
-                    <div>KO Mutations</div>
-                </v-tabs-item>
-            </v-tabs-bar>
-            <v-tabs-items>
-                <v-tabs-content id="study-detail-tabs-details" class="pa-4 " >
-                    <v-layout row wrap >
-                        <v-flex xs12 sm6 md4 class="pa-1">
-                            <v-layout column>
-                                <v-flex xs12 >
-                                    <h5 class="mb-1">Description</h5>
-                                    <v-divider></v-divider>
-                                    <v-layout row wrap class="mt-4">
-                                        <v-flex xs5 md3 >Name:</v-flex><v-flex xs7 md9>{{ phenotype }}</v-flex>
-                                        <v-flex xs5 md3 >DOI:</v-flex><v-flex xs7 md9><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
-                                        <v-flex xs5 md3>Phenotype ontology:</v-flex><v-flex xs7 md9 >{{ phenotypeOntology }}</v-flex>
-                                        <v-flex xs5 md3>Phenotype description:</v-flex><v-flex xs7 md9 >{{ phenotypeDescription }}</v-flex>
-                                        <v-flex xs5 md3>Genotype:</v-flex><v-flex xs7 mm9>{{ genotype }}</v-flex>
-                                        <v-flex xs5 md3>Transformation:</v-flex><v-flex xs7 mm9>{{ transformation }}</v-flex>
-                                        <v-flex xs5 md3>Method:</v-flex><v-flex xs7 mm9>{{ method }}</v-flex>
-                                        <v-flex xs5 md3>AraPheno link:</v-flex><v-flex xs7 mm9><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
-                                        <v-flex xs5 md3>Original publication:</v-flex><v-flex xs7 mm9><a v-bind:href="'https://www.ncbi.nlm.nih.gov/pubmed/'+pubmedId" target="_blank">{{ pub_names[publication] }}</a></v-flex>
-                                        <v-flex xs5 md3>Number of samples:</v-flex><v-flex xs7 mm9>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
-                                        <v-flex xs5 md3>Total associations:</v-flex><v-flex xs7 mm9>{{ associationCount }}</v-flex>
-                                        <v-flex xs5 md3>Bonferroni threshold:</v-flex><v-flex xs7 mm9>{{ bonferroniThreshold }}</v-flex>
-                                        <v-flex xs5 md3>Permutation threshold:</v-flex><v-flex xs7 mm9>{{ permutationThreshold }}</v-flex>
-                                        <v-flex xs5 md3>N hits (Bonferroni):</v-flex><v-flex xs7 mm9>{{ bonferroniHits }}</v-flex>
-                                        <v-flex xs5 md3>N hits (permutation):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>
-                                        <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
-                                    </v-layout>
+        <v-container>
+            <v-layout row wrap >
+                <v-flex xs12 sm6 md6 class="pa-1">
+                    <v-layout column>
+                        <v-flex xs12 >
+                            <h5 class="mb-1">SNP information</h5>
+                            <v-divider></v-divider>
+                            <v-layout row wrap class="mt-4">
+                                <v-flex xs5 md4 >Chromosome:</v-flex><v-flex xs7 md8>{{ chr }}</v-flex>
+                                <v-flex xs5 md4 >Position:</v-flex><v-flex xs7 md8><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
+                                <v-flex xs5 md4>Gene:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
+                                <v-flex xs5 md4>Annotation:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
+                                <v-flex xs5 md4>Type:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
+                                <v-flex xs10 md12> 
+                                    <vue-chart :columns="plotColumns" :rows="plotRows" :options="{pieHole: 0.3, title: 'Allelic Distribution'}" chart-type="PieChart"></vue-chart> 
                                 </v-flex>
-                                <v-flex xs12 class="mt-4">
-                                    <v-layout column>
-                                        <h5 class="mb-1">Distribution of significant associations</h5>
-                                        <study-plots :plotStatistics="plotStatistics"></study-plots>
-                                    </v-layout>
-                                </v-flex>
+                                <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                             </v-layout>
                         </v-flex>
-                        <v-flex xs12 sm6 md8 class="pa-1">
-                            <h5 class="mb-1">Associations List</h5><v-divider></v-divider>
-                            <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations>
+                        <v-flex xs12 class="mt-4">
+                            <v-layout column>
+                                <h5 class="mb-1">Association details</h5>
+                                <!-- <study-plots :plotStatistics="plotStatistics"></study-plots> -->
+                                <v-flex xs5 md6>Score:</v-flex><v-flex xs7 md6 >{{ score }}</v-flex>
+                                <v-flex xs5 md6>Significant:</v-flex><v-flex xs7 md6 >{{ phenotypeOntology }}</v-flex>
+                                <v-flex xs5 md6>Standard error of Beta estimate:</v-flex><v-flex xs7 md6>{{ associationCount }}</v-flex>
+                                <v-flex xs5 md6>Closeby associated SNPs?</v-flex><v-flex xs7 md6>{{ bonferroniThreshold }}</v-flex>
+                            </v-layout>
                         </v-flex>
                     </v-layout>
-                    </v-tabs-content>
-                    <v-tabs-content id="study-detail-tabs-manhattan" class="pa-4" >
-                        <v-layout column child-flex>
-                            <v-flex xs12>
-                                <h5 class="mb-1">Manhattan Plots</h5>
-                                <v-divider></v-divider>
-                            </v-flex>
-                            <v-flex xs12>
-                                <manhattan-plot class="flex" :shown="(currentView==='study-detail-tabs-manhattan')" :dataPoints="dataChr['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="options[i.toString()]"></manhattan-plot>
-                            </v-flex>
+                </v-flex>
+                <v-flex xs12 sm6 md6 class="pa-1">
+                    <h5 class="mb-1">Study information</h5><v-divider></v-divider>
+                    <v-layout row wrap class="mt-4">
+                        <v-flex xs5 md4 >Name:</v-flex><v-flex xs7 md8>{{ phenotype }}</v-flex>
+                        <v-flex xs5 md4 >DOI:</v-flex><v-flex xs7 md8><a :href='"http://search.datacite.org/works/" + studyDOI' target="_blank">{{ studyDOI }}</a></v-flex>
+                        <v-flex xs5 md4>Phenotype ontology:</v-flex><v-flex xs7 md8 >{{ phenotypeOntology }}</v-flex>
+                        <v-flex xs5 md4>Phenotype description:</v-flex><v-flex xs7 md8 >{{ phenotypeDescription }}</v-flex>
+                        <v-flex xs5 md4>Phenotype scoring:</v-flex><v-flex xs7 md8 >{{ phenotypeScoring }}</v-flex>
+                        <v-flex xs5 md4>Genotype:</v-flex><v-flex xs7 mm8>{{ genotype }}</v-flex>
+                        <v-flex xs5 md4>Transformation:</v-flex><v-flex xs7 mm8>{{ transformation }}</v-flex>
+                        <v-flex xs5 md4>Method:</v-flex><v-flex xs7 mm8>{{ method }}</v-flex>
+                        <v-flex xs5 md4>AraPheno link:</v-flex><v-flex xs7 mm8><a v-bind:href="araPhenoLink" target="_blank">{{ phenotype }}</a></v-flex>
+                        <v-flex xs5 md4>Original publication:</v-flex><v-flex xs7 mm8><a v-bind:href="'https://www.ncbi.nlm.nih.gov/pubmed/'+pubmedId" target="_blank">{{ pub_names[publication] }}</a></v-flex>
+                        <v-flex xs5 md4>Number of samples:</v-flex><v-flex xs7 mm8>{{ samples }} <span v-if="countries">(from {{ countries }} different countries)</span></v-flex>
+                        <v-flex xs5 md4>Total associations:</v-flex><v-flex xs7 mm8>{{ associationCount }}</v-flex>
+                        <v-flex xs5 md4>Bonferroni threshold:</v-flex><v-flex xs7 mm8>{{ bonferroniThreshold }}</v-flex>
+                        <v-flex xs5 md4>Permutation threshold:</v-flex><v-flex xs7 mm8>{{ permutationThreshold }}</v-flex>
+                        <v-flex xs5 md4>N hits (Bonferroni):</v-flex><v-flex xs7 mm8>{{ bonferroniHits }}</v-flex>
+                        <v-flex xs5 md4>N hits (permutation):</v-flex><v-flex xs7 mm8>{{ permHits }}</v-flex>
+                        <v-flex xs10 md12> INSERT Phenotype DISTRIBUTION </v-flex> 
+                            <!--<v-flex xs5 md3>N hits (with permutations):</v-flex><v-flex xs7 mm9>{{ permHits }}</v-flex>-->
                         </v-layout>
-                </v-tabs-content>
-                <v-tabs-content id="study-detail-tabs-ko-mutations" class="pa-4" >
-                        <v-layout column child-flex>
-                            <v-flex xs12>
-                                <h5 class="mb-1">KO Mutations Plots</h5>
-                                <v-divider></v-divider>
-                            </v-flex>
-                            <v-flex xs12>
-                                <ko-mutation-plot class="flex" :shown="(currentView==='study-detail-tabs-ko-mutations')" :dataPoints="dataChrKO['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="optionsKO[i.toString()]"></ko-mutation-plot>
-                            </v-flex>
-                        </v-layout>
-                </v-tabs-content>
-            </v-tabs-items>
-        </v-tabs>
+                    <!-- <top-associations :showControls="showControls" :filters="filters" :hideFields="hideFields" :view="studyView" @showAssociation></top-associations> -->
+                    <div>Insert info from AraPheno here (geographical distribution, scoring, link to study, etc...)</div>
+                </v-flex>
+            </v-layout>
+        </v-container>
     </div>
 </template>
 
@@ -96,9 +76,8 @@
 
     import {Component, Prop, Watch} from "vue-property-decorator";
 
-    import {loadAssociationsForManhattan, loadKOAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
+    import {loadAssociationsForManhattan, loadAssociationsOfStudy, loadPhenotype, loadStudy, loadStudyTopHits} from "../api";
     import ManhattanPlot from "./manhattanplot.vue";
-    import KOMutationPlot from "./komutationplot.vue";
     import Breadcrumbs from "./breadcrumbs.vue"
     import TopAssociationsComponent from "./topasso.vue"
     import StudyPlots from "./studyplots.vue"
@@ -112,15 +91,25 @@
       },
       components: {
           "manhattan-plot": ManhattanPlot,
-          "ko-mutation-plot": KOMutationPlot,
           "breadcrumbs": Breadcrumbs,
           "top-associations": TopAssociationsComponent,
           "study-plots": StudyPlots,
       },
     })
-    export default class StudyDetail extends Vue {
+    export default class AssociationDetail extends Vue {
       @Prop({required: true})
       id: number;
+      chr: string = "1";
+      position: number;
+      score: number;
+      gene: string;
+      maf: number;
+      annotation: string;
+      type: boolean;
+      selected: boolean;
+
+      highlighted: boolean;
+
       studyName: string = "";
       studyDOI: string = "";
       phenotype: string = "";
@@ -149,19 +138,19 @@
       countries: number = 0;
       plotsWidth: number = 0;
 
+      plotRows = [["A",121],["C",663]];
+      plotColumns = [{"type": "string", "label": "Condition"},{"type": "number","label":"#Count"}];
+
       dataChr = {
+          1: [],
+          2: [],
+          3: [],
+          4: [],
+          5: [],
       };
-      dataChrKO = {};
 
       // Manhattan plots options
       options = {
-          1: {chr: 1, max_x: 30427671},
-          2: {chr: 2, max_x: 19698289},
-          3: {chr: 3, max_x: 23459830},
-          4: {chr: 4, max_x: 18585056},
-          5: {chr: 5, max_x: 26975502},
-      };
-      optionsKO = {
           1: {chr: 1, max_x: 30427671},
           2: {chr: 2, max_x: 19698289},
           3: {chr: 3, max_x: 23459830},
@@ -196,18 +185,18 @@
           },
       };
 
-      breadcrumbs = [{text: "Home", href: "/"}, {text: "Studies", href: "/studies"}, {text: this.phenotype, href: "", disabled: true}];
+      breadcrumbs = [{text: "Home", href: "/"}, {text: "Associations", href: "", disabled: true}, {text: this.phenotype, href: "", disabled: true}];
       pub_names = {'https://doi.org/10.1038/nature08800':'Atwell et. al, Nature 2010', 'https://doi.org/10.1073/pnas.1007431107':'Flowering time in simulated seasons', 'https://doi.org/10.1038/ng.2824':'Mejion', 'https://doi.org/10.1073/pnas.1503272112':'DAAR', 'https://doi.org/10.1371/journal.pbio.1002009':'Ion Concentration','https://doi.org/10.1016/j.cell.2016.05.063':'1001genomes flowering time phenotypes'};
 
 
-      maf = ["1","1-5","5-10", "10"];
-      mac = ["5"];
-      annotation = ["ns", "s", "in", "i"];
-      type = ["genic", "non-genic"];
-      chr = ["1", "2","3","4","5"];
-      hideFields = ["phenotype", "study"];
-      showControls = ["chr","maf","annotation","type","mac", "significant"];
-      filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
+    //   maf = ["1","1-5","5-10", "10"];
+    //   mac = ["5"];
+    //   annotation = ["ns", "s", "in", "i"];
+    //   type = ["genic", "non-genic"];
+    //   chr = ["1", "2","3","4","5"];
+    //   hideFields = ["phenotype", "study"];
+    //   showControls = ["chr","maf","annotation","type","mac", "significant"];
+    //   filters = {chr: this.chr, annotation: this.annotation, maf: this.maf, mac: this.mac, type: this.type, significant: "0"};
       studyView = {name: "study", studyId: this.id, controlPosition: "right"};
 
       @Watch("id")
@@ -219,7 +208,6 @@
           this.loadData();
       }
       mounted(): void {
-          this.currentView = "study-detail-tabs-ko-mutations";
           this.currentView = "study-detail-tabs-details";
       }
 
@@ -228,7 +216,6 @@
             loadStudy(this.id).then(this._displayStudyData);
             loadStudyTopHits(this.id).then(this._displayPieCharts);
             loadAssociationsForManhattan(this.id).then(this._displayManhattanPlots);
-            loadKOAssociationsForManhattan(this.id).then(this._displayKOMutationsPlots);
         } catch (err) {
             console.log(err);
         }
@@ -307,22 +294,6 @@
             this.dataChr[chrom] =  chrData;
             this.options[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
             this.options[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.options[i.toString()]["max_y"]);
-        }
-      }
-      _displayKOMutationsPlots(data): void {
-        console.log(data.thresholds)
-        for (let i=1; i <=3; i++) {
-            let chrom = "chr" + i.toString();
-            const positionsKO = data[chrom].positions;
-            const chrDataKO: any[] = [];
-            for (let j = 0; j < positionsKO.length; j++) {
-                const assoc = [positionsKO[j],data[chrom].scores[j], data[chrom].mafs[j], data[chrom].genes[j]];
-                chrDataKO.push(assoc);
-            }
-            this.dataChrKO[chrom] =  chrDataKO;
-            this.optionsKO[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
-            this.optionsKO[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.optionsKO[i.toString()]["max_y"]);
-            this.optionsKO[i.toString()]["permutationThreshold"] = 0; // temporary fix
         }
       }
     }

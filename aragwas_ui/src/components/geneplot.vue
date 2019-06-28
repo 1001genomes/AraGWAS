@@ -23,6 +23,12 @@
                 <v-card-text>
                     <dl>
                         <dt>Position:</dt><dd>{{highlightedGene.originalStart}} - {{highlightedGene.originalEnd}}</dd>
+                        <dt>KO Mutations (only significant ones):</dt>
+                            <dd v-if="highlightedGene.koAssociations.length!=0">
+                                <div v-for="kohit in highlightedGene.koAssociations">{{ kohit.study.phenotype.name }} 
+                                                (Score: {{ Number((kohit.score).toFixed(2)) }})
+                                            </div></dd>
+                            <dd v-else>-</dd>
                         <dt>Description:</dt><dd>{{highlightedGene.description}}</dd>
                         <dt v-if="disclaimer" class="red--text">Disclaimer:</dt><dd v-if="disclaimer" class="red--text">Some isoforms of this gene are not displayed for better readability.</dd>
                     </dl>
@@ -111,6 +117,7 @@
         };
 
         onHighlightGene(event): void {
+            console.log(event.detail.gene)
             let gene = event.detail.gene;
             this.highlightedGene = gene;
             let e = event.detail.event;
@@ -181,14 +188,20 @@
             const isoforms = [];
             let overlappingGenes = this.getOverlappingGenes();
             this.genes.forEach(function(d) {
+                const geneIsoforms = [];
                 if (overlappingGenes.indexOf(d.name)!=-1){
-                    isoforms.push.apply(isoforms, d['isoforms']!.slice(0,2));
+                    geneIsoforms.push.apply(geneIsoforms, d['isoforms']!.slice(0,2));
                 } else {
-                    isoforms.push.apply(isoforms, d['isoforms']!.slice(0,5));
+                    geneIsoforms.push.apply(geneIsoforms, d['isoforms']!.slice(0,5));
                     if(d['isoforms']!.length>5){
                         overlappingGenes.push.apply([(d.name).toString()])
                     }
                 }
+                // Add KOassociations for hovering
+                geneIsoforms.forEach(function(l) {
+                    l['koAssociations'] = d['koAssociations']
+                    isoforms.push(l);
+                });
             });
             this.truncatedIsoforms = overlappingGenes;
             return isoforms;

@@ -55,6 +55,15 @@ def index_study(study_id, perm_threshold=None):
     return elastic.index_associations(study, top_associations, thresholds)
 
 @shared_task
+def index_ko_associations(study_id):
+    study = Study.objects.get(pk=study_id)
+    """ used to index a study in elasticsearch """
+    csv_file = os.path.join(settings.HDF5_FILE_PATH,'ko_csv', 'LOS_out%s.csv' %  study.pk)
+    # Load all scores, betas and se
+    associations, thresholds = hdf5.get_ko_associations(csv_file)
+    return elastic.index_ko_associations(study, associations, thresholds)
+
+@shared_task
 def download_es2csv(opts, filters):
     # prepare file
     file_name = opts['output_file']

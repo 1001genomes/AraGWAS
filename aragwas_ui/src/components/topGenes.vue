@@ -87,6 +87,16 @@
                                             <div v-for="isoform in props.item.isoforms">{{ isoform.name }}</div></td>
                                         <td>
                                             <div>{{ props.item.isoforms[0].shortDescription }}</div></td>
+                                        <!-- <td>
+                                            <div>{{ props.item.n_KO_hits }}</div></td> -->
+                                        <td v-if="props.item.koAssociations.length!=0">
+                                            <div v-for="kohit in props.item.koAssociations">
+                                                <router-link :to="{name: 'studyDetail', params: { id: kohit.study.phenotype.id }}">{{ kohit.study.phenotype.name }}</router-link>
+                                                (Score: {{ Number((kohit.score).toFixed(2)) }})
+                                            </div>
+                                            </td>
+                                        <td v-else>
+                                            <div>-</div></td>
                                     </template>
                                 </v-data-table>
                                 <div class="page-container mt-5 mb-3">
@@ -136,7 +146,9 @@
         headers = [{text: "gene", value: "name", name: "name", align: "left", tooltip: "Name of Gene"},{text: "n hits", value: "nHits", name: "nHits", tooltip: "Number of hits associated with the gene", align: "left"},
             {text: "chr", name: "chromosome", sortable: false, tooltip: "Chromosome", align: "left"},{text: "position",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Genetic range", align: "left"},
             {text: "strand", value: "strand", name: "strand", sortable: true, tooltip: "Strand", align: "left"},{text: "isoforms", name: "isoforms", sortable: false, tooltip: "Isoforms", align: "left"},
-            {text: "short description", name: "shortdesc", sortable: false, tooltip: "Short description", align: "left"}];
+            {text: "short description", name: "shortdesc", sortable: false, tooltip: "Short description", align: "left"},
+            // {text: "N KO hits", name: "nKOHits", sortable: false, tooltip: "Number of phenotype hits for K.O. mutations", align: "left"},
+            {text: "KO Mutation hits", name: "koHits", sortable: false, tooltip: "Phenotype associated with K.O. mutations", align: "left"},];
         genes: any[] =[];
         currentPage = 1;
         chr = ["1", "2", "3", "4", "5"];

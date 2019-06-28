@@ -107,6 +107,12 @@ export async function loadAssociationsForManhattan(studyId: number) {
         .then(checkStatus)
         .then(convertToModel);
 }
+// Load ko associations for manhattan plots
+export async function loadKOAssociationsForManhattan(studyId: number) {
+    return fetch(`/api/studies/${studyId}/ko_mutations/`)
+        .then(checkStatus)
+        .then(convertToModel);
+}
 
 // Phenotype list
 export async function loadPhenotypes(page: number = 1, ordering= "") {
@@ -308,3 +314,9 @@ export async function loadAssociationsHistogramZoomed(region=[0,0,0], regionWidt
         .then(checkStatus)
         .then<Array<{}>>(convertToModel);
 }
+// export async function loadAssociation(): Promise<Association> {
+//     return fetch(`/api/associations/map_heat/`)
+//         .then(checkStatus)
+//         .then<Array<{}>>(convertToModel);
+// }
+// TODO: implement rest functions for association retrieval.

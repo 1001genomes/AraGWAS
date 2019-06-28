@@ -34,6 +34,9 @@
                 "beta": {
                     "type": "float"
                 },
+                "se_beta": {
+                    "type": "float"
+                },
                 "odds_ratio": {
                     "type": "float"
                 },
@@ -90,6 +93,241 @@
                                 },
                                 "amino_acid_change": {
                                     "type": "keyword"
+                                }
+                            }
+                        }
+                    }
+                },
+                "study": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "suggest" : {
+                            "type" : "completion"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "transformation": {
+                            "type": "keyword"
+                        },
+                        "method": {
+                            "type": "keyword"
+                        },
+                        "n_hits_perm": {
+                            "type": "integer"
+                        },
+                        "n_hits_bonf": {
+                            "type": "integer"
+                        },
+                        "n_hits_thr": {
+                            "type": "integer"
+                        },
+                        "thresholds": {
+                            "type": "nested",
+                            "properties": {
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "value": {
+                                    "type": "float"
+                                }
+                            }
+                        },
+                        "genotype": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "version": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "phenotype": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "suggest" : {
+                                    "type" : "completion"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "date": {
+                                    "type": "date"
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        },
+        "ko_associations": {
+            "dynamic": "strict",
+            "_all": {
+                "enabled": false
+            },
+            "properties": {
+                "mac": {
+                    "type": "integer"
+                },
+                "maf": {
+                    "type": "float"
+                },
+                "overFDR": {
+                    "type": "boolean"
+                },
+                "overBonferroni": {
+                    "type": "boolean"
+                },
+                "overPermutation": {
+                    "type": "boolean"
+                },
+                "annotation": {
+                    "type": "keyword"
+                },
+                "score": {
+                    "type": "float"
+                },
+                "beta": {
+                    "type": "float"
+                },
+                "se_beta": {
+                    "type": "float"
+                },
+                "odds_ratio": {
+                    "type": "float"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "gene": {
+                    "type": "nested",
+                    "properties": {
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "strand": {
+                            "type": "keyword"
+                        },
+                        "suggest" : {
+                            "analyzer": "standard",
+                            "type" : "completion"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "chr": {
+                            "type": "keyword"
+                        },
+                        "position": {
+                            "type": "integer_range"
+                        },
+                        "positions": {
+                            "type": "integer_range"
+                        },
+                        "aliases": {
+                            "type": "nested",
+                            "properties": {
+                                "symbol": {"type": "keyword"},
+                                "full_name": {"type":"text"}
+                            }
+                        },
+                        "GO": {
+                            "type": "nested",
+                            "properties": {
+                                "object_name": {
+                                    "type":"keyword"
+                                },
+                                "go_id": {"type":"keyword"},
+                                "term": {
+                                    "type": "keyword"
+                                },
+                                "slim_term": {
+                                    "type": "keyword"
+                                },
+                                "relation": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "isoforms": {
+                            "type": "nested",
+                            "properties": {
+                                "positions": {
+                                    "type": "integer_range"
+                                },
+                                "type": {
+                                    "type": "keyword"
+                                },
+                                "short_description": {
+                                    "type": "text"
+                                },
+                                "three_prime_UTR": {
+                                    "type": "object",
+                                    "properties": {
+                                        "positions": {
+                                            "type": "integer_range"
+                                        }
+                                    }
+                                },
+                                "exons": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "positions": {
+                                            "type": "integer_range"
+                                        }
+                                    }
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "strand": {
+                                    "type": "keyword"
+                                },
+                                "cds": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "positions": {
+                                            "type": "integer_range"
+                                        },
+                                        "frame": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "curator_summary": {
+                                    "type": "text"
+                                },
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "five_prime_UTR": {
+                                    "type": "object",
+                                    "properties": {
+                                        "positions": {
+                                            "type": "integer_range"
+                                        }
+                                    }
                                 }
                             }
                         }
