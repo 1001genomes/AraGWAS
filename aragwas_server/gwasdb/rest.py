@@ -316,15 +316,15 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='ko_mutations')
     def ko_assocations_from_csv(self, request, pk):
         """ Retrieve KO associations from the csv file of the study."""
-        ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko_csv', 'LOS_out%s.csv' % pk)
+        ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko', 'LOF_GWAS%s.csv' % pk)
         ko_associations, thresholds = get_ko_associations(ko_association_file)
         output = {}
         prev_idx = 0
         for chrom in range(1, 6):
             chr_idx = ko_associations['chr'].searchsorted(str(chrom+1))
             output['chr%s' % chrom] = {'genes': ko_associations['gene'][prev_idx:chr_idx],
-                'scores': ko_associations['score'][prev_idx:chr_idx], 
-                'positions': ko_associations['position'][prev_idx:chr_idx], 
+                'scores': ko_associations['score'][prev_idx:chr_idx],
+                'positions': ko_associations['position'][prev_idx:chr_idx],
                 'mafs': ko_associations['maf'][prev_idx:chr_idx]}
             prev_idx = chr_idx
         for key, value in thresholds.items():
@@ -473,7 +473,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         type_dict = _get_percentages_from_buckets(type)
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
-    
+
     # @list_route(methods=['GET'], url_path='association')
     # def retrieve(self, request, pk):
     #     """ Retrieve information about a specific gene """
