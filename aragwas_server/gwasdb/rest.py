@@ -1,4 +1,6 @@
 import os, coreapi, coreschema
+import requests
+import numpy as np
 
 from rest_framework import permissions
 from rest_framework import viewsets, generics, filters, renderers
@@ -21,7 +23,7 @@ from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.settings import api_settings
-from gwasdb.hdf5 import get_top_associations, regroup_associations, get_ko_associations
+from gwasdb.hdf5 import get_top_associations, regroup_associations, get_ko_associations, get_snps_from_genotype
 
 from gwasdb.tasks import compute_ld, download_es2csv
 from gwasdb import __version__, __date__, __githash__,__build__, __buildurl__
@@ -104,6 +106,11 @@ def _is_filter_whole_dataset(filters):
             return False
     return True
 
+
+def get_accession_phenotype_values(phenotype_id):
+    r = requests.get('https://arapheno.1001genomes.org:443/rest/phenotype/{}/values.json'.format(phenotype_id))
+    js = r.json()
+    return js
 
 class EsQuerySet(object):
 
@@ -240,6 +247,8 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
             if inverted:
                 queryset = queryset.reverse()
         return queryset
+
+
 
     @detail_route(methods=['GET'], url_path='download')
     def download(self, request, pk):
@@ -442,6 +451,12 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
     def hide_list_fields(self, view):
         return
 
+    def retrieve(self, request, pk):
+        """ Retrieve information about a specific association """
+        association = elastic.load_associations_by_id(pk)
+        return Response(association)
+
+
     def list(self, request):
         """ List all associations sorted by score. """
         filters = _get_filter_from_params(request.query_params)
@@ -454,6 +469,26 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         # queryset = EsQuerySet(associations, count)
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
+
+    @detail_route(methods=['GET'], url_path='details')
+    def associations(self, request, pk):
+        """ Return details for a specific assocation """
+        association = elastic.load_associations_by_id(pk)
+        study_id, chr, position = pk.split('_')
+        study = Study.objects.get(pk=study_id)
+        data = get_accession_phenotype_values(study.phenotype.pk)
+        accessions = np.asarray(list(map(lambda item: item['accession_id'], data)), dtype='|S6')
+        #[:,0].astype(np.dtype('|S6'))
+        genotype_file = "%s/GENOTYPES/%s.hdf5" % (settings.HDF5_FILE_PATH, study.genotype.pk)
+        alleles, genotyped_accessions = get_snps_from_genotype(genotype_file,int(chr),position, position, accession_filter = accessions)
+        filtered_accessions_idx = np.in1d(accessions, genotyped_accessions)
+        filtered_data = []
+        for info, allele, is_genotyped in zip(data, alleles.tolist()[0], filtered_accessions_idx.tolist()):
+            if is_genotyped:
+                info['allele'] = association['snp']['alt'] if allele else association['snp']['ref']
+                filtered_data.append(info)
+        return Response(filtered_data)
+
 
     @list_route(url_path='count')
     def count(self, request):
@@ -474,11 +509,6 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         annotations_dict = _get_percentages_from_buckets(annotations)
         return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
-    # @list_route(methods=['GET'], url_path='association')
-    # def retrieve(self, request, pk):
-    #     """ Retrieve information about a specific gene """
-    #     gene = elastic.load_gene_by_id(pk)
-    #     return Response(gene)
 
     @list_route(methods=['GET'], url_path='map_histogram')
     def data_for_histogram(self, request):

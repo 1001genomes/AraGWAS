@@ -1,13 +1,13 @@
+import Annotation from "./annotation";
 import Study from "./study";
 
 interface Association {
-    chr: string;
-    position: number;
     score: number;
     study: Study;
     gene: string;
     maf: number;
-    annotation: string;
+    overPermutation: boolean;
+    overFDR: boolean;
     type: boolean;
     snp: SNP;
     selected: boolean;
@@ -16,6 +16,12 @@ interface Association {
 }
 interface SNP {
     chr: string;
-    position: string;
+    position: number;
+    annotations: Annotation[];
+    alt: string;
+    anc: string;
+    ref: string;
+    coding: boolean;
+    geneName: string;
 }
 export default Association;
