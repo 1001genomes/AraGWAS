@@ -119,7 +119,7 @@
                                     ></v-select>
                                 </v-flex>
                                 <v-flex xs12 class="pa-1">
-                                    <distro-chart v-if="variationData != null" :data="variationData" ></distro-chart>
+                                    <distro-chart v-if="variationData != null" :data="variationData" ref="variatonPlots" ></distro-chart>
                                 </v-flex>
                             </v-layout>
                         </v-tabs-content>
@@ -223,7 +223,7 @@
           { text: "Allele", value: "allele", name: "allele", align: "right", tooltip: "Allele"},
       ];
 
-      currentView: string = "association-detail-tabs-plots";
+      currentView: string = "association-detail-tabs-table";
 
       pieRows = [];
       pieColumns = [
@@ -261,7 +261,7 @@
       @Watch("currentView")
       onChangeTab(val: number, oldVal: number) {
           Vue.nextTick(() => {
-              this.onResize()
+              this.onResize();
           });
       }
 
@@ -293,6 +293,12 @@
          this.width = chartComponent.$el.offsetWidth;
          if (chartComponent.$el.parentElement != null) {
             this.height = chartComponent.$el.parentElement.offsetHeight;
+        }
+        if (this.currentView == "association-detail-tabs-plots") {
+            const variatonPlots = this.$refs.variatonPlots as DistroChart;
+            if (variatonPlots) {
+                variatonPlots.onResize();
+            }
         }
       }
 
