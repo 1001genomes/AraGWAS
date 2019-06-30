@@ -311,7 +311,7 @@
       }
       _displayKOMutationsPlots(data): void {
         console.log(data.thresholds)
-        for (let i=1; i <=3; i++) {
+        for (let i=1; i <=5; i++) {
             let chrom = "chr" + i.toString();
             const positionsKO = data[chrom].positions;
             const chrDataKO: any[] = [];

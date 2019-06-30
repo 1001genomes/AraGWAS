@@ -34,7 +34,7 @@
     import Router from "../router";
 
     @Component({
-        name: "manhattan-plot",
+        name: "ko-mutation-plot",
         props: ["dataPoints", "options", "shown"],
         filters: {
             round(number) {
