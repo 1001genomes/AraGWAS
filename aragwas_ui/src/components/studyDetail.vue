@@ -80,7 +80,7 @@
                             <v-flex xs12>
                                 <h5 class="mb-1">KO Mutations Plots</h5>
                                 <v-divider></v-divider>
-                                Associations between KO Mutations and the phenotype are computed using the list of KO Mutations published by Monroe, J. Grey, et al. "Drought adaptation in Arabidopsis thaliana by extensive genetic loss-of-function." eLife 7 (2018): e41038 (<a href="https://elifesciences.org/articles/41038" target="_top">Link<\a>)
+                                Associations between KO Mutations and the phenotype are computed using the list of KO Mutations published by Monroe, J. Grey, et al. "Drought adaptation in Arabidopsis thaliana by extensive genetic loss-of-function." eLife 7 (2018): e41038 (<a href="https://elifesciences.org/articles/41038" target="_top">Link</a>)
                             </v-flex>
                             <v-flex xs12>
                                 <ko-mutation-plot class="flex" :shown="(currentView==='study-detail-tabs-ko-mutations')" :dataPoints="dataChrKO['chr'+i.toString()]" v-for="i in [1, 2, 3, 4, 5]" :options="optionsKO[i.toString()]"></ko-mutation-plot>
