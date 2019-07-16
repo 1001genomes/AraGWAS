@@ -230,10 +230,15 @@ export async  function loadTopAggregatedStatistics(filter) {
         .then(checkStatus)
         .then(convertToModel);
 }
-export async function loadTopGenesList(filter, page: number = 1, pageSize: number = 25) {
+export async function loadTopGenesList(filter, page: number = 1, pageSize: number = 25, KO: boolean = false) {
     const queryParam = getTopAssociationsParametersQuery(filter);
     const offset = pageSize * (page - 1);
-    let url = `/api/genes/top_list/?limit=${pageSize}&offset=${offset}`;
+    let url: string;
+    if (KO) {
+        url = `/api/genes/top_ko_list/?limit=${pageSize}&offset=${offset}`;
+    } else {
+        url = `/api/genes/top_list/?limit=${pageSize}&offset=${offset}`;
+    }
     if (queryParam) {
         url += queryParam;
     }

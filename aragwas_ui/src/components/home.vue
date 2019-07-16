@@ -73,6 +73,26 @@
                             <v-btn dark class="btn--large icon--left green lighten-1" id="hitmap-button" light  to="/map"><v-icon left dark>grain</v-icon> GWAS HitMap</v-btn>
                         </div>
                     </v-flex>
+                    <v-flex xs12 sm6 md6>
+                        <div class="icon-block">
+                            <i class="material-icons" >flash_off</i>
+                            <h5 >Top KO Mutations</h5>
+                            <p >Check out the highest-scoring KO mutations.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" to="/top-ko-mutations">
+                                <v-icon left dark>flash_off</v-icon> Top KO Mutations
+                            </v-btn>
+                        </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md6>
+                        <div class="icon-block">
+                            <i class="material-icons" >grid_off</i>
+                            <h5 >Top KO Genes</h5>
+                            <p >Check out the genes with the largest number of associated KO mutations.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" to="/top-ko-genes">
+                                <v-icon left dark>grid_off</v-icon> Top KO Genes
+                            </v-btn>
+                        </div>
+                    </v-flex>
                     <v-flex xs12>
                         <div class="icon-block">
                             <i class="material-icons" >file_download</i>

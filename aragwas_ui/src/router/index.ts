@@ -12,6 +12,7 @@ import Studies from "@/components/studies.vue";
 import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
 import TopGenes from "@/components/topGenes.vue";
+import TopKOGenes from "@/components/topKOGenes.vue";
 import Vue from "vue";
 import Router from "vue-router";
 
@@ -75,6 +76,11 @@ export default new Router({
       path: "/top-genes",
       name: "topGenes",
       component: TopGenes,
+    },
+    {
+      path: "/top-ko-genes",
+      name: "topKOGenes",
+      component: TopKOGenes,
     },
     {
       path: "/study/:id",

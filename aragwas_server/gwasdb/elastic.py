@@ -179,22 +179,20 @@ def load_filtered_top_genes(filters, start=0, size=50):
         genes.append(gene)
     return genes, len(top_genes)
 
-def load_top_ko_mutations_genes():
+def load_filtered_top_ko_mutations_genes(filters, start=0, size=50):
     """Retrieves top genes according to number of KO mutations and filter them through the tickable options"""
     # First aggregate over associations
-    s = Search(using=es, doc_type='associations')
+    s = Search(using=es, doc_type='ko_associations')
     if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
-        s = s.filter(Q('bool', should=[Q('term', snp__chr=chrom if len(chrom) > 3 else 'chr%s' % chrom) for chrom in
+        s = s.filter(Q('bool', should=[Q({'nested':{'path':'gene', 'query':{'match':{'gene.chr':chrom if len(chrom) > 3 else 'chr%s' % chrom}}}}) for chrom in
                                        filters['chr']]))
     if 'significant' in filters:
         s = s.filter(Q('range', mac={'gte': 6}))
-        if filters['significant'][0] == "b":
-            s = s.filter('term', overBonferroni='T')
-        elif filters['significant'][0] == "p":
-            s = s.filter('term', overPermutation='T')
-    agg = A("terms", field="snp.gene_name", size="33341") # Need to check ALL GENES for further lists
-    s.aggs.bucket('gene_count', agg)
-    top_genes = s.execute().aggregations.gene_count.buckets
+        s = s.filter('term', overBonferroni='T') # TODO: change this to permutation once the new indexed scores are in.
+    
+    agg = A("terms", field="gene.id", size='33341') # Need to check ALL GENES for further lists
+    s.aggs.bucket('genes', 'nested', path='gene').bucket('gene_count', agg) # Need to have a NESTED query
+    top_genes = s.execute().aggregations.genes.gene_count.buckets
     genes = []
     for top in top_genes[start:start+size]:
         id = top['key']
@@ -203,13 +201,9 @@ def load_top_ko_mutations_genes():
             continue
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
-    s = Search(using=es, doc_type='associations')
-    s = s.filter('term', overPermutation='T')
-    s = s.filter(Q('range', mac={'gte': 6}))
-    agg = A("terms", field="snp.gene_name")
-    s.aggs.bucket('gene_count', agg)
-    agg_results = s.execute().aggregations.gene_count.buckets
-    return agg_results
+        gene['ko_associations'] = load_gene_ko_associations(top['key'], return_only_significant=True)
+        genes.append(gene)
+    return genes, len(top_genes)
 
 def get_top_genes_aggregated_filtered_statistics(filters):
     s = Search(using=es, doc_type='genes')

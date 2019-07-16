@@ -736,6 +736,20 @@ class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
         paginated_genes = self.paginate_queryset(queryset)
         return self.get_paginated_response(paginated_genes)
 
+    @list_route(methods=['GET'], url_path='top_ko_list')
+    def top_ko_list(self, request):
+        """ Retrieve the top genes based on the number of significant KO mutations and provide full gene information. """
+        filters = _get_filter_from_params(request.query_params)
+        if filters['significant'] == []:
+            filters['significant'] = ['p']
+        paginator = EsPagination()
+        limit = paginator.get_limit(request)
+        offset = paginator.get_offset(request)
+        genes, count = elastic.load_filtered_top_ko_mutations_genes(filters, offset, limit)
+        queryset = EsQuerySet(genes, count)
+        paginated_genes = self.paginate_queryset(queryset)
+        return self.get_paginated_response(paginated_genes)
+
     @list_route(methods=['GET'], url_path='top_list_aggregated_statistics')
     def top_genes_aggregated_statistics(self, request):
         """ Retrieve the aggregation percentage for genes in the top list. Check the FAQ for details on the filters. """
