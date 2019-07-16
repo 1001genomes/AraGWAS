@@ -25,3 +25,20 @@ Afterwards you can start the backend with the command below.
 
 `./manage runserver`
 
+## Reindexing
+In the case of changes in the elasticsearch template, reindexing must be performed. The procedure includes loading all necessary libraries from the project folder and erase the index using.
+
+`es.indices.delete(index='aragwas')`
+
+Where the name of the index can also be `geno_chrX` for the genotypes index.
+Once this is done, the new index can be created by loading the json template and creating the new index:
+
+```
+aragwas_settings = json.load(open(path_to_template, 'r'))
+es.indices.put_template('aragwas', aragwas_settings)
+```
+
+Then, the index can be populated by the individual comments
+```
+./manage.py index_study --permutations path_to_permutations_file
+```
