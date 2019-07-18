@@ -48,6 +48,7 @@
                                         v-bind:pagination.sync="pagination"
                                         hide-actions
                                         :loading="loading"
+                                        :no-data-text="noDataText"
                                         class="elevation-1 mt-2 asso-table"
 
                                 >
@@ -123,6 +124,7 @@
         breadcrumbs = [{text: "Home", href: "/"}, {text: "Top KO Genes", href: "#/top-ko-genes", disabled: true}];
 
         loading: boolean = false;
+        noDataText: string = "No data available.";
         headers = [{text: "gene", value: "name", name: "name", align: "left", tooltip: "Name of Gene"},{text: "n KO hits", value: "nHits", name: "nHits", tooltip: "Number of KO mutation hits associated with the gene", align: "left"},
             {text: "KO Mutation hits", name: "koHits", sortable: false, tooltip: "Phenotype associated with KO mutations", align: "left"},
             {text: "chr", name: "chromosome", sortable: false, tooltip: "Chromosome", align: "left"},{text: "position",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Genetic range", align: "left"},
@@ -170,6 +172,7 @@
         }
         loadData(pageToLoad): void {
             this.loading = true;
+            this.noDataText = "Data is loading...";
             // Need to check for already visited pages
             loadTopGenesList(this.filters, pageToLoad, this.pagination.rowsPerPage, true).then(this._displayData);
             loadTopGenesAggregatedStatistics(this.filters).then(this._displayAggregatedData);
@@ -182,6 +185,7 @@
             this.pagination.totalItems = data.count;
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
+            this.noDataText = "No data available.";
         }
         roundPerc(number): number {
             if (isNaN(number)) {

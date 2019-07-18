@@ -90,6 +90,7 @@
                             v-bind:pagination.sync="pagination"
                             hide-actions
                             :loading="loading"
+                            :no-data-text="noDataText"
                             class="elevation-1 mt-2 asso-table"
 
                     >
@@ -183,6 +184,7 @@
         highlightedAssociations: Association[];
         localfilters : {};
         loading: boolean = false;
+        noDataText: string = "No Data available.";
         headers = [{text: "SNP", value: "snp.chr", name: "name", align: "left", tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
             {text: "MAF",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "MAC",value: "mac", name: "mac", sortable: false, tooltip: "Minor Allele Count"},
@@ -318,6 +320,7 @@
         }
         loadData(pageToLoad): void {
             this.loading = true;
+            this.noDataText = "Data is loading...";
             if (this.view.name == "top-associations") {
                 // Need to check for already visited pages
                 loadTopAssociations(this.filters, pageToLoad, this.lastElementHistory[pageToLoad.toString()]).then(this._displayData);
@@ -349,6 +352,7 @@
             this.pagination.totalItems = data.count;
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
+            this.noDataText = "No Data available.";
             this.lastElement = data.lastel;
             this.$emit('loaded', this.associations);
         }

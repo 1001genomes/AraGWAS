@@ -15,6 +15,7 @@
              v-bind:pagination.sync="pagination"
              hide-actions
              :loading="loading"
+             :no-data-text="noDataText"
              :total-items="totalItems"
              class="elevation-1"
      >
@@ -61,6 +62,7 @@
   })
   export default class Studies extends Vue {
     loading: boolean = false;
+    noDataText: string = "No Data available.";
     studyPage: Page<Study>;
     columns = [{text: "Name", align: "left", value: "name",},{text: "Phenotype Ontology",align: "left", value: "phenotypeToName", sortable: false},{text: "Phenotype Description",align: "left", value: "phenotypeDescription", sortable: false},{text:  "N Hits Permutation", value: "nHitsPermutation",},{text:  "Genotype", value: "genotype",}]; // Removed/hidden: {text: "Phenotype", value: "phenotype"}, {text: "Publication",align: "left", value: "publication",},
     studies = [];
@@ -78,16 +80,19 @@
       // only load when sorting is changed
       if (val["sortBy"] != oldVal["sortBy"] || val["descending"] != oldVal["descending"]) {
         this.loading = true;
+        this.noDataText = "Data is loading...";
         this.loadData(val, this.currentPage);
       }
     }
     @Watch("currentPage")
     onPaginationPageChanged(val: number, oldVal: number) {
       this.loading = true;
+      this.noDataText = "Data is loading...";
       this.loadData(this.pagination, val);
     }
     created(): void {
       this.loading = true;
+      this.noDataText = "Data is loading...";
       this.loadData(this.pagination, this.currentPage);
     }
     loadData(pagination, page: number): void {
@@ -111,6 +116,7 @@
       this.totalItems = data.count;
       this.pageCount = data.pageCount;
       this.loading = false;
+      this.noDataText = "No Data available.";
     }
   }
 </script>
