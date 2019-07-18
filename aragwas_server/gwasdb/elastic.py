@@ -12,6 +12,8 @@ import re
 import operator
 import datetime
 
+from collections import defaultdict
+
 GENE_ID_PATTERN = re.compile('^[a-z]{2}([\\d]{1})G\\w+$', re.IGNORECASE)
 
 # Get an instance of a logger
@@ -193,6 +195,10 @@ def load_filtered_top_ko_mutations_genes(filters, start=0, size=50):
     agg = A("terms", field="gene.id", size='33341') # Need to check ALL GENES for further lists
     s.aggs.bucket('genes', 'nested', path='gene').bucket('gene_count', agg) # Need to have a NESTED query
     top_genes = s.execute().aggregations.genes.gene_count.buckets
+    # The KO associations are already retrieved, just need to assign them to the right gene.
+    association_dict = defaultdict(list)
+    for asso in s[0:s.count()].execute().to_dict()['hits']['hits']:
+        association_dict[asso['_source']['gene']['name']].append(asso['_source'])
     genes = []
     for top in top_genes[start:start+size]:
         id = top['key']
@@ -201,7 +207,7 @@ def load_filtered_top_ko_mutations_genes(filters, start=0, size=50):
             continue
         gene = load_gene_by_id(top['key'])
         gene['n_hits'] = top['doc_count']
-        gene['ko_associations'] = load_gene_ko_associations(top['key'], return_only_significant=True)
+        gene['ko_associations'] = association_dict[top['key']]
         genes.append(gene)
     return genes, len(top_genes)
 
