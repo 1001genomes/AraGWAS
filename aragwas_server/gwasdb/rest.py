@@ -23,6 +23,7 @@ from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.settings import api_settings
+from rest_framework_csv import renderers as r
 from gwasdb.hdf5 import get_top_associations, regroup_associations, get_ko_associations, get_snps_from_genotype
 
 from gwasdb.tasks import compute_ld, download_es2csv
@@ -447,6 +448,8 @@ class PhenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     #     return Response({'chromosomes': chr_dict, 'maf': maf_dict, 'mac': mac_dict, 'types': type_dict, 'annotations': annotations_dict})
 
 class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (r.CSVRenderer, )
+
     """ API for associations """
     def hide_list_fields(self, view):
         return
@@ -471,7 +474,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
 
     @detail_route(methods=['GET'], url_path='details')
-    def associations(self, request, pk):
+    def associations(self, request, pk, format=None):
         """ Return details for a specific assocation """
         association = elastic.load_associations_by_id(pk)
         study_id, chr, position = pk.split('_')

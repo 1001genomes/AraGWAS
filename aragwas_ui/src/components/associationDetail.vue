@@ -4,11 +4,11 @@
             <v-flex xs12>
                 <breadcrumbs :breadcrumbsItems="breadcrumbs"></breadcrumbs>
             </v-flex>
-            <!-- <v-flex xs3 class="text-xs-right">
-                <v-btn floating primary small class="mr-3 mt-2" tag="a" :href="'/api/studies/'+id+'/download'" download v-tooltip:left="{html: 'Download whole HDF5 file'}">
+            <v-flex xs3 class="text-xs-right">
+                <v-btn floating primary small class="mr-3 mt-2" tag="a" :href="`api/associations/${this.id}_${this.assocId}/details.csv`" download v-tooltip:left="{html: 'Download table as csv'}">
                     <v-icon dark>file_download</v-icon>
                 </v-btn>
-            </v-flex> -->
+            </v-flex>
         </v-layout>
         <v-layout row wrap class="pa-4 " >
             <v-flex xs12 md4 class="pa-1">
