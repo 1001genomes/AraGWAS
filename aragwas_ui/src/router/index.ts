@@ -13,6 +13,7 @@ import StudyDetail from "@/components/studyDetail.vue";
 import TopAssociations from "@/components/topAssociations.vue";
 import TopGenes from "@/components/topGenes.vue";
 import TopKOGenes from "@/components/topKOGenes.vue";
+import TopKOMutations from "@/components/topKOMutations.vue";
 import Vue from "vue";
 import Router from "vue-router";
 
@@ -71,6 +72,11 @@ export default new Router({
       path: "/top-associations",
       name: "topAssociations",
       component: TopAssociations,
+    },
+    {
+      path: "/top-ko-mutations",
+      name: "topKOMutations",
+      component: TopKOMutations,
     },
     {
       path: "/top-genes",

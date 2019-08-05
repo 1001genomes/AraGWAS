@@ -184,7 +184,7 @@
         highlightedAssociations: Association[];
         localfilters : {};
         loading: boolean = false;
-        noDataText: string = "No Data available.";
+        noDataText: string = "No data available.";
         headers = [{text: "SNP", value: "snp.chr", name: "name", align: "left", tooltip: "Name of SNP"},{text: "score", value: "score", name: "score", tooltip: "-log10(p-value)"},
             {text: "study", value: "study.name", name: "study", sortable: false, tooltip: "Study"},{text: "gene",value: "snp.geneName", name: "gene", sortable: false, tooltip: "Gene"},
             {text: "MAF",value: "maf", name: "maf", sortable: false, tooltip: "Minor Allele Frequency"},{text: "MAC",value: "mac", name: "mac", sortable: false, tooltip: "Minor Allele Count"},
@@ -352,7 +352,7 @@
             this.pagination.totalItems = data.count;
             this.pageCount = Math.ceil(data.count/this.pagination.rowsPerPage);
             this.loading = false;
-            this.noDataText = "No Data available.";
+            this.noDataText = "No data available.";
             this.lastElement = data.lastel;
             this.$emit('loaded', this.associations);
         }

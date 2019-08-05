@@ -77,7 +77,7 @@
                                         <td>
                                             <div v-for="isoform in props.item.isoforms">{{ isoform.name }}</div></td>
                                         <td>
-                                            <div>{{ props.item.isoforms[0].shortDescription }}</div></td>
+                                            <div>{{ props.item.isoforms[0].shortDescription | capitalize}}</div></td>
                                     </template>
                                 </v-data-table>
                                 <div class="page-container mt-5 mb-3">

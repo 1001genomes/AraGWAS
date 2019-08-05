@@ -638,6 +638,31 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         response['Content-Disposition'] = "attachment; filename={}.csv".format(download_name)
         return response
 
+class KOAssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
+    """ API for KO associations """
+    def hide_list_fields(self, view):
+        return
+
+    def retrieve(self, request, pk):
+        """ Retrieve information about a specific association """
+        ko_association = elastic.load_ko_associations_by_id(pk)
+        return Response(ko_association)
+
+
+    def list(self, request):
+        """ List all KO associations sorted by score. """
+        filters = _get_filter_from_params(request.query_params)
+        if len(filters['significant']) == 0:
+            filters['significant'] = 'b' # TODO: change this to p once the permutations values are entered
+        last_el = request.query_params.get('lastel', '')
+        size = int(request.query_params.get('limit', 50))
+        associations, count, lastel = elastic.load_filtered_top_ko_associations_search_after(filters,last_el, size)
+        queryset = EsQuerySetLastEl(associations, count, lastel)
+        paginated_asso = self.paginate_queryset(queryset)
+        return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
+
+    
+
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
 

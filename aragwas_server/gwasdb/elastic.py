@@ -121,6 +121,14 @@ def load_associations_by_id(id):
     association['id'] = doc['_id']
     return association
 
+def load_ko_associations_by_id(id):
+    """Retrieve a KO mutation by id"""
+    doc = es.get('aragwas', id, doc_type='ko_associations', _source=['overPermutation','overBonferroni','maf','mac','score', 'gene', 'study'], realtime=False)
+    if not doc['found']:
+        raise Exception('Associations with ID %s not found' %id)
+    association = doc['_source']
+    association['id'] = doc['_id']
+    return association
 
 def load_gene_associations(id):
     """Retrive associations by neighboring gene id"""
@@ -381,6 +389,31 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     last_el[1] = "-".join(last_el[1].split('#'))
     return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
 
+def load_filtered_top_ko_associations_search_after(filters, search_after = '', size=50):
+    """Retrieves top associations and filter them through the tickable options"""
+    s = Search(using=es, doc_type='ko_associations')
+    s = s.sort('-score', '_uid')
+    # By default, leave out associations with no gene
+    s = s.filter(Q({'nested':{'path':'gene', 'query':{'exists':{'field':'gene.chr'}}}}))
+
+    # # Only need to filter by chromosome, maf or mac
+    if 'chr' in filters and len(filters['chr']) > 0 and len(filters['chr']) < 5:
+        s = s.filter(Q('bool', should=[Q({'nested':{'path':'gene', 'query':{'match':{'gene.chr':chrom if len(chrom) > 3 else 'chr%s' % chrom}}}}) for chrom in
+                                       filters['chr']]))
+    if 'significant' in filters:
+        s = s.filter(Q('range', mac={'gte': 6}))
+        s = s.filter('term', overBonferroni='T') # TODO: change this to permutation once the new indexed scores are in.
+    if search_after != '':
+        search_after = parse_lastel(search_after)
+        print(search_after)
+        s = s.extra(search_after=search_after)
+    s = s[0:size]
+    result = s.execute()
+    associations = result['hits']['hits']
+    last_el = result['hits']['hits'][-1]['sort']
+    # Transformation needed to saveguard url transmition
+    last_el[1] = "-".join(last_el[1].split('#'))
+    return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
 
 
 def get_gwas_overview_bins_data(filters):

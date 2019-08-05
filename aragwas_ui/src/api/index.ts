@@ -1,7 +1,8 @@
+import Accession from "../models/accession";
 import ApiVersion from "../models/apiversion";
 import Association from "../models/association";
-import Accession from "../models/accession";
 import Gene from "../models/gene";
+import KOAssociation from "../models/koassociation";
 import Page from "../models/page";
 import Study from "../models/study";
 
@@ -220,6 +221,23 @@ export async function loadTopAssociations(filter, page, lastElement = [0, ""]): 
         .then(checkStatus)
         .then<Association[]>(convertToModel);
 }
+export async function loadTopKOMutations(filter, page, limit, lastElement = [0, ""]): Promise<KOAssociation[]> {
+    const queryParam = getTopAssociationsParametersQuery(filter);
+    const offset = limit * ( page - 1);
+    let url = `/api/koassociations/`;
+    if (lastElement[0] !== 0) {
+        url += "?lastel=" + lastElement[0].toString() + "," + lastElement[1] + `&limit=${limit}`;
+    } else {
+        url += `?limit=${limit}&offset=${offset}`;
+    }
+    if (queryParam) {
+        url += queryParam;
+    }
+    return fetch(url)
+        .then(checkStatus)
+        .then<KOAssociation[]>(convertToModel);
+}
+
 export async  function loadTopAggregatedStatistics(filter) {
     const queryParam = getTopAssociationsParametersQuery(filter);
     let url = `/api/associations/aggregated_statistics/?`;

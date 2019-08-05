@@ -55,6 +55,7 @@ router.register(r'genotypes', rest.GenotypeViewSet)
 router.register(r'studies', rest.StudyViewSet)
 router.register(r'phenotypes', rest.PhenotypeViewSet)
 router.register(r'associations', rest.AssociationViewSet, base_name="associations")
+router.register(r'koassociations', rest.KOAssociationViewSet, base_name="koassociations")
 router.register(r'genes', rest.GeneViewSet, base_name="genes")
 router.register(r'snps', rest.SNPViewSet, base_name="snps")
 
