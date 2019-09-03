@@ -483,7 +483,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         accessions = np.asarray(list(map(lambda item: item['accession_id'], data)), dtype='|S6')
         #[:,0].astype(np.dtype('|S6'))
         genotype_file = "%s/GENOTYPES/%s.hdf5" % (settings.HDF5_FILE_PATH, study.genotype.pk)
-        alleles, genotyped_accessions = get_snps_from_genotype(genotype_file,int(chr),position, position, accession_filter = accessions)
+        alleles, genotyped_accessions = get_snps_from_genotype(genotype_file,int(chr),int(position), int(position), accession_filter = accessions)
         filtered_accessions_idx = np.in1d(accessions, genotyped_accessions)
         filtered_data = []
         for info, allele, is_genotyped in zip(data, alleles.tolist()[0], filtered_accessions_idx.tolist()):
@@ -661,7 +661,7 @@ class KOAssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
 
-    
+
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):
     """ API for genes """
