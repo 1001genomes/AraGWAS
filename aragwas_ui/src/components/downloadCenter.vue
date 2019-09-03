@@ -17,7 +17,7 @@
                         <v-icon left dark>file_download</v-icon> Full GWAS DB Download
                     </v-btn>
                 </div>
-                <h4>KO Mutation hits download</h4>
+                <h4>KO Mutation download</h4>
                 <div class='mb-3'>
                     <p >Download all KO mutation associations scores in AraGWAS here in the csv format.</p>
                     <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" :href="'/api/koassociations/bulk_download'" download v-tooltip:right="{html: 'Download KO Mutations association scores in bulk'}">

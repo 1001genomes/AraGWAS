@@ -96,10 +96,10 @@
                     <v-flex xs12>
                         <div class="icon-block">
                             <i class="material-icons" >file_download</i>
-                            <h5 >Bulk Download</h5>
-                            <p >Download all associations scores recorded in AraGWAS here.</p>
-                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" :href="'/api/studies/bulk_download'" download v-tooltip:left="{html: 'Download AraGWAS in bulk'}">
-                                <v-icon left dark>file_download</v-icon> Download
+                            <h5 >Download Center</h5>
+                            <p >Download different files here.</p>
+                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" to="/download-center" v-tooltip:left="{html: 'Download Center for AraGWAS'}">
+                                <v-icon left dark>file_download</v-icon> Download Center
                             </v-btn>
                         </div>
                     </v-flex>
