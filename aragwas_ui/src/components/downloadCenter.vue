@@ -30,7 +30,7 @@
                         <v-icon left dark>file_download</v-icon> KO Mutations Download
                     </v-btn>
                 </div>
-                <h4>Genotype downloads</h4>
+                <h4>Genotype download</h4>
                 <div class='mb-5'>
                     <p >Download the imputed genotype used for all current associations in AraGWAS here.</p>
                     <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" :href="'/api/genotypes/download'" download v-tooltip:right="{html: 'Download the genotype matrix'}">

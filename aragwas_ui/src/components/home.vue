@@ -98,7 +98,7 @@
                             <i class="material-icons" >file_download</i>
                             <h5 >Download Center</h5>
                             <p >Download different files here.</p>
-                            <v-btn dark class="btn--large icon--left green lighten-1" light  tag="a" to="/download-center" v-tooltip:left="{html: 'Download Center for AraGWAS'}">
+                            <v-btn dark class="btn--large icon--left green lighten-1" light id="download-center-button" tag="a" to="/download-center" v-tooltip:left="{html: 'Download Center for AraGWAS'}">
                                 <v-icon left dark>file_download</v-icon> Download Center
                             </v-btn>
                         </div>
@@ -300,12 +300,16 @@
           intro: "The global search form allows the user to search across all phenotypes, studies and genomic regions"
         },
         {
+          element: "#download-center-button",
+          intro: "You can find several download options in the download center"
+        },
+        {
           element: "#studies-button",
           intro: "You can access the list of available GWA studies by clicking here"
         },
         {
           element: "#top-genes-button",
-          intro: "To see the the genes with most associations, press here."
+          intro: "To see the the genes with most associations, press here"
         },
         {
           element: "#hitmap-button",
