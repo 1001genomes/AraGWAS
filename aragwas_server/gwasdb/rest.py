@@ -207,6 +207,16 @@ class GenotypeViewSet(viewsets.ReadOnlyModelViewSet):
     def filter_queryset(self, queryset):
         return queryset
 
+    @list_route(methods=['GET'], url_path='download')
+    def download(self, request):
+        """Download the SNP matrix used for GWAS analyses"""
+        bulk_file = "%s/genotype.zip" % (settings.HDF5_FILE_PATH)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(bulk_file,"rb"), chunk_size),content_type="application/x-zip")
+        response['Content-Length'] = os.path.getsize(bulk_file)
+        response['Content-Disposition'] = "attachment; filename=genotype.zip"
+        return response
+
 class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API for studies
@@ -661,6 +671,25 @@ class KOAssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         paginated_asso = self.paginate_queryset(queryset)
         return self.get_paginated_response({'results': paginated_asso, 'count': count, 'lastel': [lastel[0], lastel[1]]})
 
+    @list_route(methods=['GET'], url_path='original_mutations')
+    def originaldownload(self, request):
+        """Download all the compressed csv files. """
+        bulk_file = "%s/ko_original_mutations.zip" % (settings.HDF5_FILE_PATH)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(bulk_file,"rb"), chunk_size),content_type="application/x-zip")
+        response['Content-Length'] = os.path.getsize(bulk_file)
+        response['Content-Disposition'] = "attachment; filename=ko_original_mutations.zip"
+        return response
+
+    @list_route(methods=['GET'], url_path='bulk_download')
+    def bulkdownload(self, request):
+        """Download all the compressed csv files. """
+        bulk_file = "%s/ko_csv.zip" % (settings.HDF5_FILE_PATH)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(bulk_file,"rb"), chunk_size),content_type="application/x-zip")
+        response['Content-Length'] = os.path.getsize(bulk_file)
+        response['Content-Disposition'] = "attachment; filename=ko_mutations_associations.zip"
+        return response
 
 
 class GeneViewSet(EsViewSetMixin, viewsets.ViewSet):

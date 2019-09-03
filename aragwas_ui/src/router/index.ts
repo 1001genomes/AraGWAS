@@ -1,5 +1,6 @@
 import About from "@/components/about.vue";
 import AssociationDetail from "@/components/associationDetail.vue";
+import DownloadCenter from "@/components/downloadCenter.vue";
 import FAQ from "@/components/faq.vue";
 import GeneDetail from "@/components/geneDetail.vue";
 import Genes from "@/components/genes.vue";
@@ -52,6 +53,11 @@ export default new Router({
       path: "/genes",
       name: "genes",
       component: Genes,
+    },
+    {
+      path: "/download-center",
+      name: "downloadCenter",
+      component: DownloadCenter,
     },
     {
       path: "/faq",
