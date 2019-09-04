@@ -119,6 +119,9 @@
 
       updateData(): void {
          d3.select("#chart-distro1").selectAll("*").remove();
+         if (! this.data) {
+           return;
+         }
          this.chart = this.distrochart({
             data: this.data,
             xName: 'label',

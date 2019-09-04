@@ -247,31 +247,24 @@
                     intro: "The Gene plot aligned underneath the Manhattan plot shows the genes in the chosen region. When the user moves the mouse over a certain gene, all corresponding associations are highlighted in the Manhattan plot. If the user moves the mouse over an association in the Manhattan plot, a vertical blue line shows the location of the association in regard to the gene.",
                     position: "bottom"
                 },
-                 {
-                    element: ".associations-table-container",
-                    intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
-                    position: "top"
-                },
                 {
                     element: ".associations-control-container",
                     intro: "You can use these filters to filter the top associations list and to choose the number of associations to display in the list and on the plot",
                     position: "right"
                 },
                 {
-                    element: ".faq",
-                    intro: "You will find more information and tutorials under the FAQ tab.",
-                    position: "bottom"
+                    element: ".associations-table-container",
+                    intro: "This table shows all top associations (sorted by score) that are stored in the database. Significant associations are marked in blue.",
+                    position: "top"
                 },
                 {
-                    element: "#rest-link",
-                    intro: "The REST documentation provides information about how to access the GWAS catalog programatically"
-                },
-                {
-                    element: ".aragwas-logo",
-                    intro: "This is the end of the tour. Enjoy AraGWAS Catalog!",
+                    element: ".associations-table-container tbody tr", //for some reason id does not work
+                    intro: "To view more information about a specific association, click on the SNP link",
                     position: "bottom"
-                }
+                },
+
             ],
+            nextPage: {name: "associationDetail", params:{id: 144, assocId: "4_1267038"}}
         };
     }
 </script>

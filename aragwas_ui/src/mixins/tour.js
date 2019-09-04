@@ -17,6 +17,13 @@ const tourMixin = {
         checkTour() {
              if (this.$route.query.tour && this.tourOptions) {
                 const intro = introJs.introJs();
+                if (this.tourOptions.callback) {
+                    var callback = this.tourOptions.callback;
+                    var component = this;
+                    intro.onchange(function() {
+                        callback(this, component);
+                    });
+                }
                 const doneLabel = this.tourOptions.nextPage ? "Next Page" : "Done";
                 const view = this.$route.name;
                 const nextPage = this.tourOptions.nextPage;
