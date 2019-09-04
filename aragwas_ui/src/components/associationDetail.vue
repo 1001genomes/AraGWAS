@@ -14,7 +14,7 @@
             <v-flex xs12 md4 class="pa-1">
                 <h5 class="mb-1">Association</h5>
                 <v-divider></v-divider>
-                <v-layout row wrap class="mt-4">
+                <v-layout row wrap class="mt-4" id="snp_info_container">
                     <v-flex xs5 md4 >Chromosome:</v-flex><v-flex xs7 md8>{{ chr | capitalize }}</v-flex>
                     <v-flex xs5 md4 >Position:</v-flex><v-flex xs7 md8>{{ position }}</v-flex>
                     <v-flex xs5 md4 >Ref:</v-flex><v-flex xs7 md8>{{ ref }}</v-flex>
@@ -29,7 +29,7 @@
                     </v-flex>
                 </v-layout>
                 <h5 class="mb-1">Study information</h5><v-divider></v-divider>
-                <v-layout row wrap class="mt-4">
+                <v-layout row wrap class="mt-4" id="association_info_container">
                     <v-flex xs5 md4>Genotype:</v-flex><v-flex xs7 mm8>{{ genotype }}</v-flex>
                     <v-flex xs5 md4>Transformation:</v-flex><v-flex xs7 mm8>{{ transformation }}</v-flex>
                     <v-flex xs5 md4>Method:</v-flex><v-flex xs7 mm8>{{ method }}</v-flex>
@@ -49,10 +49,10 @@
                             <div>Accession Table</div>
                         </v-tabs-item>
                         <v-tabs-item href="#association-detail-tabs-explorer" ripple class="grey lighten-4 black--text" >
-                            <div>Phenotype explorer</div>
+                            <div id = "explorer_tab">Phenotype explorer</div>
                         </v-tabs-item>
                         <v-tabs-item href="#association-detail-tabs-plots" ripple class="grey lighten-4 black--text" >
-                            <div>Candlestick charts</div>
+                            <div id = "plot_tab">Candlestick charts</div>
                         </v-tabs-item>
                     </v-tabs-bar>
                     <v-tabs-items class="fill-height">
@@ -109,7 +109,7 @@
                         </v-tabs-content>
                         <v-tabs-content id="association-detail-tabs-plots" class="pa-4" >
                             <v-layout row wrap class="pa-4 " >
-                                <v-flex xs12 class="pa-1">
+                                <v-flex xs12 class="pa-1" id = "country_dropdown_container">
                                     <v-select
                                         :items="accessionCountries"
                                         v-model="selectedCountry"
@@ -118,8 +118,8 @@
                                         bottom
                                     ></v-select>
                                 </v-flex>
-                                <v-flex xs12 class="pa-1">
-                                    <distro-chart v-if="variationData != null" :data="variationData" ref="variatonPlots" ></distro-chart>
+                                <v-flex xs12 class="pa-1" >
+                                    <distro-chart v-show="variationData != null" :data="variationData" ref="variatonPlots" ></distro-chart>
                                 </v-flex>
                             </v-layout>
                         </v-tabs-content>
@@ -144,6 +144,8 @@
 
     import _ from "lodash";
 
+    import tourMixin from "../mixins/tour.js";
+
     @Component({
       filters: {
         capitalize(str) {
@@ -155,6 +157,7 @@
           "breadcrumbs": Breadcrumbs,
           "distro-chart": DistroChart,
       },
+      mixins: [tourMixin],
     })
     export default class AssociationDetail extends Vue {
       @Prop({required: true})
@@ -254,6 +257,86 @@
       {text: this.assocId, href: "" + this.id, disabled: true},
       ];
 
+      tourOptions = {
+        steps: [
+            {
+                element: "#snp_info_container",
+                intro: "You find detailed information about the associated SNP here. The Pie chart shows the allelic distribution in the GWAS study.",
+                position: "right",
+            },
+            {
+                element: "#association_info_container",
+                intro: "You find detailed information about the GWAS study here. You can see the number of significant associations, the method of the GWAS study and the genotype version.",
+                position: "right",
+            },
+            {
+                element: "#association-detail-tabs-table",
+                intro: "The table contains all the accessions that where used in the GWAS study together with their phenotype value and allele for the corresponding SNP of the chosen association. The table can be sorted by phenotype or allele.",
+                position: "left",
+            },
+            {
+                element: "#explorer_tab",
+                intro: "Switch to the motionchart.",
+                position: "bottom",
+            },
+            {
+                element: "#association-detail-tabs-explorer",
+                intro: "The motionchart is a visual representation of the previous table. The axis can be sorted by latitude and longitude of the accessions and the bars/points can be colored by the allele. This can help the user to visually see geographic pattern in the allelel distrubtion. (Hint: You need to enable flash for this visualization)",
+                position: "left",
+            },
+            {
+                element: "#plot_tab",
+                intro: "Switch to the candlestick charts.",
+                position: "bottom",
+            },
+            {
+                element: ".chart-wrapper",
+                intro: "The candelstick charts show the effect of the two corresponding alleles on the phenotype distribution.",
+                position: "left",
+            },
+            {
+                element: ".chart-options",
+                intro: "The user can select different visualizations other than a classic Box Plot. Additionally a trend line can be displayed.",
+                position: "left",
+            },
+            {
+                element: "#country_dropdown_container",
+                intro: "By default the candlestick charts are display for all accessions in the GWAS study. The user can decide to display the candlestick charts for accessions from a certain country.",
+                position: "left",
+            },
+            {
+                element: ".faq",
+                intro: "You will find more information and tutorials under the FAQ tab.",
+                position: "bottom",
+            },
+            {
+                element: "#rest-link",
+                intro: "The REST documentation provides information about how to access the GWAS catalog programatically",
+            },
+            {
+                element: ".aragwas-logo",
+                intro: "This is the end of the tour. Enjoy AraGWAS Catalog!",
+                position: "bottom",
+            },
+        ],
+        callback: function(tour, component) {
+
+            if (tour._currentStep < 3) {
+                component.currentView = "association-detail-tabs-table";
+
+            } else if (tour._currentStep == 3) {
+                component.currentView = "association-detail-tabs-explorer";
+
+            } else if (tour._currentStep == 5) {
+                component.currentView = "association-detail-tabs-plots";
+            }
+            else if (tour._currentStep > 5) {
+                component.onResize();
+            }
+        },
+
+      };
+
       @Watch("id")
       onChangeId(val: number, oldVal: number) {
           this.loadData();
@@ -265,7 +348,7 @@
           });
       }
 
-    @Watch("selectedCountry")
+      @Watch("selectedCountry")
       onChangeSelectedCountry(val: string, oldVal: string) {
            const variationData = [] as any;
            for (const accession of this.accessionTable) {
