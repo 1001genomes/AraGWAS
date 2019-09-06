@@ -74,11 +74,14 @@
                                 <v-btn dark class="btn--large icon--left green lighten-1 mb-3" light  tag="a" :href="'/api/genotypes/download'" download v-tooltip:right="{html: 'Download the genotype matrix'}">
                                     <v-icon left dark>file_download</v-icon> Genotype Download
                                 </v-btn>
-                                <p class="mt-3">For other genotype versions, please refer to this <a href="">google drive page</a>.</p>
+                                <p class="mt-3">For other genotype versions, please refer to this <a href="https://drive.google.com/open?id=0BwYlrRGOfVARS01aMnFVVWotbXc">google drive page</a>.</p>
                             <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">public</v-icon> Citation</div>
                                 <div>   
                                     <p>
-                                        Please cite the following publication when using this dataset.
+                                        Please cite the following publications when using this dataset.
+                                    </p>
+                                    <p class="light">
+                                        Matteo Togninalli, Ümit Seren, Dazhe Meng, Joffrey Fitz, Magnus Nordborg, Detlef Weigel, Karsten Borgwardt, Arthur Korte, and Dominik G. Grimm (2018) <b>The AraGWAS Catalog: a curated and standardized Arabidopsis thaliana GWAS catalog;</b> Nucleic Acids Research, gkx954, <a target=_blank href=https://doi.org/10.1093/nar/gkx954>https://doi.org/10.1093/nar/gkx954</a>
                                     </p>
                                     <p class="light">
                                         The 1001 Genomes Consortium (2016) <b>1,135 genomes reveal the global pattern of polymorphism in Arabidopsis thaliana.</b> Cell 166, no. 2: 481-491.<a target=_blank href=https://doi.org/10.1016/j.cell.2016.05.063>https://doi.org/10.1016/j.cell.2016.05.063</a>
