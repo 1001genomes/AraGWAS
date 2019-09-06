@@ -264,7 +264,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='download')
     def download(self, request, pk):
         """Download the HDF5 file for the specific study. """
-        study_file = "%s/%s.hdf5" % (settings.HDF5_FILE_PATH, pk)
+        study_file = "%s/gwas_results/%s.hdf5" % (settings.HDF5_FILE_PATH, pk)
         chunk_size = 8192
         response = StreamingHttpResponse(FileWrapper(open(study_file,"rb"), chunk_size),content_type="application/x-hdf5")
         response['Content-Length'] = os.path.getsize(study_file)
@@ -319,7 +319,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
         if filter_type == 'top':
             threshold_or_top = int(threshold_or_top)
 
-        association_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % pk)
+        association_file = os.path.join(settings.HDF5_FILE_PATH, 'gwas_results', '%s.hdf5' % pk)
         top_associations, thresholds = get_top_associations(association_file, maf=0, val=threshold_or_top, top_or_threshold=filter_type)
         output = {}
         prev_idx = 0
@@ -336,7 +336,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['GET'], url_path='ko_mutations')
     def ko_assocations_from_csv(self, request, pk):
         """ Retrieve KO associations from the csv file of the study."""
-        ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko', 'LOF_GWAS%s.csv' % pk)
+        ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko', 'LOS%s.csv' % pk)
         ko_associations, thresholds = get_ko_associations(ko_association_file)
         output = {}
         prev_idx = 0

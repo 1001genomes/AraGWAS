@@ -56,7 +56,7 @@ class Command(BaseCommand):
                             perm_threshold = permutation_thresholds[study.pk]
                         hits, thresholds = get_hit_count(hdf5_file, maf=maf, perm_threshold=perm_threshold)
                         study.n_hits_bonf = hits['bonferroni_hits05']
-                        study.n_hits_top = hits['thr_e-4']
+                        study.n_hits_thr = hits['thr_e-4']
                         study.n_hits_fdr = hits['bh_hits']
                         study.bonferroni_threshold = thresholds['bonferroni_threshold05']
                         study.bh_threshold = thresholds['bh_threshold']

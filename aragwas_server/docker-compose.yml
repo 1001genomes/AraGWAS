@@ -46,7 +46,7 @@ services:
     environment:
       - cluster.name=aragwas
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms8G -Xmx8G"
       - xpack.security.enabled=false
       - xpack.monitoring.enabled=false
       - xpack.graph.enabled=false
@@ -58,7 +58,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1g
+          memory: 8g
     volumes:
       - esdata1:/usr/share/elasticsearch/data
     ports:

@@ -88,7 +88,7 @@ class Command(BaseCommand):
                 hits, thresholds = get_hit_count(hdf5_file, maf=0.05, perm_threshold=perm_threshold)
                 # Get n_samples
                 r = requests.get(
-                    'https://arapheno.1001genomes.org:443/rest/phenotype/' + str(phenotype_id) + '/values.json')
+                    'https://arapheno.1001genomes.org/rest/phenotype/' + str(phenotype_id) + '/values.json')
                 accessions = r.json()
                 countries = [acc['accession_country'] for acc in accessions]
 
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     phenotype=phenotype,
                     method=method,
                     n_hits_bonf=hits['bonferroni_hits05'],
-                    n_hits_top=hits['thr_e-4'],
+                    n_hits_thr=hits['thr_e-4'],
                     n_hits_fdr=hits['bh_hits'],
                     bonferroni_threshold=thresholds['bonferroni_threshold05'],
                     bh_threshold=thresholds['bh_threshold'],
@@ -119,7 +119,7 @@ class Command(BaseCommand):
                 study.save()
                 # copy file
                 print("Copying file to AraGWAS folder...")
-                hdf5_ag_file = os.path.join(settings.HDF5_FILE_PATH, '%s.hdf5' % study.pk)
+                hdf5_ag_file = os.path.join(settings.HDF5_FILE_PATH, 'gwas_results', '%s.hdf5' % study.pk)
                 if hdf5_file != hdf5_ag_file:
                     shutil.copyfile(hdf5_file, hdf5_ag_file)
                     print("Done")
