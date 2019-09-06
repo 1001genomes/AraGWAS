@@ -35,7 +35,7 @@ class Command(BaseCommand):
             for pheno in phenos_arapheno:
                 if pheno['phenotype_id'] not in ids_aragwas or update:
                     # Add to table:
-                    p = Phenotype(pk=pheno['phenotype_id'], name=pheno['name'], description=pheno['scoring'], date=pheno['integration_date'], arapheno_link="https://arapheno.1001genomes.org/phenotype/"+str(pheno['phenotype_id']), trait_ontology_id=pheno['to_term'] if pheno['to_term'] is not None else "", trait_ontology_name=pheno['to_name'] if pheno['to_name'] is not None else "", trait_ontology_description=pheno['to_definition'])
+                    p = Phenotype(pk=pheno['phenotype_id'], name=pheno['name'], study_name=pheno['study'], description=pheno['scoring'], date=pheno['integration_date'], arapheno_link="https://arapheno.1001genomes.org/phenotype/"+str(pheno['phenotype_id']), trait_ontology_id=pheno['to_term'] if pheno['to_term'] is not None else "", trait_ontology_name=pheno['to_name'] if pheno['to_name'] is not None else "", trait_ontology_description=pheno['to_definition'])
                     p.save()
                     counter += 1
                 # else:

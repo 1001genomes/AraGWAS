@@ -15,6 +15,8 @@ import datetime
 from collections import defaultdict
 
 GENE_ID_PATTERN = re.compile('^[a-z]{2}([\\d]{1})G\\w+$', re.IGNORECASE)
+es_logger = logging.getLogger('elasticsearch')
+es_logger.setLevel(logging.WARNING)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -199,7 +201,7 @@ def load_filtered_top_ko_mutations_genes(filters, start=0, size=50):
     if 'significant' in filters:
         s = s.filter(Q('range', mac={'gte': 6}))
         s = s.filter('term', overBonferroni='T') # TODO: change this to permutation once the new indexed scores are in.
-    
+
     agg = A("terms", field="gene.id", size='33341') # Need to check ALL GENES for further lists
     s.aggs.bucket('genes', 'nested', path='gene').bucket('gene_count', agg) # Need to have a NESTED query
     top_genes = s.execute().aggregations.genes.gene_count.buckets
@@ -384,9 +386,11 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
     print(json.dumps(s.to_dict()))
     result = s.execute()
     associations = result['hits']['hits']
-    last_el = result['hits']['hits'][-1]['sort']
+    last_el = ('','')
+    if len(associations) > 0:
+        last_el = result['hits']['hits'][-1]['sort']
     # Transformation needed to saveguard url transmition
-    last_el[1] = "-".join(last_el[1].split('#'))
+        last_el[1] = "-".join(last_el[1].split('#'))
     return [association['_source'].to_dict() for association in associations], result['hits']['total'], last_el
 
 def load_filtered_top_ko_associations_search_after(filters, search_after = '', size=50):
@@ -626,7 +630,7 @@ def _get_index_from_chr(chrom):
 def index_ko_associations(study, associations, thresholds):
     """
     indexes gene knockout associations
-    
+
     They are stored differently cause they represent associations between genes and phenotypes
     """
     with_permutations = 'permutation_threshold' in thresholds.keys() and thresholds['permutation_threshold'] # This will always be FALSE
@@ -637,7 +641,7 @@ def index_ko_associations(study, associations, thresholds):
         _id = '%s_%s' % (study.pk, assoc['gene'])
         study_data = serializers.EsStudySerializer(study).data
         study_data['thresholds'] = thresholds_study
-        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'beta': float(assoc['beta']), 
+        _source = {'mac': int(assoc['mac']), 'maf': float(assoc['maf']), 'score': float(assoc['score']), 'beta': float(assoc['beta']),
             'se_beta': float(assoc['se_beta']), 'created': datetime.datetime.now(),'study':study_data}
         _source['overBonferroni'] = bool(assoc['score'] > thresholds['bonferroni_threshold05'])
         if with_permutations:

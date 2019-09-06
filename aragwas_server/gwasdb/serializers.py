@@ -27,7 +27,7 @@ class EsPhenotypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Phenotype
-        fields = ('id', 'suggest', 'name', 'description', 'date')
+        fields = ('id', 'suggest', 'name', 'study_name', 'description', 'date')
 
 
 class EsGenotypeSerializer(serializers.ModelSerializer):

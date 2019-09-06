@@ -165,6 +165,9 @@
                                 "name": {
                                     "type": "text"
                                 },
+                                "study_name": {
+                                    "type": "text"
+                                },
                                 "description": {
                                     "type": "text"
                                 },
@@ -398,6 +401,9 @@
                                     "type" : "completion"
                                 },
                                 "name": {
+                                    "type": "text"
+                                },
+                                "study_name": {
                                     "type": "text"
                                 },
                                 "description": {

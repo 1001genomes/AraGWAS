@@ -7,6 +7,7 @@ class Phenotype(models.Model):
     Phenotype model, if possible links to AraPheno
     """
     name = models.CharField(max_length=255) # name of phenotype
+    study_name = models.CharField(max_length=255, default = "")
     description = models.TextField(blank=True, null=True) # short description
     date = models.DateTimeField(blank= True, null=True) # date of creation/update
     # to = models.CharField(max_length=255) # Trait ontology that regroups similar phenotypes TODO: add trait ontology to all phenotypes
@@ -21,7 +22,7 @@ class Phenotype(models.Model):
         return '%s/phenotype:%s' % (settings.DATACITE_PREFIX, self.id)
 
     def __str__(self):
-        return "Phenotype: %s" % (self.name)
+        return "Phenotype: %s (%s)" % (self.name, self.study_name)
 
 class Study(models.Model):
     """
