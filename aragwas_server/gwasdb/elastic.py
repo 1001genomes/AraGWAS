@@ -440,7 +440,7 @@ def get_gwas_overview_bins_data(filters):
     # Get study list
     return {"type":"top", "data":combined_data}
 
-def get_gwas_overview_heatmap_data(filters):
+def get_gwas_overview_heatmap_data(filters, num_studies):
     """Collect the data used to plot the gwas heatmap"""
     # Check missing filters
     filters = check_missing_filters(filters)
@@ -451,14 +451,14 @@ def get_gwas_overview_heatmap_data(filters):
         for i in range(1,6):
             chr = 'chr' + str(i)
             filters['chrom'] = chr
-            max_score_temp, data_temp = get_top_hits_for_all_studies(filters) # TODO: link parameters from rest endpoint
+            max_score_temp, data_temp = get_top_hits_for_all_studies(filters, num_studies) # TODO: link parameters from rest endpoint
             max_score[chr]=max_score_temp[chr]
             data[chr] = data_temp[chr]
         # Aggregate over chromosomes
         combined_data = combine_data(max_score, data) # For testing: change to data_bis to get faster but more localized points (looks bad)
     else:
         chr = 'chr'+str(filters['chrom'][-1])
-        max_score_temp, data_temp = get_top_hits_for_all_studies(filters)  # TODO: link parameters from rest endpoint
+        max_score_temp, data_temp = get_top_hits_for_all_studies(filters, num_studies)  # TODO: link parameters from rest endpoint
         max_score[chr] = max_score_temp[chr]
         data[chr] = data_temp[chr]
         combined_data = combine_data(max_score, data, region=filters['region'],region_width=filters['region_width'])
@@ -480,7 +480,7 @@ def check_missing_filters(filters):
         filters['mac'] = 6
     return filters
 
-def get_top_hits_for_all_studies(filters):
+def get_top_hits_for_all_studies(filters, num_studies):
     s = Search(using=es, doc_type='associations')
     s = filter_heatmap_search(s, filters)
     # First aggregate for studies
@@ -488,7 +488,7 @@ def get_top_hits_for_all_studies(filters):
     # Keep track of the maximum value for each study
     s.aggs['per_chrom'].metric('max', 'max', field='score')
     # Then aggregate for chromosomes
-    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size='200',min_doc_count='0') #TODO: automatically check number of studies
+    s.aggs['per_chrom'].bucket('per_study', 'terms', field='study.id', order={'_term':'asc'}, size=num_studies,min_doc_count='0') #TODO: automatically check number of studies
     s.aggs['per_chrom']['per_study'].metric('top_N', 'top_hits', size='25', sort={'score':'desc'}, _source=['-score','snp.position'])
     # Then for regions (to avoid too many overlapping hits)
     s.aggs['per_chrom']['per_study'].bucket('per_region', 'histogram', field='snp.position', interval=str(filters['region_width']))

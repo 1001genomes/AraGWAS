@@ -65,7 +65,7 @@ export default function gwasHeatmap() {
         colorScale.domain(values).range(schemeYlOrRd[9]);
         fillScale.domain(scoreRange);
         if (data.type === "top") {
-            yScale = d3.scalePoint().domain(data.studies.map(function(d) { return d.name; }));
+            yScale = d3.scalePoint().domain(data.studies.map(function(d) { return d.name + " (" + d.id + ")"; }));
         }
     }
 
@@ -252,7 +252,7 @@ export default function gwasHeatmap() {
             row.enter().append("g")
                 .attr("class", "row")
                 .attr("data-index", function(d, ix) { return ix; })
-                .attr("transform", function(d, i) { return "translate(0," + yScale(data.studies[i].name) + ")"; })
+                .attr("transform", function(d, i) { return "translate(0," + yScale(data.studies[i].name + " (" + data.studies[i].id + ")") + ")"; })
                 .each(drawCell);
         }
 

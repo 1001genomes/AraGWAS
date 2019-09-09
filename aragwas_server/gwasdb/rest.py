@@ -576,7 +576,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         region = request.query_params.getlist('region')
         filters['region']=(int(region[0]),int(region[1]))
         filters['region_width'] = request.query_params.get('regionwidth')
-        results = elastic.get_gwas_overview_heatmap_data(filters)
+        results = elastic.get_gwas_overview_heatmap_data(filters, len(studies))
         results['studies'] = studies_data
         return Response(results)
 

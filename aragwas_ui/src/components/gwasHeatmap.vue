@@ -137,7 +137,11 @@
         }
         loadHistogramData() {
             this.loaded=false;
+            if (!this.pointData) {
+                return;
+            }
             if (this.zoomed) {
+
                 Promise.all([loadAssociationsHistogramZoomed(this.zoomRegion, this.zoomRegionWidth)])
                     .then((results) => {
                         let data = this.pointData;
