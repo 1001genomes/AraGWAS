@@ -86,13 +86,13 @@ def get_top_associations(hdf5_file, val=100, maf=0.05, top_or_threshold='top'):
             while (True):
                 start_idx = end_idx
                 end_idx = min(start_idx + val, group_length)
-                add_positions, add_scores, add_mafs, add_macs = _filter_by_maf((group['positions'][start_idx:end_idx], group['scores'][start_idx:end_idx], group['mafs'][start_idx:end_idx], group['macs'][start_idx:end_idx], group['beta'][start_idx:end_idx], group['se_beta'][start_idx:end_idx]), maf)
+                add_positions, add_scores, add_mafs, add_macs, add_betas, add_se_betas = _filter_by_maf((group['positions'][start_idx:end_idx], group['scores'][start_idx:end_idx], group['mafs'][start_idx:end_idx], group['macs'][start_idx:end_idx], group['beta'][start_idx:end_idx], group['se_beta'][start_idx:end_idx]), maf)
                 top_positions = np.concatenate((top_positions, add_positions))
                 top_scores = np.concatenate((top_scores, add_scores))
                 top_mafs = np.concatenate((top_mafs, add_mafs))
                 top_macs = np.concatenate((top_macs, add_macs))
-                top_betas = np.concatenate((top_mafs, top_betas))
-                top_se_betas = np.concatenate((top_macs, top_se_betas))
+                top_betas = np.concatenate((top_betas, add_betas))
+                top_se_betas = np.concatenate((top_se_betas, add_se_betas))
                 if len(top_positions) >= val:
                     top_positions = top_positions[:val]
                     top_scores = top_scores[:val]

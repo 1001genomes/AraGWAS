@@ -77,21 +77,23 @@ class HDF5LoadingTests(TestCase):
 
     def _check_return_array(self, top_associations):
         assert isinstance(top_associations, np.core.records.recarray)
-        assert top_associations.dtype.names == ('chr', 'position', 'score', 'maf', 'mac')
+        assert top_associations.dtype.names == ('chr', 'position', 'score', 'maf', 'mac', 'beta', 'se_beta')
         assert top_associations.dtype[0] == np.dtype('<U1')
         assert top_associations.dtype[1] == np.dtype('int32')
         assert top_associations.dtype[2] == np.dtype('float64')
         assert top_associations.dtype[3] == np.dtype('float64')
         assert top_associations.dtype[4] == np.dtype('int32')
+        assert top_associations.dtype[5] == np.dtype('float64')
+        assert top_associations.dtype[6] == np.dtype('float64')
 
     def test_load_top_associations_by_top_hits(self):
         """Test if top associations by number of hits cann be retrieved"""
         top_hit_num = 15
-        top_hits = [('1', 6369772, 5.559458119903501, 0.1386861313868613, 19),
-                    ('2', 18351161, 5.221548337450959, 0.08029197080291971, 11),
-                    ('3', 18057816, 4.795206143400829, 0.2116788321167883, 29),
-                    ('4', 429928, 6.555416448260276, 0.4233576642335766, 58),
-                    ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21)]
+        top_hits = [('1', 6369772, 5.559458119903501, 0.1386861313868613, 19, 0.360335870170728, 0.0761941875889666),
+                    ('2', 18351161, 5.221548337450959, 0.08029197080291971, 11, 0.328720498341187, 0.0747141063333232),
+                    ('3', 18057816, 4.795206143400829, 0.2116788321167883, 29, -0.336795159960789, 0.0737295910747224),
+                    ('4', 429928, 6.555416448260276, 0.4233576642335766, 58, 0.368255762771892, 0.0711756042811744 ),
+                    ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21, -0.327934944673749 ,0.0833854459419328 )]
 
         top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, top_hit_num, maf=0, top_or_threshold='top')
         assert thresholds['bonferroni_threshold01'] == 7.3140147710960965
@@ -125,14 +127,13 @@ class HDF5LoadingTests(TestCase):
             assert assoc.tolist() == top_associations[i].tolist()
 
     def test_load_top_associations_by_top_hits_and_maf(self):
-        top_hit_num = 15
         """Test if top associations by number of hits cann be retrieved"""
-        top_hits = [('1', 6369772, 5.559458119903501, 0.1386861313868613, 19),
-                    ('2', 18351161, 5.221548337450959, 0.08029197080291971, 11),
-                    ('3', 18057816, 4.795206143400829, 0.2116788321167883, 29),
-                    ('4', 429928, 6.555416448260276, 0.4233576642335766, 58),
-                    ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21)]
-
+        top_hit_num = 15
+        top_hits = [('1', 6369772, 5.559458119903501, 0.1386861313868613, 19, 0.360335870170728, 0.0761941875889666),
+                    ('2', 18351161, 5.221548337450959, 0.08029197080291971, 11, 0.328720498341187, 0.0747141063333232),
+                    ('3', 18057816, 4.795206143400829, 0.2116788321167883, 29, -0.336795159960789, 0.0737295910747224),
+                    ('4', 429928, 6.555416448260276, 0.4233576642335766, 58, 0.368255762771892, 0.0711756042811744 ),
+                    ('5', 18577788, 6.219812361173065, 0.15328467153284672, 21, -0.327934944673749 ,0.0833854459419328 )]
         top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, top_hit_num, top_or_threshold='top')
         assert thresholds['bonferroni_threshold01'] == 7.294197188903931
         assert thresholds['bonferroni_threshold05'] == 6.5952271845679125
@@ -140,6 +141,7 @@ class HDF5LoadingTests(TestCase):
         assert thresholds['total_associations'] == 196878
         assert len(top_associations) == top_hit_num*5
         assert np.count_nonzero(top_associations['maf'] < 0.05) == 0
+
         self._check_return_array(top_associations)
         for i in range(0 ,5):
             assert top_associations[i*top_hit_num].tolist() == top_hits[i]
@@ -147,8 +149,8 @@ class HDF5LoadingTests(TestCase):
     def test_regroup_top_assocations(self):
         top_associations, thresholds = hdf5.get_top_associations(self.hdf5_file, 5, maf=0, top_or_threshold='threshold')
         top_associations = hdf5.regroup_associations(top_associations)
-        top_associations[0].tolist() == ('4',   429928,  6.55541645,  0.42335766, 58)
-        top_associations[-1].tolist() == ('5', 18606578,  5.07844918,  0.47445255, 65)
+        top_associations[0].tolist() == ('4',   429928,  6.55541645,  0.42335766, 58, 0.36825576, 0.0711756)
+        top_associations[-1].tolist() == ('5', 18606578,  5.07844918,  0.47445255, 65, -0.34592279, 0.0832137)
 
 
 class AssociationsFilteringTests(TestCase):
