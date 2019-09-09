@@ -19,6 +19,7 @@ import time
 import argparse
 import json
 import csv
+import zipfile
 import elasticsearch
 from functools import wraps
 from aragwas.settings import ES_HOST, HDF5_FILE_PATH
@@ -258,5 +259,9 @@ def prepare_csv(opts, filters):
     es.clean_scroll_ids()
 
 def generate_all_associations_file():
-    opts=dict(output_file='%s/all_associations.csv' % HDF5_FILE_PATH, doc_type='associations')
+    csv_filename = os.path.join(HDF5_FILE_PATH, 'all_associations.csv' )
+    opts=dict(output_file=csv_filename, doc_type='associations')
     prepare_csv(opts, dict())
+    with zipfile.ZipFile(os.path.join(HDF5_FILE_PATH, "all_associations.zip" ), 'w') as myzip:
+        myzip.write(csv_filename)
+        os.remove(csv_filename)

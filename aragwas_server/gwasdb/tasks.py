@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-import os, json
+import os, json, time
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 from celery import shared_task
@@ -12,9 +12,15 @@ from gwasdb import elastic
 from gwasdb import hdf5
 from aragwas import settings
 from gwasdb import es2csv
+from pathlib import Path
 import glob
 
 logger = get_task_logger(__name__)
+
+def _check_modifed(abs_filename):
+    if not os.path.exists(abs_filename) or not os.path.exists('%s.run' % abs_filename):
+        return True
+    return False
 
 @shared_task
 def debug_task():
@@ -30,23 +36,36 @@ def clean_temp_files():
 
 @shared_task
 def generate_hitmap_json():
+    abs_filename = os.path.join(settings.HDF5_FILE_PATH,"heatmap_data.json")
+    if not _check_modifed(abs_filename):
+        logger.info('Hitmap already up2date. Skipping generation')
+        return
+    Path('%s.run' % abs_filename).touch()
     studies = Study.objects.all()
     studies_data = []
     for study in studies:
         studies_data.append(
             {'id': study.id, 'name': study.phenotype.name})  # For now only add phenotype name for shorted strings
+    num_studies = len(studies)
     filters = dict()
-    results = elastic.get_gwas_overview_heatmap_data(filters)
+    results = elastic.get_gwas_overview_heatmap_data(filters, num_studies)
     results['studies'] = studies_data
-    file_name = "%s/heatmap_data.json" % (settings.HDF5_FILE_PATH)
-    with open(file_name, 'w') as out_file:
+    with open('%s.tmp' % abs_filename, 'w') as out_file:
         json.dump(results, out_file)
+    os.rename('%s.tmp' % abs_filename, abs_filename)
     logger.info('Finished generating hitmap')
 
 @shared_task
 def generate_associations_csv():
+    abs_filename = "all_associations.zp"
+    if not _check_modifed(abs_filename):
+        logger.info('Assocation zip file already up2date. Skipping generation')
+        return
+    Path('%s.run' % abs_filename).touch()
     es2csv.generate_all_associations_file()
     logger.info('Finished generating association csv')
+
+
 
 @shared_task
 def index_study(study_id, perm_threshold=None):

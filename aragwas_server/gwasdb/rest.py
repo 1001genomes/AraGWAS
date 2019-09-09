@@ -614,7 +614,7 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
             filters['end'] = gene['positions']['lte'] + zoom
         if _is_filter_whole_dataset(filters):
             # download_name = "all_associations"
-            file_name = "%s/all_associations.csv" % (settings.HDF5_FILE_PATH)
+            file_name = "%s/all_associations.zip" % (settings.HDF5_FILE_PATH)
             chunk_size = 8192
             response = StreamingHttpResponse(FileWrapper(open(file_name, "rb"), chunk_size),
                                              content_type="text/csv")
