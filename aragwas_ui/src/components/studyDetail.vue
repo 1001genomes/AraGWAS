@@ -245,12 +245,8 @@
         this.phenotypeId = data.phenotypePk;
         this.breadcrumbs[2].text = data.phenotype;
         this.studyDOI = data.doi;
-        if (data.nHitsBonf) {
-          this.bonferroniHits = data.nHitsBonf;
-        }
-        if (data.nHitsPerm) {
-          this.permHits = data.nHitsPerm;
-        }
+        this.bonferroniHits = data.nHitsBonf;
+        this.permHits = data.nHitsPerm;
         this.fdrHits = data.nHitsFdr;
         this.samples = data.numberSamples;
         this.countries = data.numberCountries;
@@ -311,7 +307,6 @@
         }
       }
       _displayKOMutationsPlots(data): void {
-        console.log(data.thresholds)
         for (let i=1; i <=5; i++) {
             let chrom = "chr" + i.toString();
             const positionsKO = data[chrom].positions;

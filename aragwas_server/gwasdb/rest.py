@@ -367,7 +367,7 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
                     else:
                         label = 'Non genic'
                     list_top_snp_type.append([label, i['doc_count']])
-                    response['on_snp_type'] = list_top_snp_type
+                response['on_snp_type'] = list_top_snp_type
             elif key == "maf_hist":
                 print(agg_results[key])
                 # Need to check if all consequent maf ranges are present
