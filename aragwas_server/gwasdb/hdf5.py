@@ -169,7 +169,7 @@ def regroup_associations(top_associations):
     top_associations.sort(order = 'score')
     return top_associations[::-1]
 
-def get_ko_associations(csv_file):
+def get_ko_associations(csv_file, permutation_file=None, study_id=None):
     """Retrieves all KO associations from a csv file"""
     with open(csv_file) as csv_file_open:
         filereader = csv.DictReader(csv_file_open,  delimiter=',')
@@ -199,6 +199,14 @@ def get_ko_associations(csv_file):
     associations = np.rec.fromarrays((genes, chrs, positions, n_kos, scores, betas, se_betas, mafs, macs), names='gene, chr, position, n_ko, score, beta, se_beta, maf, mac')
     thresholds = {'bonferroni_threshold05': bt05, 'bonferroni_threshold01': bt01,
                 'bonferroni_ara': bt_ara, 'total_associations': num_associations}
+    # Retrieve the permutation threshold from the master file:
+    if permutation_file is not None:
+        with open(permutation_file) as csv_file_open:
+            filereader = csv.DictReader(csv_file_open,  delimiter=',')
+            for row in filereader:
+                if row['id']==study_id:
+                    thresholds['permutation_threshold'] = -math.log(float(row['thres']), 10)
+                    break
     return associations, thresholds
 def get_snps_from_genotype(genotype_hdf5, chr, pos_start, pos_end, accession_filter=None):
     """ Returns the snps for a given genotype for a specific range/position """

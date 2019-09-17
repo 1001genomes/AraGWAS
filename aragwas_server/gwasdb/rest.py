@@ -337,7 +337,8 @@ class StudyViewSet(viewsets.ReadOnlyModelViewSet):
     def ko_assocations_from_csv(self, request, pk):
         """ Retrieve KO associations from the csv file of the study."""
         ko_association_file = os.path.join(settings.HDF5_FILE_PATH,'ko', 'LOS%s.csv' % pk)
-        ko_associations, thresholds = get_ko_associations(ko_association_file)
+        ko_permutation_file = os.path.join(settings.HDF5_FILE_PATH, 'permutation_ko.csv')
+        ko_associations, thresholds = get_ko_associations(ko_association_file, ko_permutation_file, pk)
         output = {}
         prev_idx = 0
         for chrom in range(1, 6):

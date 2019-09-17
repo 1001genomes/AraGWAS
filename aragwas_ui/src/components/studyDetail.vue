@@ -317,8 +317,9 @@
             }
             this.dataChrKO[chrom] =  chrDataKO;
             this.optionsKO[i.toString()]["bonferroniThreshold"] = data.thresholds.bonferroniThreshold05;
+            this.optionsKO[i.toString()]["permutationThreshold"] = data.thresholds.permutationThreshold;
             this.optionsKO[i.toString()]["max_y"] = Math.max(Math.max(data[chrom].scores[0]+1, 10), this.optionsKO[i.toString()]["max_y"]);
-            this.optionsKO[i.toString()]["permutationThreshold"] = 0; // temporary fix
+            this.optionsKO[i.toString()]["max_y"] = Math.max(Math.max(data.thresholds.permutationThreshold+1, data.thresholds.bonferroniThreshold05), this.optionsKO[i.toString()]["max_y"]);
         }
       }
     }
