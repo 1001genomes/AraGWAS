@@ -112,6 +112,9 @@ export default function() {
                     })
                     .on("mouseout", function(d, i) {
                         svg.dispatch("unhighlightgene", { detail: {gene: d, event: d3.event} });
+                    })
+                    .on("click", function(d, i) {
+                        svg.dispatch("clickgene", { detail: {gene: d, event: d3.event} });
                     });
 
 

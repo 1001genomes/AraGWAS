@@ -2,7 +2,7 @@
     <div style="position:relative">
         <svg id="manhattanplot" :height="scatterPlotHeight" width="100%" v-on:highlightassociations="onHighlightAssociations" v-on:unhighlightassociations="onUnhighlightAssociations" >
         </svg>
-        <svg id="geneplot" width="100%" :height="genePlotHeight" :style="genePlotStyles" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" >
+        <svg id="geneplot" width="100%" :height="genePlotHeight" :style="genePlotStyles" v-on:highlightgene="onHighlightGene" v-on:unhighlightgene="onUnhighlightGene" v-on:clickgene="onClickGene" >
         </svg>
         <div class="colorlegend-container">
             <v-select
@@ -25,7 +25,7 @@
                         <dt>Position:</dt><dd>{{highlightedGene.originalStart}} - {{highlightedGene.originalEnd}}</dd>
                         <dt>KO Mutations (only significant ones):</dt>
                             <dd v-if="highlightedGene.koAssociations.length!=0">
-                                <div v-for="kohit in highlightedGene.koAssociations">{{ kohit.study.phenotype.name }} 
+                                <div v-for="kohit in highlightedGene.koAssociations">{{ kohit.study.phenotype.name }}
                                                 (Score: {{ Number((kohit.score).toFixed(2)) }})
                                             </div></dd>
                             <dd v-else>-</dd>
@@ -117,7 +117,6 @@
         };
 
         onHighlightGene(event): void {
-            console.log(event.detail.gene)
             let gene = event.detail.gene;
             this.highlightedGene = gene;
             let e = event.detail.event;
@@ -140,6 +139,10 @@
             // not necessariy because prop will be updated. If this is enabled than it should be de-bounced
             // this.manhattanPlt.highlightSnps([]);
             this.$emit("unhighlightgene", []);
+        }
+
+        onClickGene(event): void {
+            window.open(`https://apps.araport.org/thalemine/portal.do?externalids=${event.detail.gene.name}` , "_blank");
         }
 
         onHighlightAssociations(event): void {
