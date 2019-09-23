@@ -57,7 +57,7 @@ def generate_hitmap_json():
 
 @shared_task
 def generate_associations_csv():
-    abs_filename = "all_associations.zp"
+    abs_filename = os.path.join(settings.HDF5_FILE_PATH,"all_associations.zip")
     if not _check_modifed(abs_filename):
         logger.info('Assocation zip file already up2date. Skipping generation')
         return
