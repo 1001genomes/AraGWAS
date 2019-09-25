@@ -18,7 +18,7 @@
         <div  v-bind:style="popupStyle" id="genepopup"  >
             <v-card v-if="highlightedGene != null" >
                 <v-card-title class="green darken-1" >
-                    <h3 class="headline mb-0 white--text">{{highlightedGene.name}}</h3>
+                    <h3 class="headline mb-0 white--text">{{highlightedGene.name}} <span style="font-size:14px">(click for information)</span></h3>
                 </v-card-title>
                 <v-card-text>
                     <dl>
@@ -303,6 +303,9 @@
                 fill: highlight-color;
             rect.highlight
                 stroke:highlight-color;
+    .isoform
+      cursor:pointer;
+
 
 
     #genepopup
