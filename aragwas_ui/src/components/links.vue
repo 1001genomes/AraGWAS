@@ -126,7 +126,7 @@ export default class Links extends Vue {
       image: "/static/img/tair_logo.png",
     },
     {
-      title: "EnsamblePlants",
+      title: "EnsemblPlants",
       description:
         "The Ensembl genome annotation system, developed jointly by the EBI and the Wellcome Trust Sanger Institute, has been used for the annotation, analysis and display of vertebrate genomes since 2000. Since 2009, the Ensembl site has been complemented by the creation of five new sites, for bacteria, protists, fungi, plants and invertebrate metazoa, enabling users to use a single collection of (interactive and programatic) interfaces for accessing and comparing genome-scale data from species of scientific interest from across the taxonomy",
       link: "http://plants.ensembl.org/Arabidopsis_thaliana/Info/Index",
