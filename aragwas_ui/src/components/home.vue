@@ -111,6 +111,19 @@
                         <h5 class="light black--text"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> News &amp; Updates</h5>
                         <v-card>
                             <v-card-text>
+                                <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraPheno and AraGWAS Catalog 2020 update paper published</div>
+                                <div>
+                                    <p class="light">
+                                        We are happy to announce the next generation of our A. thaliana resources AraPheno and the AraGWAS Catalog, which got published in the Database issue of Nucleic Acids Research:
+                                    </p>
+                                    <p class="light">
+                                    Matteo Togninalli*, Ümit Seren*, Jan A Freudenthal, J Grey Monroe, Dazhe Meng, Magnus Nordborg, Detlef Weigel, Karsten Borgwardt, Arthur Korte, Dominik G Grimm: AraPheno and the AraGWAS Catalog 2022: a major database update including RNA-Seq and knockout mutation data for Arabidopsis thaliana; Nucleic Acids Research, gkz925, <a href="https://doi.org/10.1093/nar/gkz925">https://doi.org/10.1093/nar/gkz925</a>
+				    </p>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                        <v-card>
+                            <v-card-text>
                                 <div style="font-size: 14pt"><v-icon class="green--text lighten-1 small-icon">fiber_new</v-icon> AraGWAS Catalog paper published</div>
                                 <div>
                                     <p class="light">
