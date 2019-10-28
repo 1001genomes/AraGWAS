@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+import sentry_sdk
 from celery.schedules import crontab
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://6eb160cb12724078b2c59291ac6917fb@sentry.io/1798787",
+    integrations=[DjangoIntegration()]
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__+ "/../")))
@@ -25,7 +32,7 @@ ADMINS = [('Matteo', 'matteo.togninalli@bsse.ethz.ch'),('Uemit', 'uemit.seren@gm
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '!x&y+0o%^+*hc5phfjh2jm+vprr=6z00*f^z03k5%e0xqrgiz0'
 
-ALLOWED_HOSTS = ['aragwas.1001genomes.org', 'aragwas.sci.gmi.oeaw.ac.at','localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','127.0.0.1').split()
 
 
 # Application definition

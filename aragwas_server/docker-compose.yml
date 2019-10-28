@@ -19,6 +19,7 @@ services:
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_USER=${EMAIL_USER}
       - DJANGO_SETTINGS_MODULE=aragwas.settings.prod
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     networks:
       - aragwas
     depends_on:
@@ -85,6 +86,7 @@ services:
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_USER=${EMAIL_USER}
       - DJANGO_SETTINGS_MODULE=aragwas.settings.prod
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     networks:
       - aragwas
     depends_on:
