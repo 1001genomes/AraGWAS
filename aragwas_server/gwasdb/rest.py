@@ -490,15 +490,15 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         association = elastic.load_associations_by_id(pk)
         study_id, chr, position = pk.split('_')
         study = Study.objects.get(pk=study_id)
-        data = get_accession_phenotype_values(study.phenotype.pk)
-        accessions = np.asarray(list(map(lambda item: item['accession_id'], data)), dtype='|S6')
-        #[:,0].astype(np.dtype('|S6'))
+        data = {item['accession_id']: item for item in get_accession_phenotype_values(study.phenotype.pk) }
+        accessions = np.asarray(list(data.keys()), dtype='|S6')
         genotype_file = "%s/GENOTYPES/%s.hdf5" % (settings.HDF5_FILE_PATH, study.genotype.pk)
         alleles, genotyped_accessions = get_snps_from_genotype(genotype_file,int(chr),int(position), int(position), accession_filter = accessions)
         filtered_accessions_idx = np.in1d(accessions, genotyped_accessions)
         filtered_data = []
-        for info, allele, is_genotyped in zip(data, alleles.tolist()[0], filtered_accessions_idx.tolist()):
+        for accession_id, allele, is_genotyped in zip(genotyped_accessions, alleles.tolist()[0], filtered_accessions_idx.tolist()):
             if is_genotyped:
+                info = data[int(accession_id.decode())]
                 info['allele'] = association['snp']['alt'] if allele else association['snp']['ref']
                 filtered_data.append(info)
         return Response(filtered_data)
