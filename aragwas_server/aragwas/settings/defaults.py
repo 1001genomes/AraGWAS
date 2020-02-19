@@ -23,7 +23,7 @@ ADMINS = [('Matteo', 'matteo.togninalli@bsse.ethz.ch'),('Uemit', 'uemit.seren@gm
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!x&y+0o%^+*hc5phfjh2jm+vprr=6z00*f^z03k5%e0xqrgiz0'
+SECRET_KEY = os.environ.get('SECRET_KEY','REPLACE_WITH_PROD_KEY')
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','127.0.0.1').split()
 
@@ -131,11 +131,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/usr/share/nginx/html/static'
+STATIC_ROOT = '/srv/static'
+
 
 # Celery
-BROKER_HOST = os.environ.get('AMQP_HOST', 'amqp1')
-CELERY_BROKER_URL = 'amqp://%s' % (BROKER_HOST)
+BROKER_HOST = os.environ.get('RABBITMQ_HOSTNAME', 'amqp1')
+BROKER_USERNAME =  os.environ.get('RABBITMQ_DEFAULT_USER', 'guest')
+BROKER_PASSWORD =  os.environ.get('RABBITMQ_DEFAULT_PASS', 'guest')
+CELERY_BROKER_URL = 'amqp://%s:%s@%s' % (BROKER_USERNAME, BROKER_PASSWORD, BROKER_HOST)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -156,7 +159,10 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
-ES_HOST = os.environ.get('ES_HOST', 'http://elastic:changeme@localhost:9200')
+ES_HOSTNAME = os.environ.get('ELASTICSEARCH_HOSTNAME', 'http://elastic:changeme@localhost:9200')
+ES_USERNAME = os.environ.get('ELASTICSEARCH_USER', 'elastic')
+ES_PASSWORD = os.environ.get('ELASTICSEARCH_PASS', 'changeme')
+ES_HOST = 'http://%s:%s@%s' % (ES_USERNAME, ES_PASSWORD, ES_HOSTNAME)
 GITHUB_URL='https://github.com/1001genomes/aragwas/commit'
 HDF5_FILE_PATH = os.environ.get('ARAGWAS_HDF5_FILE_PATH','aragwas_data')
 

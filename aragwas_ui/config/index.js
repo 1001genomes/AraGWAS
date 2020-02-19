@@ -4,8 +4,8 @@ var path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
-    index: path.resolve(__dirname, '../../aragwas_server/gwasdb/templates/index.html'),
-    assetsRoot: path.resolve(__dirname, '../../aragwas_server/gwasdb/static'),
+    index: path.resolve(__dirname, '../dist/index.html'),
+    assetsRoot: path.resolve(__dirname, '../dist/static/'),
     assetsSubDirectory: '',
     assetsPublicPath: '/static',
     productionSourceMap: true,
