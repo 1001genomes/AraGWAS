@@ -63,7 +63,7 @@
               <a :href="versionInfo.buildUrl" target="_blank">{{versionInfo.build}}</a>
             </li>
             <li>
-              <a :href="versionInfo.githubUrl+'/'+versionInfo.githash" target="_blank">{{versionInfo.githash}}</a>
+              <a :href="versionInfo.githubUrl+'/'+versionInfo.githash" target="_blank">{{versionInfo.githash | substr }}</a>
             </li>
             <li><timeago :since="versionInfo.date" :auto-update="60"></timeago></li>
             <li>
@@ -126,6 +126,13 @@
 
   @Component({
     components: {'rotate-overlay': RotateOverlay,},
+    filters: {
+      substr: function(value) {
+        if (!value)
+          return ''; 
+        return value.slice(0,7);
+      }
+    }
   })
   export default class AppComponent extends Vue {
     versionInfo: ApiVersion = {} as ApiVersion;

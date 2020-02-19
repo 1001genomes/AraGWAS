@@ -92,6 +92,7 @@
     "tslint-language-service": "^0.9.6",
     "tslint-loader": "^3.5.3",
     "typescript": "2.4.1",
+    "uglifyjs-webpack-plugin": "^1.3.0",
     "url-loader": "^0.5.9",
     "vue-loader": "^12.2.2",
     "vue-property-decorator": "^5.1.1",
