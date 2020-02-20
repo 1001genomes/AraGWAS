@@ -11,10 +11,9 @@ def extraImages =
 ]
 
 buildDockerImage([
-    //imageName: "aragwas-backend",
     pushRegistryNamespace: "the1001genomes",
     pushBranches: ['develop', 'master'],
     test: testScript('py.test -ra -p no:cacheprovider /srv/web --junitxml junit.xml', '**/junit.xml'),
-    containerImages: extraImages
-    //tower: jobsMapping
+    containerImages: extraImages,
+    tower: jobsMapping
 ])
