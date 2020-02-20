@@ -66,8 +66,13 @@ class ApiVersionTests(TestCase):
         view = rest.ApiVersionView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'date': '2017-04-26T09:11:18Z', 'version': 'N/A', 'build_url': None, 'build': 'N/A', 'github_url': 'https://github.com/1001genomes/aragwas/commit', 'githash': 'N/A'})
-
+        self.assertTrue('date' in response.data)
+        self.assertTrue('version' in response.data)
+        self.assertTrue('build_url' in response.data)
+        self.assertTrue('build' in response.data)
+        self.assertTrue('githash' in response.data)
+        self.assertEqual(response.data['github_url'], 'https://github.com/1001genomes/aragwas/commit')
+       
 
 class HDF5LoadingTests(TestCase):
 
