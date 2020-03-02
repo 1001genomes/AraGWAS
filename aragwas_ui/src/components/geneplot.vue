@@ -142,7 +142,7 @@
         }
 
         onClickGene(event): void {
-            window.open(`https://apps.araport.org/thalemine/portal.do?externalids=${event.detail.gene.name}` , "_blank");
+            window.open(`https://bar.utoronto.ca/thalemine/portal.do?externalids=${event.detail.gene.name}` , "_blank");
         }
 
         onHighlightAssociations(event): void {
