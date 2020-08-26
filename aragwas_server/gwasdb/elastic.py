@@ -373,7 +373,7 @@ def load_filtered_top_associations(filters, start=0, size=50):
     associations = result['hits']['hits']
     return [association['_source'].to_dict() for association in associations], result['hits']['total']
 
-def load_filtered_top_associations_search_after(filters, search_after = ''):
+def load_filtered_top_associations_search_after(filters, search_after = '', limit=25):
     """Retrieves top associations and filter them through the tickable options"""
     s = Search(using=es, doc_type='associations')
     s = s.sort('-score', '_uid')
@@ -382,7 +382,7 @@ def load_filtered_top_associations_search_after(filters, search_after = ''):
         search_after = parse_lastel(search_after)
         print(search_after)
         s = s.extra(search_after=search_after)
-    s = s[0:25]
+    s = s[0:limit]
     print(json.dumps(s.to_dict()))
     result = s.execute()
     associations = result['hits']['hits']

@@ -14,6 +14,9 @@ class EsPagination(pagination.LimitOffsetPagination):
         if (isinstance(data, dict)):
             d['lastel'] = data['lastel']
             d['results'] = data['results']
+            d['next'] += "?lastel=" + string(data['lastel'][0]) + "," + string(data['lastel'][1]) # f-strings could also work.
+            # One could also remove the automatically generated '&offset=XX' from the link to avoid confusion
+            d['previous'] = None
         else:
             d['results'] = data
         return Response(d)
