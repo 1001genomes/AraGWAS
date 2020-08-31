@@ -1,5 +1,6 @@
 from rest_framework import pagination
 from rest_framework.response import Response
+from rest_framework.utils.urls import replace_query_param
 
 class EsPagination(pagination.LimitOffsetPagination):
     default_limit = 25
@@ -13,7 +14,11 @@ class EsPagination(pagination.LimitOffsetPagination):
         }
         if (isinstance(data, dict)):
             d['lastel'] = data['lastel']
-            d['results'] = data['results']
+            d['results'] = data['results'] 
+            newLastEl = str(data['lastel'][0]) + "," + str(data['lastel'][1])
+            d['links']['next'] = replace_query_param(d['links']['next'],'lastel', newLastEl)
+            # One could also remove the automatically generated '&offset=XX' from the link to avoid confusion
+            d['previous'] = None
         else:
             d['results'] = data
         return Response(d)
@@ -21,7 +26,7 @@ class EsPagination(pagination.LimitOffsetPagination):
 class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
-            'links': {
+            'links': {  
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link()
             },

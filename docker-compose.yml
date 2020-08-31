@@ -2,7 +2,7 @@ version: '3'
 services:
   backend:
     #image: "docker.artifactory.imp.ac.at/the1001genomes/aragwas:latest"
-    build: ./aragwas_server
+    build: .
     ports:
      - "8000:8000"
     entrypoint:

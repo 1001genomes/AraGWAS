@@ -477,7 +477,8 @@ class AssociationViewSet(EsViewSetMixin, viewsets.ViewSet):
         if len(filters['significant']) == 0:
             filters['significant'] = 'p'
         last_el = request.query_params.get('lastel', '')
-        associations, count, lastel = elastic.load_filtered_top_associations_search_after(filters,last_el)
+        limit = EsPagination().get_limit(request)
+        associations, count, lastel = elastic.load_filtered_top_associations_search_after(filters,last_el,limit)
         queryset = EsQuerySetLastEl(associations, count, lastel)
         # associations, count = elastic.load_filtered_top_associations(filters,offset,limit)
         # queryset = EsQuerySet(associations, count)
