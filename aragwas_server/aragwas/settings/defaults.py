@@ -175,7 +175,7 @@ LOGGING = {
 }
 
 
-ES_HOSTNAME = os.environ.get('ELASTICSEARCH_HOSTNAME', 'http://elastic:changeme@localhost:9200')
+ES_HOSTNAME = os.environ.get('ELASTICSEARCH_HOSTNAME', 'localhost:9200')
 ES_USERNAME = os.environ.get('ELASTICSEARCH_USER', 'elastic')
 ES_PASSWORD = os.environ.get('ELASTICSEARCH_PASS', 'changeme')
 ES_HOST = 'http://%s:%s@%s' % (ES_USERNAME, ES_PASSWORD, ES_HOSTNAME)
