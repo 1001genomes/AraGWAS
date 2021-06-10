@@ -1,5 +1,5 @@
 appdirs==1.4.3
-Django==1.11.28
+Django==2.2.24
 djangorestframework==3.6.4
 packaging==16.8
 pyparsing==2.1.10
