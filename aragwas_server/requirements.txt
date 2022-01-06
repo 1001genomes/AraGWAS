@@ -7,7 +7,7 @@ pytz==2016.10
 six==1.10.0
 djangorestframework-csv==2.0.0
 h5py==2.9.0
-celery==4.3.0
+celery==5.2.2
 coreapi==2.3.0
 pytest-django==3.1.2
 pytest == 4.6.3
