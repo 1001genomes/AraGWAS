@@ -13,8 +13,8 @@
     "lint": "tslint -c tslint.json  'src/**/*.{ts,js}' 'test/unit/specs/*.{ts,js}' 'test/e2e/specs/*.{ts,js}'"
   },
   "dependencies": {
-    "d3": "^4.9.1",
-    "d3-scale-chromatic": "^1.1.1",
+    "d3": "^7.6.1",
+    "d3-scale-chromatic": "^3.0.0",
     "intro.js": "^2.5.0",
     "lodash": "^4.17.13",
     "moment": "^2.24.0",
