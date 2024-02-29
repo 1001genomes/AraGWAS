@@ -1,4 +1,3 @@
-@Library('vbc-cicd@docker_multi_test')
 def jobsMapping = [
   tags: [jobName:"App AraGWAS", jobTags: "reload", extraVars: "app_generic_image_tag: latest"],
   master: [jobName:"App AraGWAS", jobTags: "reload", extraVars: "app_generic_image_tag: master"]
@@ -12,7 +11,8 @@ def extraImages =
 
 buildDockerImage([
     pushRegistryNamespace: "the1001genomes",
-    pushBranches: ['develop', 'master'],
+    imageName: "aragwas-backend",
+    pushBranches: ['master', 'fix_mail'],
     test: testScript('py.test -ra -p no:cacheprovider /srv/web --junitxml junit.xml', '**/junit.xml'),
     containerImages: extraImages,
     tower: jobsMapping
