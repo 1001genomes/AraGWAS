@@ -1,4 +1,4 @@
-FROM python:3 as django
+FROM python:3.8 as django
 RUN useradd --uid=10372 -ms /bin/bash aragwas && mkdir -p /srv/web &&  mkdir -p /srv/static && chown aragwas:aragwas /srv/static && chown aragwas:aragwas /srv/web
 COPY aragwas_server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && pip install gunicorn

@@ -25,3 +25,6 @@ DATABASES = {
 EMAIL_HOST = os.environ["EMAIL_HOST"]
 EMAIL_PORT = os.environ.get("EMAIL_PORT",25)
 EMAIL_HOST_USER = os.environ["EMAIL_USER"]
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD","")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS",False)
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL","root@localhost")
