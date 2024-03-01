@@ -16,7 +16,7 @@
     "d3": "^4.9.1",
     "d3-scale-chromatic": "^1.1.1",
     "intro.js": "^2.5.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "vue": "^2.4.1",
     "vue-analytics": "^4.1.2",
